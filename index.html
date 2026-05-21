@@ -6,45 +6,119 @@
 <title>Follow-up Positivação</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
-:root{--bg:#F5F4F0;--card:#fff;--border:#E2E0D8;--text:#1A1A18;--muted:#7A7870;--accent:#1D4ED8;--accent-light:#EFF6FF;--green:#166534;--green-bg:#DCFCE7;--amber:#92400E;--amber-bg:#FEF3C7;--gray:#6B7280;--gray-bg:#F3F4F6}
+:root{--bg:#F5F4F0;--card:#fff;--border:#E2E0D8;--text:#1A1A18;--muted:#7A7870;--accent:#1D4ED8;--accent-light:#EFF6FF;--green:#166534;--green-bg:#DCFCE7;--amber:#92400E;--amber-bg:#FEF3C7;--gray:#6B7280;--gray-bg:#F3F4F6;--red:#991B1B;--red-bg:#FEE2E2}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px}
-#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.screen{display:none}
+.screen.active{display:block}
+
+/* LOGIN */
+#s-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:360px}
-.login-logo{font-size:28px;margin-bottom:8px;text-align:center}
+.login-logo{font-size:32px;margin-bottom:8px;text-align:center}
 .login-title{font-size:18px;font-weight:600;text-align:center;margin-bottom:4px}
 .login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px}
 .login-box select,.login-box input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--bg);color:var(--text);margin-bottom:10px}
 .btn-login{width:100%;padding:13px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
 .login-err{font-size:12px;color:#991B1B;text-align:center;margin-top:8px;display:none}
-header{background:var(--text);color:#fff;padding:18px 16px 14px}
-.hdr-top{display:flex;align-items:flex-start;justify-content:space-between}
-.hdr-name{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:3px}
-.hdr-title{font-size:20px;font-weight:600}
-.hdr-month{font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);padding:4px 10px;border-radius:6px;white-space:nowrap}
-.prog-wrap{margin-top:14px}
-.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.5);margin-bottom:5px}
-.prog-val{color:#fff;font-weight:500}
-.prog-bg{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
-.prog-fg{height:100%;background:#60A5FA;border-radius:99px;transition:width .3s}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 16px}
-.sum-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
-.sum-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
-.sum-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace}
-.sum-sub{font-size:10px;color:var(--muted);margin-top:2px}
-.mes-wrap{padding:0 16px 12px;display:flex;align-items:center;gap:8px}
-.mes-wrap label{font-size:12px;color:var(--muted);white-space:nowrap}
-.mes-wrap select{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--card);color:var(--text)}
-.section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0 16px;margin-bottom:8px}
-.client-list{padding:0 16px;display:flex;flex-direction:column;gap:8px}
-.client-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.client-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;gap:8px}
-.client-name{font-size:13px;font-weight:500;flex:1;line-height:1.3}
-.client-total{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap}
+
+/* COMMON HEADER */
+.app-header{background:var(--text);color:#fff;padding:16px}
+.hdr-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.hdr-back{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:5px 11px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.hdr-title{font-size:18px;font-weight:600;flex:1}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.55)}
+.hdr-badge{font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);padding:4px 10px;border-radius:6px;white-space:nowrap}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:40}
+.nav-btn{flex:1;padding:12px 8px 10px;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'DM Sans',sans-serif}
+.nav-btn .nav-icon{font-size:20px}
+.nav-btn .nav-label{font-size:10px;color:var(--muted)}
+.nav-btn.active .nav-label{color:var(--text);font-weight:600}
+.nav-btn.active .nav-icon{filter:saturate(2)}
+
+/* DASHBOARD */
+#s-dash{padding-bottom:70px}
+.dash-header{background:var(--text);color:#fff;padding:20px 16px 18px}
+.dash-greeting{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px}
+.dash-name{font-size:22px;font-weight:600;margin-bottom:2px}
+.dash-month-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.dash-month-row label{font-size:12px;color:rgba(255,255,255,.5);white-space:nowrap}
+.dash-month-row select{flex:1;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px}
+.dash-month-row select option{background:#1A1A18;color:#fff}
+
+/* METRIC CARDS */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+.metric-card.full{grid-column:1/-1}
+.mc-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.mc-value{font-size:28px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
+.mc-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.mc-bar-bg{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:10px}
+.mc-bar-fg{height:100%;border-radius:99px;transition:width .4s}
+
+/* CHART */
+.chart-wrap{padding:0 16px;margin-bottom:14px}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+.chart-title{font-size:13px;font-weight:500;margin-bottom:12px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:70px;margin-bottom:5px}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.chart-bar{width:100%;border-radius:3px 3px 0 0;min-height:2px}
+.chart-bar-label{font-size:9px;color:var(--muted)}
+.chart-bar-val{font-size:9px;color:var(--muted);font-weight:500}
+
+/* COORD CARDS (admin) */
+.coord-cards{padding:0 16px;display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.coord-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.cc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.cc-name{font-size:15px;font-weight:600}
+.cc-base{font-size:11px;color:var(--muted);margin-top:1px}
+.cc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.cs-item{text-align:center}
+.cs-label{font-size:10px;color:var(--muted);margin-bottom:1px}
+.cs-val{font-size:17px;font-weight:600;font-family:'DM Mono',monospace}
+.bar-wrap{margin-bottom:6px}
+.bar-label-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px}
+.bar-bg{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.bar-fg{height:100%;border-radius:99px}
+
+/* SECTION */
+.section{padding:0 16px;margin-bottom:14px}
+.section-hdr{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.pending-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.pending-name{font-size:13px;flex:1;line-height:1.3}
+.empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px}
+
+/* BADGES */
 .badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:99px;white-space:nowrap}
 .badge-ok{background:var(--green-bg);color:var(--green)}
 .badge-parc{background:var(--amber-bg);color:var(--amber)}
 .badge-sem{background:var(--gray-bg);color:var(--gray)}
+.badge-danger{background:var(--red-bg);color:var(--red)}
+.badge-inativo{background:#F3F4F6;color:#9CA3AF;font-style:italic}
+
+/* PEDIDOS */
+#s-ped{padding-bottom:70px}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.5);margin-bottom:5px}
+.prog-val{color:#fff;font-weight:500}
+.prog-bg{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+.prog-fg{height:100%;background:#60A5FA;border-radius:99px;transition:width .3s}
+.ped-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px}
+.ps-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
+.ps-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.ps-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace}
+.admin-tabs{display:flex;gap:4px;padding:0 16px;margin-bottom:10px;overflow-x:auto}
+.admin-tab{padding:6px 12px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.admin-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0 16px;margin-bottom:8px}
+.client-list{padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.client-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.client-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;gap:8px}
+.client-name{font-size:13px;font-weight:500;flex:1;line-height:1.3}
+.client-total{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap}
+.chevron{font-size:12px;color:var(--muted);transition:transform .2s}
+.chevron.open{transform:rotate(180deg)}
 .sku-grid{display:none;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 14px 12px;border-top:1px solid var(--border)}
 .sku-grid.open{display:grid}
 .sku-item{display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -53,12 +127,31 @@ header{background:var(--text);color:#fff;padding:18px 16px 14px}
 .sku-input::-webkit-outer-spin-button,.sku-input::-webkit-inner-spin-button{-webkit-appearance:none}
 .sku-input:focus{outline:none;border-color:var(--accent);background:var(--accent-light)}
 .sku-input.filled{border-color:#86EFAC;background:#F0FDF4;color:var(--green)}
-.chevron{font-size:12px;color:var(--muted);transition:transform .2s}
-.chevron.open{transform:rotate(180deg)}
-.fab-wrap{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);display:flex;gap:8px}
-.fab{flex:1;padding:13px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.fab-wrap{position:fixed;bottom:60px;left:0;right:0;padding:10px 16px;background:var(--bg);border-top:1px solid var(--border);display:flex;gap:8px}
+.fab{flex:1;padding:12px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
 .fab-primary{background:var(--text);color:#fff}
-.fab-secondary{background:var(--card);color:var(--text);border:1px solid var(--border);flex:0 0 auto;padding:13px 14px}
+.fab-secondary{background:var(--card);color:var(--text);border:1px solid var(--border);flex:0 0 auto;padding:12px 14px}
+
+/* CLIENTES (gestão) */
+#s-cli{padding-bottom:70px}
+.cli-coord-tabs{display:flex;gap:4px;padding:12px 16px 8px;overflow-x:auto}
+.cli-coord-tab{padding:6px 12px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.cli-coord-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.cli-list{padding:0 16px;display:flex;flex-direction:column;gap:6px;margin-bottom:80px}
+.cli-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.cli-item.inativo{opacity:.55}
+.cli-nome{font-size:13px;font-weight:500;flex:1;line-height:1.3}
+.cli-actions{display:flex;gap:6px;align-items:center}
+.btn-toggle{padding:4px 10px;border-radius:8px;border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer}
+.btn-toggle-ativo{background:var(--red-bg);color:var(--red);border-color:#FECACA}
+.btn-toggle-inativo{background:var(--green-bg);color:var(--green);border-color:#BBF7D0}
+.cli-add-wrap{position:fixed;bottom:60px;left:0;right:0;padding:10px 16px;background:var(--bg);border-top:1px solid var(--border)}
+.cli-add-row{display:flex;gap:8px}
+.cli-add-input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--card);color:var(--text)}
+.cli-add-input:focus{outline:none;border-color:var(--accent)}
+.btn-add{padding:11px 16px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+
+/* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end}
 .modal-bg.open{display:flex}
 .modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:80vh;overflow-y:auto}
@@ -67,16 +160,21 @@ header{background:var(--text);color:#fff;padding:18px 16px 14px}
 .resumo-text{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;white-space:pre-wrap;line-height:1.7;margin-bottom:14px}
 .btn-copy{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px}
 .btn-close{width:100%;padding:13px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer}
-.saving{position:fixed;top:12px;right:12px;background:var(--text);color:#fff;font-size:12px;padding:6px 12px;border-radius:8px;opacity:0;transition:opacity .3s;z-index:200}
-.saving.show{opacity:1}
-.admin-tabs{display:flex;gap:4px;padding:0 16px;margin-bottom:12px;overflow-x:auto}
-.admin-tab{padding:7px 14px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:'DM Sans',sans-serif}
-.admin-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* TOAST */
+.toast{position:fixed;top:12px;right:12px;left:12px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;z-index:200;text-align:center}
+.toast.show{opacity:1}
+.toast.ok{background:#166534;color:#fff}
+.toast.error{background:#991B1B;color:#fff}
+.toast.info{background:var(--text);color:#fff}
+
+.loading{text-align:center;padding:40px 16px;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
 
-<div id="login-screen">
+<!-- LOGIN -->
+<div id="s-login">
   <div class="login-box">
     <div class="login-logo">📦</div>
     <div class="login-title">Follow-up Positivação</div>
@@ -89,61 +187,84 @@ header{background:var(--text);color:#fff;padding:18px 16px 14px}
       <option value="Vitor Valle">Vitor Valle</option>
       <option value="Sem Responsável">Sem Responsável (Vagner)</option>
     </select>
-    <input type="password" id="login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter')fazerLogin()"/>
-    <button class="btn-login" onclick="fazerLogin()">Entrar</button>
-    <div class="login-err" id="login-err">Senha incorreta</div>
+    <input type="password" id="login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="btn-login" onclick="login()">Entrar</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<div id="app-screen" style="display:none">
-  <header>
-    <div class="hdr-top">
-      <div>
-        <div class="hdr-name" id="hdr-name">Coordenador</div>
-        <div class="hdr-title" id="hdr-title">—</div>
-      </div>
-      <div class="hdr-month" id="hdr-month">—</div>
+<!-- DASHBOARD -->
+<div id="s-dash" class="screen">
+  <div class="dash-header">
+    <div class="dash-greeting" id="dash-greeting">Olá,</div>
+    <div class="dash-name" id="dash-name">—</div>
+    <div class="dash-month-row">
+      <label>Mês:</label>
+      <select id="dash-mes">
+        <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+        <option value="2">Março</option><option value="3">Abril</option>
+        <option value="4">Maio</option><option value="5">Junho</option>
+        <option value="6">Julho</option><option value="7">Agosto</option>
+        <option value="8">Setembro</option><option value="9">Outubro</option>
+        <option value="10">Novembro</option><option value="11">Dezembro</option>
+      </select>
     </div>
-    <div class="prog-wrap">
-      <div class="prog-labels">
-        <span>Volume realizado</span>
-        <span class="prog-val"><span id="pct-val">0</span>% da meta (<span id="meta-val">—</span> cx)</span>
-      </div>
-      <div class="prog-bg"><div class="prog-fg" id="prog-fg" style="width:0%"></div></div>
-    </div>
-  </header>
-
-  <div class="summary">
-    <div class="sum-card"><div class="sum-label">Total cx</div><div class="sum-value" id="tot-geral">0</div><div class="sum-sub" id="sum-meta-sub">de — meta</div></div>
-    <div class="sum-card"><div class="sum-label">Com pedido</div><div class="sum-value" style="color:var(--green)" id="tot-cli">0</div><div class="sum-sub" id="sum-base-sub">de — clientes</div></div>
-    <div class="sum-card"><div class="sum-label">Pendentes</div><div class="sum-value" style="color:var(--muted)" id="tot-sem">0</div><div class="sum-sub">clientes</div></div>
   </div>
+  <div id="dash-content"><div class="loading">Carregando...</div></div>
+  <div class="bottom-nav" id="nav-dash"></div>
+</div>
 
-  <div id="admin-tabs-wrap" style="display:none">
+<!-- PEDIDOS -->
+<div id="s-ped" class="screen">
+  <div class="app-header">
+    <div class="hdr-row">
+      <div class="hdr-title" id="ped-title">Pedidos</div>
+      <div class="hdr-badge" id="ped-month">—</div>
+    </div>
+    <div class="prog-labels">
+      <span>Volume realizado</span>
+      <span class="prog-val"><span id="pct-val">0</span>% da meta (<span id="meta-val">—</span> cx)</span>
+    </div>
+    <div class="prog-bg"><div class="prog-fg" id="prog-fg" style="width:0%"></div></div>
+  </div>
+  <div class="ped-summary">
+    <div class="ps-card"><div class="ps-label">Total cx</div><div class="ps-value" id="ped-tot">0</div></div>
+    <div class="ps-card"><div class="ps-label">Com pedido</div><div class="ps-value" style="color:var(--green)" id="ped-com">0</div></div>
+    <div class="ps-card"><div class="ps-label">Pendentes</div><div class="ps-value" style="color:var(--muted)" id="ped-pend">0</div></div>
+  </div>
+  <div id="admin-tabs-wrap" style="display:none;margin-bottom:8px">
     <div class="admin-tabs" id="admin-tabs"></div>
   </div>
-
-  <div class="mes-wrap">
-    <label>Mês:</label>
-    <select id="sel-mes">
-      <option value="0">Janeiro</option><option value="1">Fevereiro</option>
-      <option value="2">Março</option><option value="3">Abril</option>
-      <option value="4">Maio</option><option value="5">Junho</option>
-      <option value="6">Julho</option><option value="7">Agosto</option>
-      <option value="8">Setembro</option><option value="9">Outubro</option>
-      <option value="10">Novembro</option><option value="11">Dezembro</option>
-    </select>
-  </div>
-
-  <div class="section-title" id="section-title">Clientes — toque para preencher</div>
+  <div class="sec-title">Clientes ativos</div>
   <div class="client-list" id="client-list"></div>
-
+  <div style="height:120px"></div>
   <div class="fab-wrap">
     <button class="fab fab-secondary" onclick="abrirResumo()">📋</button>
     <button class="fab fab-primary" onclick="salvarTudo()">💾 Salvar pedidos</button>
   </div>
+  <div class="bottom-nav" id="nav-ped"></div>
 </div>
 
+<!-- CLIENTES -->
+<div id="s-cli" class="screen">
+  <div class="app-header">
+    <div class="hdr-row">
+      <div class="hdr-title">Gestão de clientes</div>
+    </div>
+    <div class="hdr-sub">Ative, inative ou adicione clientes. Histórico de vendas é preservado.</div>
+  </div>
+  <div class="cli-coord-tabs" id="cli-coord-tabs"></div>
+  <div class="cli-list" id="cli-list"></div>
+  <div class="cli-add-wrap">
+    <div class="cli-add-row">
+      <input class="cli-add-input" id="cli-add-input" placeholder="Nome do novo cliente..." onkeydown="if(event.key==='Enter')adicionarCliente()"/>
+      <button class="btn-add" onclick="adicionarCliente()">+ Adicionar</button>
+    </div>
+  </div>
+  <div class="bottom-nav" id="nav-cli"></div>
+</div>
+
+<!-- MODAL RESUMO -->
 <div class="modal-bg" id="modal">
   <div class="modal">
     <div class="modal-title">Resumo para enviar</div>
@@ -154,112 +275,331 @@ header{background:var(--text);color:#fff;padding:18px 16px 14px}
   </div>
 </div>
 
-<div class="saving" id="saving">Salvando...</div>
+<div class="toast" id="toast"></div>
 
 <script>
-const SB_URL='https://rpxrjawzkkpnzancmcif.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
+const SB='https://rpxrjawzkkpnzancmcif.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
 
-const SENHAS={'admin':'leandro123','Igor Cater':'igor123','Marcio Vit':'marcio123','Vitor Valle':'vitor123','Sem Responsável':'vagner123'};
-
-const COORDS={
-  'Igor Cater':{clientes:['COM ATAC DE CIG SOUZA - MRT','DMC DISTRIBUIDORA MINEIRA DE CIGARROS','EDIVANES','JC DISTRIBUIDORA','JK','LA DIST','MARTA MG ( ANTIGO PEDRO HENRIQUE )','MAXWEL SILVA BARBORSA / EMPORIO DO TABAC','NEW BLUETEX','PORTO SEGURO MG','REGIONAL DISTRIBUIDORA','WINS DISTRIBUIDORA ( Mauricinho )'],metas:[131,267,192,241,279,251,269,296,305,308,311,234]},
-  'Marcio Vit':{clientes:['CONCEITO  -  PE','CONCEITO AL','GB - CE','GB - MA','LEGAL DRNK','PANTELAO -PB'],metas:[310,326,335,345,356,374,385,396,416,437,450,473]},
-  'Sem Responsável':{clientes:['BE ROYAL','BM TAB  - BAURU','BM TAB  - RIBEIRÃO','BM TAB  - SJC','BM TAB  - SUMARE','BRASUR COMERCIO DE ALIMENTOS','BROVALE','DUE VALLE RS','DUE VALLE','EL PRIME - MR DISTRIBUIDORA','FREEDOM TECH LTDA','GB - SP','LH SANTOS','MG PRESENTES - 25 DE MARCO - MARIA','MP COMERCIO'],metas:[541,429,502,547,591,597,633,645,658,671,685,479]},
-  'Vitor Valle':{clientes:['ARAUJO & OLIVEIRA TAB LTDA','BENTES OLIVEIRA COMERCIO','BRASIL TABACOS','CERENA PINTO SOUTO MAIOR','EURO TAB','EURO TABAGYN GO','J IZIDORIO','JOSE GRIJALVO DA SILVA MOREIRA','L & L','MARINGA COMERCIO E REPRESENTAÇOES LTDA','SOUSA & SOUSA','TAB LM - PORTO VELHO','TABANORTE','ZRIOS GOIAS'],metas:[122,96,134,139,140,150,153,169,172,177,213,217]}
-};
-
+const SENHAS={admin:'leandro123','Igor Cater':'igor123','Marcio Vit':'marcio123','Vitor Valle':'vitor123','Sem Responsável':'vagner123'};
+const COORD_KEYS=['Igor Cater','Marcio Vit','Sem Responsável','Vitor Valle'];
+const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Sem Responsável':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const SKUS=['GR','GM','CM','CC'];
 
-let userCoord=null,isAdmin=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear(),dadosLocais={};
+let user=null,isAdmin=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear();
+let dadosLocais={},clientesDB={},pedidosCarregados=false,coordPedCarregado=null,mesPedCarregado=null;
+let cliCoordAtual=COORD_KEYS[0];
 
-function fazerLogin(){
-  const coord=document.getElementById('login-coord').value;
-  const senha=document.getElementById('login-senha').value;
-  if(!coord){mostrarErro('Selecione seu nome');return;}
-  if(SENHAS[coord]!==senha){mostrarErro('Senha incorreta');return;}
-  userCoord=coord;isAdmin=coord==='admin';
-  coordAtual=isAdmin?'Igor Cater':coord;
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app-screen').style.display='block';
-  if(isAdmin){document.getElementById('admin-tabs-wrap').style.display='block';renderAdminTabs();document.getElementById('section-title').textContent='Clientes';}
-  document.getElementById('sel-mes').value=mesAtual;
-  document.getElementById('sel-mes').onchange=function(){mesAtual=parseInt(this.value);carregarDados();};
-  carregarDados();
+// ── UTILS ──
+const g=id=>document.getElementById(id);
+function corPct(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
+function corBar(p){return p>=80?'#16A34A':p>=50?'#D97706':'#DC2626';}
+
+function toast(msg,type='info',dur=2000){
+  const t=g('toast');t.textContent=msg;t.className='toast show '+type;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur);
 }
 
-function mostrarErro(m){const e=document.getElementById('login-err');e.textContent=m;e.style.display='block';}
+async function sb(path,opts={}){
+  try{
+    const r=await fetch(SB+path,{...opts,headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})}});
+    if(opts.ret){const t=await r.text();try{return JSON.parse(t);}catch{return[];}}
+    return r;
+  }catch(e){console.error(e);if(opts.ret)return[];return{ok:false};}
+}
+
+// ── SCREENS ──
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  g(id).classList.add('active');
+}
+
+function renderNav(navId,active){
+  const tabs=isAdmin?[
+    {id:'dash',icon:'📊',label:'Dashboard'},
+    {id:'ped',icon:'✏️',label:'Pedidos'},
+    {id:'cli',icon:'👥',label:'Clientes'},
+  ]:[
+    {id:'dash',icon:'📊',label:'Dashboard'},
+    {id:'ped',icon:'✏️',label:'Pedidos'},
+  ];
+  g(navId).innerHTML=tabs.map(t=>`
+    <button class="nav-btn ${t.id===active?'active':''}" onclick="navTo('${t.id}')">
+      <span class="nav-icon">${t.icon}</span>
+      <span class="nav-label">${t.label}</span>
+    </button>`).join('');
+}
+
+function navTo(id){
+  if(id==='dash'){irDash();}
+  else if(id==='ped'){irPed();}
+  else if(id==='cli'){irCli();}
+}
+
+// ── LOGIN ──
+function login(){
+  const coord=g('login-coord').value;
+  const senha=g('login-senha').value;
+  if(!coord){g('login-err').textContent='Selecione seu nome';g('login-err').style.display='block';return;}
+  if(SENHAS[coord]!==senha){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
+  user=coord;isAdmin=coord==='admin';
+  coordAtual=isAdmin?COORD_KEYS[0]:coord;
+  cliCoordAtual=coordAtual==='admin'?COORD_KEYS[0]:coordAtual;
+  g('login-screen') && (g('s-login').style.display='none');
+  irDash();
+}
+
+// ── CLIENTES DB ──
+async function carregarClientes(){
+  const data=await sb('/rest/v1/clientes?select=*&order=nome',{ret:true});
+  clientesDB={};
+  COORD_KEYS.forEach(c=>{clientesDB[c]=[];});
+  if(Array.isArray(data))data.forEach(r=>{if(clientesDB[r.coordenador])clientesDB[r.coordenador].push({nome:r.nome,ativo:r.ativo,id:r.id});});
+}
+
+function clientesAtivos(coord){return(clientesDB[coord]||[]).filter(c=>c.ativo);}
+
+// ── DASHBOARD ──
+async function irDash(){
+  show('s-dash');
+  renderNav('nav-dash','dash');
+  g('dash-greeting').textContent='Olá,';
+  g('dash-name').textContent=isAdmin?'Leandro':coordAtual;
+  g('dash-mes').value=mesAtual;
+  g('dash-mes').onchange=function(){mesAtual=parseInt(this.value);pedidosCarregados=false;carregarDashboard();};
+  await carregarClientes();
+  carregarDashboard();
+}
+
+async function carregarDashboard(){
+  g('dash-content').innerHTML='<div class="loading">Carregando...</div>';
+  if(isAdmin){
+    const [,anoData]=await Promise.all([
+      carregarTodosPedidos(),
+      sb(`/rest/v1/pedidos?ano=eq.${anoAtual}&select=*`,{ret:true})
+    ]);
+    renderAdminDash(Array.isArray(anoData)?anoData:[]);
+  } else {
+    const [pedMes,anoData]=await Promise.all([
+      sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true}),
+      sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&select=*`,{ret:true})
+    ]);
+    dadosLocais={};
+    if(Array.isArray(pedMes))pedMes.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0};});
+    renderCoordDash(Array.isArray(anoData)?anoData:[]);
+  }
+}
+
+let todosPedidosMes={};
+async function carregarTodosPedidos(){
+  const data=await sb(`/rest/v1/pedidos?mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true});
+  todosPedidosMes={};
+  COORD_KEYS.forEach(c=>{todosPedidosMes[c]={};});
+  if(Array.isArray(data))data.forEach(r=>{if(todosPedidosMes[r.coordenador])todosPedidosMes[r.coordenador][r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0};});
+}
+
+function totCliD(d,cli){const x=d[cli]||{};return(x.gr||0)+(x.gm||0)+(x.cm||0)+(x.cc||0);}
+
+function renderCoordDash(anoData){
+  const coord=coordAtual;
+  const ativos=clientesAtivos(coord);
+  const meta=METAS[coord][mesAtual];
+  const tot=ativos.reduce((s,c)=>s+totCliD(dadosLocais,c.nome),0);
+  const comPedido=ativos.filter(c=>totCliD(dadosLocais,c.nome)>0).length;
+  const pctPos=ativos.length?Math.round(comPedido/ativos.length*100):0;
+  const pctMeta=Math.min(100,meta>0?Math.round(tot/meta*100):0);
+  const pendentes=ativos.filter(c=>totCliD(dadosLocais,c.nome)===0);
+  const parciais=ativos.filter(c=>{const d=dadosLocais[c.nome]||{};return SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length>0&&SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length<3;});
+
+  const mesesChart=MESES.map((m,i)=>{
+    const t=anoData.filter(r=>r.mes===i).reduce((s,r)=>s+(r.gr||0)+(r.gm||0)+(r.cm||0)+(r.cc||0),0);
+    const mt=METAS[coord][i];
+    return{m:m.substring(0,3),tot:t,meta:mt,pct:Math.min(100,mt>0?Math.round(t/mt*100):0)};
+  });
+  const maxT=Math.max(...mesesChart.map(m=>m.tot),1);
+
+  g('dash-content').innerHTML=`
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="mc-label">Positivação</div>
+        <div class="mc-value" style="color:${corPct(pctPos)}">${pctPos}%</div>
+        <div class="mc-sub">${comPedido} de ${ativos.length} ativos</div>
+        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${pctPos}%;background:${corBar(pctPos)}"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-label">Volume</div>
+        <div class="mc-value" style="color:${corPct(pctMeta)}">${pctMeta}%</div>
+        <div class="mc-sub">${tot} / ${meta} cx</div>
+        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${pctMeta}%;background:${corBar(pctMeta)}"></div></div>
+      </div>
+      ${parciais.length>0?`<div class="metric-card full">
+        <div class="mc-label">⚠ Pedidos parciais (1-2 SKUs)</div>
+        ${parciais.map(c=>`<div style="font-size:13px;padding:4px 0;border-bottom:0.5px solid var(--border)">${c.nome}</div>`).join('')}
+      </div>`:''}
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-box">
+        <div class="chart-title">Volume mensal — ${anoAtual}</div>
+        <div class="chart-bars">
+          ${mesesChart.map((m,i)=>`
+            <div class="chart-bar-col">
+              <div class="chart-bar-val">${m.tot>0?m.tot:''}</div>
+              <div class="chart-bar" style="height:${Math.round(m.tot/maxT*60)}px;background:${i===mesAtual?corBar(m.pct):'var(--border)'}"></div>
+              <div class="chart-bar-label">${m.m}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    ${pendentes.length>0?`<div class="section">
+      <div class="section-hdr">⏳ Pendentes (${pendentes.length})</div>
+      ${pendentes.map(c=>`<div class="pending-item"><span class="pending-name">${c.nome}</span><span class="badge badge-sem">Pendente</span></div>`).join('')}
+    </div>`:`<div class="empty">✅ Todos os clientes ativos com pedido!</div>`}
+  `;
+}
+
+function renderAdminDash(anoData){
+  const totGeral=COORD_KEYS.reduce((s,c)=>s+clientesAtivos(c).reduce((ss,cl)=>ss+totCliD(todosPedidosMes[c]||{},cl.nome),0),0);
+  const metaGeral=COORD_KEYS.reduce((s,c)=>s+METAS[c][mesAtual],0);
+  const totalAtivos=COORD_KEYS.reduce((s,c)=>s+clientesAtivos(c).length,0);
+  const comPedidoGeral=COORD_KEYS.reduce((s,c)=>s+clientesAtivos(c).filter(cl=>totCliD(todosPedidosMes[c]||{},cl.nome)>0).length,0);
+  const pctPosG=totalAtivos?Math.round(comPedidoGeral/totalAtivos*100):0;
+  const pctMetaG=Math.min(100,metaGeral>0?Math.round(totGeral/metaGeral*100):0);
+
+  const cards=COORD_KEYS.map(coord=>{
+    const d=todosPedidosMes[coord]||{};
+    const ativos=clientesAtivos(coord);
+    const meta=METAS[coord][mesAtual];
+    const tot=ativos.reduce((s,c)=>s+totCliD(d,c.nome),0);
+    const comPed=ativos.filter(c=>totCliD(d,c.nome)>0).length;
+    const pctPos=ativos.length?Math.round(comPed/ativos.length*100):0;
+    const pctMeta=Math.min(100,meta>0?Math.round(tot/meta*100):0);
+    const mesesChart=MESES.map((m,i)=>{
+      const t=anoData.filter(r=>r.coordenador===coord&&r.mes===i).reduce((s,r)=>s+(r.gr||0)+(r.gm||0)+(r.cm||0)+(r.cc||0),0);
+      return{m:m.substring(0,3),tot:t,meta:METAS[coord][i]};
+    });
+    const maxT=Math.max(...mesesChart.map(m=>m.tot),1);
+    return `<div class="coord-card">
+      <div class="cc-top">
+        <div><div class="cc-name">${coord}</div><div class="cc-base">${ativos.length} clientes ativos</div></div>
+        <span class="badge ${pctPos>=80?'badge-ok':pctPos>=50?'badge-parc':'badge-danger'}">${pctPos>=80?'✓ Meta':'Abaixo'}</span>
+      </div>
+      <div class="cc-stats">
+        <div class="cs-item"><div class="cs-label">Positivação</div><div class="cs-val" style="color:${corPct(pctPos)}">${pctPos}%</div></div>
+        <div class="cs-item"><div class="cs-label">Volume</div><div class="cs-val" style="color:${corPct(pctMeta)}">${pctMeta}%</div></div>
+        <div class="cs-item"><div class="cs-label">Cx total</div><div class="cs-val">${tot}</div></div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label-row"><span>Positivação</span><span>${comPed}/${ativos.length}</span></div>
+        <div class="bar-bg"><div class="bar-fg" style="width:${pctPos}%;background:${corBar(pctPos)}"></div></div>
+      </div>
+      <div class="bar-wrap" style="margin-top:6px">
+        <div class="bar-label-row"><span>Volume vs meta</span><span>${tot}/${meta} cx</span></div>
+        <div class="bar-bg"><div class="bar-fg" style="width:${pctMeta}%;background:${corBar(pctMeta)}"></div></div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:5px">Volume ${anoAtual}</div>
+        <div class="chart-bars" style="height:44px">
+          ${mesesChart.map((m,i)=>{const p=m.meta>0?Math.min(100,Math.round(m.tot/m.meta*100)):0;return`
+            <div class="chart-bar-col">
+              <div class="chart-bar" style="height:${Math.round(m.tot/maxT*38)}px;background:${i===mesAtual?corBar(p):'var(--border)'}"></div>
+              <div class="chart-bar-label">${m.m}</div>
+            </div>`;}).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  g('dash-content').innerHTML=`
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="mc-label">Positivação geral</div>
+        <div class="mc-value" style="color:${corPct(pctPosG)}">${pctPosG}%</div>
+        <div class="mc-sub">${comPedidoGeral} de ${totalAtivos} clientes</div>
+        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${pctPosG}%;background:${corBar(pctPosG)}"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-label">Volume geral</div>
+        <div class="mc-value" style="color:${corPct(pctMetaG)}">${pctMetaG}%</div>
+        <div class="mc-sub">${totGeral} / ${metaGeral} cx</div>
+        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${pctMetaG}%;background:${corBar(pctMetaG)}"></div></div>
+      </div>
+    </div>
+    <div class="coord-cards">${cards}</div>`;
+}
+
+// ── PEDIDOS ──
+async function irPed(){
+  show('s-ped');
+  renderNav('nav-ped','ped');
+  if(isAdmin){
+    g('admin-tabs-wrap').style.display='block';
+    renderAdminTabs();
+  }
+  if(!pedidosCarregados||coordPedCarregado!==coordAtual||mesPedCarregado!==mesAtual){
+    await carregarPedidos();
+  } else {
+    renderPedHeader();renderClientes();renderPedSummary();
+  }
+}
 
 function renderAdminTabs(){
-  document.getElementById('admin-tabs').innerHTML=Object.keys(COORDS).map(c=>
-    `<button class="admin-tab ${c===coordAtual?'active':''}" onclick="setAdminCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
+  g('admin-tabs').innerHTML=COORD_KEYS.map(c=>
+    `<button class="admin-tab ${c===coordAtual?'active':''}" onclick="setCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
 }
 
-function setAdminCoord(c){coordAtual=c;renderAdminTabs();carregarDados();}
+async function setCoord(c){coordAtual=c;renderAdminTabs();await carregarPedidos();}
 
-async function sbFetch(path,opts={}){
-  const res=await fetch(SB_URL+path,{...opts,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})}});
-  if(opts.returnData){const t=await res.text();try{return JSON.parse(t);}catch{return[];}}
-  return res;
-}
-
-async function carregarDados(){
-  const data=await sbFetch(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{returnData:true});
+async function carregarPedidos(){
+  const data=await sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true});
   dadosLocais={};
   if(Array.isArray(data))data.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0};});
-  renderHeader();renderClientes();renderSummary();
+  pedidosCarregados=true;coordPedCarregado=coordAtual;mesPedCarregado=mesAtual;
+  await carregarClientes();
+  renderPedHeader();renderClientes();renderPedSummary();
 }
 
 async function salvarTudo(){
-  mostrarSaving(true);
-  const rows=COORDS[coordAtual].clientes.map(cli=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:cli,gr:(dadosLocais[cli]||{}).gr||0,gm:(dadosLocais[cli]||{}).gm||0,cm:(dadosLocais[cli]||{}).cm||0,cc:(dadosLocais[cli]||{}).cc||0,updated_at:new Date().toISOString()}));
-  await sbFetch('/rest/v1/pedidos',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
-  mostrarSaving(false);
+  toast('Salvando...','info',10000);
+  const ativos=clientesAtivos(coordAtual);
+  const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,updated_at:new Date().toISOString()}));
+  const res=await sb('/rest/v1/pedidos',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+  if(res&&res.ok===false){toast('⚠ Erro ao salvar. Tente novamente.','error',3000);}
+  else{toast('✓ Salvo com sucesso!','ok',2000);}
 }
 
-function mostrarSaving(show){
-  const e=document.getElementById('saving');
-  e.textContent=show?'Salvando...':'✓ Salvo!';
-  e.classList.add('show');
-  if(!show)setTimeout(()=>e.classList.remove('show'),1500);
-}
-
-function renderHeader(){
-  const meta=COORDS[coordAtual].metas[mesAtual];
-  document.getElementById('hdr-name').textContent=isAdmin?'Gestor — visão geral':'Coordenador';
-  document.getElementById('hdr-title').textContent=coordAtual;
-  document.getElementById('hdr-month').textContent=MESES[mesAtual]+' '+anoAtual;
-  document.getElementById('meta-val').textContent=meta;
-  document.getElementById('sum-meta-sub').textContent='de '+meta+' meta';
-  document.getElementById('sum-base-sub').textContent='de '+COORDS[coordAtual].clientes.length+' clientes';
+function renderPedHeader(){
+  const meta=METAS[coordAtual][mesAtual];
+  g('ped-title').textContent=coordAtual;
+  g('ped-month').textContent=MESES[mesAtual]+' '+anoAtual;
+  g('meta-val').textContent=meta;
 }
 
 function totCli(cli){const d=dadosLocais[cli]||{};return(d.gr||0)+(d.gm||0)+(d.cm||0)+(d.cc||0);}
 function skusCli(cli){const d=dadosLocais[cli]||{};return SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length;}
 function st(cli){const n=skusCli(cli);return n===0?'sem':n<=2?'parc':'ok';}
 function stLabel(s){return s==='ok'?'Feito':s==='parc'?'Parcial':'Pendente';}
-function totGeral(){return COORDS[coordAtual].clientes.reduce((s,c)=>s+totCli(c),0);}
+function totGeral(){return clientesAtivos(coordAtual).reduce((s,c)=>s+totCli(c.nome),0);}
 
-function renderSummary(){
-  const clis=COORDS[coordAtual].clientes;
-  const meta=COORDS[coordAtual].metas[mesAtual];
+function renderPedSummary(){
+  const ativos=clientesAtivos(coordAtual);
+  const meta=METAS[coordAtual][mesAtual];
   const tot=totGeral();
   const pct=Math.min(100,Math.round(tot/meta*100));
-  document.getElementById('tot-geral').textContent=tot;
-  document.getElementById('tot-cli').textContent=clis.filter(c=>totCli(c)>0).length;
-  document.getElementById('tot-sem').textContent=clis.filter(c=>totCli(c)===0).length;
-  document.getElementById('pct-val').textContent=pct;
-  document.getElementById('prog-fg').style.width=pct+'%';
+  g('ped-tot').textContent=tot;
+  g('ped-com').textContent=ativos.filter(c=>totCli(c.nome)>0).length;
+  g('ped-pend').textContent=ativos.filter(c=>totCli(c.nome)===0).length;
+  g('pct-val').textContent=pct;
+  g('prog-fg').style.width=pct+'%';
 }
 
 function renderClientes(){
-  const clis=COORDS[coordAtual].clientes;
-  document.getElementById('client-list').innerHTML=clis.map((cli,i)=>{
-    const d=dadosLocais[cli]||{};const tot=totCli(cli);const s=st(cli);
+  const ativos=clientesAtivos(coordAtual);
+  g('client-list').innerHTML=ativos.map((cli,i)=>{
+    const d=dadosLocais[cli.nome]||{};const tot=totCli(cli.nome);const s=st(cli.nome);
     return `<div class="client-card">
       <div class="client-header" onclick="toggleCard(${i})">
-        <div class="client-name">${cli}</div>
+        <div class="client-name">${cli.nome}</div>
         <span class="client-total" id="tot-${i}">${tot>0?tot+' cx':'—'}</span>
         <span class="badge badge-${s}" id="badge-${i}">${stLabel(s)}</span>
         <span class="chevron" id="chev-${i}">▾</span>
@@ -267,54 +607,116 @@ function renderClientes(){
       <div class="sku-grid" id="grid-${i}">
         ${SKUS.map(sk=>`<div class="sku-item"><span class="sku-label">${sk}</span>
           <input type="number" inputmode="numeric" class="sku-input ${(d[sk.toLowerCase()]||0)>0?'filled':''}"
-            id="inp-${i}-${sk}" value="${d[sk.toLowerCase()]||''}" min="0" placeholder="0"
+            id="inp-${i}-${sk}" value="${d[sk.toLowerCase()]||''}" min="0" max="99999" placeholder="0"
             oninput="onCh(${i},'${sk}',this.value)"></div>`).join('')}
       </div>
     </div>`;
-  }).join('');
+  }).join('')||'<div class="empty">Nenhum cliente ativo.</div>';
 }
 
 function toggleCard(i){
-  const g=document.getElementById('grid-'+i);const c=document.getElementById('chev-'+i);
-  const open=g.classList.toggle('open');c.classList.toggle('open',open);
-  if(open&&!isAdmin)setTimeout(()=>document.getElementById('inp-'+i+'-GR').focus(),100);
+  const gg=g('grid-'+i);const c=g('chev-'+i);
+  const open=gg.classList.toggle('open');c.classList.toggle('open',open);
+  if(open)setTimeout(()=>g('inp-'+i+'-GR').focus(),100);
 }
 
 function onCh(i,sk,val){
-  const cli=COORDS[coordAtual].clientes[i];const num=Math.max(0,parseInt(val)||0);
+  const ativos=clientesAtivos(coordAtual);
+  const cli=ativos[i].nome;
+  const num=Math.max(0,Math.min(99999,parseInt(val)||0));
   if(!dadosLocais[cli])dadosLocais[cli]={gr:0,gm:0,cm:0,cc:0};
   dadosLocais[cli][sk.toLowerCase()]=num;
-  const inp=document.getElementById('inp-'+i+'-'+sk);inp.classList.toggle('filled',num>0);
+  const inp=g('inp-'+i+'-'+sk);inp.classList.toggle('filled',num>0);
   const tot=totCli(cli);const s=st(cli);
-  document.getElementById('tot-'+i).textContent=tot>0?tot+' cx':'—';
-  const b=document.getElementById('badge-'+i);b.className='badge badge-'+s;b.textContent=stLabel(s);
-  renderSummary();
+  g('tot-'+i).textContent=tot>0?tot+' cx':'—';
+  const b=g('badge-'+i);b.className='badge badge-'+s;b.textContent=stLabel(s);
+  renderPedSummary();
 }
 
 function abrirResumo(){
-  const clis=COORDS[coordAtual].clientes;const meta=COORDS[coordAtual].metas[mesAtual];
+  const ativos=clientesAtivos(coordAtual);
+  const meta=METAS[coordAtual][mesAtual];
   const tot=totGeral();const pct=Math.round(tot/meta*100);
-  const comPedido=clis.filter(c=>totCli(c)>0).map(cli=>{
-    const d=dadosLocais[cli]||{};
+  const comPedido=ativos.filter(c=>totCli(c.nome)>0).map(c=>{
+    const d=dadosLocais[c.nome]||{};
     const skus=SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).map(sk=>`${sk}:${d[sk.toLowerCase()]}`).join(' ');
-    return `• ${cli}\n  ${skus} → ${totCli(cli)} cx`;
+    return `• ${c.nome}\n  ${skus} → ${totCli(c.nome)} cx`;
   });
-  const pendentes=clis.filter(c=>totCli(c)===0).map(c=>'• '+c);
+  const pendentes=ativos.filter(c=>totCli(c.nome)===0).map(c=>'• '+c.nome);
   let txt=`📦 FOLLOW-UP POSITIVAÇÃO\n${coordAtual} — ${MESES[mesAtual]} ${anoAtual}\n${'─'.repeat(32)}\n\n`;
   if(comPedido.length)txt+=`✅ COM PEDIDO (${comPedido.length})\n${comPedido.join('\n')}\n\n`;
   if(pendentes.length)txt+=`⏳ PENDENTES (${pendentes.length})\n${pendentes.join('\n')}\n\n`;
   txt+=`${'─'.repeat(32)}\nTotal: ${tot} cx / Meta: ${meta} cx (${pct}%)`;
-  document.getElementById('resumo-text').textContent=txt;
-  document.getElementById('modal').classList.add('open');
+  g('resumo-text').textContent=txt;
+  g('modal').classList.add('open');
 }
 
-function fecharModal(){document.getElementById('modal').classList.remove('open');}
-
+function fecharModal(){g('modal').classList.remove('open');}
 function copiar(){
-  navigator.clipboard.writeText(document.getElementById('resumo-text').textContent).then(()=>{
-    const btn=document.querySelector('.btn-copy');btn.textContent='✅ Copiado!';
-    setTimeout(()=>{btn.textContent='📋 Copiar mensagem';},2000);
-  });
+  const txt=g('resumo-text').textContent;
+  const btn=document.querySelector('.btn-copy');
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(()=>{btn.textContent='✅ Copiado!';setTimeout(()=>{btn.textContent='📋 Copiar mensagem';},2000);}).catch(()=>copiarFallback(txt,btn));
+  } else {copiarFallback(txt,btn);}
+}
+function copiarFallback(txt,btn){
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');btn.textContent='✅ Copiado!';}catch{btn.textContent='⚠ Copie manualmente';}
+  document.body.removeChild(ta);setTimeout(()=>{btn.textContent='📋 Copiar mensagem';},2000);
+}
+
+// ── GESTÃO CLIENTES (só admin) ──
+async function irCli(){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return;}
+  show('s-cli');
+  renderNav('nav-cli','cli');
+  await carregarClientes();
+  renderCliCoordTabs();
+  renderCliList();
+}
+
+function renderCliCoordTabs(){
+  g('cli-coord-tabs').innerHTML=COORD_KEYS.map(c=>
+    `<button class="cli-coord-tab ${c===cliCoordAtual?'active':''}" onclick="setCliCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
+}
+
+function setCliCoord(c){cliCoordAtual=c;renderCliCoordTabs();renderCliList();}
+
+function renderCliList(){
+  const todos=clientesDB[cliCoordAtual]||[];
+  g('cli-list').innerHTML=todos.map(c=>`
+    <div class="cli-item ${c.ativo?'':'inativo'}">
+      <div class="cli-nome">${c.nome}</div>
+      <div class="cli-actions">
+        <span class="badge ${c.ativo?'badge-ok':'badge-inativo'}">${c.ativo?'Ativo':'Inativo'}</span>
+        <button class="btn-toggle ${c.ativo?'btn-toggle-ativo':'btn-toggle-inativo'}"
+          onclick="toggleCliente('${c.id}',${c.ativo})">${c.ativo?'Inativar':'Ativar'}</button>
+      </div>
+    </div>`).join('')||'<div class="empty">Nenhum cliente cadastrado.</div>';
+  g('cli-add-input').value='';
+}
+
+async function toggleCliente(id,ativo){
+  const res=await sb(`/rest/v1/clientes?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({ativo:!ativo})});
+  if(res&&res.ok===false){toast('Erro ao atualizar','error');return;}
+  toast(ativo?'Cliente inativado':'Cliente ativado','ok');
+  await carregarClientes();
+  renderCliList();
+  pedidosCarregados=false; // força recarregar pedidos
+}
+
+async function adicionarCliente(){
+  const nome=g('cli-add-input').value.trim().toUpperCase();
+  if(!nome){toast('Digite o nome do cliente','error');return;}
+  const jaExiste=(clientesDB[cliCoordAtual]||[]).find(c=>c.nome===nome);
+  if(jaExiste){toast('Cliente já cadastrado','error');return;}
+  const res=await sb('/rest/v1/clientes',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome,coordenador:cliCoordAtual,ativo:true})});
+  if(res&&res.ok===false){toast('Erro ao adicionar','error');return;}
+  toast('✓ Cliente adicionado!','ok');
+  await carregarClientes();
+  renderCliList();
+  pedidosCarregados=false;
 }
 </script>
 </body>
