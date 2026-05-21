@@ -183,7 +183,7 @@ function fazerLogin(){
   coordAtual=isAdmin?'Igor Cater':coord;
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-screen').style.display='block';
-  if(isAdmin){document.getElementById('admin-tabs-wrap').style.display='block';renderAdminTabs();document.getElementById('section-title').textContent='Clientes (somente leitura)';}
+  if(isAdmin){document.getElementById('admin-tabs-wrap').style.display='block';renderAdminTabs();document.getElementById('section-title').textContent='Clientes';}
   document.getElementById('sel-mes').value=mesAtual;
   document.getElementById('sel-mes').onchange=function(){mesAtual=parseInt(this.value);carregarDados();};
   carregarDados();
@@ -268,7 +268,6 @@ function renderClientes(){
         ${SKUS.map(sk=>`<div class="sku-item"><span class="sku-label">${sk}</span>
           <input type="number" inputmode="numeric" class="sku-input ${(d[sk.toLowerCase()]||0)>0?'filled':''}"
             id="inp-${i}-${sk}" value="${d[sk.toLowerCase()]||''}" min="0" placeholder="0"
-            ${isAdmin?'readonly':''}
             oninput="onCh(${i},'${sk}',this.value)"></div>`).join('')}
       </div>
     </div>`;
