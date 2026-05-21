@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Follow-up Positivação</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#F5F4F0;--card:#fff;--border:#E2E0D8;--text:#1A1A18;--muted:#7A7870;--accent:#1D4ED8;--accent-light:#EFF6FF;--green:#166534;--green-bg:#DCFCE7;--amber:#92400E;--amber-bg:#FEF3C7;--gray:#6B7280;--gray-bg:#F3F4F6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:360px}
+.login-logo{font-size:28px;margin-bottom:8px;text-align:center}
+.login-title{font-size:18px;font-weight:600;text-align:center;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px}
+.login-box select,.login-box input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--bg);color:var(--text);margin-bottom:10px}
+.btn-login{width:100%;padding:13px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
+.login-err{font-size:12px;color:#991B1B;text-align:center;margin-top:8px;display:none}
+header{background:var(--text);color:#fff;padding:18px 16px 14px}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between}
+.hdr-name{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:3px}
+.hdr-title{font-size:20px;font-weight:600}
+.hdr-month{font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);padding:4px 10px;border-radius:6px;white-space:nowrap}
+.prog-wrap{margin-top:14px}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.5);margin-bottom:5px}
+.prog-val{color:#fff;font-weight:500}
+.prog-bg{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+.prog-fg{height:100%;background:#60A5FA;border-radius:99px;transition:width .3s}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 16px}
+.sum-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
+.sum-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.sum-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace}
+.sum-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.mes-wrap{padding:0 16px 12px;display:flex;align-items:center;gap:8px}
+.mes-wrap label{font-size:12px;color:var(--muted);white-space:nowrap}
+.mes-wrap select{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--card);color:var(--text)}
+.section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0 16px;margin-bottom:8px}
+.client-list{padding:0 16px;display:flex;flex-direction:column;gap:8px}
+.client-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.client-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;gap:8px}
+.client-name{font-size:13px;font-weight:500;flex:1;line-height:1.3}
+.client-total{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap}
+.badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:99px;white-space:nowrap}
+.badge-ok{background:var(--green-bg);color:var(--green)}
+.badge-parc{background:var(--amber-bg);color:var(--amber)}
+.badge-sem{background:var(--gray-bg);color:var(--gray)}
+.sku-grid{display:none;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 14px 12px;border-top:1px solid var(--border)}
+.sku-grid.open{display:grid}
+.sku-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.sku-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.sku-input{width:100%;text-align:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;padding:8px 4px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);-moz-appearance:textfield}
+.sku-input::-webkit-outer-spin-button,.sku-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.sku-input:focus{outline:none;border-color:var(--accent);background:var(--accent-light)}
+.sku-input.filled{border-color:#86EFAC;background:#F0FDF4;color:var(--green)}
+.chevron{font-size:12px;color:var(--muted);transition:transform .2s}
+.chevron.open{transform:rotate(180deg)}
+.fab-wrap{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);display:flex;gap:8px}
+.fab{flex:1;padding:13px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.fab-primary{background:var(--text);color:#fff}
+.fab-secondary{background:var(--card);color:var(--text);border:1px solid var(--border);flex:0 0 auto;padding:13px 14px}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.resumo-text{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;white-space:pre-wrap;line-height:1.7;margin-bottom:14px}
+.btn-copy{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px}
+.btn-close{width:100%;padding:13px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer}
+.saving{position:fixed;top:12px;right:12px;background:var(--text);color:#fff;font-size:12px;padding:6px 12px;border-radius:8px;opacity:0;transition:opacity .3s;z-index:200}
+.saving.show{opacity:1}
+.admin-tabs{display:flex;gap:4px;padding:0 16px;margin-bottom:12px;overflow-x:auto}
+.admin-tab{padding:7px 14px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.admin-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">📦</div>
+    <div class="login-title">Follow-up Positivação</div>
+    <div class="login-sub">Selecione seu perfil para continuar</div>
+    <select id="login-coord">
+      <option value="">Selecione seu nome...</option>
+      <option value="admin">👁 Leandro (Gestor)</option>
+      <option value="Igor Cater">Igor Cater</option>
+      <option value="Marcio Vit">Marcio Vit</option>
+      <option value="Vitor Valle">Vitor Valle</option>
+      <option value="Sem Responsável">Sem Responsável (Vagner)</option>
+    </select>
+    <input type="password" id="login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter')fazerLogin()"/>
+    <button class="btn-login" onclick="fazerLogin()">Entrar</button>
+    <div class="login-err" id="login-err">Senha incorreta</div>
+  </div>
+</div>
+
+<div id="app-screen" style="display:none">
+  <header>
+    <div class="hdr-top">
+      <div>
+        <div class="hdr-name" id="hdr-name">Coordenador</div>
+        <div class="hdr-title" id="hdr-title">—</div>
+      </div>
+      <div class="hdr-month" id="hdr-month">—</div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-labels">
+        <span>Volume realizado</span>
+        <span class="prog-val"><span id="pct-val">0</span>% da meta (<span id="meta-val">—</span> cx)</span>
+      </div>
+      <div class="prog-bg"><div class="prog-fg" id="prog-fg" style="width:0%"></div></div>
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="sum-card"><div class="sum-label">Total cx</div><div class="sum-value" id="tot-geral">0</div><div class="sum-sub" id="sum-meta-sub">de — meta</div></div>
+    <div class="sum-card"><div class="sum-label">Com pedido</div><div class="sum-value" style="color:var(--green)" id="tot-cli">0</div><div class="sum-sub" id="sum-base-sub">de — clientes</div></div>
+    <div class="sum-card"><div class="sum-label">Pendentes</div><div class="sum-value" style="color:var(--muted)" id="tot-sem">0</div><div class="sum-sub">clientes</div></div>
+  </div>
+
+  <div id="admin-tabs-wrap" style="display:none">
+    <div class="admin-tabs" id="admin-tabs"></div>
+  </div>
+
+  <div class="mes-wrap">
+    <label>Mês:</label>
+    <select id="sel-mes">
+      <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+      <option value="2">Março</option><option value="3">Abril</option>
+      <option value="4">Maio</option><option value="5">Junho</option>
+      <option value="6">Julho</option><option value="7">Agosto</option>
+      <option value="8">Setembro</option><option value="9">Outubro</option>
+      <option value="10">Novembro</option><option value="11">Dezembro</option>
+    </select>
+  </div>
+
+  <div class="section-title" id="section-title">Clientes — toque para preencher</div>
+  <div class="client-list" id="client-list"></div>
+
+  <div class="fab-wrap">
+    <button class="fab fab-secondary" onclick="abrirResumo()">📋</button>
+    <button class="fab fab-primary" onclick="salvarTudo()">💾 Salvar pedidos</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-title">Resumo para enviar</div>
+    <div class="modal-sub">Copie e cole no WhatsApp</div>
+    <div class="resumo-text" id="resumo-text"></div>
+    <button class="btn-copy" onclick="copiar()">📋 Copiar mensagem</button>
+    <button class="btn-close" onclick="fecharModal()">Fechar</button>
+  </div>
+</div>
+
+<div class="saving" id="saving">Salvando...</div>
+
+<script>
+const SB_URL='https://rpxrjawzkkpnzancmcif.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
+
+const SENHAS={'admin':'leandro123','Igor Cater':'igor123','Marcio Vit':'marcio123','Vitor Valle':'vitor123','Sem Responsável':'vagner123'};
+
+const COORDS={
+  'Igor Cater':{clientes:['COM ATAC DE CIG SOUZA - MRT','DMC DISTRIBUIDORA MINEIRA DE CIGARROS','EDIVANES','JC DISTRIBUIDORA','JK','LA DIST','MARTA MG ( ANTIGO PEDRO HENRIQUE )','MAXWEL SILVA BARBORSA / EMPORIO DO TABAC','NEW BLUETEX','PORTO SEGURO MG','REGIONAL DISTRIBUIDORA','WINS DISTRIBUIDORA ( Mauricinho )'],metas:[131,267,192,241,279,251,269,296,305,308,311,234]},
+  'Marcio Vit':{clientes:['CONCEITO  -  PE','CONCEITO AL','GB - CE','GB - MA','LEGAL DRNK','PANTELAO -PB'],metas:[310,326,335,345,356,374,385,396,416,437,450,473]},
+  'Sem Responsável':{clientes:['BE ROYAL','BM TAB  - BAURU','BM TAB  - RIBEIRÃO','BM TAB  - SJC','BM TAB  - SUMARE','BRASUR COMERCIO DE ALIMENTOS','BROVALE','DUE VALLE RS','DUE VALLE','EL PRIME - MR DISTRIBUIDORA','FREEDOM TECH LTDA','GB - SP','LH SANTOS','MG PRESENTES - 25 DE MARCO - MARIA','MP COMERCIO'],metas:[541,429,502,547,591,597,633,645,658,671,685,479]},
+  'Vitor Valle':{clientes:['ARAUJO & OLIVEIRA TAB LTDA','BENTES OLIVEIRA COMERCIO','BRASIL TABACOS','CERENA PINTO SOUTO MAIOR','EURO TAB','EURO TABAGYN GO','J IZIDORIO','JOSE GRIJALVO DA SILVA MOREIRA','L & L','MARINGA COMERCIO E REPRESENTAÇOES LTDA','SOUSA & SOUSA','TAB LM - PORTO VELHO','TABANORTE','ZRIOS GOIAS'],metas:[122,96,134,139,140,150,153,169,172,177,213,217]}
+};
+
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const SKUS=['GR','GM','CM','CC'];
+
+let userCoord=null,isAdmin=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear(),dadosLocais={};
+
+function fazerLogin(){
+  const coord=document.getElementById('login-coord').value;
+  const senha=document.getElementById('login-senha').value;
+  if(!coord){mostrarErro('Selecione seu nome');return;}
+  if(SENHAS[coord]!==senha){mostrarErro('Senha incorreta');return;}
+  userCoord=coord;isAdmin=coord==='admin';
+  coordAtual=isAdmin?'Igor Cater':coord;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  if(isAdmin){document.getElementById('admin-tabs-wrap').style.display='block';renderAdminTabs();document.getElementById('section-title').textContent='Clientes (somente leitura)';}
+  document.getElementById('sel-mes').value=mesAtual;
+  document.getElementById('sel-mes').onchange=function(){mesAtual=parseInt(this.value);carregarDados();};
+  carregarDados();
+}
+
+function mostrarErro(m){const e=document.getElementById('login-err');e.textContent=m;e.style.display='block';}
+
+function renderAdminTabs(){
+  document.getElementById('admin-tabs').innerHTML=Object.keys(COORDS).map(c=>
+    `<button class="admin-tab ${c===coordAtual?'active':''}" onclick="setAdminCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
+}
+
+function setAdminCoord(c){coordAtual=c;renderAdminTabs();carregarDados();}
+
+async function sbFetch(path,opts={}){
+  const res=await fetch(SB_URL+path,{...opts,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})}});
+  if(opts.returnData){const t=await res.text();try{return JSON.parse(t);}catch{return[];}}
+  return res;
+}
+
+async function carregarDados(){
+  const data=await sbFetch(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{returnData:true});
+  dadosLocais={};
+  if(Array.isArray(data))data.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0};});
+  renderHeader();renderClientes();renderSummary();
+}
+
+async function salvarTudo(){
+  mostrarSaving(true);
+  const rows=COORDS[coordAtual].clientes.map(cli=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:cli,gr:(dadosLocais[cli]||{}).gr||0,gm:(dadosLocais[cli]||{}).gm||0,cm:(dadosLocais[cli]||{}).cm||0,cc:(dadosLocais[cli]||{}).cc||0,updated_at:new Date().toISOString()}));
+  await sbFetch('/rest/v1/pedidos',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+  mostrarSaving(false);
+}
+
+function mostrarSaving(show){
+  const e=document.getElementById('saving');
+  e.textContent=show?'Salvando...':'✓ Salvo!';
+  e.classList.add('show');
+  if(!show)setTimeout(()=>e.classList.remove('show'),1500);
+}
+
+function renderHeader(){
+  const meta=COORDS[coordAtual].metas[mesAtual];
+  document.getElementById('hdr-name').textContent=isAdmin?'Gestor — visão geral':'Coordenador';
+  document.getElementById('hdr-title').textContent=coordAtual;
+  document.getElementById('hdr-month').textContent=MESES[mesAtual]+' '+anoAtual;
+  document.getElementById('meta-val').textContent=meta;
+  document.getElementById('sum-meta-sub').textContent='de '+meta+' meta';
+  document.getElementById('sum-base-sub').textContent='de '+COORDS[coordAtual].clientes.length+' clientes';
+}
+
+function totCli(cli){const d=dadosLocais[cli]||{};return(d.gr||0)+(d.gm||0)+(d.cm||0)+(d.cc||0);}
+function skusCli(cli){const d=dadosLocais[cli]||{};return SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length;}
+function st(cli){const n=skusCli(cli);return n===0?'sem':n<=2?'parc':'ok';}
+function stLabel(s){return s==='ok'?'Feito':s==='parc'?'Parcial':'Pendente';}
+function totGeral(){return COORDS[coordAtual].clientes.reduce((s,c)=>s+totCli(c),0);}
+
+function renderSummary(){
+  const clis=COORDS[coordAtual].clientes;
+  const meta=COORDS[coordAtual].metas[mesAtual];
+  const tot=totGeral();
+  const pct=Math.min(100,Math.round(tot/meta*100));
+  document.getElementById('tot-geral').textContent=tot;
+  document.getElementById('tot-cli').textContent=clis.filter(c=>totCli(c)>0).length;
+  document.getElementById('tot-sem').textContent=clis.filter(c=>totCli(c)===0).length;
+  document.getElementById('pct-val').textContent=pct;
+  document.getElementById('prog-fg').style.width=pct+'%';
+}
+
+function renderClientes(){
+  const clis=COORDS[coordAtual].clientes;
+  document.getElementById('client-list').innerHTML=clis.map((cli,i)=>{
+    const d=dadosLocais[cli]||{};const tot=totCli(cli);const s=st(cli);
+    return `<div class="client-card">
+      <div class="client-header" onclick="toggleCard(${i})">
+        <div class="client-name">${cli}</div>
+        <span class="client-total" id="tot-${i}">${tot>0?tot+' cx':'—'}</span>
+        <span class="badge badge-${s}" id="badge-${i}">${stLabel(s)}</span>
+        <span class="chevron" id="chev-${i}">▾</span>
+      </div>
+      <div class="sku-grid" id="grid-${i}">
+        ${SKUS.map(sk=>`<div class="sku-item"><span class="sku-label">${sk}</span>
+          <input type="number" inputmode="numeric" class="sku-input ${(d[sk.toLowerCase()]||0)>0?'filled':''}"
+            id="inp-${i}-${sk}" value="${d[sk.toLowerCase()]||''}" min="0" placeholder="0"
+            ${isAdmin?'readonly':''}
+            oninput="onCh(${i},'${sk}',this.value)"></div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(i){
+  const g=document.getElementById('grid-'+i);const c=document.getElementById('chev-'+i);
+  const open=g.classList.toggle('open');c.classList.toggle('open',open);
+  if(open&&!isAdmin)setTimeout(()=>document.getElementById('inp-'+i+'-GR').focus(),100);
+}
+
+function onCh(i,sk,val){
+  const cli=COORDS[coordAtual].clientes[i];const num=Math.max(0,parseInt(val)||0);
+  if(!dadosLocais[cli])dadosLocais[cli]={gr:0,gm:0,cm:0,cc:0};
+  dadosLocais[cli][sk.toLowerCase()]=num;
+  const inp=document.getElementById('inp-'+i+'-'+sk);inp.classList.toggle('filled',num>0);
+  const tot=totCli(cli);const s=st(cli);
+  document.getElementById('tot-'+i).textContent=tot>0?tot+' cx':'—';
+  const b=document.getElementById('badge-'+i);b.className='badge badge-'+s;b.textContent=stLabel(s);
+  renderSummary();
+}
+
+function abrirResumo(){
+  const clis=COORDS[coordAtual].clientes;const meta=COORDS[coordAtual].metas[mesAtual];
+  const tot=totGeral();const pct=Math.round(tot/meta*100);
+  const comPedido=clis.filter(c=>totCli(c)>0).map(cli=>{
+    const d=dadosLocais[cli]||{};
+    const skus=SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).map(sk=>`${sk}:${d[sk.toLowerCase()]}`).join(' ');
+    return `• ${cli}\n  ${skus} → ${totCli(cli)} cx`;
+  });
+  const pendentes=clis.filter(c=>totCli(c)===0).map(c=>'• '+c);
+  let txt=`📦 FOLLOW-UP POSITIVAÇÃO\n${coordAtual} — ${MESES[mesAtual]} ${anoAtual}\n${'─'.repeat(32)}\n\n`;
+  if(comPedido.length)txt+=`✅ COM PEDIDO (${comPedido.length})\n${comPedido.join('\n')}\n\n`;
+  if(pendentes.length)txt+=`⏳ PENDENTES (${pendentes.length})\n${pendentes.join('\n')}\n\n`;
+  txt+=`${'─'.repeat(32)}\nTotal: ${tot} cx / Meta: ${meta} cx (${pct}%)`;
+  document.getElementById('resumo-text').textContent=txt;
+  document.getElementById('modal').classList.add('open');
+}
+
+function fecharModal(){document.getElementById('modal').classList.remove('open');}
+
+function copiar(){
+  navigator.clipboard.writeText(document.getElementById('resumo-text').textContent).then(()=>{
+    const btn=document.querySelector('.btn-copy');btn.textContent='✅ Copiado!';
+    setTimeout(()=>{btn.textContent='📋 Copiar mensagem';},2000);
+  });
+}
+</script>
+</body>
+</html>
