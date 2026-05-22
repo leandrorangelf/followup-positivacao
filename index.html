@@ -194,10 +194,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- DASHBOARD -->
 <div id="s-dash" class="screen" style="display:none">
-  <div class="dash-header">
-    <div class="dash-greeting" id="dash-greeting">Olá,</div>
-    <div class="dash-name" id="dash-name">—</div>
-    <div class="dash-month-row">
+  <div class="dash-hero">
+    <div class="dash-hero-greeting" id="dash-greeting">Olá,</div>
+    <div class="dash-hero-name" id="dash-name">—</div>
+    <div class="dash-hero-mes">
       <label>Mês:</label>
       <select id="dash-mes">
         <option value="0">Janeiro</option><option value="1">Fevereiro</option>
@@ -480,31 +480,49 @@ function renderAdminDash(anoData){
       return{m:m.substring(0,3),tot:t,meta:METAS[coord][i]};
     });
     const maxT=Math.max(...mesesChart.map(m=>m.tot),1);
-    return `<div class="coord-card">
-      <div class="cc-top">
-        <div><div class="cc-name">${coord}</div><div class="cc-base">${ativos.length} clientes ativos</div></div>
-        <span class="badge ${pctPos>=80?'badge-ok':pctPos>=50?'badge-parc':'badge-danger'}">${pctPos>=80?'✓ Meta':'Abaixo'}</span>
+    const badgeColor=pctPos>=80?'background:#DCFCE7;color:#166534':pctPos>=50?'background:#FEF3C7;color:#92400E':'background:#FEE2E2;color:#991B1B';
+    const badgeText=pctPos>=80?'✓ Meta':pctPos>=50?'Parcial':'Abaixo';
+    return `<div class="cc2">
+      <div class="cc2-header">
+        <div><div class="cc2-name">${coord}</div><div class="cc2-base">${ativos.length} clientes ativos</div></div>
+        <span class="cc2-badge" style="${badgeColor}">${badgeText}</span>
       </div>
-      <div class="cc-stats">
-        <div class="cs-item"><div class="cs-label">Positivação</div><div class="cs-val" style="color:${corPct(pctPos)}">${pctPos}%</div></div>
-        <div class="cs-item"><div class="cs-label">Volume</div><div class="cs-val" style="color:${corPct(pctMeta)}">${pctMeta}%</div></div>
-        <div class="cs-item"><div class="cs-label">Cx total</div><div class="cs-val">${tot}</div></div>
+      <div class="cc2-metrics">
+        <div class="cc2-metric">
+          <div class="cc2-metric-label">Positivação</div>
+          <div class="cc2-metric-val" style="color:${corPct(pctPos)}">${pctPos}%</div>
+        </div>
+        <div class="cc2-metric">
+          <div class="cc2-metric-label">Volume</div>
+          <div class="cc2-metric-val" style="color:${corPct(pctMeta)}">${pctMeta}%</div>
+        </div>
+        <div class="cc2-metric">
+          <div class="cc2-metric-label">Cx total</div>
+          <div class="cc2-metric-val">${tot}</div>
+        </div>
       </div>
-      <div class="bar-wrap">
-        <div class="bar-label-row"><span>Positivação</span><span>${comPed}/${ativos.length}</span></div>
-        <div class="bar-bg"><div class="bar-fg" style="width:${pctPos}%;background:${corBar(pctPos)}"></div></div>
+      <div class="cc2-bars">
+        <div class="cc2-bar-row">
+          <span class="cc2-bar-label">Positivação</span>
+          <div class="cc2-bar-bg"><div class="cc2-bar-fg" style="width:${pctPos}%;background:${corBar(pctPos)}"></div></div>
+          <span class="cc2-bar-val">${comPed}/${ativos.length}</span>
+        </div>
+        <div class="cc2-bar-row">
+          <span class="cc2-bar-label">Volume</span>
+          <div class="cc2-bar-bg"><div class="cc2-bar-fg" style="width:${pctMeta}%;background:${corBar(pctMeta)}"></div></div>
+          <span class="cc2-bar-val">${tot}/${meta} cx</span>
+        </div>
       </div>
-      <div class="bar-wrap" style="margin-top:6px">
-        <div class="bar-label-row"><span>Volume vs meta</span><span>${tot}/${meta} cx</span></div>
-        <div class="bar-bg"><div class="bar-fg" style="width:${pctMeta}%;background:${corBar(pctMeta)}"></div></div>
-      </div>
-      <div style="margin-top:10px">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:5px">Volume ${anoAtual}</div>
-        <div class="chart-bars" style="height:44px">
-          ${mesesChart.map((m,i)=>{const p=m.meta>0?Math.min(100,Math.round(m.tot/m.meta*100)):0;return`
-            <div class="chart-bar-col">
-              <div class="chart-bar" style="height:${Math.round(m.tot/maxT*38)}px;background:${i===mesAtual?corBar(p):'var(--border)'}"></div>
-              <div class="chart-bar-label">${m.m}</div>
+      <div class="cc2-chart">
+        <div class="cc2-chart-title">Volume ${anoAtual}</div>
+        <div class="cc2-chart-bars">
+          ${mesesChart.map((m,i)=>{
+            const p=m.meta>0?Math.min(100,Math.round(m.tot/m.meta*100)):0;
+            const h=Math.round(m.tot/maxT*42);
+            const bg=i===mesAtual?corBar(p):(m.tot>0?'#CBD5E1':'var(--border)');
+            return`<div class="cc2-chart-col">
+              <div class="cc2-chart-bar" style="height:${h}px;background:${bg}"></div>
+              <div class="cc2-chart-lbl">${m.m}</div>
             </div>`;}).join('')}
         </div>
       </div>
@@ -512,21 +530,22 @@ function renderAdminDash(anoData){
   }).join('');
 
   g('dash-content').innerHTML=`
-    <div class="metrics">
-      <div class="metric-card">
-        <div class="mc-label">Positivação geral</div>
-        <div class="mc-value" style="color:${corPct(pctPosG)}">${pctPosG}%</div>
-        <div class="mc-sub">${comPedidoGeral} de ${totalAtivos} clientes</div>
-        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${pctPosG}%;background:${corBar(pctPosG)}"></div></div>
+    <div class="dash-totais">
+      <div class="dash-total-card">
+        <div class="dtc-label">Positivação geral</div>
+        <div class="dtc-value" style="color:${corPct(pctPosG)}">${pctPosG}%</div>
+        <div class="dtc-sub">${comPedidoGeral} de ${totalAtivos} clientes</div>
+        <div class="dtc-bar"><div class="dtc-bar-fg" style="width:${pctPosG}%;background:${corBar(pctPosG)}"></div></div>
       </div>
-      <div class="metric-card">
-        <div class="mc-label">Volume geral</div>
-        <div class="mc-value" style="color:${corPct(pctMetaG)}">${pctMetaG}%</div>
-        <div class="mc-sub">${totGeral} / ${metaGeral} cx</div>
-        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${pctMetaG}%;background:${corBar(pctMetaG)}"></div></div>
+      <div class="dash-total-card">
+        <div class="dtc-label">Volume geral</div>
+        <div class="dtc-value" style="color:${corPct(pctMetaG)}">${pctMetaG}%</div>
+        <div class="dtc-sub">${totGeral} / ${metaGeral} cx</div>
+        <div class="dtc-bar"><div class="dtc-bar-fg" style="width:${pctMetaG}%;background:${corBar(pctMetaG)}"></div></div>
       </div>
     </div>
-    <div class="coord-cards">${cards}</div>`;
+    <div class="dash-section-title">Coordenadores</div>
+    ${cards}`;
 }
 
 // ── PEDIDOS ──
