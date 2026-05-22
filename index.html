@@ -363,10 +363,12 @@ async function carregarClientes(){
   const data=await sb('/rest/v1/clientes?select=*&order=nome',{ret:true});
   clientesDB={};
   COORD_KEYS.forEach(c=>{clientesDB[c]=[];});
-  if(Array.isArray(data))data.forEach(r=>{if(clientesDB[r.coordenador])clientesDB[r.coordenador].push({nome:r.nome,ativo:r.ativo,id:r.id});});
+  if(Array.isArray(data))data.forEach(r=>{if(clientesDB[r.coordenador])clientesDB[r.coordenador].push({nome:r.nome,ativo:r.ativo,id:r.id,ativo_desde:r.ativo_desde||0,inativo_desde:r.inativo_desde||13});});
 }
 
-function clientesAtivos(coord){return(clientesDB[coord]||[]).filter(c=>c.ativo);}
+function clientesAtivos(coord){
+  return(clientesDB[coord]||[]).filter(c=>c.ativo_desde<=mesAtual&&c.inativo_desde>mesAtual);
+}
 
 // ── DASHBOARD ──
 async function irDash(){
