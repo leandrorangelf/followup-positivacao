@@ -302,7 +302,9 @@ function toast(msg,type='info',dur=2000){
 
 async function sb(path,opts={}){
   try{
-    const r=await fetch(SB+path,{...opts,headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})}});
+    const headers={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json',...(opts.headers||{})};
+    if(!headers['Prefer'])headers['Prefer']='return=minimal';
+    const r=await fetch(SB+path,{...opts,headers});
     if(opts.ret){const t=await r.text();try{return JSON.parse(t);}catch{return[];}}
     return {ok:r.ok,status:r.status};
   }catch(e){console.error('Erro rede:',e);if(opts.ret)return[];return{ok:false,status:0};}
@@ -563,7 +565,7 @@ async function salvarTudo(){
   const ativos=clientesAtivos(coordAtual);
   if(!ativos.length){toast('Nenhum cliente ativo','error',2000);return;}
   const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,updated_at:new Date().toISOString()}));
-  const res=await sb('/rest/v1/pedidos',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+  const res=await sb('/rest/v1/pedidos',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation','Content-Type':'application/json'},body:JSON.stringify(rows)});
   if(!res||!res.ok){
     console.error('Erro ao salvar, status:',res&&res.status);
     toast('⚠ Erro ao salvar ('+((res&&res.status)||'sem conexão')+')','error',4000);
