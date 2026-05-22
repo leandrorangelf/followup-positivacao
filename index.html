@@ -533,21 +533,21 @@ function renderAdminDash(anoData){
   }).join('');
 
   g('dash-content').innerHTML=`
-    <div class="dash-totais">
-      <div class="dash-total-card">
-        <div class="dtc-label">Positivação geral</div>
-        <div class="dtc-value" style="color:${corPct(pctPosG)}">${pctPosG}%</div>
-        <div class="dtc-sub">${comPedidoGeral} de ${totalAtivos} clientes</div>
-        <div class="dtc-bar"><div class="dtc-bar-fg" style="width:${pctPosG}%;background:${corBar(pctPosG)}"></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 4px">
+      <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Positivação geral</div>
+        <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctPosG)}">${pctPosG}%</div>
+        <div style="font-size:11px;color:#7A7870;margin-top:4px">${comPedidoGeral} de ${totalAtivos}</div>
+        <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctPosG}%;background:${corBar(pctPosG)};border-radius:99px"></div></div>
       </div>
-      <div class="dash-total-card">
-        <div class="dtc-label">Volume geral</div>
-        <div class="dtc-value" style="color:${corPct(pctMetaG)}">${pctMetaG}%</div>
-        <div class="dtc-sub">${totGeral} / ${metaGeral} cx</div>
-        <div class="dtc-bar"><div class="dtc-bar-fg" style="width:${pctMetaG}%;background:${corBar(pctMetaG)}"></div></div>
+      <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Volume geral</div>
+        <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctMetaG)}">${pctMetaG}%</div>
+        <div style="font-size:11px;color:#7A7870;margin-top:4px">${totGeral} / ${metaGeral} cx</div>
+        <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctMetaG}%;background:${corBar(pctMetaG)};border-radius:99px"></div></div>
       </div>
     </div>
-    <div class="dash-section-title">Coordenadores</div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#7A7870;padding:10px 16px 6px">Coordenadores</div>
     ${cards}`;
 }
 
