@@ -10,7 +10,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .screen{display:none}
-.screen.active{display:block}
 
 /* LOGIN */
 #s-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
@@ -174,7 +173,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <body>
 
 <!-- LOGIN -->
-<div id="s-login">
+<div id="s-login" style="display:flex">
   <div class="login-box">
     <div class="login-logo">📦</div>
     <div class="login-title">Follow-up Positivação</div>
@@ -194,7 +193,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <!-- DASHBOARD -->
-<div id="s-dash" class="screen">
+<div id="s-dash" class="screen" style="display:none">
   <div class="dash-header">
     <div class="dash-greeting" id="dash-greeting">Olá,</div>
     <div class="dash-name" id="dash-name">—</div>
@@ -215,7 +214,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <!-- PEDIDOS -->
-<div id="s-ped" class="screen">
+<div id="s-ped" class="screen" style="display:none">
   <div class="app-header">
     <div class="hdr-row">
       <div class="hdr-title" id="ped-title">Pedidos</div>
@@ -246,7 +245,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <!-- CLIENTES -->
-<div id="s-cli" class="screen">
+<div id="s-cli" class="screen" style="display:none">
   <div class="app-header">
     <div class="hdr-row">
       <div class="hdr-title">Gestão de clientes</div>
@@ -305,14 +304,14 @@ async function sb(path,opts={}){
   try{
     const r=await fetch(SB+path,{...opts,headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})}});
     if(opts.ret){const t=await r.text();try{return JSON.parse(t);}catch{return[];}}
-    return r;
-  }catch(e){console.error(e);if(opts.ret)return[];return{ok:false};}
+    return {ok:r.ok,status:r.status};
+  }catch(e){console.error('Erro rede:',e);if(opts.ret)return[];return{ok:false,status:0};}
 }
 
 // ── SCREENS ──
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  g(id).classList.add('active');
+  ['s-login','s-dash','s-ped','s-cli'].forEach(s=>g(s).style.display='none');
+  g(id).style.display=(id==='s-login')?'flex':'block';
 }
 
 function renderNav(navId,active){
@@ -562,10 +561,15 @@ async function carregarPedidos(){
 async function salvarTudo(){
   toast('Salvando...','info',10000);
   const ativos=clientesAtivos(coordAtual);
+  if(!ativos.length){toast('Nenhum cliente ativo','error',2000);return;}
   const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,updated_at:new Date().toISOString()}));
   const res=await sb('/rest/v1/pedidos',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
-  if(res&&res.ok===false){toast('⚠ Erro ao salvar. Tente novamente.','error',3000);}
-  else{toast('✓ Salvo com sucesso!','ok',2000);}
+  if(!res||!res.ok){
+    console.error('Erro ao salvar, status:',res&&res.status);
+    toast('⚠ Erro ao salvar ('+((res&&res.status)||'sem conexão')+')','error',4000);
+  } else {
+    toast('✓ Salvo com sucesso!','ok',2000);
+  }
 }
 
 function renderPedHeader(){
@@ -698,8 +702,8 @@ function renderCliList(){
 }
 
 async function toggleCliente(id,ativo){
-  const res=await sb(`/rest/v1/clientes?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({ativo:!ativo})});
-  if(res&&res.ok===false){toast('Erro ao atualizar','error');return;}
+  const res=await sb('/rest/v1/clientes?id=eq.'+id,{method:'PATCH',body:JSON.stringify({ativo:!ativo})});
+  if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
   toast(ativo?'Cliente inativado':'Cliente ativado','ok');
   await carregarClientes();
   renderCliList();
