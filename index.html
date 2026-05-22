@@ -707,7 +707,10 @@ async function irCli(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return;}
   show('s-cli');
   renderNav('nav-cli','cli');
+  g('cli-list').innerHTML='<div class="loading">Carregando...</div>';
   await carregarClientes();
+  // garante que cliCoordAtual é válido
+  if(!COORD_KEYS.includes(cliCoordAtual)) cliCoordAtual=COORD_KEYS[0];
   renderCliCoordTabs();
   renderCliList();
 }
@@ -721,25 +724,38 @@ function setCliCoord(c){cliCoordAtual=c;renderCliCoordTabs();renderCliList();}
 
 function renderCliList(){
   const todos=clientesDB[cliCoordAtual]||[];
-  g('cli-list').innerHTML=todos.map(c=>`
-    <div class="cli-item ${c.ativo?'':'inativo'}">
+  g('cli-list').innerHTML=todos.map(c=>{
+    const ativoNesteMes=c.ativo_desde<=mesAtual&&c.inativo_desde>mesAtual;
+    const statusLabel=ativoNesteMes
+      ?`Ativo desde ${MESES[c.ativo_desde]||'início'}`
+      :`Inativo desde ${MESES[c.inativo_desde]||'?'}`;
+    const badgeClass=ativoNesteMes?'badge-ok':'badge-inativo';
+    const btnClass=ativoNesteMes?'btn-toggle-ativo':'btn-toggle-inativo';
+    const btnLabel=ativoNesteMes?'Inativar agora':'Reativar agora';
+    return `<div class="cli-item ${ativoNesteMes?'':'inativo'}">
       <div class="cli-nome">${c.nome}</div>
       <div class="cli-actions">
-        <span class="badge ${c.ativo?'badge-ok':'badge-inativo'}">${c.ativo?'Ativo':'Inativo'}</span>
-        <button class="btn-toggle ${c.ativo?'btn-toggle-ativo':'btn-toggle-inativo'}"
-          onclick="toggleCliente('${c.id}',${c.ativo})">${c.ativo?'Inativar':'Ativar'}</button>
+        <span class="badge ${badgeClass}" style="white-space:nowrap;font-size:9px">${statusLabel}</span>
+        <button class="btn-toggle ${btnClass}"
+          onclick="toggleCliente('${c.id}',${ativoNesteMes})">${btnLabel}</button>
       </div>
-    </div>`).join('')||'<div class="empty">Nenhum cliente cadastrado.</div>';
+    </div>`;
+  }).join('')||'<div class="empty">Nenhum cliente cadastrado.</div>';
   g('cli-add-input').value='';
 }
 
-async function toggleCliente(id,ativo){
-  const res=await sb('/rest/v1/clientes?id=eq.'+id,{method:'PATCH',body:JSON.stringify({ativo:!ativo})});
+async function toggleCliente(id,ativoNesteMes){
+  // Inativar: define inativo_desde = mes atual
+  // Reativar: define ativo_desde = mes atual, inativo_desde = 13
+  const patch=ativoNesteMes
+    ?{inativo_desde:mesAtual}
+    :{ativo_desde:mesAtual,inativo_desde:13};
+  const res=await sb('/rest/v1/clientes?id=eq.'+id,{method:'PATCH',body:JSON.stringify(patch)});
   if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
-  toast(ativo?'Cliente inativado':'Cliente ativado','ok');
+  toast(ativoNesteMes?'Cliente inativado a partir deste mês':'Cliente reativado a partir deste mês','ok');
   await carregarClientes();
   renderCliList();
-  pedidosCarregados=false; // força recarregar pedidos
+  pedidosCarregados=false;
 }
 
 async function adicionarCliente(){
@@ -747,7 +763,7 @@ async function adicionarCliente(){
   if(!nome){toast('Digite o nome do cliente','error');return;}
   const jaExiste=(clientesDB[cliCoordAtual]||[]).find(c=>c.nome===nome);
   if(jaExiste){toast('Cliente já cadastrado','error');return;}
-  const res=await sb('/rest/v1/clientes',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome,coordenador:cliCoordAtual,ativo:true})});
+  const res=await sb('/rest/v1/clientes',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome,coordenador:cliCoordAtual,ativo:true,ativo_desde:mesAtual,inativo_desde:13})});
   if(res&&res.ok===false){toast('Erro ao adicionar','error');return;}
   toast('✓ Cliente adicionado!','ok');
   await carregarClientes();
