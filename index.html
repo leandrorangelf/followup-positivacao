@@ -12,8 +12,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .screen{display:none}
 
 /* LOGIN */
-#s-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:100%;max-width:360px}
+#s-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:linear-gradient(145deg,#050505 0%,#111 45%,#25211c 100%)}
+.login-box{background:rgba(255,255,255,.96);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:30px 24px;width:100%;max-width:380px;box-shadow:0 24px 70px rgba(0,0,0,.38)}
 .login-logo{font-size:32px;margin-bottom:8px;text-align:center}
 .login-title{font-size:18px;font-weight:600;text-align:center;margin-bottom:4px}
 .login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px}
@@ -168,294 +168,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .toast.info{background:var(--text);color:#fff}
 
 .loading{text-align:center;padding:40px 16px;color:var(--muted);font-size:13px}
-
-/* ===== RESTYLE MODERNO ===== */
-:root{
-  --bg:#F3F4F6;
-  --card:#FFFFFF;
-  --border:#E5E7EB;
-  --text:#111827;
-  --muted:#6B7280;
-  --accent:#2563EB;
-  --accent-light:#EFF6FF;
-  --green:#15803D;
-  --green-bg:#DCFCE7;
-  --amber:#B45309;
-  --amber-bg:#FEF3C7;
-  --red:#B91C1C;
-  --red-bg:#FEE2E2;
-  --shadow:0 12px 30px rgba(15,23,42,.08);
-  --shadow-soft:0 4px 14px rgba(15,23,42,.06);
-}
-body{
-  background:
-    radial-gradient(circle at top left, rgba(37,99,235,.10), transparent 32rem),
-    linear-gradient(180deg,#F8FAFC 0%,#EEF2F7 100%);
-  color:var(--text);
-}
-.screen{
-  max-width:1040px;
-  margin:0 auto;
-  min-height:100vh;
-  background:rgba(255,255,255,.30);
-}
-#s-login{
-  max-width:none;
-  background:
-    radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 34rem),
-    linear-gradient(180deg,#F8FAFC,#EEF2F7);
-}
-.login-box{
-  border:none;
-  box-shadow:var(--shadow);
-  border-radius:24px;
-}
-.login-logo{
-  width:58px;
-  height:58px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:0 auto 14px;
-  border-radius:18px;
-  background:var(--accent-light);
-}
-.login-title{font-size:21px}
-.btn-login{
-  background:linear-gradient(135deg,#111827,#334155);
-  border-radius:14px;
-}
-.dash-header,
-.app-header{
-  background:
-    radial-gradient(circle at top right, rgba(96,165,250,.30), transparent 18rem),
-    linear-gradient(135deg,#111827 0%,#1E293B 55%,#0F172A 100%);
-  padding:24px 20px 20px;
-  border-radius:0 0 28px 28px;
-  box-shadow:0 14px 30px rgba(15,23,42,.20);
-}
-.dash-greeting{font-size:13px;color:rgba(255,255,255,.65)}
-.dash-name{font-size:28px;font-weight:750;letter-spacing:-.03em;margin-top:2px}
-.dash-month-row{
-  max-width:360px;
-  margin-top:16px;
-  padding:8px;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:16px;
-}
-.dash-month-row label{padding-left:4px}
-.dash-month-row select{
-  height:38px;
-  border-radius:12px;
-  background:rgba(255,255,255,.13);
-}
-.metrics,
-.dash-admin-totals{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-  padding:18px 20px 8px;
-}
-.metric-card,
-.dash-admin-total,
-.chart-box,
-.coord-admin-card,
-.client-card,
-.ps-card,
-.cli-item{
-  background:rgba(255,255,255,.92);
-  border:1px solid rgba(226,232,240,.9);
-  box-shadow:var(--shadow-soft);
-  border-radius:20px;
-}
-.metric-card,
-.dash-admin-total{padding:18px}
-.mc-label,
-.dat-label{
-  font-size:10px;
-  font-weight:800;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.09em;
-}
-.mc-value,
-.dat-value{
-  font-size:34px;
-  font-weight:800;
-  letter-spacing:-.05em;
-  margin-top:8px;
-}
-.mc-sub,
-.dat-sub{font-size:12px;color:var(--muted);margin-top:5px}
-.mc-bar-bg,
-.dat-bar,
-.ca-bar-bg{
-  height:7px;
-  background:#E5E7EB;
-  border-radius:999px;
-  overflow:hidden;
-}
-.dat-bar{margin-top:12px}
-.dat-bar-fg,
-.ca-bar-fg{height:100%;border-radius:999px}
-.chart-wrap{padding:8px 20px 0}
-.chart-box{padding:18px}
-.chart-title{font-size:14px;font-weight:700;color:#334155}
-.chart-bars{height:92px;gap:6px}
-.chart-bar{border-radius:8px 8px 3px 3px}
-.chart-bar-label,.chart-bar-val{font-size:10px}
-.dash-section-title,
-.sec-title,
-.section-hdr{
-  padding:16px 20px 8px;
-  font-size:11px;
-  font-weight:850;
-  text-transform:uppercase;
-  letter-spacing:.10em;
-  color:#64748B;
-}
-.coord-admin-list{
-  padding:0 20px 92px;
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-}
-.coord-admin-card{
-  overflow:hidden;
-}
-.ca-header{
-  padding:16px 18px 13px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-}
-.ca-name{
-  font-size:17px;
-  font-weight:800;
-  letter-spacing:-.02em;
-}
-.ca-base{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:3px;
-}
-.ca-badge{
-  font-size:10px;
-  font-weight:850;
-  padding:5px 10px;
-  border-radius:999px;
-  white-space:nowrap;
-}
-.ca-metrics{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-.ca-metric{
-  padding:13px 10px;
-  text-align:center;
-}
-.ca-metric:not(:last-child){border-right:1px solid var(--border)}
-.ca-metric-label{
-  font-size:10px;
-  color:var(--muted);
-  margin-bottom:4px;
-}
-.ca-metric-val{
-  font-size:22px;
-  font-weight:850;
-  letter-spacing:-.04em;
-}
-.ca-progress{
-  padding:14px 18px;
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-}
-.ca-bar-row{
-  display:grid;
-  grid-template-columns:76px 1fr 64px;
-  align-items:center;
-  gap:9px;
-}
-.ca-bar-label,
-.ca-bar-val{
-  font-size:11px;
-  color:var(--muted);
-}
-.ca-bar-val{text-align:right}
-.ca-chart{
-  padding:0 18px 16px;
-}
-.ca-chart-title{
-  font-size:11px;
-  color:var(--muted);
-  font-weight:700;
-  margin-bottom:8px;
-}
-.ca-chart-bars{
-  height:54px;
-  display:flex;
-  align-items:flex-end;
-  gap:5px;
-}
-.ca-chart-col{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:3px;
-}
-.ca-chart-bar{
-  width:100%;
-  min-height:2px;
-  border-radius:7px 7px 2px 2px;
-}
-.ca-chart-lbl{
-  font-size:8px;
-  color:#94A3B8;
-}
-.bottom-nav{
-  max-width:1040px;
-  margin:0 auto;
-  left:50%;
-  transform:translateX(-50%);
-  border-radius:22px 22px 0 0;
-  box-shadow:0 -10px 25px rgba(15,23,42,.08);
-}
-.nav-btn{padding:13px 8px 11px}
-.nav-btn.active .nav-icon{
-  background:var(--accent-light);
-  border-radius:14px;
-  padding:5px 10px;
-}
-.client-list,.cli-list{padding:0 20px}
-.client-header{padding:14px 16px}
-.fab-wrap,.cli-add-wrap{
-  max-width:1040px;
-  margin:0 auto;
-  left:50%;
-  transform:translateX(-50%);
-}
-.fab,.btn-add{border-radius:14px}
-.fab-primary,.btn-add{background:linear-gradient(135deg,#111827,#334155)}
-.badge{font-weight:800}
-@media (max-width:760px){
-  .screen{max-width:none}
-  .metrics,
-  .dash-admin-totals{grid-template-columns:1fr 1fr;padding-left:14px;padding-right:14px}
-  .coord-admin-list{grid-template-columns:1fr;padding-left:14px;padding-right:14px}
-  .chart-wrap,.client-list,.cli-list{padding-left:14px;padding-right:14px}
-  .dash-header,.app-header{border-radius:0 0 24px 24px}
-}
-@media (max-width:420px){
-  .metrics,.dash-admin-totals{gap:10px}
-  .mc-value,.dat-value{font-size:29px}
-}
-
 </style>
 </head>
 <body>
@@ -463,7 +175,7 @@ body{
 <!-- LOGIN -->
 <div id="s-login" style="display:flex">
   <div class="login-box">
-    <div class="login-logo">📦</div>
+    <div class="login-logo"><img src="data:image/png;base64,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" alt="Clean Tobacco" style="width:150px;max-width:80%;display:block;margin:0 auto 12px;border-radius:8px"></div>
     <div class="login-title">Follow-up Positivação</div>
     <div class="login-sub">Selecione seu perfil para continuar</div>
     <select id="login-coord">
@@ -482,12 +194,13 @@ body{
 
 <!-- DASHBOARD -->
 <div id="s-dash" class="screen" style="display:none">
-  <div class="dash-header">
-    <div class="dash-greeting" id="dash-greeting">Olá,</div>
-    <div class="dash-name" id="dash-name">—</div>
-    <div class="dash-month-row">
-      <label>Mês:</label>
-      <select id="dash-mes">
+  <div style="background:#1A1A18;color:#fff;padding:20px 16px">
+    <img src="data:image/png;base64,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" alt="Clean Tobacco" style="width:88px;display:block;margin-bottom:14px;border-radius:6px">
+    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px" id="dash-greeting">Olá,</div>
+    <div style="font-size:22px;font-weight:600;margin-bottom:14px" id="dash-name">—</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <label style="font-size:12px;color:rgba(255,255,255,.4)">Mês:</label>
+      <select id="dash-mes" style="flex:1;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 10px;border-radius:8px;font-size:13px">
         <option value="0">Janeiro</option><option value="1">Fevereiro</option>
         <option value="2">Março</option><option value="3">Abril</option>
         <option value="4">Maio</option><option value="5">Junho</option>
@@ -568,11 +281,17 @@ body{
 const SB='https://rpxrjawzkkpnzancmcif.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
 
-const SENHAS={admin:'leandro123','Igor Cater':'igor123','Marcio Vit':'marcio123','Vitor Valle':'vitor123','Sem Responsável':'vagner123'};
+const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Sem Responsável':'f4ec1b0e9ecf3baec9c32537f106e4004feb9a312773d6eeede18efdffbbe94c'};
 const COORD_KEYS=['Igor Cater','Marcio Vit','Sem Responsável','Vitor Valle'];
 const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Sem Responsável':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const SKUS=['GR','GM','CM','CC'];
+
+async function sha256(txt){
+  const data=new TextEncoder().encode(txt);
+  const hash=await crypto.subtle.digest('SHA-256',data);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 
 let user=null,isAdmin=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear();
 let dadosLocais={},clientesDB={},pedidosCarregados=false,coordPedCarregado=null,mesPedCarregado=null;
@@ -627,14 +346,15 @@ function navTo(id){
 }
 
 // ── LOGIN ──
-function login(){
+async function login(){
   const coord=g('login-coord').value;
   const senha=g('login-senha').value;
   if(!coord){g('login-err').textContent='Selecione seu nome';g('login-err').style.display='block';return;}
-  if(SENHAS[coord]!==senha){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
+  const senhaHash=await sha256(senha);
+  if(SENHAS_HASH[coord]!==senhaHash){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
   user=coord;isAdmin=coord==='admin';
   coordAtual=isAdmin?COORD_KEYS[0]:coord;
-  cliCoordAtual=coordAtual==='admin'?COORD_KEYS[0]:coordAtual;
+  cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
   irDash();
 }
 
@@ -769,78 +489,73 @@ function renderAdminDash(anoData){
     const maxT=Math.max(...mesesChart.map(m=>m.tot),1);
     const badgeColor=pctPos>=80?'background:#DCFCE7;color:#166534':pctPos>=50?'background:#FEF3C7;color:#92400E':'background:#FEE2E2;color:#991B1B';
     const badgeText=pctPos>=80?'✓ Meta':pctPos>=50?'Parcial':'Abaixo';
-
-    return `<div class="coord-admin-card">
-      <div class="ca-header">
+    return `<div style="background:#fff;border-radius:14px;margin:0 16px 10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="padding:14px 16px 12px;display:flex;align-items:flex-start;justify-content:space-between">
         <div>
-          <div class="ca-name">${coord}</div>
-          <div class="ca-base">${ativos.length} clientes ativos</div>
+          <div style="font-size:16px;font-weight:600">${coord}</div>
+          <div style="font-size:11px;color:#7A7870;margin-top:1px">${ativos.length} clientes ativos</div>
         </div>
-        <span class="ca-badge" style="${badgeColor}">${badgeText}</span>
+        <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:99px;${badgeColor}">${badgeText}</span>
       </div>
-
-      <div class="ca-metrics">
-        <div class="ca-metric">
-          <div class="ca-metric-label">Positivação</div>
-          <div class="ca-metric-val" style="color:${corPct(pctPos)}">${pctPos}%</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #E2E0D8;border-bottom:1px solid #E2E0D8">
+        <div style="padding:12px 16px;text-align:center;border-right:1px solid #E2E0D8">
+          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Positivação</div>
+          <div style="font-size:20px;font-weight:700;color:${corPct(pctPos)}">${pctPos}%</div>
         </div>
-        <div class="ca-metric">
-          <div class="ca-metric-label">Volume</div>
-          <div class="ca-metric-val" style="color:${corPct(pctMeta)}">${pctMeta}%</div>
+        <div style="padding:12px 16px;text-align:center;border-right:1px solid #E2E0D8">
+          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Volume</div>
+          <div style="font-size:20px;font-weight:700;color:${corPct(pctMeta)}">${pctMeta}%</div>
         </div>
-        <div class="ca-metric">
-          <div class="ca-metric-label">Cx total</div>
-          <div class="ca-metric-val">${tot}</div>
-        </div>
-      </div>
-
-      <div class="ca-progress">
-        <div class="ca-bar-row">
-          <span class="ca-bar-label">Positivação</span>
-          <div class="ca-bar-bg"><div class="ca-bar-fg" style="width:${pctPos}%;background:${corBar(pctPos)}"></div></div>
-          <span class="ca-bar-val">${comPed}/${ativos.length}</span>
-        </div>
-        <div class="ca-bar-row">
-          <span class="ca-bar-label">Volume</span>
-          <div class="ca-bar-bg"><div class="ca-bar-fg" style="width:${pctMeta}%;background:${corBar(pctMeta)}"></div></div>
-          <span class="ca-bar-val">${tot}/${meta}</span>
+        <div style="padding:12px 16px;text-align:center">
+          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Cx total</div>
+          <div style="font-size:20px;font-weight:700">${tot}</div>
         </div>
       </div>
-
-      <div class="ca-chart">
-        <div class="ca-chart-title">Volume ${anoAtual}</div>
-        <div class="ca-chart-bars">
+      <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:#7A7870;width:70px">Positivação</span>
+          <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pctPos}%;background:${corBar(pctPos)};border-radius:99px"></div></div>
+          <span style="font-size:11px;color:#7A7870;width:55px;text-align:right">${comPed}/${ativos.length}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:#7A7870;width:70px">Volume</span>
+          <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pctMeta}%;background:${corBar(pctMeta)};border-radius:99px"></div></div>
+          <span style="font-size:11px;color:#7A7870;width:55px;text-align:right">${tot}/${meta}</span>
+        </div>
+      </div>
+      <div style="padding:0 16px 14px">
+        <div style="font-size:11px;color:#7A7870;margin-bottom:8px">Volume ${anoAtual}</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:48px">
           ${mesesChart.map((m,i)=>{
             const p=m.meta>0?Math.min(100,Math.round(m.tot/m.meta*100)):0;
             const h=Math.max(2,Math.round(m.tot/maxT*42));
-            const bg=i===mesAtual?corBar(p):(m.tot>0?'#CBD5E1':'#E5E7EB');
-            return`<div class="ca-chart-col">
-              <div class="ca-chart-bar" style="height:${h}px;background:${bg}"></div>
-              <div class="ca-chart-lbl">${m.m}</div>
-            </div>`;
-          }).join('')}
+            const bg=i===mesAtual?corBar(p):(m.tot>0?'#CBD5E1':'#E2E0D8');
+            return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="width:100%;height:${h}px;background:${bg};border-radius:3px 3px 0 0"></div>
+              <div style="font-size:8px;color:#7A7870">${m.m}</div>
+            </div>`;}).join('')}
         </div>
       </div>
     </div>`;
   }).join('');
 
   g('dash-content').innerHTML=`
-    <div class="dash-admin-totals">
-      <div class="dash-admin-total">
-        <div class="dat-label">Positivação geral</div>
-        <div class="dat-value" style="color:${corPct(pctPosG)}">${pctPosG}%</div>
-        <div class="dat-sub">${comPedidoGeral} de ${totalAtivos} clientes</div>
-        <div class="dat-bar"><div class="dat-bar-fg" style="width:${pctPosG}%;background:${corBar(pctPosG)}"></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 4px">
+      <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Positivação geral</div>
+        <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctPosG)}">${pctPosG}%</div>
+        <div style="font-size:11px;color:#7A7870;margin-top:4px">${comPedidoGeral} de ${totalAtivos}</div>
+        <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctPosG}%;background:${corBar(pctPosG)};border-radius:99px"></div></div>
       </div>
-      <div class="dash-admin-total">
-        <div class="dat-label">Volume geral</div>
-        <div class="dat-value" style="color:${corPct(pctMetaG)}">${pctMetaG}%</div>
-        <div class="dat-sub">${totGeral} / ${metaGeral} cx</div>
-        <div class="dat-bar"><div class="dat-bar-fg" style="width:${pctMetaG}%;background:${corBar(pctMetaG)}"></div></div>
+      <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
+        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Volume geral</div>
+        <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctMetaG)}">${pctMetaG}%</div>
+        <div style="font-size:11px;color:#7A7870;margin-top:4px">${totGeral} / ${metaGeral} cx</div>
+        <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctMetaG}%;background:${corBar(pctMetaG)};border-radius:99px"></div></div>
       </div>
     </div>
-    <div class="dash-section-title">Coordenadores</div>
-    <div class="coord-admin-list">${cards}</div>`;
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#7A7870;padding:10px 16px 6px">Coordenadores</div>
+    ${cards}`;
 }
 
 // ── PEDIDOS ──
