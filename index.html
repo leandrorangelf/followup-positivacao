@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Follow-up Positivação</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
 :root{--bg:#F5F4F0;--card:#fff;--border:#E2E0D8;--text:#1A1A18;--muted:#7A7870;--accent:#1D4ED8;--accent-light:#EFF6FF;--green:#166534;--green-bg:#DCFCE7;--amber:#92400E;--amber-bg:#FEF3C7;--gray:#6B7280;--gray-bg:#F3F4F6;--red:#991B1B;--red-bg:#FEE2E2}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .screen{display:none}
 
 /* LOGIN */
@@ -17,21 +17,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .login-logo{font-size:32px;margin-bottom:8px;text-align:center}
 .login-title{font-size:18px;font-weight:600;text-align:center;margin-bottom:4px}
 .login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px}
-.login-box select,.login-box input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--bg);color:var(--text);margin-bottom:10px}
-.btn-login{width:100%;padding:13px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
+.login-box select,.login-box input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;background:var(--bg);color:var(--text);margin-bottom:10px}
+.btn-login{width:100%;padding:13px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
 .login-err{font-size:12px;color:#991B1B;text-align:center;margin-top:8px;display:none}
 
 /* COMMON HEADER */
 .app-header{background:var(--text);color:#fff;padding:16px}
 .hdr-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.hdr-back{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:5px 11px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.hdr-back{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:5px 11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;cursor:pointer}
 .hdr-title{font-size:18px;font-weight:600;flex:1}
 .hdr-sub{font-size:12px;color:rgba(255,255,255,.55)}
-.hdr-badge{font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);padding:4px 10px;border-radius:6px;white-space:nowrap}
+.hdr-badge{font-family:'SF Mono','Courier New',monospace;font-size:11px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);padding:4px 10px;border-radius:6px;white-space:nowrap}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:40}
-.nav-btn{flex:1;padding:12px 8px 10px;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'DM Sans',sans-serif}
+.nav-btn{flex:1;padding:12px 8px 10px;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .nav-btn .nav-icon{font-size:20px}
 .nav-btn .nav-label{font-size:10px;color:var(--muted)}
 .nav-btn.active .nav-label{color:var(--text);font-weight:600}
@@ -44,7 +44,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .dash-name{font-size:22px;font-weight:600;margin-bottom:2px}
 .dash-month-row{display:flex;align-items:center;gap:8px;margin-top:10px}
 .dash-month-row label{font-size:12px;color:rgba(255,255,255,.5);white-space:nowrap}
-.dash-month-row select{flex:1;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px}
+.dash-month-row select{flex:1;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px}
 .dash-month-row select option{background:#1A1A18;color:#fff}
 
 /* METRIC CARDS */
@@ -52,7 +52,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
 .metric-card.full{grid-column:1/-1}
 .mc-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.mc-value{font-size:28px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
+.mc-value{font-size:28px;font-weight:600;font-family:'SF Mono','Courier New',monospace;line-height:1}
 .mc-sub{font-size:12px;color:var(--muted);margin-top:4px}
 .mc-bar-bg{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:10px}
 .mc-bar-fg{height:100%;border-radius:99px;transition:width .4s}
@@ -76,7 +76,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
 .cs-item{text-align:center}
 .cs-label{font-size:10px;color:var(--muted);margin-bottom:1px}
-.cs-val{font-size:17px;font-weight:600;font-family:'DM Mono',monospace}
+.cs-val{font-size:17px;font-weight:600;font-family:'SF Mono','Courier New',monospace}
 .bar-wrap{margin-bottom:6px}
 .bar-label-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:3px}
 .bar-bg{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
@@ -106,49 +106,49 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ped-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px}
 .ps-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center}
 .ps-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
-.ps-value{font-size:20px;font-weight:600;font-family:'DM Mono',monospace}
+.ps-value{font-size:20px;font-weight:600;font-family:'SF Mono','Courier New',monospace}
 .admin-tabs{display:flex;gap:4px;padding:0 16px;margin-bottom:10px;overflow-x:auto}
-.admin-tab{padding:6px 12px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.admin-tab{padding:6px 12px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .admin-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
 .sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0 16px;margin-bottom:8px}
 .client-list{padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .client-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .client-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;gap:8px}
 .client-name{font-size:13px;font-weight:500;flex:1;line-height:1.3}
-.client-total{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap}
+.client-total{font-family:'SF Mono','Courier New',monospace;font-size:13px;color:var(--muted);white-space:nowrap}
 .chevron{font-size:12px;color:var(--muted);transition:transform .2s}
 .chevron.open{transform:rotate(180deg)}
 .sku-grid{display:none;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 14px 12px;border-top:1px solid var(--border)}
 .sku-grid.open{display:grid}
 .sku-item{display:flex;flex-direction:column;align-items:center;gap:4px}
 .sku-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.sku-input{width:100%;text-align:center;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;padding:8px 4px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);-moz-appearance:textfield}
+.sku-input{width:100%;text-align:center;font-family:'SF Mono','Courier New',monospace;font-size:16px;font-weight:500;padding:8px 4px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);-moz-appearance:textfield}
 .sku-input::-webkit-outer-spin-button,.sku-input::-webkit-inner-spin-button{-webkit-appearance:none}
 .sku-input:focus{outline:none;border-color:var(--accent);background:var(--accent-light)}
 .sku-input.filled{border-color:#86EFAC;background:#F0FDF4;color:var(--green)}
 .fab-wrap{position:fixed;bottom:60px;left:0;right:0;padding:10px 16px;background:var(--bg);border-top:1px solid var(--border);display:flex;gap:8px}
-.fab{flex:1;padding:12px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.fab{flex:1;padding:12px;border:none;border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
 .fab-primary{background:var(--text);color:#fff}
 .fab-secondary{background:var(--card);color:var(--text);border:1px solid var(--border);flex:0 0 auto;padding:12px 14px}
 
 /* CLIENTES (gestão) */
 #s-cli{padding-bottom:70px}
 .cli-coord-tabs{display:flex;gap:4px;padding:12px 16px 8px;overflow-x:auto}
-.cli-coord-tab{padding:6px 12px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.cli-coord-tab{padding:6px 12px;font-size:13px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .cli-coord-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
 .cli-list{padding:0 16px;display:flex;flex-direction:column;gap:6px;margin-bottom:80px}
 .cli-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px}
 .cli-item.inativo{opacity:.55}
 .cli-nome{font-size:13px;font-weight:500;flex:1;line-height:1.3}
 .cli-actions{display:flex;gap:6px;align-items:center}
-.btn-toggle{padding:4px 10px;border-radius:8px;border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer}
+.btn-toggle{padding:4px 10px;border-radius:8px;border:1px solid var(--border);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:600;cursor:pointer}
 .btn-toggle-ativo{background:var(--red-bg);color:var(--red);border-color:#FECACA}
 .btn-toggle-inativo{background:var(--green-bg);color:var(--green);border-color:#BBF7D0}
 .cli-add-wrap{position:fixed;bottom:60px;left:0;right:0;padding:10px 16px;background:var(--bg);border-top:1px solid var(--border)}
 .cli-add-row{display:flex;gap:8px}
-.cli-add-input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--card);color:var(--text)}
+.cli-add-input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;background:var(--card);color:var(--text)}
 .cli-add-input:focus{outline:none;border-color:var(--accent)}
-.btn-add{padding:11px 16px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn-add{padding:11px 16px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
 
 /* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end}
@@ -156,9 +156,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .modal{background:var(--card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:80vh;overflow-y:auto}
 .modal-title{font-size:16px;font-weight:600;margin-bottom:4px}
 .modal-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
-.resumo-text{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;white-space:pre-wrap;line-height:1.7;margin-bottom:14px}
-.btn-copy{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px}
-.btn-close{width:100%;padding:13px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer}
+.resumo-text{font-family:'SF Mono','Courier New',monospace;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;white-space:pre-wrap;line-height:1.7;margin-bottom:14px}
+.btn-copy{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px}
+.btn-close{width:100%;padding:13px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;cursor:pointer}
 
 /* TOAST */
 .toast{position:fixed;top:12px;right:12px;left:12px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;z-index:200;text-align:center}
