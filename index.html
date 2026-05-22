@@ -564,14 +564,13 @@ async function salvarTudo(){
   toast('Salvando...','info',10000);
   const ativos=clientesAtivos(coordAtual);
   if(!ativos.length){toast('Nenhum cliente ativo','error',2000);return;}
+  // Delete existing records for this coord/mes/ano then reinsert
+  const del=await sb('/rest/v1/pedidos?coordenador=eq.'+encodeURIComponent(coordAtual)+'&mes=eq.'+mesAtual+'&ano=eq.'+anoAtual,{method:'DELETE'});
+  if(!del||!del.ok){toast('⚠ Erro ao salvar ('+((del&&del.status)||'sem conexão')+')','error',4000);return;}
   const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,updated_at:new Date().toISOString()}));
-  const res=await sb('/rest/v1/pedidos',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=representation','Content-Type':'application/json'},body:JSON.stringify(rows)});
-  if(!res||!res.ok){
-    console.error('Erro ao salvar, status:',res&&res.status);
-    toast('⚠ Erro ao salvar ('+((res&&res.status)||'sem conexão')+')','error',4000);
-  } else {
-    toast('✓ Salvo com sucesso!','ok',2000);
-  }
+  const res=await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(rows)});
+  if(!res||!res.ok){toast('⚠ Erro ao salvar ('+((res&&res.status)||'sem conexão')+')','error',4000);}
+  else{toast('✓ Salvo com sucesso!','ok',2000);}
 }
 
 function renderPedHeader(){
