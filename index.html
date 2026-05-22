@@ -168,6 +168,294 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .toast.info{background:var(--text);color:#fff}
 
 .loading{text-align:center;padding:40px 16px;color:var(--muted);font-size:13px}
+
+/* ===== RESTYLE MODERNO ===== */
+:root{
+  --bg:#F3F4F6;
+  --card:#FFFFFF;
+  --border:#E5E7EB;
+  --text:#111827;
+  --muted:#6B7280;
+  --accent:#2563EB;
+  --accent-light:#EFF6FF;
+  --green:#15803D;
+  --green-bg:#DCFCE7;
+  --amber:#B45309;
+  --amber-bg:#FEF3C7;
+  --red:#B91C1C;
+  --red-bg:#FEE2E2;
+  --shadow:0 12px 30px rgba(15,23,42,.08);
+  --shadow-soft:0 4px 14px rgba(15,23,42,.06);
+}
+body{
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,.10), transparent 32rem),
+    linear-gradient(180deg,#F8FAFC 0%,#EEF2F7 100%);
+  color:var(--text);
+}
+.screen{
+  max-width:1040px;
+  margin:0 auto;
+  min-height:100vh;
+  background:rgba(255,255,255,.30);
+}
+#s-login{
+  max-width:none;
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 34rem),
+    linear-gradient(180deg,#F8FAFC,#EEF2F7);
+}
+.login-box{
+  border:none;
+  box-shadow:var(--shadow);
+  border-radius:24px;
+}
+.login-logo{
+  width:58px;
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 14px;
+  border-radius:18px;
+  background:var(--accent-light);
+}
+.login-title{font-size:21px}
+.btn-login{
+  background:linear-gradient(135deg,#111827,#334155);
+  border-radius:14px;
+}
+.dash-header,
+.app-header{
+  background:
+    radial-gradient(circle at top right, rgba(96,165,250,.30), transparent 18rem),
+    linear-gradient(135deg,#111827 0%,#1E293B 55%,#0F172A 100%);
+  padding:24px 20px 20px;
+  border-radius:0 0 28px 28px;
+  box-shadow:0 14px 30px rgba(15,23,42,.20);
+}
+.dash-greeting{font-size:13px;color:rgba(255,255,255,.65)}
+.dash-name{font-size:28px;font-weight:750;letter-spacing:-.03em;margin-top:2px}
+.dash-month-row{
+  max-width:360px;
+  margin-top:16px;
+  padding:8px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+}
+.dash-month-row label{padding-left:4px}
+.dash-month-row select{
+  height:38px;
+  border-radius:12px;
+  background:rgba(255,255,255,.13);
+}
+.metrics,
+.dash-admin-totals{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  padding:18px 20px 8px;
+}
+.metric-card,
+.dash-admin-total,
+.chart-box,
+.coord-admin-card,
+.client-card,
+.ps-card,
+.cli-item{
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(226,232,240,.9);
+  box-shadow:var(--shadow-soft);
+  border-radius:20px;
+}
+.metric-card,
+.dash-admin-total{padding:18px}
+.mc-label,
+.dat-label{
+  font-size:10px;
+  font-weight:800;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.09em;
+}
+.mc-value,
+.dat-value{
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:-.05em;
+  margin-top:8px;
+}
+.mc-sub,
+.dat-sub{font-size:12px;color:var(--muted);margin-top:5px}
+.mc-bar-bg,
+.dat-bar,
+.ca-bar-bg{
+  height:7px;
+  background:#E5E7EB;
+  border-radius:999px;
+  overflow:hidden;
+}
+.dat-bar{margin-top:12px}
+.dat-bar-fg,
+.ca-bar-fg{height:100%;border-radius:999px}
+.chart-wrap{padding:8px 20px 0}
+.chart-box{padding:18px}
+.chart-title{font-size:14px;font-weight:700;color:#334155}
+.chart-bars{height:92px;gap:6px}
+.chart-bar{border-radius:8px 8px 3px 3px}
+.chart-bar-label,.chart-bar-val{font-size:10px}
+.dash-section-title,
+.sec-title,
+.section-hdr{
+  padding:16px 20px 8px;
+  font-size:11px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  color:#64748B;
+}
+.coord-admin-list{
+  padding:0 20px 92px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.coord-admin-card{
+  overflow:hidden;
+}
+.ca-header{
+  padding:16px 18px 13px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.ca-name{
+  font-size:17px;
+  font-weight:800;
+  letter-spacing:-.02em;
+}
+.ca-base{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+}
+.ca-badge{
+  font-size:10px;
+  font-weight:850;
+  padding:5px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+.ca-metrics{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.ca-metric{
+  padding:13px 10px;
+  text-align:center;
+}
+.ca-metric:not(:last-child){border-right:1px solid var(--border)}
+.ca-metric-label{
+  font-size:10px;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+.ca-metric-val{
+  font-size:22px;
+  font-weight:850;
+  letter-spacing:-.04em;
+}
+.ca-progress{
+  padding:14px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.ca-bar-row{
+  display:grid;
+  grid-template-columns:76px 1fr 64px;
+  align-items:center;
+  gap:9px;
+}
+.ca-bar-label,
+.ca-bar-val{
+  font-size:11px;
+  color:var(--muted);
+}
+.ca-bar-val{text-align:right}
+.ca-chart{
+  padding:0 18px 16px;
+}
+.ca-chart-title{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:700;
+  margin-bottom:8px;
+}
+.ca-chart-bars{
+  height:54px;
+  display:flex;
+  align-items:flex-end;
+  gap:5px;
+}
+.ca-chart-col{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:3px;
+}
+.ca-chart-bar{
+  width:100%;
+  min-height:2px;
+  border-radius:7px 7px 2px 2px;
+}
+.ca-chart-lbl{
+  font-size:8px;
+  color:#94A3B8;
+}
+.bottom-nav{
+  max-width:1040px;
+  margin:0 auto;
+  left:50%;
+  transform:translateX(-50%);
+  border-radius:22px 22px 0 0;
+  box-shadow:0 -10px 25px rgba(15,23,42,.08);
+}
+.nav-btn{padding:13px 8px 11px}
+.nav-btn.active .nav-icon{
+  background:var(--accent-light);
+  border-radius:14px;
+  padding:5px 10px;
+}
+.client-list,.cli-list{padding:0 20px}
+.client-header{padding:14px 16px}
+.fab-wrap,.cli-add-wrap{
+  max-width:1040px;
+  margin:0 auto;
+  left:50%;
+  transform:translateX(-50%);
+}
+.fab,.btn-add{border-radius:14px}
+.fab-primary,.btn-add{background:linear-gradient(135deg,#111827,#334155)}
+.badge{font-weight:800}
+@media (max-width:760px){
+  .screen{max-width:none}
+  .metrics,
+  .dash-admin-totals{grid-template-columns:1fr 1fr;padding-left:14px;padding-right:14px}
+  .coord-admin-list{grid-template-columns:1fr;padding-left:14px;padding-right:14px}
+  .chart-wrap,.client-list,.cli-list{padding-left:14px;padding-right:14px}
+  .dash-header,.app-header{border-radius:0 0 24px 24px}
+}
+@media (max-width:420px){
+  .metrics,.dash-admin-totals{gap:10px}
+  .mc-value,.dat-value{font-size:29px}
+}
+
 </style>
 </head>
 <body>
@@ -194,12 +482,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- DASHBOARD -->
 <div id="s-dash" class="screen" style="display:none">
-  <div style="background:#1A1A18;color:#fff;padding:20px 16px">
-    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px" id="dash-greeting">Olá,</div>
-    <div style="font-size:22px;font-weight:600;margin-bottom:14px" id="dash-name">—</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <label style="font-size:12px;color:rgba(255,255,255,.4)">Mês:</label>
-      <select id="dash-mes" style="flex:1;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 10px;border-radius:8px;font-size:13px">
+  <div class="dash-header">
+    <div class="dash-greeting" id="dash-greeting">Olá,</div>
+    <div class="dash-name" id="dash-name">—</div>
+    <div class="dash-month-row">
+      <label>Mês:</label>
+      <select id="dash-mes">
         <option value="0">Janeiro</option><option value="1">Fevereiro</option>
         <option value="2">Março</option><option value="3">Abril</option>
         <option value="4">Maio</option><option value="5">Junho</option>
@@ -347,7 +635,6 @@ function login(){
   user=coord;isAdmin=coord==='admin';
   coordAtual=isAdmin?COORD_KEYS[0]:coord;
   cliCoordAtual=coordAtual==='admin'?COORD_KEYS[0]:coordAtual;
-  g('login-screen') && (g('s-login').style.display='none');
   irDash();
 }
 
@@ -482,73 +769,78 @@ function renderAdminDash(anoData){
     const maxT=Math.max(...mesesChart.map(m=>m.tot),1);
     const badgeColor=pctPos>=80?'background:#DCFCE7;color:#166534':pctPos>=50?'background:#FEF3C7;color:#92400E':'background:#FEE2E2;color:#991B1B';
     const badgeText=pctPos>=80?'✓ Meta':pctPos>=50?'Parcial':'Abaixo';
-    return `<div style="background:#fff;border-radius:14px;margin:0 16px 10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-      <div style="padding:14px 16px 12px;display:flex;align-items:flex-start;justify-content:space-between">
+
+    return `<div class="coord-admin-card">
+      <div class="ca-header">
         <div>
-          <div style="font-size:16px;font-weight:600">${coord}</div>
-          <div style="font-size:11px;color:#7A7870;margin-top:1px">${ativos.length} clientes ativos</div>
+          <div class="ca-name">${coord}</div>
+          <div class="ca-base">${ativos.length} clientes ativos</div>
         </div>
-        <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:99px;${badgeColor}">${badgeText}</span>
+        <span class="ca-badge" style="${badgeColor}">${badgeText}</span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #E2E0D8;border-bottom:1px solid #E2E0D8">
-        <div style="padding:12px 16px;text-align:center;border-right:1px solid #E2E0D8">
-          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Positivação</div>
-          <div style="font-size:20px;font-weight:700;color:${corPct(pctPos)}">${pctPos}%</div>
+
+      <div class="ca-metrics">
+        <div class="ca-metric">
+          <div class="ca-metric-label">Positivação</div>
+          <div class="ca-metric-val" style="color:${corPct(pctPos)}">${pctPos}%</div>
         </div>
-        <div style="padding:12px 16px;text-align:center;border-right:1px solid #E2E0D8">
-          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Volume</div>
-          <div style="font-size:20px;font-weight:700;color:${corPct(pctMeta)}">${pctMeta}%</div>
+        <div class="ca-metric">
+          <div class="ca-metric-label">Volume</div>
+          <div class="ca-metric-val" style="color:${corPct(pctMeta)}">${pctMeta}%</div>
         </div>
-        <div style="padding:12px 16px;text-align:center">
-          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Cx total</div>
-          <div style="font-size:20px;font-weight:700">${tot}</div>
-        </div>
-      </div>
-      <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:#7A7870;width:70px">Positivação</span>
-          <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pctPos}%;background:${corBar(pctPos)};border-radius:99px"></div></div>
-          <span style="font-size:11px;color:#7A7870;width:55px;text-align:right">${comPed}/${ativos.length}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:#7A7870;width:70px">Volume</span>
-          <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pctMeta}%;background:${corBar(pctMeta)};border-radius:99px"></div></div>
-          <span style="font-size:11px;color:#7A7870;width:55px;text-align:right">${tot}/${meta}</span>
+        <div class="ca-metric">
+          <div class="ca-metric-label">Cx total</div>
+          <div class="ca-metric-val">${tot}</div>
         </div>
       </div>
-      <div style="padding:0 16px 14px">
-        <div style="font-size:11px;color:#7A7870;margin-bottom:8px">Volume ${anoAtual}</div>
-        <div style="display:flex;align-items:flex-end;gap:3px;height:48px">
+
+      <div class="ca-progress">
+        <div class="ca-bar-row">
+          <span class="ca-bar-label">Positivação</span>
+          <div class="ca-bar-bg"><div class="ca-bar-fg" style="width:${pctPos}%;background:${corBar(pctPos)}"></div></div>
+          <span class="ca-bar-val">${comPed}/${ativos.length}</span>
+        </div>
+        <div class="ca-bar-row">
+          <span class="ca-bar-label">Volume</span>
+          <div class="ca-bar-bg"><div class="ca-bar-fg" style="width:${pctMeta}%;background:${corBar(pctMeta)}"></div></div>
+          <span class="ca-bar-val">${tot}/${meta}</span>
+        </div>
+      </div>
+
+      <div class="ca-chart">
+        <div class="ca-chart-title">Volume ${anoAtual}</div>
+        <div class="ca-chart-bars">
           ${mesesChart.map((m,i)=>{
             const p=m.meta>0?Math.min(100,Math.round(m.tot/m.meta*100)):0;
             const h=Math.max(2,Math.round(m.tot/maxT*42));
-            const bg=i===mesAtual?corBar(p):(m.tot>0?'#CBD5E1':'#E2E0D8');
-            return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
-              <div style="width:100%;height:${h}px;background:${bg};border-radius:3px 3px 0 0"></div>
-              <div style="font-size:8px;color:#7A7870">${m.m}</div>
-            </div>`;}).join('')}
+            const bg=i===mesAtual?corBar(p):(m.tot>0?'#CBD5E1':'#E5E7EB');
+            return`<div class="ca-chart-col">
+              <div class="ca-chart-bar" style="height:${h}px;background:${bg}"></div>
+              <div class="ca-chart-lbl">${m.m}</div>
+            </div>`;
+          }).join('')}
         </div>
       </div>
     </div>`;
   }).join('');
 
   g('dash-content').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 4px">
-      <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
-        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Positivação geral</div>
-        <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctPosG)}">${pctPosG}%</div>
-        <div style="font-size:11px;color:#7A7870;margin-top:4px">${comPedidoGeral} de ${totalAtivos}</div>
-        <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctPosG}%;background:${corBar(pctPosG)};border-radius:99px"></div></div>
+    <div class="dash-admin-totals">
+      <div class="dash-admin-total">
+        <div class="dat-label">Positivação geral</div>
+        <div class="dat-value" style="color:${corPct(pctPosG)}">${pctPosG}%</div>
+        <div class="dat-sub">${comPedidoGeral} de ${totalAtivos} clientes</div>
+        <div class="dat-bar"><div class="dat-bar-fg" style="width:${pctPosG}%;background:${corBar(pctPosG)}"></div></div>
       </div>
-      <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
-        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Volume geral</div>
-        <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctMetaG)}">${pctMetaG}%</div>
-        <div style="font-size:11px;color:#7A7870;margin-top:4px">${totGeral} / ${metaGeral} cx</div>
-        <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctMetaG}%;background:${corBar(pctMetaG)};border-radius:99px"></div></div>
+      <div class="dash-admin-total">
+        <div class="dat-label">Volume geral</div>
+        <div class="dat-value" style="color:${corPct(pctMetaG)}">${pctMetaG}%</div>
+        <div class="dat-sub">${totGeral} / ${metaGeral} cx</div>
+        <div class="dat-bar"><div class="dat-bar-fg" style="width:${pctMetaG}%;background:${corBar(pctMetaG)}"></div></div>
       </div>
     </div>
-    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#7A7870;padding:10px 16px 6px">Coordenadores</div>
-    ${cards}`;
+    <div class="dash-section-title">Coordenadores</div>
+    <div class="coord-admin-list">${cards}</div>`;
 }
 
 // ── PEDIDOS ──
