@@ -472,7 +472,7 @@ function renderCoordDash(anoData){
   const tot=ativos.reduce((s,c)=>s+totCliD(dadosLocais,c.nome),0);
   const comPedido=ativos.filter(c=>totCliD(dadosLocais,c.nome)>0).length;
   const pctPos=ativos.length?Math.round(comPedido/ativos.length*100):0;
-  const pctMeta=Math.min(100,meta>0?Math.round(tot/meta*100):0);
+  const pctMeta=meta>0?Math.round(tot/meta*100):0;
   const pendentes=ativos.filter(c=>totCliD(dadosLocais,c.nome)===0);
   const parciais=ativos.filter(c=>{const d=dadosLocais[c.nome]||{};return SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length>0&&SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length<3;});
 
@@ -495,7 +495,7 @@ function renderCoordDash(anoData){
         <div class="mc-label">Volume</div>
         <div class="mc-value" style="color:${corPct(pctMeta)}">${pctMeta}%</div>
         <div class="mc-sub">${tot} / ${meta} cx</div>
-        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${pctMeta}%;background:${corBar(pctMeta)}"></div></div>
+        <div class="mc-bar-bg"><div class="mc-bar-fg" style="width:${Math.min(100,pctMeta)}%;background:${corBar(pctMeta)}"></div></div>
       </div>
       ${parciais.length>0?`<div class="metric-card full">
         <div class="mc-label">⚠ Pedidos parciais (1-2 SKUs)</div>
@@ -528,7 +528,7 @@ function renderAdminDash(anoData){
   const totalAtivos=COORD_KEYS.reduce((s,c)=>s+clientesAtivos(c).length,0);
   const comPedidoGeral=COORD_KEYS.reduce((s,c)=>s+clientesAtivos(c).filter(cl=>totCliD(todosPedidosMes[c]||{},cl.nome)>0).length,0);
   const pctPosG=totalAtivos?Math.round(comPedidoGeral/totalAtivos*100):0;
-  const pctMetaG=Math.min(100,metaGeral>0?Math.round(totGeral/metaGeral*100):0);
+  const pctMetaG=metaGeral>0?Math.round(totGeral/metaGeral*100):0;
 
   const cards=COORD_KEYS.map(coord=>{
     const d=todosPedidosMes[coord]||{};
@@ -537,7 +537,7 @@ function renderAdminDash(anoData){
     const tot=ativos.reduce((s,c)=>s+totCliD(d,c.nome),0);
     const comPed=ativos.filter(c=>totCliD(d,c.nome)>0).length;
     const pctPos=ativos.length?Math.round(comPed/ativos.length*100):0;
-    const pctMeta=Math.min(100,meta>0?Math.round(tot/meta*100):0);
+    const pctMeta=meta>0?Math.round(tot/meta*100):0;
     const mesesChart=MESES.map((m,i)=>{
       const t=anoData.filter(r=>r.coordenador===coord&&r.mes===i).reduce((s,r)=>s+(r.gr||0)+(r.gm||0)+(r.cm||0)+(r.cc||0),0);
       return{m:m.substring(0,3),tot:t,meta:METAS[coord][i]};
@@ -675,12 +675,12 @@ function renderPedSummary(){
   const ativos=clientesAtivos(coordAtual);
   const meta=METAS[coordAtual][mesAtual];
   const tot=totGeral();
-  const pct=Math.min(100,Math.round(tot/meta*100));
+  const pct=Math.round(tot/meta*100);
   g('ped-tot').textContent=tot;
   g('ped-com').textContent=ativos.filter(c=>totCli(c.nome)>0).length;
   g('ped-pend').textContent=ativos.filter(c=>totCli(c.nome)===0).length;
   g('pct-val').textContent=pct;
-  g('prog-fg').style.width=pct+'%';
+  g('prog-fg').style.width=Math.min(100,pct)+'%';
 }
 
 function renderClientes(){
