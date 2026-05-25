@@ -340,6 +340,7 @@ const COORD_KEYS=['Igor Cater','Marcio Vit','Sem Responsável','Vitor Valle'];
 const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Sem Responsável':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const SKUS=['GR','GM','CM','CC'];
+const SKUS_COM_CLICK=['GR','GM','CM','CC','CLICK']; // Jan-Abr
 
 async function sha256(txt){
   const data=new TextEncoder().encode(txt);
@@ -536,7 +537,7 @@ async function carregarDashboard(){
       sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&select=*`,{ret:true})
     ]);
     dadosLocais={};
-    if(Array.isArray(pedMes))pedMes.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0};});
+    if(Array.isArray(pedMes))pedMes.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
     renderCoordDash(Array.isArray(anoData)?anoData:[]);
   }
 }
@@ -546,10 +547,10 @@ async function carregarTodosPedidos(){
   const data=await sb(`/rest/v1/pedidos?mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true});
   todosPedidosMes={};
   COORD_KEYS.forEach(c=>{todosPedidosMes[c]={};});
-  if(Array.isArray(data))data.forEach(r=>{if(todosPedidosMes[r.coordenador])todosPedidosMes[r.coordenador][r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0};});
+  if(Array.isArray(data))data.forEach(r=>{if(todosPedidosMes[r.coordenador])todosPedidosMes[r.coordenador][r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
 }
 
-function totCliD(d,cli){const x=d[cli]||{};return(x.gr||0)+(x.gm||0)+(x.cm||0)+(x.cc||0);}
+function totCliD(d,cli,mes){const x=d[cli]||{};const base=(x.gr||0)+(x.gm||0)+(x.cm||0)+(x.cc||0);return(mes===undefined?mesAtual:mes)<4?base+(x.click||0):base;}
 
 function renderCoordDash(anoData){
   const coord=coordAtual;
@@ -728,7 +729,7 @@ async function setCoord(c){coordAtual=c;renderAdminTabs();await carregarPedidos(
 async function carregarPedidos(){
   const data=await sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true});
   dadosLocais={};
-  if(Array.isArray(data))data.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0};});
+  if(Array.isArray(data))data.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
   pedidosCarregados=true;coordPedCarregado=coordAtual;mesPedCarregado=mesAtual;
   await carregarClientes();
   renderPedHeader();renderClientes();renderPedSummary();
@@ -741,7 +742,7 @@ async function salvarTudo(){
   // Delete existing records for this coord/mes/ano then reinsert
   const del=await sb('/rest/v1/pedidos?coordenador=eq.'+encodeURIComponent(coordAtual)+'&mes=eq.'+mesAtual+'&ano=eq.'+anoAtual,{method:'DELETE'});
   if(!del||!del.ok){toast('⚠ Erro ao salvar ('+((del&&del.status)||'sem conexão')+')','error',4000);return;}
-  const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,updated_at:new Date().toISOString()}));
+  const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,click:(dadosLocais[c.nome]||{}).click||0,updated_at:new Date().toISOString()}));
   const res=await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(rows)});
   if(!res||!res.ok){toast('⚠ Erro ao salvar ('+((res&&res.status)||'sem conexão')+')','error',4000);}
   else{toast('✓ Salvo com sucesso!','ok',2000);}
@@ -754,7 +755,7 @@ function renderPedHeader(){
   g('meta-val').textContent=meta;
 }
 
-function totCli(cli){const d=dadosLocais[cli]||{};return(d.gr||0)+(d.gm||0)+(d.cm||0)+(d.cc||0);}
+function totCli(cli){const d=dadosLocais[cli]||{};const base=(d.gr||0)+(d.gm||0)+(d.cm||0)+(d.cc||0);return mesAtual<4?base+(d.click||0):base;}
 function skusCli(cli){const d=dadosLocais[cli]||{};return SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length;}
 function st(cli){const n=skusCli(cli);return n===0?'sem':n<=2?'parc':'ok';}
 function stLabel(s){return s==='ok'?'Feito':s==='parc'?'Parcial':'Pendente';}
@@ -784,7 +785,7 @@ function renderClientes(){
         <span class="chevron" id="chev-${i}">▾</span>
       </div>
       <div class="sku-grid" id="grid-${i}">
-        ${SKUS.map(sk=>`<div class="sku-item"><span class="sku-label">${sk}</span>
+        ${(mesAtual<4?SKUS_COM_CLICK:SKUS).map(sk=>`<div class="sku-item"><span class="sku-label">${sk}</span>
           <input type="number" inputmode="numeric" class="sku-input ${(d[sk.toLowerCase()]||0)>0?'filled':''}"
             id="inp-${i}-${sk}" value="${d[sk.toLowerCase()]||''}" min="0" max="99999" placeholder="0"
             oninput="onCh(${i},'${sk}',this.value)"></div>`).join('')}
@@ -818,7 +819,8 @@ function abrirResumo(){
   const tot=totGeral();const pct=Math.round(tot/meta*100);
   const comPedido=ativos.filter(c=>totCli(c.nome)>0).map(c=>{
     const d=dadosLocais[c.nome]||{};
-    const skus=SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).map(sk=>`${sk}:${d[sk.toLowerCase()]}`).join(' ');
+    const skuList=mesAtual<4?SKUS_COM_CLICK:SKUS;
+    const skus=skuList.filter(sk=>(d[sk.toLowerCase()]||0)>0).map(sk=>`${sk}:${d[sk.toLowerCase()]}`).join(' ');
     return `• ${c.nome}\n  ${skus} → ${totCli(c.nome)} cx`;
   });
   const pendentes=ativos.filter(c=>totCli(c.nome)===0).map(c=>'• '+c.nome);
