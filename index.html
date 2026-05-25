@@ -681,7 +681,15 @@ function renderAdminDash(anoData){
             </div>`;}).join('')}
         </div>
       </div>
-      ${premRow}
+      <div style="padding:10px 16px;border-top:1px solid #E2E0D8;background:#FAFAF8">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#7A7870">🏆 Premiação</span>
+          <span style="font-size:14px;font-weight:700;color:${(()=>{const prem=calcPremiacao(pctMeta,pctPos,ativos.length?Math.round(ativos.filter(cl=>{const dd=d[cl.nome]||{};return SKUS.every(sk=>(dd[sk.toLowerCase()]||0)>0);}).length/ativos.length*100):0);return prem.total>0?'#166534':'#7A7870';})()}">${(()=>{const pt4=ativos.length?Math.round(ativos.filter(cl=>{const dd=d[cl.nome]||{};return SKUS.every(sk=>(dd[sk.toLowerCase()]||0)>0);}).length/ativos.length*100):0;const prem=calcPremiacao(pctMeta,pctPos,pt4);return 'R$ '+prem.total.toLocaleString('pt-BR');})()}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px">
+          ${(()=>{const pt4=ativos.length?Math.round(ativos.filter(cl=>{const dd=d[cl.nome]||{};return SKUS.every(sk=>(dd[sk.toLowerCase()]||0)>0);}).length/ativos.length*100):0;const prem=calcPremiacao(pctMeta,pctPos,pt4);const mc=(ok,lbl,val)=>`<div style="background:${ok?'#166534':'#F5F4F0'};border-radius:8px;padding:6px 8px;text-align:center;border:1px solid ${ok?'#14532D':'#E2E0D8'}"><div style="font-size:9px;color:${ok?'rgba(255,255,255,.7)':'#7A7870'};margin-bottom:2px">${lbl}</div><div style="font-size:11px;font-weight:700;color:${ok?'#86EFAC':'#C4C0B8'}">${ok?'R$ '+val.toLocaleString('pt-BR'):'—'}</div></div>`;return mc(prem.volume>0,'Volume',prem.volume)+mc(prem.pos>0,'Posit.',prem.pos)+mc(prem.top4>0,'TOP 4',prem.top4);})()}
+        </div>
+      </div>
     </div>`;
   }).join('');
 
