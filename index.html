@@ -354,6 +354,72 @@ let cliCoordAtual=COORD_KEYS[0];
 // ── UTILS ──
 const g=id=>document.getElementById(id);
 function corPct(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
+
+function calcPremiacao(pctMeta, pctPos, pctTop4){
+  // Volume
+  let volume = 0;
+  if(pctMeta >= 130) volume = 5000;
+  else if(pctMeta >= 120) volume = 4750;
+  else if(pctMeta >= 110) volume = 4500;
+  else if(pctMeta >= 100) volume = 4000;
+
+  // Positivacao
+  const pos = pctPos >= 80 ? 500 : 0;
+
+  // TOP 4
+  const top4 = pctTop4 >= 80 ? 500 : 0;
+
+  const total = volume + pos + top4;
+  return {volume, pos, top4, total};
+}
+
+function renderPremiacao(pctMeta, pctPos, pctTop4){
+  const p = calcPremiacao(pctMeta, pctPos, pctTop4);
+  const fmt = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  const barW = v => Math.min(100, Math.round(v/6000*100));
+
+  return `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;margin:0 16px 14px;overflow:hidden">
+    <div style="background:#1A1A18;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:13px;font-weight:600;color:#fff">🏆 Premiação estimada</div>
+      <div style="font-size:18px;font-weight:700;color:${p.total>0?'#60A5FA':'rgba(255,255,255,.4)'}">${fmt(p.total)}</div>
+    </div>
+    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--muted)">Volume (${pctMeta}% da meta)</span>
+          <span style="font-weight:600;color:${p.volume>0?'var(--green)':'var(--muted)'}">${fmt(p.volume)}</span>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">100%=R$4k · 110%=R$4,5k · 120%=R$4,75k · 130%=R$5k</div>
+        <div style="height:5px;background:var(--border);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${Math.min(100,pctMeta)}%;background:${p.volume>0?'#16A34A':'#E2E0D8'};border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--muted)">Positivação (${pctPos}% · meta 80%)</span>
+          <span style="font-weight:600;color:${p.pos>0?'var(--green)':'var(--muted)'}">${fmt(p.pos)}</span>
+        </div>
+        <div style="height:5px;background:var(--border);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${Math.min(100,pctPos)}%;background:${p.pos>0?'#16A34A':'#D97706'};border-radius:99px"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--muted)">TOP 4 SKUs (${pctTop4}% · meta 80%)</span>
+          <span style="font-weight:600;color:${p.top4>0?'var(--green)':'var(--muted)'}">${fmt(p.top4)}</span>
+        </div>
+        <div style="height:5px;background:var(--border);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:${Math.min(100,pctTop4)}%;background:${p.top4>0?'#16A34A':'#D97706'};border-radius:99px"></div>
+        </div>
+      </div>
+      ${p.total < 6000 ? `<div style="font-size:11px;color:var(--muted);text-align:center;padding-top:4px;border-top:0.5px solid var(--border)">
+        Faltam ${fmt(6000-p.total)} para o máximo de ${fmt(6000)}
+      </div>` : `<div style="font-size:11px;color:var(--green);text-align:center;padding-top:4px;border-top:0.5px solid var(--border)">
+        🎉 Premiação máxima atingida!
+      </div>`}
+    </div>
+  </div>`;
+}
 function corBar(p){return p>=80?'#16A34A':p>=50?'#D97706':'#DC2626';}
 
 function toast(msg,type='info',dur=2000){
@@ -482,8 +548,10 @@ function renderCoordDash(anoData){
     return{m:m.substring(0,3),tot:t,meta:mt,pct:Math.min(100,mt>0?Math.round(t/mt*100):0)};
   });
   const maxT=Math.max(...mesesChart.map(m=>m.tot),1);
+  const pctTop4=ativos.length?Math.round(ativos.filter(c=>{const d=dadosLocais[c.nome]||{};return SKUS.every(sk=>(d[sk.toLowerCase()]||0)>0);}).length/ativos.length*100):0;
 
   g('dash-content').innerHTML=`
+    ${renderPremiacao(pctMeta, pctPos, pctTop4)}
     <div class="metrics">
       <div class="metric-card">
         <div class="mc-label">Positivação</div>
