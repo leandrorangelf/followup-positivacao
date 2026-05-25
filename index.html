@@ -45,7 +45,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dash-month-row{display:flex;align-items:center;gap:8px;margin-top:10px}
 .dash-month-row label{font-size:12px;color:rgba(255,255,255,.5);white-space:nowrap}
 .dash-month-row select{flex:1;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px}
-.dash-month-row select option{background:#1A1A18;color:#fff}
+.dash-month-row select option{background:#1A1A18;color:#fff} select option{background:#fff;color:#1A1A18}
 
 /* METRIC CARDS */
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px}
@@ -201,12 +201,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="display:flex;align-items:center;gap:8px">
       <label style="font-size:12px;color:rgba(255,255,255,.4)">Mês:</label>
       <select id="dash-mes" style="flex:1;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 10px;border-radius:8px;font-size:13px">
-        <option value="0">Janeiro</option><option value="1">Fevereiro</option>
-        <option value="2">Março</option><option value="3">Abril</option>
-        <option value="4">Maio</option><option value="5">Junho</option>
-        <option value="6">Julho</option><option value="7">Agosto</option>
-        <option value="8">Setembro</option><option value="9">Outubro</option>
-        <option value="10">Novembro</option><option value="11">Dezembro</option>
+        <option value="0" style="background:#1A1A18;color:#fff">Janeiro</option><option value="1" style="background:#1A1A18;color:#fff">Fevereiro</option>
+        <option value="2" style="background:#1A1A18;color:#fff">Março</option><option value="3" style="background:#1A1A18;color:#fff">Abril</option>
+        <option value="4" style="background:#1A1A18;color:#fff">Maio</option><option value="5" style="background:#1A1A18;color:#fff">Junho</option>
+        <option value="6" style="background:#1A1A18;color:#fff">Julho</option><option value="7" style="background:#1A1A18;color:#fff">Agosto</option>
+        <option value="8" style="background:#1A1A18;color:#fff">Setembro</option><option value="9" style="background:#1A1A18;color:#fff">Outubro</option>
+        <option value="10" style="background:#1A1A18;color:#fff">Novembro</option><option value="11" style="background:#1A1A18;color:#fff">Dezembro</option>
       </select>
     </div>
   </div>
@@ -262,6 +262,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="bottom-nav" id="nav-cli"></div>
+</div>
+
+<!-- MODAL REATIVAR -->
+<div class="modal-bg" id="modal-reativar">
+  <div class="modal">
+    <div class="modal-title">Reativar cliente</div>
+    <div class="modal-sub" id="reativar-nome"></div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">A partir de qual mês?</label>
+      <select id="reativar-mes" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text)">
+        <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+        <option value="2">Março</option><option value="3">Abril</option>
+        <option value="4">Maio</option><option value="5">Junho</option>
+        <option value="6">Julho</option><option value="7">Agosto</option>
+        <option value="8">Setembro</option><option value="9">Outubro</option>
+        <option value="10">Novembro</option><option value="11">Dezembro</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Inativar a partir de qual mês? (ou deixe Dezembro para manter ativo)</label>
+      <select id="reativar-ate" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text)">
+        <option value="13">Manter ativo (sem data de saída)</option>
+        <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+        <option value="2">Março</option><option value="3">Abril</option>
+        <option value="4">Maio</option><option value="5">Junho</option>
+        <option value="6">Julho</option><option value="7">Agosto</option>
+        <option value="8">Setembro</option><option value="9">Outubro</option>
+        <option value="10">Novembro</option><option value="11">Dezembro</option>
+      </select>
+    </div>
+    <button class="btn-copy" onclick="confirmarReativar()">✓ Confirmar</button>
+    <button class="btn-close" onclick="fecharModalReativar()">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL INATIVAR -->
+<div class="modal-bg" id="modal-inativar">
+  <div class="modal">
+    <div class="modal-title">Inativar cliente</div>
+    <div class="modal-sub" id="inativar-nome"></div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Inativar a partir de qual mês?</label>
+      <select id="inativar-mes" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text)">
+        <option value="0">Janeiro</option><option value="1">Fevereiro</option>
+        <option value="2">Março</option><option value="3">Abril</option>
+        <option value="4">Maio</option><option value="5">Junho</option>
+        <option value="6">Julho</option><option value="7">Agosto</option>
+        <option value="8">Setembro</option><option value="9">Outubro</option>
+        <option value="10">Novembro</option><option value="11">Dezembro</option>
+      </select>
+    </div>
+    <button class="btn-copy" style="background:var(--red)" onclick="confirmarInativar()">✓ Inativar</button>
+    <button class="btn-close" onclick="fecharModalInativar()">Cancelar</button>
+  </div>
 </div>
 
 <!-- MODAL RESUMO -->
@@ -688,6 +742,50 @@ function abrirResumo(){
 }
 
 function fecharModal(){g('modal').classList.remove('open');}
+
+let _toggleId=null, _toggleAtivo=false;
+
+function abrirToggle(id, ativoNesteMes){
+  _toggleId=id; _toggleAtivo=ativoNesteMes;
+  const cli=(clientesDB[cliCoordAtual]||[]).find(c=>c.id===id);
+  const nome=cli?cli.nome:'cliente';
+  if(ativoNesteMes){
+    g('inativar-nome').textContent=nome;
+    g('inativar-mes').value=mesAtual;
+    g('modal-inativar').classList.add('open');
+  } else {
+    g('reativar-nome').textContent=nome;
+    g('reativar-mes').value=0;
+    g('reativar-ate').value=13;
+    g('modal-reativar').classList.add('open');
+  }
+}
+
+function fecharModalReativar(){g('modal-reativar').classList.remove('open');}
+function fecharModalInativar(){g('modal-inativar').classList.remove('open');}
+
+async function confirmarReativar(){
+  const desde=parseInt(g('reativar-mes').value);
+  const ate=parseInt(g('reativar-ate').value);
+  const res=await sb('/rest/v1/clientes?id=eq.'+_toggleId,{method:'PATCH',body:JSON.stringify({ativo_desde:desde,inativo_desde:ate})});
+  if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
+  toast('✓ Cliente reativado!','ok');
+  fecharModalReativar();
+  await carregarClientes();
+  renderCliList();
+  pedidosCarregados=false;
+}
+
+async function confirmarInativar(){
+  const desde=parseInt(g('inativar-mes').value);
+  const res=await sb('/rest/v1/clientes?id=eq.'+_toggleId,{method:'PATCH',body:JSON.stringify({inativo_desde:desde})});
+  if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
+  toast('Cliente inativado!','ok');
+  fecharModalInativar();
+  await carregarClientes();
+  renderCliList();
+  pedidosCarregados=false;
+}
 function copiar(){
   const txt=g('resumo-text').textContent;
   const btn=document.querySelector('.btn-copy');
@@ -737,26 +835,14 @@ function renderCliList(){
       <div class="cli-actions">
         <span class="badge ${badgeClass}" style="white-space:nowrap;font-size:9px">${statusLabel}</span>
         <button class="btn-toggle ${btnClass}"
-          onclick="toggleCliente('${c.id}',${ativoNesteMes})">${btnLabel}</button>
+          onclick="abrirToggle('${c.id}',${ativoNesteMes})">${btnLabel}</button>
       </div>
     </div>`;
   }).join('')||'<div class="empty">Nenhum cliente cadastrado.</div>';
   g('cli-add-input').value='';
 }
 
-async function toggleCliente(id,ativoNesteMes){
-  // Inativar: define inativo_desde = mes atual
-  // Reativar: define ativo_desde = mes atual, inativo_desde = 13
-  const patch=ativoNesteMes
-    ?{inativo_desde:mesAtual}
-    :{ativo_desde:mesAtual,inativo_desde:13};
-  const res=await sb('/rest/v1/clientes?id=eq.'+id,{method:'PATCH',body:JSON.stringify(patch)});
-  if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
-  toast(ativoNesteMes?'Cliente inativado a partir deste mês':'Cliente reativado a partir deste mês','ok');
-  await carregarClientes();
-  renderCliList();
-  pedidosCarregados=false;
-}
+
 
 async function adicionarCliente(){
   const nome=g('cli-add-input').value.trim().toUpperCase();
