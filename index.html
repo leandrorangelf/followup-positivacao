@@ -168,9 +168,76 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .toast.info{background:var(--text);color:#fff}
 
 .loading{text-align:center;padding:40px 16px;color:var(--muted);font-size:13px}
+
+/* SIDEBAR DESKTOP (só admin, telas >= 1024px) */
+.sidebar{display:none}
+.sidebar-overlay{display:none}
+@media (min-width:1024px){
+  body.has-sidebar{padding-left:240px}
+  body.has-sidebar .bottom-nav{display:none}
+  body.has-sidebar .fab-wrap{left:240px}
+  body.has-sidebar .cli-add-wrap{left:240px}
+  body.has-sidebar #s-dash,body.has-sidebar #s-ped,body.has-sidebar #s-cli,body.has-sidebar #s-metas{padding-bottom:24px}
+  .sidebar.open{display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;width:240px;background:#1A1A18;color:#fff;z-index:50;padding:24px 0}
+  .sb-logo{padding:0 20px 22px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:14px;text-align:center}
+  .sb-logo img{width:110px;border-radius:6px}
+  .sb-section{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);padding:14px 20px 6px;font-weight:600}
+  .sb-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;font-size:14px;color:rgba(255,255,255,.75);border-left:3px solid transparent;transition:all .15s}
+  .sb-item:hover{background:rgba(255,255,255,.05);color:#fff}
+  .sb-item.active{background:rgba(96,165,250,.1);color:#fff;border-left-color:#60A5FA;font-weight:500}
+  .sb-icon{font-size:17px;width:22px;text-align:center}
+  .sb-sub{padding-left:48px;font-size:13px;padding-top:7px;padding-bottom:7px}
+  .sb-foot{margin-top:auto;padding:14px 20px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.4)}
+  .sb-user{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .sb-avatar{width:32px;height:32px;border-radius:50%;background:#60A5FA;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+  .sb-uname{font-size:13px;color:#fff;font-weight:500}
+  .sb-urole{font-size:10px;color:rgba(255,255,255,.5)}
+  .btn-logout{width:100%;padding:8px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1);border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn-logout:hover{background:rgba(239,68,68,.15);color:#fca5a5}
+}
+
+/* TELA METAS */
+#s-metas{padding-bottom:90px}
+.metas-controls{display:flex;gap:8px;padding:14px 16px;flex-wrap:wrap;align-items:center}
+.metas-controls select{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);font-family:inherit;font-size:13px;color:var(--text)}
+.metas-controls .btn-copy-mes{padding:8px 12px;background:var(--accent-light);color:var(--accent);border:1px solid #BFDBFE;border-radius:8px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.metas-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:0 16px;overflow:hidden}
+.metas-table{width:100%;border-collapse:collapse}
+.metas-table th{background:#FAFAF8;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:12px;text-align:left;border-bottom:1px solid var(--border)}
+.metas-table td{padding:12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.metas-table tr:last-child td{border-bottom:none}
+.metas-table tr.total-row td{background:#FAFAF8;font-weight:600}
+.meta-input{width:90px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'SF Mono','Courier New',monospace;font-size:14px;text-align:right;background:var(--bg);color:var(--text)}
+.meta-input:focus{outline:none;border-color:var(--accent);background:#fff}
+.meta-input.changed{border-color:#F59E0B;background:#FFFBEB}
+.metas-fab{position:fixed;bottom:80px;right:16px;z-index:30}
+@media (min-width:1024px){body.has-sidebar .metas-fab{bottom:24px}}
+.btn-salvar-metas{padding:13px 22px;background:var(--text);color:#fff;border:none;border-radius:99px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.btn-salvar-metas:disabled{opacity:.4;cursor:not-allowed}
+.realizado-cell{font-family:'SF Mono','Courier New',monospace;color:var(--muted)}
+.pct-cell{font-family:'SF Mono','Courier New',monospace;font-weight:600}
 </style>
 </head>
 <body>
+
+<!-- SIDEBAR (desktop, só gestor) -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo"><img src="data:image/png;base64,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" alt="Clean Tobacco"></div>
+  <div class="sb-section">Principal</div>
+  <div class="sb-item active" data-nav="dash" onclick="navTo('dash')"><span class="sb-icon">📊</span> Dashboard</div>
+  <div class="sb-section">Operação</div>
+  <div class="sb-item" data-nav="ped" onclick="navTo('ped')"><span class="sb-icon">✏️</span> Pedidos</div>
+  <div class="sb-section">Gestão</div>
+  <div class="sb-item" data-nav="cli" onclick="navTo('cli')"><span class="sb-icon">👥</span> Clientes</div>
+  <div class="sb-item" data-nav="metas" onclick="navTo('metas')"><span class="sb-icon">🎯</span> Metas</div>
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-avatar">L</div>
+      <div><div class="sb-uname" id="sb-uname">—</div><div class="sb-urole" id="sb-urole">—</div></div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+</aside>
 
 <!-- LOGIN -->
 <div id="s-login" style="display:flex">
@@ -318,6 +385,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<!-- METAS (só admin) -->
+<div id="s-metas" class="screen" style="display:none">
+  <div class="app-header">
+    <div class="hdr-row">
+      <div class="hdr-title">🎯 Metas mensais</div>
+    </div>
+    <div class="hdr-sub">Edite a meta de cada coordenador. Os promotores veem a meta no dashboard deles.</div>
+  </div>
+  <div class="metas-controls">
+    <label style="font-size:12px;color:var(--muted)">Mês:</label>
+    <select id="metas-mes"></select>
+    <label style="font-size:12px;color:var(--muted)">Ano:</label>
+    <select id="metas-ano"></select>
+    <button class="btn-copy-mes" onclick="copiarMetasMesAnterior()">📋 Copiar do mês anterior</button>
+  </div>
+  <div class="metas-table-wrap">
+    <table class="metas-table">
+      <thead><tr><th>Coordenador</th><th style="text-align:right">Meta (cx)</th><th style="text-align:right">Realizado</th><th style="text-align:right">% Cumprimento</th></tr></thead>
+      <tbody id="metas-tbody"><tr><td colspan="4" class="loading">Carregando...</td></tr></tbody>
+    </table>
+  </div>
+  <div class="metas-fab"><button class="btn-salvar-metas" id="btn-salvar-metas" onclick="salvarMetas()" disabled>💾 Salvar alterações</button></div>
+  <div class="bottom-nav" id="nav-metas"></div>
+</div>
+
 <!-- MODAL RESUMO -->
 <div class="modal-bg" id="modal">
   <div class="modal">
@@ -337,7 +429,10 @@ const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6
 
 const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Sem Responsável':'f4ec1b0e9ecf3baec9c32537f106e4004feb9a312773d6eeede18efdffbbe94c'};
 const COORD_KEYS=['Igor Cater','Marcio Vit','Sem Responsável','Vitor Valle'];
-const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Sem Responsável':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
+// METAS: fallback inicial; será sobrescrito por carregarMetas() vindas do Supabase
+let METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Sem Responsável':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
+let metasEditadas={};  // {coord: {mes: novoValor}} — pendentes de salvar
+let metasMesAtual=new Date().getMonth(), metasAnoAtual=new Date().getFullYear();
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const SKUS=['GR','GM','CM','CC'];
 const SKUS_COM_CLICK=['GR','GM','CM','CC','CLICK']; // Jan-Abr
@@ -486,8 +581,28 @@ async function sb(path,opts={}){
 
 // ── SCREENS ──
 function show(id){
-  ['s-login','s-dash','s-ped','s-cli'].forEach(s=>g(s).style.display='none');
+  ['s-login','s-dash','s-ped','s-cli','s-metas'].forEach(s=>g(s).style.display='none');
   g(id).style.display=(id==='s-login')?'flex':'block';
+  // marca item ativo no sidebar
+  const map={'s-dash':'dash','s-ped':'ped','s-cli':'cli','s-metas':'metas'};
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.toggle('active',el.dataset.nav===map[id]));
+}
+
+function ativarSidebar(){
+  if(!isAdmin)return;
+  document.body.classList.add('has-sidebar');
+  g('sidebar').classList.add('open');
+  g('sb-avatar').textContent='L';
+  g('sb-uname').textContent='Leandro';
+  g('sb-urole').textContent='Gestor';
+}
+
+function logout(){
+  user=null;isAdmin=false;coordAtual=null;
+  document.body.classList.remove('has-sidebar');
+  g('sidebar').classList.remove('open');
+  g('login-coord').value='';g('login-senha').value='';g('login-err').style.display='none';
+  show('s-login');
 }
 
 function renderNav(navId,active){
@@ -495,6 +610,7 @@ function renderNav(navId,active){
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'ped',icon:'✏️',label:'Pedidos'},
     {id:'cli',icon:'👥',label:'Clientes'},
+    {id:'metas',icon:'🎯',label:'Metas'},
   ]:[
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'ped',icon:'✏️',label:'Pedidos'},
@@ -510,6 +626,7 @@ function navTo(id){
   if(id==='dash'){irDash();}
   else if(id==='ped'){irPed();}
   else if(id==='cli'){irCli();}
+  else if(id==='metas'){irMetas();}
 }
 
 // ── LOGIN ──
@@ -522,7 +639,19 @@ async function login(){
   user=coord;isAdmin=coord==='admin';
   coordAtual=isAdmin?COORD_KEYS[0]:coord;
   cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
+  await carregarMetas(anoAtual);
+  if(isAdmin)ativarSidebar();
   irDash();
+}
+
+// ── METAS (Supabase) ──
+async function carregarMetas(ano){
+  const data=await sb(`/rest/v1/metas_mensais?ano=eq.${ano}&select=*`,{ret:true});
+  if(!Array.isArray(data)||!data.length)return; // mantém fallback se vier vazio
+  COORD_KEYS.forEach(c=>{METAS[c]=new Array(12).fill(0);});
+  data.forEach(r=>{
+    if(METAS[r.coordenador]&&r.mes>=0&&r.mes<12)METAS[r.coordenador][r.mes]=r.meta_cx||0;
+  });
 }
 
 // ── CLIENTES DB ──
@@ -927,6 +1056,140 @@ function copiarFallback(txt,btn){
   document.body.appendChild(ta);ta.select();
   try{document.execCommand('copy');btn.textContent='✅ Copiado!';}catch{btn.textContent='⚠ Copie manualmente';}
   document.body.removeChild(ta);setTimeout(()=>{btn.textContent='📋 Copiar mensagem';},2000);
+}
+
+// ── GESTÃO METAS (só admin) ──
+async function irMetas(){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return;}
+  show('s-metas');
+  renderNav('nav-metas','metas');
+  // popular selects de mês/ano
+  const selMes=g('metas-mes'),selAno=g('metas-ano');
+  if(!selMes.options.length){
+    selMes.innerHTML=MESES.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+    const anoNow=new Date().getFullYear();
+    selAno.innerHTML=[anoNow-1,anoNow,anoNow+1].map(a=>`<option value="${a}">${a}</option>`).join('');
+    selMes.onchange=async()=>{metasMesAtual=parseInt(selMes.value);await renderMetas();};
+    selAno.onchange=async()=>{metasAnoAtual=parseInt(selAno.value);await carregarMetas(metasAnoAtual);await renderMetas();};
+  }
+  selMes.value=metasMesAtual;
+  selAno.value=metasAnoAtual;
+  // garante metas e pedidos carregados pro mês selecionado
+  if(metasAnoAtual!==anoAtual)await carregarMetas(metasAnoAtual);
+  await carregarClientes();
+  await renderMetas();
+}
+
+async function renderMetas(){
+  // buscar realizado do mês/ano selecionado
+  const data=await sb(`/rest/v1/pedidos?mes=eq.${metasMesAtual}&ano=eq.${metasAnoAtual}&select=*`,{ret:true});
+  const realizadoPorCoord={};
+  COORD_KEYS.forEach(c=>{realizadoPorCoord[c]=0;});
+  if(Array.isArray(data))data.forEach(r=>{
+    if(realizadoPorCoord[r.coordenador]!==undefined){
+      const base=(r.gr||0)+(r.gm||0)+(r.cm||0)+(r.cc||0);
+      realizadoPorCoord[r.coordenador]+=metasMesAtual<4?base+(r.click||0):base;
+    }
+  });
+  let metaTotal=0,realTotal=0;
+  const rows=COORD_KEYS.map(c=>{
+    const metaSalva=(METAS[c]&&METAS[c][metasMesAtual])||0;
+    const editVal=(metasEditadas[c]&&metasEditadas[c][metasMesAtual]!==undefined)?metasEditadas[c][metasMesAtual]:metaSalva;
+    const real=realizadoPorCoord[c]||0;
+    const pct=editVal>0?Math.round(real/editVal*100):0;
+    metaTotal+=editVal;realTotal+=real;
+    const edited=metasEditadas[c]&&metasEditadas[c][metasMesAtual]!==undefined;
+    return `<tr>
+      <td><strong>${c}</strong></td>
+      <td style="text-align:right"><input type="number" class="meta-input ${edited?'changed':''}" id="mi-${c.replace(/ /g,'_')}" value="${editVal}" min="0" max="99999" oninput="onChangeMeta('${c}',this.value)"></td>
+      <td class="realizado-cell" style="text-align:right">${real} cx</td>
+      <td class="pct-cell" style="text-align:right;color:${corPct(pct)}">${pct}%</td>
+    </tr>`;
+  }).join('');
+  const pctTotal=metaTotal>0?Math.round(realTotal/metaTotal*100):0;
+  const totalRow=`<tr class="total-row">
+    <td><strong>TOTAL GERAL</strong></td>
+    <td style="text-align:right;font-family:'SF Mono','Courier New',monospace;font-size:14px"><strong>${metaTotal} cx</strong></td>
+    <td class="realizado-cell" style="text-align:right"><strong>${realTotal} cx</strong></td>
+    <td class="pct-cell" style="text-align:right;color:${corPct(pctTotal)}"><strong>${pctTotal}%</strong></td>
+  </tr>`;
+  g('metas-tbody').innerHTML=rows+totalRow;
+  atualizarBotaoSalvar();
+}
+
+function onChangeMeta(coord,val){
+  const num=Math.max(0,Math.min(99999,parseInt(val)||0));
+  if(!metasEditadas[coord])metasEditadas[coord]={};
+  metasEditadas[coord][metasMesAtual]=num;
+  // atualiza só visualmente o input e recalcula totais sem re-render completo
+  const inp=g('mi-'+coord.replace(/ /g,'_'));
+  if(inp)inp.classList.add('changed');
+  // recalcula linha total
+  let metaTotal=0,realTotal=0;
+  COORD_KEYS.forEach(c=>{
+    const m=(metasEditadas[c]&&metasEditadas[c][metasMesAtual]!==undefined)?metasEditadas[c][metasMesAtual]:((METAS[c]&&METAS[c][metasMesAtual])||0);
+    metaTotal+=m;
+    const cell=document.querySelector(`#metas-tbody tr:nth-child(${COORD_KEYS.indexOf(c)+1}) td:nth-child(3)`);
+    if(cell){const rTxt=cell.textContent.replace(/[^\d]/g,'');realTotal+=parseInt(rTxt)||0;}
+    // recalcula pct desta linha
+    const pctCell=document.querySelector(`#metas-tbody tr:nth-child(${COORD_KEYS.indexOf(c)+1}) td:nth-child(4)`);
+    if(pctCell){const r=parseInt((cell&&cell.textContent.replace(/[^\d]/g,''))||0);const p=m>0?Math.round(r/m*100):0;pctCell.textContent=p+'%';pctCell.style.color=corPct(p);}
+  });
+  const totRow=document.querySelector('#metas-tbody tr.total-row');
+  if(totRow){
+    totRow.children[1].innerHTML=`<strong>${metaTotal} cx</strong>`;
+    const pTot=metaTotal>0?Math.round(realTotal/metaTotal*100):0;
+    totRow.children[3].innerHTML=`<strong>${pTot}%</strong>`;
+    totRow.children[3].style.color=corPct(pTot);
+  }
+  atualizarBotaoSalvar();
+}
+
+function atualizarBotaoSalvar(){
+  const btn=g('btn-salvar-metas');
+  const hasChanges=Object.keys(metasEditadas).some(c=>Object.keys(metasEditadas[c]||{}).length>0);
+  btn.disabled=!hasChanges;
+}
+
+async function salvarMetas(){
+  const updates=[];
+  Object.keys(metasEditadas).forEach(c=>{
+    Object.keys(metasEditadas[c]).forEach(mes=>{
+      updates.push({coordenador:c,ano:metasAnoAtual,mes:parseInt(mes),meta_cx:metasEditadas[c][mes]});
+    });
+  });
+  if(!updates.length){toast('Nada para salvar','info');return;}
+  toast('Salvando...','info',5000);
+  // upsert via on_conflict
+  const res=await sb('/rest/v1/metas_mensais?on_conflict=coordenador,ano,mes',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify(updates)
+  });
+  if(!res||!res.ok){toast('⚠ Erro ao salvar metas ('+((res&&res.status)||'sem conexão')+')','error',4000);return;}
+  // aplica no METAS local
+  Object.keys(metasEditadas).forEach(c=>{
+    Object.keys(metasEditadas[c]).forEach(mes=>{
+      if(METAS[c])METAS[c][parseInt(mes)]=metasEditadas[c][mes];
+    });
+  });
+  metasEditadas={};
+  toast('✓ Metas salvas!','ok',2500);
+  await renderMetas();
+}
+
+async function copiarMetasMesAnterior(){
+  const mesAnt=metasMesAtual===0?11:metasMesAtual-1;
+  const anoAnt=metasMesAtual===0?metasAnoAtual-1:metasAnoAtual;
+  // buscar metas do mês anterior do supabase
+  const data=await sb(`/rest/v1/metas_mensais?ano=eq.${anoAnt}&mes=eq.${mesAnt}&select=*`,{ret:true});
+  if(!Array.isArray(data)||!data.length){toast('Não achei metas em '+MESES[mesAnt]+'/'+anoAnt,'error');return;}
+  data.forEach(r=>{
+    if(!metasEditadas[r.coordenador])metasEditadas[r.coordenador]={};
+    metasEditadas[r.coordenador][metasMesAtual]=r.meta_cx;
+  });
+  toast('✓ Copiado de '+MESES[mesAnt]+'/'+anoAnt+'. Confira e salve.','info',3000);
+  await renderMetas();
 }
 
 // ── GESTÃO CLIENTES (só admin) ──
