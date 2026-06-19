@@ -336,6 +336,7 @@ body{background:var(--canvas);color:var(--ink)}
     <div class="side-nav-label">MENU</div>
     <button class="side-link" id="side-dash" onclick="navTo('dash')"><span>Dashboard</span><span>Visão geral</span></button>
     <button class="side-link" id="side-ped" onclick="navTo('ped')"><span>Pedidos</span><span>Operação</span></button>
+    <button class="side-link" id="side-vendas" onclick="navTo('vendas')"><span>Vendas</span><span>Pedidos & faturamento</span></button>
     <button class="side-link" id="side-gestao" type="button"><span>Gestão</span><span>Aberto</span></button>
     <div class="side-sub admin-only">
       <button class="side-sub-link" id="side-cli" onclick="navTo('cli')">Clientes</button>
@@ -1335,8 +1336,8 @@ function setupShell(){
 }
 
 function updateSideNav(active){
-  const titles={dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas'};
-  ['dash','ped','cli','metas'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
+  const titles={dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento'};
+  ['dash','ped','cli','metas','vendas'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
   if(g('topbar-title'))g('topbar-title').textContent=titles[active]||'Follow-up Positivação';
   if(g('shell-mes'))g('shell-mes').value=mesAtual;
 }
