@@ -336,7 +336,6 @@ body{background:var(--canvas);color:var(--ink)}
     <div class="side-brand"><img id="side-brand-logo" class="side-brand-logo" alt="Clean Tobacco">Clean Tobacco</div>
     <div class="side-nav-label">MENU</div>
     <button class="side-link" id="side-dash" onclick="navTo('dash')"><span>Dashboard</span><span>Visão geral</span></button>
-    <button class="side-link" id="side-ped" onclick="navTo('ped')"><span>Pedidos</span><span>Operação</span></button>
     <button class="side-link" id="side-vendas" onclick="navTo('vendas')"><span>Vendas</span><span>Pedidos & faturamento</span></button>
     <button class="side-link" id="side-gestao" type="button"><span>Gestão</span><span>Aberto</span></button>
     <div class="side-sub admin-only">
@@ -823,12 +822,10 @@ function show(id){
 function renderNav(navId,active){
   const tabs=isAdmin?[
     {id:'dash',icon:'📊',label:'Dashboard'},
-    {id:'ped',icon:'✏️',label:'Positivação'},
     {id:'vendas',icon:'💰',label:'Vendas'},
     {id:'cli',icon:'👥',label:'Clientes'},
   ]:[
     {id:'dash',icon:'📊',label:'Dashboard'},
-    {id:'ped',icon:'✏️',label:'Positivação'},
     {id:'vendas',icon:'💰',label:'Vendas'},
   ];
   g(navId).innerHTML=tabs.map(t=>`
