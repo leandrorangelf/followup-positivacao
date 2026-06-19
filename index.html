@@ -230,6 +230,8 @@ body{background:var(--canvas);color:var(--ink)}
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px}.section-title{font-size:27px;font-weight:850;letter-spacing:-.04em}.section-sub{font-size:13px;color:#748097;margin-top:5px}.primary-btn,.secondary-btn,.danger-btn{border:0;border-radius:9px;padding:10px 14px;font:700 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}.primary-btn{background:var(--purple);color:#fff}.secondary-btn{background:#fff;color:var(--ink);border:1px solid var(--line)}.danger-btn{background:#fff;color:var(--danger);border:1px solid #f0caca}
 .goals-table input{width:110px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font:700 13px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.goal-actions{display:flex;gap:7px;justify-content:flex-end}.annual-grid{display:grid;grid-template-columns:150px repeat(12,minmax(72px,1fr));min-width:1050px}.annual-cell{padding:10px 8px;border-right:1px solid #edf0f5;border-bottom:1px solid #edf0f5;font-size:11px}.annual-head{font-weight:750;color:#667085;background:#f7f8fb}.annual-coord{font-weight:750}
 .client-edit{padding:6px 9px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:11px;font-weight:700;cursor:pointer}.client-delete{color:var(--danger);border-color:#f1caca}
+.client-management-toolbar{display:flex;align-items:center;gap:10px;width:100%}.client-search,.client-filter,.client-owner-select,.cli-add-owner{border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:600 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.client-search{flex:1;min-width:220px;padding:10px 12px}.client-filter,.client-owner-select,.cli-add-owner{padding:9px 30px 9px 10px}.client-count{font-size:11px;color:#7c879c;white-space:nowrap}.client-owner{display:flex;align-items:center;gap:7px}.client-owner-label{font-size:10px;color:#7c879c;text-transform:uppercase;letter-spacing:.05em}.client-owner-select{min-width:150px}.cli-add-owner{min-width:180px}.client-search:focus,.client-filter:focus,.client-owner-select:focus,.cli-add-owner:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(101,71,217,.12)}
+#s-cli .cli-list{display:flex;flex-direction:column;gap:8px}.cli-item{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;align-items:center}.cli-actions{justify-content:flex-end}
 .mobile-overlay{display:none}
 
 @media(max-width:1000px){
@@ -238,6 +240,7 @@ body{background:var(--canvas);color:var(--ink)}
 @media(max-width:680px){
  .topbar-title{font-size:17px}.topbar-period span{display:none}.topbar select{min-width:120px}.page-pad,#dash-content{padding:18px 14px 90px!important}.dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-kpi{padding:16px 14px;min-height:118px;border-right:1px solid var(--line)!important;border-bottom:1px solid var(--line)}.dash-kpi:nth-child(even){border-right:0!important}.dash-kpi:nth-child(n+3){border-bottom:0}.dash-kpi-value{font-size:25px}.dash-kpi-label{font-size:11px}.dash-kpi-sub{font-size:10px}.trend-bars{gap:7px;height:220px}.panel{padding:15px}.dash-lower{display:block}.dash-lower>.panel{margin-bottom:14px}.data-table{min-width:650px}.table-scroll{overflow-x:auto}#s-ped .ped-summary{padding:18px 14px 10px;grid-template-columns:1fr}#s-ped .client-list,#s-cli .cli-list{grid-template-columns:1fr;padding-left:14px;padding-right:14px}#s-ped .admin-tabs,#s-ped .sec-title{padding-left:14px;padding-right:14px}#s-cli .cli-coord-tabs{padding:18px 14px 10px}#s-ped .fab-wrap,#s-cli .cli-add-wrap{padding:10px 14px}.section-title{font-size:23px}
 }
+@media(max-width:680px){.client-management-toolbar{align-items:stretch;flex-direction:column}.client-search{min-width:0;width:100%}.client-filter{width:100%}.client-count{padding:0 2px}#s-cli .cli-list{padding-bottom:160px}.cli-item{grid-template-columns:1fr;gap:10px}.client-owner{justify-content:space-between}.client-owner-select{flex:1}.cli-actions{justify-content:flex-start;flex-wrap:wrap}.cli-add-row{flex-wrap:wrap}.cli-add-input{flex:1 1 100%}.cli-add-owner{flex:1}.btn-add{flex:1}}
 /* ======= MÓDULO VENDAS ======= */
 #s-vendas,#s-vfn,#s-vficha{padding-bottom:90px}
 .vd-header{background:var(--text);color:#fff;padding:18px 22px}
@@ -422,6 +425,7 @@ body{background:var(--canvas);color:var(--ink)}
   <div class="cli-add-wrap">
     <div class="cli-add-row">
       <input class="cli-add-input" id="cli-add-input" placeholder="Nome do novo cliente..." onkeydown="if(event.key==='Enter')adicionarCliente()"/>
+      <select class="cli-add-owner" id="cli-add-owner" aria-label="Coordenador responsável"></select>
       <button class="btn-add" onclick="adicionarCliente()">+ Adicionar</button>
     </div>
   </div>
@@ -1438,6 +1442,99 @@ renderCliList=function(){
     return `<div class="cli-item ${ativoNesteMes?'':'inativo'}"><div class="cli-nome"><strong>${c.nome}</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">${statusLabel}</div></div><div class="cli-actions"><button class="client-edit" onclick="editarCliente('${c.id}')">Editar</button><button class="client-edit" onclick="abrirToggle('${c.id}',${ativoNesteMes})">${ativoNesteMes?'Inativar':'Reativar'}</button><button class="client-edit client-delete" onclick="excluirCliente('${c.id}')">Excluir</button></div></div>`;
   }).join('')||'<div class="empty">Nenhum cliente cadastrado.</div>';
   g('cli-add-input').value='';updateSideNav('cli');
+};
+
+let cliOwnerFilter='todos',cliSearchTerm='';
+
+function findClienteGlobal(id){
+  for(const coordenador of COORD_KEYS){
+    const cliente=(clientesDB[coordenador]||[]).find(c=>String(c.id)===String(id));
+    if(cliente)return{cliente,coordenador};
+  }
+  return null;
+}
+
+renderCliCoordTabs=function(){
+  const total=COORD_KEYS.reduce((s,c)=>s+(clientesDB[c]||[]).length,0);
+  g('cli-coord-tabs').innerHTML=`<div class="client-management-toolbar">
+    <input class="client-search" type="search" placeholder="Buscar cliente..." value="${cliSearchTerm}" oninput="cliSearchTerm=this.value;renderCliList()">
+    <select class="client-filter" onchange="cliOwnerFilter=this.value;renderCliList()">
+      <option value="todos" ${cliOwnerFilter==='todos'?'selected':''}>Todos os responsáveis</option>
+      ${COORD_KEYS.map(c=>`<option value="${c}" ${cliOwnerFilter===c?'selected':''}>${c}</option>`).join('')}
+    </select>
+    <span class="client-count">${total} clientes cadastrados</span>
+  </div>`;
+  if(g('cli-add-owner')){
+    const atual=g('cli-add-owner').value;
+    g('cli-add-owner').innerHTML='<option value="">Responsável...</option>'+COORD_KEYS.map(c=>`<option value="${c}">${c}</option>`).join('');
+    if(COORD_KEYS.includes(atual))g('cli-add-owner').value=atual;
+  }
+};
+
+abrirToggle=function(id,ativoNesteMes){
+  const encontrado=findClienteGlobal(id);if(!encontrado)return;
+  _toggleId=id;_toggleAtivo=ativoNesteMes;cliCoordAtual=encontrado.coordenador;
+  if(ativoNesteMes){g('inativar-nome').textContent=encontrado.cliente.nome;g('inativar-mes').value=mesAtual;g('modal-inativar').classList.add('open');}
+  else{g('reativar-nome').textContent=encontrado.cliente.nome;g('reativar-mes').value=0;g('reativar-ate').value=13;g('modal-reativar').classList.add('open');}
+};
+
+adicionarCliente=async function(){
+  const nome=g('cli-add-input').value.trim().toUpperCase();
+  const proprietario=g('cli-add-owner').value;
+  if(!nome){toast('Digite o nome do cliente','error');return;}
+  if(!COORD_KEYS.includes(proprietario)){toast('Escolha o coordenador responsável','error');return;}
+  const jaExiste=COORD_KEYS.some(coord=>(clientesDB[coord]||[]).some(c=>c.nome===nome));
+  if(jaExiste){toast('Cliente já cadastrado','error');return;}
+  const res=await sb('/rest/v1/clientes',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome,coordenador:proprietario,ativo:true,ativo_desde:mesAtual,inativo_desde:13})});
+  if(!res||!res.ok){toast('Erro ao adicionar','error');return;}
+  g('cli-add-input').value='';
+  toast('Cliente adicionado','ok');await carregarClientes();renderCliCoordTabs();renderCliList();pedidosCarregados=false;
+};
+
+editarCliente=async function(id){
+  const encontrado=findClienteGlobal(id);if(!encontrado)return;
+  const nome=prompt('Novo nome do cliente:',encontrado.cliente.nome);if(nome===null)return;
+  const limpo=nome.trim().toUpperCase();if(!limpo){toast('Informe um nome válido','error');return;}
+  const duplicado=COORD_KEYS.some(coord=>(clientesDB[coord]||[]).some(c=>c.nome===limpo&&String(c.id)!==String(id)));
+  if(duplicado){toast('Já existe um cliente com esse nome','error');return;}
+  const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({nome:limpo})});
+  if(!res||!res.ok){toast('Não foi possível editar','error');return;}
+  await carregarClientes();renderCliCoordTabs();renderCliList();toast('Cliente atualizado','ok');pedidosCarregados=false;
+};
+
+excluirCliente=async function(id){
+  const encontrado=findClienteGlobal(id);if(!encontrado)return;
+  if(!confirm(`Excluir ${encontrado.cliente.nome}? O histórico de pedidos não será apagado.`))return;
+  const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
+  if(!res||!res.ok){toast('Não foi possível excluir','error');return;}
+  await carregarClientes();renderCliCoordTabs();renderCliList();toast('Cliente excluído','ok');pedidosCarregados=false;
+};
+
+async function alterarProprietario(id,select){
+  const encontrado=findClienteGlobal(id);if(!encontrado)return;
+  const novo=select.value,anterior=encontrado.coordenador;
+  if(!COORD_KEYS.includes(novo)||novo===anterior)return;
+  select.disabled=true;
+  const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({coordenador:novo})});
+  if(!res||!res.ok){select.value=anterior;select.disabled=false;toast('Não foi possível trocar o responsável','error');return;}
+  await carregarClientes();renderCliCoordTabs();renderCliList();pedidosCarregados=false;toast('Responsável atualizado','ok');
+}
+
+renderCliList=function(){
+  const busca=cliSearchTerm.trim().toLocaleUpperCase('pt-BR');
+  const todos=COORD_KEYS.flatMap(coordenador=>(clientesDB[coordenador]||[]).map(cliente=>({cliente,coordenador})))
+    .filter(item=>(cliOwnerFilter==='todos'||item.coordenador===cliOwnerFilter)&&(!busca||item.cliente.nome.toLocaleUpperCase('pt-BR').includes(busca)))
+    .sort((a,b)=>a.cliente.nome.localeCompare(b.cliente.nome,'pt-BR'));
+  g('cli-list').innerHTML=todos.map(({cliente:c,coordenador})=>{
+    const ativoNesteMes=c.ativo_desde<=mesAtual&&c.inativo_desde>mesAtual;
+    const statusLabel=ativoNesteMes?`Ativo desde ${MESES[c.ativo_desde]||'início'}`:`Inativo desde ${MESES[c.inativo_desde]||'?'}`;
+    return `<div class="cli-item ${ativoNesteMes?'':'inativo'}">
+      <div class="cli-nome"><strong>${c.nome}</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">${statusLabel}</div></div>
+      <label class="client-owner"><span class="client-owner-label">Responsável</span><select class="client-owner-select" aria-label="Responsável por ${c.nome}" onchange="alterarProprietario('${c.id}',this)">${COORD_KEYS.map(nome=>`<option value="${nome}" ${nome===coordenador?'selected':''}>${nome}</option>`).join('')}</select></label>
+      <div class="cli-actions"><button class="client-edit" onclick="editarCliente('${c.id}')">Editar</button><button class="client-edit" onclick="abrirToggle('${c.id}',${ativoNesteMes})">${ativoNesteMes?'Inativar':'Reativar'}</button><button class="client-edit client-delete" onclick="excluirCliente('${c.id}')">Excluir</button></div>
+    </div>`;
+  }).join('')||'<div class="empty">Nenhum cliente encontrado.</div>';
+  updateSideNav('cli');
 };
 
 renderAdminDash=function(anoData){
