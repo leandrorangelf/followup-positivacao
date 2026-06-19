@@ -321,7 +321,7 @@ body{background:var(--canvas);color:var(--ink)}
       <option value="Igor Cater">Igor Cater</option>
       <option value="Marcio Vit">Marcio Vit</option>
       <option value="Vitor Valle">Vitor Valle</option>
-      <option value="Sem Responsável">Sem Responsável (Vagner)</option>
+      <option value="Rosana">Rosana</option>
     </select>
     <input type="password" id="login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter')login()"/>
     <button class="btn-login" onclick="login()">Entrar</button>
@@ -661,9 +661,9 @@ body{background:var(--canvas);color:var(--ink)}
 const SB='https://rpxrjawzkkpnzancmcif.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
 
-const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Sem Responsável':'f4ec1b0e9ecf3baec9c32537f106e4004feb9a312773d6eeede18efdffbbe94c'};
-const COORD_KEYS=['Igor Cater','Marcio Vit','Sem Responsável','Vitor Valle'];
-const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Sem Responsável':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
+const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
+const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
+const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const METAS_PADRAO=JSON.parse(JSON.stringify(METAS));
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const SKUS=['GR','GM','CM','CC'];
