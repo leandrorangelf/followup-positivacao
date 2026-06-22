@@ -246,7 +246,7 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-header{background:var(--text);color:#fff;padding:18px 22px}
 .vd-header h2{font-size:22px;font-weight:600}
 .vd-header .sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
-.vd-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px 22px 6px;max-width:1540px;margin:0 auto}
+.vd-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 22px 6px;max-width:1540px;margin:0 auto}
 @media(max-width:900px){.vd-metrics{grid-template-columns:1fr 1fr}}
 .vd-metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
 .vd-metric .lbl{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
@@ -273,8 +273,9 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-card-cli{font-size:13px;font-weight:600;flex:1;line-height:1.3}
 .vd-card-tot{font-size:13px;font-weight:700;white-space:nowrap}
 .vd-card-meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-.vd-card-actions{display:flex;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
+.vd-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
 .vd-card-action{flex:1;border:1px solid var(--border);border-radius:7px;padding:6px 8px;background:var(--card);color:var(--text);font:600 11px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}
+.vd-card-action.invoice{flex-basis:100%;background:var(--green);border-color:var(--green);color:#fff}
 .vd-card-action:hover{border-color:var(--accent);color:var(--accent)}
 .vd-card-action.delete:hover{border-color:var(--red);color:var(--red)}
 .vd-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px}
@@ -283,6 +284,12 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-b-skus{background:var(--accent-light);color:var(--accent)}
 .vd-b-prazo{background:var(--gray-bg);color:var(--gray)}
 .vd-b-done{background:#E0E7FF;color:#3730A3}
+.vd-b-partial{background:var(--amber-bg);color:var(--amber)}
+.vd-fat-row{display:grid;grid-template-columns:minmax(100px,1fr) repeat(3,minmax(70px,.65fr));gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.vd-fat-head{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.vd-fat-row input{width:100%;padding:8px;border:1px solid var(--border);border-radius:7px;text-align:center;font:700 13px inherit}
+.vd-fat-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.vd-fat-stat{background:var(--bg);border-radius:9px;padding:10px;text-align:center}.vd-fat-stat strong{display:block;font-size:18px}.vd-fat-stat span{font-size:10px;color:var(--muted);text-transform:uppercase}
 .vd-empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px}
 .vd-form-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;max-width:760px;margin-left:auto;margin-right:auto}
 .vd-field{margin-bottom:14px}
@@ -528,8 +535,10 @@ body{background:var(--canvas);color:var(--ink)}
   <div class="vd-header"><h2>Vendas</h2><div class="sub" id="vd-sub">— · —</div></div>
   <div class="vd-metrics">
     <div class="vd-metric"><div class="lbl">Total de pedidos</div><div class="val" id="vd-total-pedidos">—</div><div class="vsub" id="vd-total-pedidos-sub">—</div></div>
-    <div class="vd-metric"><div class="lbl">Valor confirmado</div><div class="val" id="vd-total-valor">—</div><div class="vsub" id="vd-total-valor-sub">—</div></div>
-    <div class="vd-metric"><div class="lbl">Realizado (caixas vendidas)</div><div class="val" id="vd-real">—</div><div class="vsub" id="vd-real-sub">— de — cx</div><div class="bar"><span id="vd-real-bar" style="width:0;background:var(--green)"></span></div></div>
+    <div class="vd-metric"><div class="lbl">Valor vendido</div><div class="val" id="vd-total-valor">—</div><div class="vsub" id="vd-total-valor-sub">Pedidos confirmados</div></div>
+    <div class="vd-metric"><div class="lbl">Caixas vendidas</div><div class="val" id="vd-real">—</div><div class="vsub" id="vd-real-sub">— de — cx</div><div class="bar"><span id="vd-real-bar" style="width:0;background:var(--green)"></span></div></div>
+    <div class="vd-metric"><div class="lbl">Caixas faturadas</div><div class="val" id="vd-fat-cx">—</div><div class="vsub" id="vd-fat-valor">—</div></div>
+    <div class="vd-metric"><div class="lbl">Saldo pendente</div><div class="val" id="vd-saldo-cx">—</div><div class="vsub" id="vd-saldo-valor">—</div></div>
     <div class="vd-metric"><div class="lbl">Cobertura</div><div class="val" id="vd-cob">—</div><div class="vsub" id="vd-cob-sub">— de — clientes</div><div class="bar"><span id="vd-cob-bar" style="width:0;background:var(--accent)"></span></div></div>
   </div>
   <div class="vd-coord-tabs" id="vd-coord-tabs" style="display:none"></div>
@@ -543,8 +552,8 @@ body{background:var(--canvas);color:var(--ink)}
   </div>
   <div class="vd-section">
     <div class="vd-kanban">
-      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Previsão</h4><span class="vd-kanban-count" id="vd-c-prev">0</span></div><div id="vd-col-prev"></div></div>
-      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Pedido feito</h4><span class="vd-kanban-count" id="vd-c-ped">0</span></div><div id="vd-col-ped"></div></div>
+      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Pedido confirmado</h4><span class="vd-kanban-count" id="vd-c-prev">0</span></div><div id="vd-col-prev"></div></div>
+      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Faturado parcial</h4><span class="vd-kanban-count" id="vd-c-ped">0</span></div><div id="vd-col-ped"></div></div>
       <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Faturado / Entregue</h4><span class="vd-kanban-count" id="vd-c-fim">0</span></div><div id="vd-col-fim"></div></div>
     </div>
   </div>
@@ -610,15 +619,33 @@ body{background:var(--canvas);color:var(--ink)}
   <div class="modal">
     <div class="modal-title" id="vd-det-title">Pedido</div>
     <div id="vd-det-body"></div>
-    <div style="font-size:13px;font-weight:600;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;margin:14px 0 8px">Mover para</div>
     <div class="vd-btnrow" style="margin:0 0 10px">
-      <button class="vd-btn vd-btn-out" onclick="vdMoverStatus('previsao')">Previsão</button>
-      <button class="vd-btn vd-btn-out" onclick="vdMoverStatus('pedido')">Pedido</button>
-      <button class="vd-btn vd-btn-dark" id="vd-det-fim" onclick="vdMoverFinal()">Faturado</button>
+      <button class="vd-btn vd-btn-pri" id="vd-det-fim" onclick="vdAbrirFaturamentoAtual()">Confirmar faturamento</button>
+      <button class="vd-btn vd-btn-out" id="vd-det-editar" onclick="vdEditarPedido()">Editar pedido</button>
     </div>
     <div class="vd-btnrow" style="margin:0">
       <button class="vd-btn vd-btn-out" onclick="vdFecharDet()">Fechar</button>
-      <button class="vd-btn vd-btn-del" onclick="vdExcluirPedido()">Excluir</button>
+      <button class="vd-btn vd-btn-del" id="vd-det-excluir" onclick="vdExcluirPedido()">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR FATURAMENTO -->
+<div class="modal-bg" id="modal-vd-fat">
+  <div class="modal">
+    <div class="modal-title" id="vd-fat-title">Confirmar faturamento</div>
+    <div class="modal-sub" id="vd-fat-sub">Informe quantas caixas saíram agora. O pedido original será preservado.</div>
+    <div class="vd-fat-row vd-fat-head"><span>Produto</span><span>Pedido</span><span>Já faturado</span><span>Faturar agora</span></div>
+    <div id="vd-fat-itens"></div>
+    <div class="vd-fat-summary">
+      <div class="vd-fat-stat"><strong id="vd-fat-pedido">0</strong><span>Pedido</span></div>
+      <div class="vd-fat-stat"><strong id="vd-fat-ja">0</strong><span>Já faturado</span></div>
+      <div class="vd-fat-stat"><strong id="vd-fat-restante">0</strong><span>Saldo</span></div>
+    </div>
+    <div class="vd-field"><label>Observação do faturamento</label><textarea id="vd-fat-obs" placeholder="Ex.: estoque parcial, restante previsto para próxima semana"></textarea></div>
+    <div class="vd-btnrow" style="margin:0">
+      <button class="vd-btn vd-btn-out" onclick="vdFecharFaturamento()">Cancelar</button>
+      <button class="vd-btn vd-btn-pri" id="vd-fat-salvar" onclick="vdSalvarFaturamento()">Confirmar</button>
     </div>
   </div>
 </div>
@@ -693,6 +720,7 @@ let user=null,isAdmin=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAt
 let dadosLocais={},clientesDB={},pedidosCarregados=false,coordPedCarregado=null,mesPedCarregado=null;
 let cliCoordAtual=COORD_KEYS[0];
 let salvandoTudo=false;
+let vendasDashboard=[],dashCarregando=false;
 
 // ── UTILS ──
 const g=id=>document.getElementById(id);
@@ -904,22 +932,32 @@ async function irDash(){
   carregarDashboard();
 }
 
-async function carregarDashboard(){
-  g('dash-content').innerHTML='<div class="loading">Carregando...</div>';
-  if(isAdmin){
-    const [,anoData]=await Promise.all([
-      carregarTodosPedidos(),
-      sb(`/rest/v1/pedidos?ano=eq.${anoAtual}&select=*`,{ret:true})
-    ]);
-    renderAdminDash(Array.isArray(anoData)?anoData:[]);
-  } else {
-    const [pedMes,anoData]=await Promise.all([
-      sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true}),
-      sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&select=*`,{ret:true})
-    ]);
-    dadosLocais={};
-    if(Array.isArray(pedMes))pedMes.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
-    renderCoordDash(Array.isArray(anoData)?anoData:[]);
+async function carregarDashboard(silencioso=false){
+  if(dashCarregando)return;
+  dashCarregando=true;
+  if(!silencioso)g('dash-content').innerHTML='<div class="loading">Carregando...</div>';
+  try{
+    if(isAdmin){
+      const [,anoData,vendas]=await Promise.all([
+        carregarTodosPedidos(),
+        sb(`/rest/v1/pedidos?ano=eq.${anoAtual}&select=*`,{ret:true}),
+        sb(`/rest/v1/pedidos_vendas?mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true})
+      ]);
+      vendasDashboard=Array.isArray(vendas)?vendas:[];
+      renderAdminDash(Array.isArray(anoData)?anoData:[]);
+    } else {
+      const [pedMes,anoData,vendas]=await Promise.all([
+        sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true}),
+        sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&select=*`,{ret:true}),
+        sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true})
+      ]);
+      vendasDashboard=Array.isArray(vendas)?vendas:[];
+      dadosLocais={};
+      if(Array.isArray(pedMes))pedMes.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
+      renderCoordDash(Array.isArray(anoData)?anoData:[]);
+    }
+  }finally{
+    dashCarregando=false;
   }
 }
 
@@ -1583,6 +1621,7 @@ renderAdminDash=function(anoData){
   const skuTotal=Math.max(1,Object.values(sku).reduce((s,v)=>s+v,0));
   const pendingNames=[];COORD_KEYS.forEach(c=>{const d=todosPedidosMes[c]||{};clientesAtivos(c).filter(cli=>totCliD(d,cli.nome)===0).slice(0,3).forEach(cli=>pendingNames.push({name:cli.nome,coord:c}));});
   g('dash-content').innerHTML=`
+    ${vdDashboardResumoHTML(vendasDashboard)}
     <div class="dash-kpis">
       <div class="dash-kpi"><div class="dash-kpi-label">Positivação geral</div><div class="dash-kpi-value" style="color:var(--purple)">${pctPos}%</div><div class="dash-kpi-sub good">${comPedido} de ${totalAtivos} clientes ativos</div></div>
       <div class="dash-kpi"><div class="dash-kpi-label">Volume total</div><div class="dash-kpi-value">${volume.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">Realizado em ${MESES[mesAtual]}</div></div>
@@ -1629,6 +1668,7 @@ renderCoordDash=function(anoData){
   const rows=ativos.slice().sort((a,b)=>totCliD(dadosLocais,a.nome)-totCliD(dadosLocais,b.nome)||a.nome.localeCompare(b.nome));
 
   g('dash-content').innerHTML=`
+    ${vdDashboardResumoHTML(vendasDashboard)}
     <div class="dash-kpis">
       <div class="dash-kpi"><div class="dash-kpi-label">Positivação da carteira</div><div class="dash-kpi-value" style="color:var(--purple)">${pctPos}%</div><div class="dash-kpi-sub good">${comPedido} de ${ativos.length} clientes ativos</div></div>
       <div class="dash-kpi"><div class="dash-kpi-label">Volume total</div><div class="dash-kpi-value">${volume.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">Realizado em ${MESES[mesAtual]}</div></div>
@@ -1655,10 +1695,44 @@ let vdEditPedidoId=null;
 let vdDetAtual=null;
 let vdEditCliId=null;
 let vdSalvandoPedido=false;
+let vdFatPedidoId=null;
+let vdFaturando=false;
 let vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
 let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0}};
 const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function vdResumoPedido(p){
+  const itens=p.pedidos_vendas_itens||[];
+  const pedidoCx=Number(p.total_caixas)||itens.reduce((s,i)=>s+Number(i.qty_caixas||0),0);
+  const faturadoCx=itens.reduce((s,i)=>s+Math.min(Number(i.qty_caixas||0),Number(i.qty_faturada||0)),0);
+  const pedidoValor=Number(p.total)||itens.reduce((s,i)=>s+Number(i.subtotal||0),0);
+  const faturadoValor=itens.reduce((s,i)=>s+Math.min(Number(i.qty_caixas||0),Number(i.qty_faturada||0))*Number(i.packs_por_caixa||0)*Number(i.valor_pacote||0),0);
+  const saldoCx=Math.max(0,pedidoCx-faturadoCx);
+  const saldoValor=Math.max(0,pedidoValor-faturadoValor);
+  const status=faturadoCx>0&&saldoCx>0?'parcial':pedidoCx>0&&saldoCx===0?(p.tipo==='off'?'entregue':'faturado'):'pedido';
+  return{itens,pedidoCx,faturadoCx,saldoCx,pedidoValor,faturadoValor,saldoValor,status,detalhado:itens.length>0};
+}
+
+function vdResumoLista(lista){
+  return(lista||[]).reduce((r,p)=>{
+    const x=vdResumoPedido(p);
+    r.pedidos+=1;r.pedidoCx+=x.pedidoCx;r.faturadoCx+=x.faturadoCx;r.saldoCx+=x.saldoCx;
+    r.pedidoValor+=x.pedidoValor;r.faturadoValor+=x.faturadoValor;r.saldoValor+=x.saldoValor;
+    if(x.status==='parcial')r.parciais+=1;
+    return r;
+  },{pedidos:0,pedidoCx:0,faturadoCx:0,saldoCx:0,pedidoValor:0,faturadoValor:0,saldoValor:0,parciais:0});
+}
+
+function vdDashboardResumoHTML(lista){
+  const r=vdResumoLista(lista);
+  return `<div class="dash-kpis">
+    <div class="dash-kpi"><div class="dash-kpi-label">Vendido confirmado</div><div class="dash-kpi-value">${r.pedidoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.pedidoValor)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Faturado</div><div class="dash-kpi-value" style="color:var(--success)">${r.faturadoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.faturadoValor)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Saldo a faturar</div><div class="dash-kpi-value" style="color:var(--warning)">${r.saldoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">${vdFmt(r.saldoValor)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Faturamentos parciais</div><div class="dash-kpi-value">${r.parciais}</div><div class="dash-kpi-sub ${r.parciais?'bad':'good'}">${r.pedidos} pedidos confirmados</div></div>
+  </div>`;
+}
 
 async function irVendas(){
   if(!isAdmin)vdCoordFiltro=coordAtual;
@@ -1701,20 +1775,23 @@ function vdRenderMetrics(){
   const geral=vdCoordFiltro==='todos';
   const coords=geral?COORD_KEYS:[vdCoordFiltro];
   const meta=coords.reduce((s,c)=>s+(METAS[c]?METAS[c][mesAtual]:0),0);
-  const confirmados=vdPedidos.filter(p=>p.status!=='previsao');
-  const real=confirmados.reduce((s,p)=>s+(Number(p.total_caixas)||(p.pedidos_vendas_itens||[]).reduce((a,i)=>a+Number(i.qty_caixas||0),0)),0);
-  const valor=confirmados.reduce((s,p)=>s+Number(p.total||0),0);
-  g('vd-total-pedidos').textContent=vdPedidos.length;
-  g('vd-total-pedidos-sub').textContent=vdPedidos.filter(p=>p.status==='previsao').length+' previsões · '+vdPedidos.filter(p=>p.status==='pedido'&&p.tipo==='in').length+' pra faturar';
-  g('vd-total-valor').textContent=vdFmt(valor);
-  g('vd-total-valor-sub').textContent=real+' caixas no total';
+  const resumo=vdResumoLista(vdPedidos);
+  const real=resumo.pedidoCx;
+  g('vd-total-pedidos').textContent=resumo.pedidos;
+  g('vd-total-pedidos-sub').textContent=resumo.parciais+' parciais · '+vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&p.tipo==='in').length+' pra faturar';
+  g('vd-total-valor').textContent=vdFmt(resumo.pedidoValor);
+  g('vd-total-valor-sub').textContent=real+' caixas confirmadas';
   const pctReal=meta>0?Math.round(real/meta*100):0;
-  g('vd-real').textContent=pctReal+'%';
-  g('vd-real-sub').textContent=real+' de '+meta+' cx';
+  g('vd-real').textContent=real+' cx';
+  g('vd-real-sub').textContent=pctReal+'% da meta · '+meta+' cx';
   g('vd-real-bar').style.width=Math.min(100,pctReal)+'%';
   g('vd-real-bar').style.background=pctReal>=80?'var(--green)':pctReal>=50?'var(--amber)':'var(--red)';
+  g('vd-fat-cx').textContent=resumo.faturadoCx+' cx';
+  g('vd-fat-valor').textContent=vdFmt(resumo.faturadoValor);
+  g('vd-saldo-cx').textContent=resumo.saldoCx+' cx';
+  g('vd-saldo-valor').textContent=vdFmt(resumo.saldoValor);
   const ativos=coords.flatMap(c=>clientesAtivos(c).map(cli=>({coord:c,...cli})));
-  const ids=new Set(confirmados.map(p=>p.coordenador+'|'+p.cliente_id));
+  const ids=new Set(vdPedidos.map(p=>p.coordenador+'|'+p.cliente_id));
   const pos=ids.size;
   const pctCob=ativos.length>0?Math.round(pos/ativos.length*100):0;
   g('vd-cob').textContent=pctCob+'%';
@@ -1729,15 +1806,15 @@ function vdSetFiltro(f){
   vdRenderKanban();
 }
 function vdPedidosFiltrados(){
-  if(vdFiltro==='faturar')return vdPedidos.filter(p=>p.status==='pedido'&&p.tipo==='in');
-  if(vdFiltro==='pendente')return vdPedidos.filter(p=>p.status==='previsao'||p.status==='pedido');
+  if(vdFiltro==='faturar')return vdPedidos.filter(p=>p.tipo==='in'&&vdResumoPedido(p).saldoCx>0);
+  if(vdFiltro==='pendente')return vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0);
   return vdPedidos;
 }
 
 function vdRenderKanban(){
   const lista=vdPedidosFiltrados();
   const cols={prev:[],ped:[],fim:[]};
-  lista.forEach(p=>{if(p.status==='previsao')cols.prev.push(p);else if(p.status==='pedido')cols.ped.push(p);else cols.fim.push(p);});
+  lista.forEach(p=>{const st=vdResumoPedido(p).status;if(st==='pedido')cols.prev.push(p);else if(st==='parcial')cols.ped.push(p);else cols.fim.push(p);});
   g('vd-c-prev').textContent=cols.prev.length;
   g('vd-c-ped').textContent=cols.ped.length;
   g('vd-c-fim').textContent=cols.fim.length;
@@ -1747,23 +1824,22 @@ function vdRenderKanban(){
 }
 
 function vdCardHTML(p){
-  const itens=p.pedidos_vendas_itens||[];
-  const cxItens=itens.reduce((s,i)=>s+Number(i.qty_caixas||0),0);
-  const cx=cxItens||Number(p.total_caixas||0);
-  const skusLista=itens.length?itens.map(i=>i.sku+':'+i.qty_caixas).join(' · '):
+  const x=vdResumoPedido(p),itens=x.itens,cx=x.pedidoCx;
+  const skusLista=itens.length?itens.map(i=>i.sku+': '+i.qty_caixas+' ped. / '+Number(i.qty_faturada||0)+' fat.').join(' · '):
     (cx>0?'Detalhamento de SKUs não registrado':'Sem itens registrados');
-  const stEnd=p.status==='faturado'?'Faturado':p.status==='entregue'?'Entregue':'';
+  const stEnd=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Faturado parcial':'';
   const acoesGestor=isAdmin?'<div class="vd-card-actions">'+
-    '<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>'+
-    '<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button></div>':'';
+    (x.saldoCx>0?'<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>':'')+
+    (x.faturadoCx===0?'<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>':'')+
+    (x.faturadoCx===0?'<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>':'')+'</div>':'';
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
       '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+
-      '<span class="vd-badge vd-b-skus">'+cx+' cx</span>'+
+      '<span class="vd-badge vd-b-skus">'+cx+' ped. · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</span>'+
       '<span class="vd-badge vd-b-prazo">'+(p.prazo_tipo==='avista'?'À vista':'Parcelado')+'</span>'+
       (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+
-      (stEnd?'<span class="vd-badge vd-b-done">'+stEnd+'</span>':'')+
+      (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
     '</div>'+
     '<div style="font-size:11px;color:var(--muted);margin-top:6px">'+skusLista+'</div>'+acoesGestor+
   '</div>';
@@ -1856,7 +1932,7 @@ async function vdSalvarPedido(){
     parcela_3_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p3').value)||null):null,
     total,total_caixas:totCx,observacao:g('vf-obs').value||null,mes:mesAtual,ano:anoAtual
   };
-  if(!vdEditPedidoId)ped.status='previsao';
+  if(!vdEditPedidoId)ped.status='pedido';
   vdSalvandoPedido=true;
   const btnSalvar=g('vf-btn-save');
   btnSalvar.disabled=true;
@@ -1916,22 +1992,82 @@ async function vdSalvarPedido(){
 
 function vdAbrirDet(id){
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
-  vdDetAtual=p;
+  const x=vdResumoPedido(p);vdDetAtual=p;
   g('vd-det-title').textContent=p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'');
-  const itens=p.pedidos_vendas_itens||[];
-  const itensHTML=itens.map(i=>'<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span>'+vdEsc(i.sku)+' · '+Number(i.qty_caixas||0)+' cx × '+Number(i.packs_por_caixa||0)+' × '+vdFmt(i.valor_pacote)+'</span><strong>'+vdFmt(i.subtotal)+'</strong></div>').join('');
+  const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(i.sku)+'</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
   const parc=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(x=>x).map(x=>x+'d').join(' / '):'À vista';
   g('vd-det-body').innerHTML=
-    '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+p.status+'</strong></div>'+
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+(x.status==='parcial'?'Faturado parcial':x.status==='pedido'?'Pedido confirmado':x.status==='entregue'?'Entregue':'Faturado')+'</strong></div>'+
     '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span></div>'+
     itensHTML+
-    '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total</span><span>'+vdFmt(p.total)+'</span></div>'+
+    '<div class="vd-fat-summary"><div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div><div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div><div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div></div>'+ 
+    '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
     (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+vdEsc(p.observacao)+'</div>':'')+
-    '<button class="vd-btn vd-btn-out" style="width:100%;margin-top:10px" onclick="vdEditarPedido()">✏️ Editar</button>';
-  g('vd-det-fim').textContent=p.tipo==='in'?'Faturado':'Entregue';
+    (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
+  g('vd-det-fim').textContent=p.tipo==='in'?'Confirmar faturamento':'Confirmar entrega';
+  g('vd-det-fim').style.display=isAdmin&&x.saldoCx>0?'block':'none';
+  g('vd-det-editar').style.display=isAdmin&&x.faturadoCx===0?'block':'none';
+  g('vd-det-excluir').style.display=isAdmin?'block':'none';
   g('modal-vd-det').classList.add('open');
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
+function vdAbrirFaturamentoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdAbrirFaturamento(id)}}
+function vdAbrirFaturamento(id){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  const x=vdResumoPedido(p);
+  if(!x.detalhado||x.itens.some(i=>!i.id)){toast('Edite este pedido e informe os SKUs antes de faturar','error');return}
+  if(x.saldoCx<=0){toast('Pedido já faturado por completo','info');return}
+  vdFatPedidoId=id;
+  g('vd-fat-title').textContent=p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento';
+  g('vd-fat-sub').textContent=p.cliente_nome+' · informe apenas as caixas que saíram agora';
+  g('vd-fat-itens').innerHTML=x.itens.map(i=>{
+    const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0),saldo=Math.max(0,ped-fat);
+    return '<div class="vd-fat-row"><strong>'+vdEsc(i.sku)+'</strong><span>'+ped+' cx</span><span>'+fat+' cx</span><input class="vd-fat-input" data-id="'+vdEsc(i.id)+'" type="number" min="0" max="'+saldo+'" step="1" value="0" oninput="vdAtualizarFatResumo()"></div>';
+  }).join('');
+  g('vd-fat-pedido').textContent=x.pedidoCx;
+  g('vd-fat-ja').textContent=x.faturadoCx;
+  g('vd-fat-restante').textContent=x.saldoCx;
+  g('vd-fat-obs').value=p.faturamento_observacao||'';
+  g('modal-vd-fat').classList.add('open');
+}
+function vdAtualizarFatResumo(){
+  const p=vdPedidos.find(x=>x.id===vdFatPedidoId);if(!p)return;
+  const x=vdResumoPedido(p);
+  const agora=[...document.querySelectorAll('.vd-fat-input')].reduce((s,i)=>s+(parseFloat(i.value)||0),0);
+  g('vd-fat-restante').textContent=Math.max(0,x.saldoCx-agora);
+}
+function vdFecharFaturamento(){g('modal-vd-fat').classList.remove('open');vdFatPedidoId=null}
+async function vdSalvarFaturamento(){
+  if(vdFaturando)return;
+  const p=vdPedidos.find(x=>x.id===vdFatPedidoId);if(!p)return;
+  const x=vdResumoPedido(p),inputs=[...document.querySelectorAll('.vd-fat-input')];
+  const agora=new Map(inputs.map(i=>[i.dataset.id,Math.max(0,parseFloat(i.value)||0)]));
+  let totalAgora=0,invalido=false;
+  x.itens.forEach(i=>{const q=agora.get(String(i.id))||0,saldo=Math.max(0,Number(i.qty_caixas||0)-Number(i.qty_faturada||0));if(q>saldo)invalido=true;totalAgora+=q});
+  if(invalido){toast('Quantidade maior que o saldo do produto','error');return}
+  if(totalAgora<=0){toast('Informe ao menos uma caixa faturada','error');return}
+  vdFaturando=true;g('vd-fat-salvar').disabled=true;
+  try{
+    const rows=x.itens.map(i=>({
+      id:i.id,pedido_id:i.pedido_id,sku:i.sku,qty_caixas:i.qty_caixas,valor_pacote:i.valor_pacote,
+      packs_por_caixa:i.packs_por_caixa,subtotal:i.subtotal,
+      qty_faturada:Number(i.qty_faturada||0)+(agora.get(String(i.id))||0)
+    }));
+    const r=await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+    if(!r||!r.ok){toast('Atualize o banco antes de confirmar o faturamento','error');return}
+    const fatDepois=x.faturadoCx+totalAgora,completo=fatDepois>=x.pedidoCx;
+    const status=completo?(p.tipo==='off'?'entregue':'faturado'):'pedido';
+    const r2=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({
+      status,faturamento_observacao:g('vd-fat-obs').value||null,faturado_at:completo?new Date().toISOString():null
+    })});
+    if(!r2||!r2.ok){toast('Caixas registradas, mas a observação não foi salva','error')}
+    else toast(completo?'Pedido faturado por completo':'Faturamento parcial registrado','ok');
+    vdFecharFaturamento();await vdCarregar();
+  }finally{
+    vdFaturando=false;g('vd-fat-salvar').disabled=false;
+  }
+}
 async function vdMoverStatus(novo){
   if(!vdDetAtual)return;
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'PATCH',body:JSON.stringify({status:novo})});
@@ -1944,7 +2080,9 @@ async function vdMoverFinal(){
   await vdMoverStatus(vdDetAtual.tipo==='in'?'faturado':'entregue');
 }
 async function vdExcluirPedido(){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   if(!vdDetAtual)return;
+  if(vdResumoPedido(vdDetAtual).faturadoCx>0){toast('Pedido com faturamento não pode ser excluído','error');return}
   if(!confirm('Excluir este pedido?'))return;
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
   if(!r||!r.ok){toast('Erro','error');return}
@@ -1960,6 +2098,7 @@ function vdEditarPedidoPorId(id){
 async function vdExcluirPedidoPorId(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(vdResumoPedido(p).faturadoCx>0){toast('Pedido com faturamento não pode ser excluído','error');return}
   if(!confirm('Excluir o pedido de '+p.cliente_nome+'?'))return;
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
   if(!r||!r.ok){toast('Erro ao excluir pedido','error');return}
@@ -1967,8 +2106,10 @@ async function vdExcluirPedidoPorId(id){
   await vdCarregar();
 }
 function vdEditarPedido(){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   if(!vdDetAtual)return;
   const p=vdDetAtual;
+  if(vdResumoPedido(p).faturadoCx>0){toast('Pedido com faturamento não pode ser alterado','error');return}
   if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
   vdEditPedidoId=p.id;
   vdForm={tipo:p.tipo,prazo:p.prazo_tipo,skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
@@ -2063,86 +2204,92 @@ function vdExportarPDF(){
   const lista=vdPedidosFiltrados();
   if(!lista.length){toast('Nenhum pedido no filtro atual','error');return}
   const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({unit:'pt',format:'a4'});
-  const pageW=doc.internal.pageSize.getWidth();
-  const titulo='Pedidos · '+(vdFiltro==='faturar'?'Pra Faturar (IN)':vdFiltro==='pendente'?'Pendentes':'Todos');
+  const doc=new jsPDF({unit:'pt',format:'a4',orientation:'landscape'});
+  const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight();
+  const titulo=vdFiltro==='faturar'?'RELATÓRIO PARA FATURAMENTO':vdFiltro==='pendente'?'PEDIDOS COM SALDO PENDENTE':'RELATÓRIO COMPLETO DE PEDIDOS';
   const escopo=vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro;
   const sub=escopo+' · '+MESES[mesAtual]+'/'+anoAtual+' · '+lista.length+' pedidos';
-  doc.setFontSize(16);doc.setFont(undefined,'bold');
-  doc.text('Cleantabaco · Vendas',40,42);
-  doc.setFontSize(11);doc.setFont(undefined,'normal');
-  doc.text(titulo,40,60);
+  const geral=vdResumoLista(lista);
+  doc.setFontSize(17);doc.setFont(undefined,'bold');doc.setTextColor(26);
+  doc.text('CLEANTABACO · VENDAS',40,38);
+  doc.setFontSize(12);doc.text(titulo,40,57);
   doc.setFontSize(9);doc.setTextColor(120);
-  doc.text(sub,40,74);
-  doc.text('Gerado em '+new Date().toLocaleString('pt-BR'),pageW-40,74,{align:'right'});
+  doc.text(sub,40,72);
+  doc.text('Gerado em '+new Date().toLocaleString('pt-BR'),pageW-40,72,{align:'right'});
+  doc.setFillColor(245,244,240);doc.roundedRect(40,82,pageW-80,42,6,6,'F');
+  doc.setFontSize(9);doc.setTextColor(90);
+  doc.text('PEDIDO',55,98);doc.text('FATURADO',205,98);doc.text('SALDO',355,98);doc.text('VALOR NEGOCIADO',505,98);doc.text('VALOR FATURADO',675,98);
+  doc.setFontSize(13);doc.setFont(undefined,'bold');doc.setTextColor(26);
+  doc.text(geral.pedidoCx+' cx',55,116);doc.text(geral.faturadoCx+' cx',205,116);doc.text(geral.saldoCx+' cx',355,116);doc.text(vdFmt(geral.pedidoValor),505,116);doc.text(vdFmt(geral.faturadoValor),675,116);
   doc.setTextColor(0);
-  let y=92,totalGeral=0;
-  const tots={GR:{cx:0,r:0},GM:{cx:0,r:0},CM:{cx:0,r:0},CC:{cx:0,r:0}};
-  const semDetalhe={cx:0,r:0};
+  let y=140;
+  const tots={GR:{pedido:0,faturado:0,saldo:0,valor:0},GM:{pedido:0,faturado:0,saldo:0,valor:0},CM:{pedido:0,faturado:0,saldo:0,valor:0},CC:{pedido:0,faturado:0,saldo:0,valor:0}};
+  const semDetalhe={pedido:0,faturado:0,saldo:0,valor:0};
   lista.forEach((p,idx)=>{
-    if(y>740){doc.addPage();y=50}
+    const x=vdResumoPedido(p);
+    if(y>pageH-120){doc.addPage();y=42}
     doc.setFillColor(26,26,24);
-    doc.rect(40,y,pageW-80,22,'F');
+    doc.roundedRect(40,y,pageW-80,24,4,4,'F');
     doc.setTextColor(255);doc.setFontSize(10);doc.setFont(undefined,'bold');
-    doc.text((idx+1)+'. '+p.cliente_nome+(p.cliente_uf?'  ('+p.cliente_uf+')':'')+(vdCoordFiltro==='todos'?' · '+p.coordenador:''),48,y+14);
+    doc.text((idx+1)+'. '+p.cliente_nome+(p.cliente_uf?' ('+p.cliente_uf+')':'')+' · '+p.coordenador,48,y+16);
     doc.text(vdFmt(p.total),pageW-48,y+14,{align:'right'});
     doc.setTextColor(0);doc.setFont(undefined,'normal');
-    y+=24;
+    y+=27;
     doc.setFontSize(9);doc.setTextColor(80);
     const prazoTxt=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(x=>x).map(x=>x+'d').join(' / '):'À vista';
-    const stTxt=p.status==='faturado'?'Faturado':p.status==='entregue'?'Entregue':p.status==='pedido'?'Pedido feito':'Previsão';
+    const stTxt=x.status==='parcial'?'Faturado parcial':x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':'Pedido confirmado';
     doc.text((p.tipo==='in'?'IN (com NF)':'OFF (sem NF)')+'  ·  '+prazoTxt+'  ·  Status: '+stTxt,48,y+2);
     y+=14;doc.setTextColor(0);
-    const itensPedido=p.pedidos_vendas_itens||[];
-    const linhas=itensPedido.map(i=>{
-      if(tots[i.sku]){
-        tots[i.sku].cx+=Number(i.qty_caixas||0);tots[i.sku].r+=Number(i.subtotal||0);
-      }else{
-        semDetalhe.cx+=Number(i.qty_caixas||0);semDetalhe.r+=Number(i.subtotal||0);
-      }
-      return [i.sku,i.qty_caixas+' cx',i.packs_por_caixa+' pac',vdFmt(i.valor_pacote),vdFmt(i.subtotal)];
+    const linhas=x.itens.map(i=>{
+      const pedido=Number(i.qty_caixas||0),faturado=Math.min(pedido,Number(i.qty_faturada||0)),saldo=Math.max(0,pedido-faturado);
+      const alvo=tots[i.sku]||semDetalhe;alvo.pedido+=pedido;alvo.faturado+=faturado;alvo.saldo+=saldo;alvo.valor+=Number(i.subtotal||0);
+      return [i.sku,pedido+' cx',faturado+' cx',saldo+' cx',Number(i.packs_por_caixa||0),vdFmt(i.valor_pacote),vdFmt(i.subtotal)];
     });
     if(!linhas.length){
-      semDetalhe.cx+=Number(p.total_caixas||0);semDetalhe.r+=Number(p.total||0);
-      linhas.push(['SEM DETALHE',Number(p.total_caixas||0)+' cx','—','—',vdFmt(p.total)]);
+      semDetalhe.pedido+=x.pedidoCx;semDetalhe.faturado+=x.faturadoCx;semDetalhe.saldo+=x.saldoCx;semDetalhe.valor+=x.pedidoValor;
+      linhas.push(['SEM DETALHE',x.pedidoCx+' cx',x.faturadoCx+' cx',x.saldoCx+' cx','—','—',vdFmt(p.total)]);
     }
     doc.autoTable({
       startY:y,
-      head:[['SKU','Caixas','Pacotes/cx','R$/Pacote','Subtotal']],
+      head:[['Produto','Pedido','Já faturado','Faturar / saldo','Pacotes/cx','Valor negociado/pac','Subtotal pedido']],
       body:linhas,theme:'grid',
-      styles:{fontSize:9,cellPadding:4},
+      styles:{fontSize:8,cellPadding:4},
       headStyles:{fillColor:[245,244,240],textColor:[26,26,24],fontStyle:'bold'},
-      columnStyles:{0:{cellWidth:50,fontStyle:'bold'},1:{cellWidth:60,halign:'right'},2:{cellWidth:70,halign:'right'},3:{cellWidth:80,halign:'right'},4:{cellWidth:90,halign:'right'}},
+      columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'},4:{halign:'right'},5:{halign:'right'},6:{halign:'right',fontStyle:'bold'}},
       margin:{left:48,right:48}
     });
     y=doc.lastAutoTable.finalY+4;
-    if(p.observacao){
+    const observacoes=[p.observacao?'Pedido: '+p.observacao:'',p.faturamento_observacao?'Faturamento: '+p.faturamento_observacao:''].filter(Boolean).join(' · ');
+    if(observacoes){
       doc.setFontSize(9);doc.setTextColor(80);
-      const txt=doc.splitTextToSize('Obs: '+p.observacao,pageW-110);
+      const txt=doc.splitTextToSize(observacoes,pageW-110);
       doc.text(txt,48,y+8);
       y+=8+txt.length*11;doc.setTextColor(0);
     }
-    y+=10;totalGeral+=Number(p.total||0);
+    y+=10;
   });
-  if(y>700){doc.addPage();y=50}
+  if(y>pageH-150){doc.addPage();y=42}
   doc.setDrawColor(200);doc.line(40,y,pageW-40,y);y+=14;
   doc.setFontSize(11);doc.setFont(undefined,'bold');
-  doc.text('RESUMO',40,y);y+=14;
+  doc.text('RESUMO POR PRODUTO',40,y);y+=14;
   doc.autoTable({
     startY:y,
-    head:[['SKU','Total Caixas','Total R$']],
-    body:VD_SKUS.map(s=>[s,tots[s].cx+' cx',vdFmt(tots[s].r)])
-      .concat(semDetalhe.cx||semDetalhe.r?[['SEM DETALHE',semDetalhe.cx+' cx',vdFmt(semDetalhe.r)]]:[])
-      .concat([['TOTAL GERAL','',vdFmt(totalGeral)]]),
+    head:[['Produto','Pedido','Faturado','Saldo','Valor negociado']],
+    body:VD_SKUS.map(s=>[s,tots[s].pedido+' cx',tots[s].faturado+' cx',tots[s].saldo+' cx',vdFmt(tots[s].valor)])
+      .concat(semDetalhe.pedido||semDetalhe.valor?[['SEM DETALHE',semDetalhe.pedido+' cx',semDetalhe.faturado+' cx',semDetalhe.saldo+' cx',vdFmt(semDetalhe.valor)]]:[])
+      .concat([['TOTAL GERAL',geral.pedidoCx+' cx',geral.faturadoCx+' cx',geral.saldoCx+' cx',vdFmt(geral.pedidoValor)]]),
     theme:'grid',
     styles:{fontSize:9,cellPadding:5},
     headStyles:{fillColor:[26,26,24],textColor:[255,255,255]},
-    columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right',fontStyle:'bold'}},
+    columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'},4:{halign:'right',fontStyle:'bold'}},
     margin:{left:40,right:40}
   });
   doc.save('Pedidos_'+escopo.replace(/ /g,'_')+'_'+MESES[mesAtual]+'_'+anoAtual+'.pdf');
   toast('✓ PDF gerado','ok');
 }
+setInterval(()=>{
+  if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true);
+},30000);
 // ===================== FIM MÓDULO VENDAS =====================
 </script>
 </body>
