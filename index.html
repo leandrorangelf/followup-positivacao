@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -255,6 +254,7 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-metric .bar{height:7px;background:var(--gray-bg);border-radius:4px;margin-top:10px;overflow:hidden}
 .vd-metric .bar span{display:block;height:100%;border-radius:4px;transition:width .3s}
 .vd-filter{display:flex;gap:6px;padding:12px 22px;max-width:1540px;margin:0 auto;flex-wrap:wrap}
+.vd-coord-tabs{display:flex;gap:7px;padding:14px 22px 0;overflow-x:auto;max-width:1540px;margin:0 auto}
 .vd-chip{padding:7px 14px;border:1px solid var(--border);border-radius:18px;background:var(--card);font-size:12px;font-weight:600;cursor:pointer;color:var(--text);font-family:inherit;white-space:nowrap}
 .vd-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .vd-chip-pdf{background:var(--green);color:#fff;border-color:var(--green);margin-left:auto}
@@ -529,6 +529,7 @@ body{background:var(--canvas);color:var(--ink)}
     <div class="vd-metric"><div class="lbl">Realizado (caixas vendidas)</div><div class="val" id="vd-real">—</div><div class="vsub" id="vd-real-sub">— de — cx</div><div class="bar"><span id="vd-real-bar" style="width:0;background:var(--green)"></span></div></div>
     <div class="vd-metric"><div class="lbl">Cobertura</div><div class="val" id="vd-cob">—</div><div class="vsub" id="vd-cob-sub">— de — clientes</div><div class="bar"><span id="vd-cob-bar" style="width:0;background:var(--accent)"></span></div></div>
   </div>
+  <div class="vd-coord-tabs" id="vd-coord-tabs" style="display:none"></div>
   <div class="vd-filter">
     <button class="vd-chip on" data-f="todos" onclick="vdSetFiltro('todos')">Todos</button>
     <button class="vd-chip" data-f="faturar" onclick="vdSetFiltro('faturar')">⚠ Pra faturar</button>
@@ -1360,11 +1361,12 @@ function setMesGlobal(value){
   mesAtual=parseInt(value,10);
   pedidosCarregados=false;
   if(g('dash-mes'))g('dash-mes').value=mesAtual;
-  const visible=['s-dash','s-ped','s-cli','s-metas'].find(id=>g(id).style.display!=='none');
+  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas'].find(id=>g(id).style.display!=='none');
   if(visible==='s-dash')carregarDashboard();
   else if(visible==='s-ped')carregarPedidos();
   else if(visible==='s-cli')renderCliList();
   else if(visible==='s-metas')renderMetas();
+  else if(visible==='s-vendas')vdCarregar();
 }
 
 function logout(){
@@ -1637,6 +1639,24 @@ async function irVendas(){
   show('s-vendas');
   renderNav('nav-vendas','vendas');
   updateSideNav('vendas');
+  vdRenderCoordTabs();
+  g('vd-sub').textContent=coordAtual+' · '+MESES[mesAtual]+'/'+anoAtual;
+  await vdCarregar();
+}
+
+function vdRenderCoordTabs(){
+  const el=g('vd-coord-tabs');
+  el.style.display=isAdmin?'flex':'none';
+  if(!isAdmin){el.innerHTML='';return}
+  el.innerHTML=COORD_KEYS.map(c=>
+    '<button class="admin-tab '+(c===coordAtual?'active':'')+'" onclick="vdSetCoord(\''+c+'\')">'+c+'</button>'
+  ).join('');
+}
+
+async function vdSetCoord(c){
+  if(!isAdmin||!COORD_KEYS.includes(c))return;
+  coordAtual=c;
+  vdRenderCoordTabs();
   g('vd-sub').textContent=coordAtual+' · '+MESES[mesAtual]+'/'+anoAtual;
   await vdCarregar();
 }
@@ -1841,9 +1861,9 @@ function vdAbrirDet(id){
     (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+p.observacao+'</div>':'')+
     '<button class="vd-btn vd-btn-out" style="width:100%;margin-top:10px" onclick="vdEditarPedido()">✏️ Editar</button>';
   g('vd-det-fim').textContent=p.tipo==='in'?'Faturado':'Entregue';
-  g('modal-vd-det').classList.add('show');
+  g('modal-vd-det').classList.add('open');
 }
-function vdFecharDet(){g('modal-vd-det').classList.remove('show');vdDetAtual=null}
+function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
 async function vdMoverStatus(novo){
   if(!vdDetAtual)return;
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+vdDetAtual.id,{method:'PATCH',body:JSON.stringify({status:novo})});
@@ -1932,9 +1952,9 @@ function vdAbrirFichaCli(id){
   g('vdc-p1').value=c.def_p1||'';g('vdc-p2').value=c.def_p2||'';g('vdc-p3').value=c.def_p3||'';
   vdSetCliTipo(vdCliForm.tipo);vdSetCliPrazo(vdCliForm.prazo);
   vdRenderCliSku();
-  g('modal-vd-cli').classList.add('show');
+  g('modal-vd-cli').classList.add('open');
 }
-function vdFecharFichaCli(){g('modal-vd-cli').classList.remove('show');vdEditCliId=null}
+function vdFecharFichaCli(){g('modal-vd-cli').classList.remove('open');vdEditCliId=null}
 function vdSetCliTipo(t){vdCliForm.tipo=t;document.querySelectorAll('.vd-toggle[data-cv]').forEach(b=>b.classList.toggle('on',b.dataset.cv===t))}
 function vdSetCliPrazo(p){
   vdCliForm.prazo=p;
