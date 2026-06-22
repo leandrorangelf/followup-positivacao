@@ -938,22 +938,19 @@ async function carregarDashboard(silencioso=false){
   if(!silencioso)g('dash-content').innerHTML='<div class="loading">Carregando...</div>';
   try{
     if(isAdmin){
-      const [,anoData,vendas]=await Promise.all([
-        carregarTodosPedidos(),
-        sb(`/rest/v1/pedidos?ano=eq.${anoAtual}&select=*`,{ret:true}),
+      const [anoData,vendas]=await Promise.all([
+        sb(`/rest/v1/pedidos_vendas?ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true}),
         sb(`/rest/v1/pedidos_vendas?mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true})
       ]);
       vendasDashboard=Array.isArray(vendas)?vendas:[];
       renderAdminDash(Array.isArray(anoData)?anoData:[]);
     } else {
-      const [pedMes,anoData,vendas]=await Promise.all([
-        sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true}),
-        sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&select=*`,{ret:true}),
+      const [anoData,vendas]=await Promise.all([
+        sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true}),
         sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true})
       ]);
       vendasDashboard=Array.isArray(vendas)?vendas:[];
-      dadosLocais={};
-      if(Array.isArray(pedMes))pedMes.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
+      dadosLocais=vdAgruparVendasPorCliente(vendasDashboard,coordAtual);
       renderCoordDash(Array.isArray(anoData)?anoData:[]);
     }
   }finally{
@@ -1605,36 +1602,160 @@ renderCliList=function(){
   updateSideNav('cli');
 };
 
+
+function vdListaDashboard(anoData,mesFiltro,coordFiltro){
+  const lista=Array.isArray(anoData)?anoData:[];
+  return lista.filter(p=>
+    Number(p.mes)===Number(mesFiltro) &&
+    (coordFiltro==='todos' || !coordFiltro || p.coordenador===coordFiltro)
+  );
+}
+
+function vdAgruparVendasPorCliente(lista,coordFiltro){
+  const out={};
+  (Array.isArray(lista)?lista:[]).forEach(p=>{
+    if(coordFiltro&&coordFiltro!=='todos'&&p.coordenador!==coordFiltro)return;
+    const nome=p.cliente_nome||p.cliente;
+    if(!nome)return;
+    if(!out[nome])out[nome]={gr:0,gm:0,cm:0,cc:0,click:0};
+    const itens=Array.isArray(p.pedidos_vendas_itens)?p.pedidos_vendas_itens:[];
+    if(itens.length){
+      itens.forEach(i=>{
+        const sk=String(i.sku||'').toUpperCase();
+        const q=Number(i.qty_caixas||0);
+        if(sk==='GR')out[nome].gr+=q;
+        else if(sk==='GM')out[nome].gm+=q;
+        else if(sk==='CM')out[nome].cm+=q;
+        else if(sk==='CC')out[nome].cc+=q;
+      });
+    }else{
+      out[nome].gr+=Number(p.total_caixas||0);
+    }
+  });
+  return out;
+}
+
+function vdVolumePedidoDash(p){
+  const x=vdResumoPedido(p);
+  return Number(x.pedidoCx||0);
+}
+
+function vdSkuDash(lista){
+  const sku={GR:0,GM:0,CM:0,CC:0};
+  (Array.isArray(lista)?lista:[]).forEach(p=>{
+    const itens=Array.isArray(p.pedidos_vendas_itens)?p.pedidos_vendas_itens:[];
+    if(itens.length){
+      itens.forEach(i=>{
+        const sk=String(i.sku||'').toUpperCase();
+        if(sku[sk]!==undefined)sku[sk]+=Number(i.qty_caixas||0);
+      });
+    }else{
+      sku.GR+=Number(p.total_caixas||0);
+    }
+  });
+  return sku;
+}
+
 renderAdminDash=function(anoData){
+  const vendasMes=vdListaDashboard(anoData,mesAtual,'todos');
+  vendasDashboard=vendasMes;
+  const vendasPorCoord={};
+  COORD_KEYS.forEach(c=>{vendasPorCoord[c]=vdListaDashboard(anoData,mesAtual,c);});
+
   const activeAll=COORD_KEYS.flatMap(c=>clientesAtivos(c).map(cli=>({coord:c,...cli})));
   const totalAtivos=activeAll.length;
   const rows=COORD_KEYS.map(coord=>{
-    const ativos=clientesAtivos(coord),d=todosPedidosMes[coord]||{},meta=METAS[coord][mesAtual]||0;
-    const volume=ativos.reduce((s,c)=>s+totCliD(d,c.nome),0),comPedido=ativos.filter(c=>totCliD(d,c.nome)>0).length;
+    const ativos=clientesAtivos(coord);
+    const lista=vendasPorCoord[coord]||[];
+    const d=vdAgruparVendasPorCliente(lista,coord);
+    const meta=METAS[coord][mesAtual]||0;
+    const volume=lista.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+    const comPedido=ativos.filter(c=>totCliD(d,c.nome)>0).length;
     return{coord,ativos:ativos.length,volume,meta,comPedido,pendentes:ativos.length-comPedido,pctPos:ativos.length?Math.round(comPedido/ativos.length*100):0,pctMeta:meta?Math.round(volume/meta*100):0};
   });
-  const volume=rows.reduce((s,r)=>s+r.volume,0),meta=rows.reduce((s,r)=>s+r.meta,0),comPedido=rows.reduce((s,r)=>s+r.comPedido,0),pendentes=rows.reduce((s,r)=>s+r.pendentes,0);
-  const pctPos=totalAtivos?Math.round(comPedido/totalAtivos*100):0,pctMeta=meta?Math.round(volume/meta*100):0;
-  const trend=MESES.map((m,i)=>{const data=anoData.filter(r=>r.mes===i);const vol=data.reduce((s,r)=>s+(r.gr||0)+(r.gm||0)+(r.cm||0)+(r.cc||0),0);const mt=COORD_KEYS.reduce((s,c)=>s+(METAS[c][i]||0),0);return{label:m.slice(0,3),pct:mt?Math.min(140,Math.round(vol/mt*100)):0};});
+
+  const volume=rows.reduce((s,r)=>s+r.volume,0);
+  const meta=rows.reduce((s,r)=>s+r.meta,0);
+  const comPedido=rows.reduce((s,r)=>s+r.comPedido,0);
+  const pendentes=rows.reduce((s,r)=>s+r.pendentes,0);
+  const pctPos=totalAtivos?Math.round(comPedido/totalAtivos*100):0;
+  const pctMeta=meta?Math.round(volume/meta*100):0;
+
+  const trend=MESES.map((m,i)=>{
+    const lista=vdListaDashboard(anoData,i,'todos');
+    const vol=lista.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+    const mt=COORD_KEYS.reduce((s,c)=>s+(METAS[c][i]||0),0);
+    return{label:m.slice(0,3),pct:mt?Math.min(140,Math.round(vol/mt*100)):0,vol};
+  });
   const trendMax=Math.max(100,...trend.map(t=>t.pct));
-  const sku={GR:0,GM:0,CM:0,CC:0};Object.values(todosPedidosMes).forEach(d=>Object.values(d||{}).forEach(v=>{sku.GR+=v.gr||0;sku.GM+=v.gm||0;sku.CM+=v.cm||0;sku.CC+=v.cc||0;}));
+  const sku=vdSkuDash(vendasMes);
   const skuTotal=Math.max(1,Object.values(sku).reduce((s,v)=>s+v,0));
-  const pendingNames=[];COORD_KEYS.forEach(c=>{const d=todosPedidosMes[c]||{};clientesAtivos(c).filter(cli=>totCliD(d,cli.nome)===0).slice(0,3).forEach(cli=>pendingNames.push({name:cli.nome,coord:c}));});
+  const pendingNames=[];
+  COORD_KEYS.forEach(c=>{
+    const d=vdAgruparVendasPorCliente(vendasPorCoord[c]||[],c);
+    clientesAtivos(c).filter(cli=>totCliD(d,cli.nome)===0).slice(0,3).forEach(cli=>pendingNames.push({name:cli.nome,coord:c}));
+  });
+
   g('dash-content').innerHTML=`
-    ${vdDashboardResumoHTML(vendasDashboard)}
+    ${vdDashboardResumoHTML(vendasMes)}
     <div class="dash-kpis">
       <div class="dash-kpi"><div class="dash-kpi-label">Positivação geral</div><div class="dash-kpi-value" style="color:var(--purple)">${pctPos}%</div><div class="dash-kpi-sub good">${comPedido} de ${totalAtivos} clientes ativos</div></div>
-      <div class="dash-kpi"><div class="dash-kpi-label">Volume total</div><div class="dash-kpi-value">${volume.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">Realizado em ${MESES[mesAtual]}</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-label">Volume vendido</div><div class="dash-kpi-value">${volume.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">Vendas realizadas em ${MESES[mesAtual]}</div></div>
       <div class="dash-kpi"><div class="dash-kpi-label">Meta do mês</div><div class="dash-kpi-value">${meta.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub ${pctMeta>=100?'good':''}">${pctMeta}% cumprida</div></div>
-      <div class="dash-kpi"><div class="dash-kpi-label">Clientes pendentes</div><div class="dash-kpi-value" style="color:var(--danger)">${pendentes}</div><div class="dash-kpi-sub bad">${totalAtivos?Math.round(pendentes/totalAtivos*100):0}% da carteira ativa</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-label">Clientes sem venda</div><div class="dash-kpi-value" style="color:var(--danger)">${pendentes}</div><div class="dash-kpi-sub bad">${totalAtivos?Math.round(pendentes/totalAtivos*100):0}% da carteira ativa</div></div>
     </div>
     <div class="dash-grid">
-      <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de performance</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
-      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes}</div></div><div class="attention-list">${pendingNames.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.name}</strong><br><small style="color:#7c879c">${p.coord}</small></span><span class="attention-count">Pendente</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de vendas realizadas</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
+      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes}</div></div><div class="attention-list">${pendingNames.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.name}</strong><br><small style="color:#7c879c">${p.coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
     </div>
     <div class="dash-lower">
-      <section class="panel"><div class="panel-title-row"><div class="panel-title">Performance por coordenador</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Coordenador</th><th>Positivação</th><th>Volume</th><th>Meta</th><th>Cumprimento</th><th>Pendentes</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="table-name">${r.coord}</td><td>${r.pctPos}%</td><td>${r.volume.toLocaleString('pt-BR')} cx</td><td>${r.meta.toLocaleString('pt-BR')} cx</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-progress"><span style="width:${Math.min(100,r.pctMeta)}%"></span></div><strong>${r.pctMeta}%</strong></div></td><td>${r.pendentes}</td></tr>`).join('')}</tbody></table></div></section>
-      <section class="panel"><div class="panel-title-row"><div class="panel-title">Mix de SKUs</div><div class="panel-note">${volume.toLocaleString('pt-BR')} cx</div></div>${Object.entries(sku).map(([k,v],i)=>`<div class="sku-row"><div class="sku-row-top"><strong>${k}</strong><span>${Math.round(v/skuTotal*100)}% · ${v.toLocaleString('pt-BR')} cx</span></div><div class="sku-track"><div class="sku-fill" style="width:${Math.round(v/skuTotal*100)}%;opacity:${1-i*.14}"></div></div></div>`).join('')}</section>
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Performance por coordenador</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Coordenador</th><th>Positivação</th><th>Volume vendido</th><th>Meta</th><th>Cumprimento</th><th>Sem venda</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="table-name">${r.coord}</td><td>${r.pctPos}%</td><td>${r.volume.toLocaleString('pt-BR')} cx</td><td>${r.meta.toLocaleString('pt-BR')} cx</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-progress"><span style="width:${Math.min(100,r.pctMeta)}%"></span></div><strong>${r.pctMeta}%</strong></div></td><td>${r.pendentes}</td></tr>`).join('')}</tbody></table></div></section>
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Mix de SKUs vendidos</div><div class="panel-note">${volume.toLocaleString('pt-BR')} cx</div></div>${Object.entries(sku).map(([k,v],i)=>`<div class="sku-row"><div class="sku-row-top"><strong>${k}</strong><span>${Math.round(v/skuTotal*100)}% · ${v.toLocaleString('pt-BR')} cx</span></div><div class="sku-track"><div class="sku-fill" style="width:${Math.round(v/skuTotal*100)}%;opacity:${1-i*.14}"></div></div></div>`).join('')}</section>
+    </div>`;
+  updateSideNav('dash');
+};
+
+renderCoordDash=function(anoData){
+  const coord=coordAtual;
+  const vendasMes=vdListaDashboard(anoData,mesAtual,coord);
+  vendasDashboard=vendasMes;
+  dadosLocais=vdAgruparVendasPorCliente(vendasMes,coord);
+
+  const ativos=clientesAtivos(coord);
+  const meta=METAS[coord][mesAtual]||0;
+  const volume=vendasMes.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+  const comPedido=ativos.filter(c=>totCliD(dadosLocais,c.nome)>0).length;
+  const pendentes=ativos.filter(c=>totCliD(dadosLocais,c.nome)===0);
+  const pctPos=ativos.length?Math.round(comPedido/ativos.length*100):0;
+  const pctMeta=meta?Math.round(volume/meta*100):0;
+  const parciais=vdResumoLista(vendasMes).parciais;
+
+  const trend=MESES.map((m,i)=>{
+    const lista=vdListaDashboard(anoData,i,coord);
+    const vol=lista.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+    const mt=METAS[coord][i]||0;
+    return{label:m.slice(0,3),pct:mt?Math.min(140,Math.round(vol/mt*100)):0,vol};
+  });
+  const trendMax=Math.max(100,...trend.map(t=>t.pct));
+  const sku=vdSkuDash(vendasMes);
+  const skuTotal=Math.max(1,Object.values(sku).reduce((s,v)=>s+v,0));
+  const rows=ativos.slice().sort((a,b)=>totCliD(dadosLocais,a.nome)-totCliD(dadosLocais,b.nome)||a.nome.localeCompare(b.nome));
+
+  g('dash-content').innerHTML=`
+    ${vdDashboardResumoHTML(vendasMes)}
+    <div class="dash-kpis">
+      <div class="dash-kpi"><div class="dash-kpi-label">Positivação da carteira</div><div class="dash-kpi-value" style="color:var(--purple)">${pctPos}%</div><div class="dash-kpi-sub good">${comPedido} de ${ativos.length} clientes ativos</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-label">Volume vendido</div><div class="dash-kpi-value">${volume.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">Vendas realizadas em ${MESES[mesAtual]}</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-label">Meta do mês</div><div class="dash-kpi-value">${meta.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub ${pctMeta>=100?'good':''}">${pctMeta}% cumprida</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-label">Clientes sem venda</div><div class="dash-kpi-value" style="color:var(--danger)">${pendentes.length}</div><div class="dash-kpi-sub bad">${ativos.length?Math.round(pendentes.length/ativos.length*100):0}% da carteira ativa</div></div>
+    </div>
+    <div class="dash-grid">
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de vendas realizadas</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
+      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length}</div></div><div class="attention-list">${pendentes.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.nome}</strong><br><small style="color:#7c879c">${coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
+    </div>
+    <div class="dash-lower">
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Clientes da carteira</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Status</th><th>Volume vendido</th><th>SKUs</th></tr></thead><tbody>${rows.map(c=>{const d=dadosLocais[c.nome]||{},vol=totCliD(d,c.nome),skus=Object.entries({GR:d.gr||0,GM:d.gm||0,CM:d.cm||0,CC:d.cc||0}).filter(([k,v])=>v>0).map(([k,v])=>`${k}: ${v}`).join(' · ')||'-';return`<tr><td class="table-name">${c.nome}</td><td>${vol>0?'Com venda':'Sem venda'}</td><td>${vol.toLocaleString('pt-BR')} cx</td><td>${skus}</td></tr>`}).join('')}</tbody></table></div></section>
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Mix de SKUs vendidos</div><div class="panel-note">${volume.toLocaleString('pt-BR')} cx</div></div>${Object.entries(sku).map(([k,v],i)=>`<div class="sku-row"><div class="sku-row-top"><strong>${k}</strong><span>${Math.round(v/skuTotal*100)}% · ${v.toLocaleString('pt-BR')} cx</span></div><div class="sku-track"><div class="sku-fill" style="width:${Math.round(v/skuTotal*100)}%;opacity:${1-i*.14}"></div></div></div>`).join('')}</section>
     </div>`;
   updateSideNav('dash');
 };
