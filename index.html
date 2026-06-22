@@ -692,6 +692,7 @@ async function sha256(txt){
 let user=null,isAdmin=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear();
 let dadosLocais={},clientesDB={},pedidosCarregados=false,coordPedCarregado=null,mesPedCarregado=null;
 let cliCoordAtual=COORD_KEYS[0];
+let salvandoTudo=false;
 
 // ── UTILS ──
 const g=id=>document.getElementById(id);
@@ -817,10 +818,15 @@ function toast(msg,type='info',dur=2000){
 
 async function sb(path,opts={}){
   try{
+    const {ret=false,...fetchOpts}=opts;
     const headers={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json',...(opts.headers||{})};
     if(!headers['Prefer'])headers['Prefer']='return=minimal';
-    const r=await fetch(SB+path,{...opts,headers});
-    if(opts.ret){const t=await r.text();try{return JSON.parse(t);}catch{return[];}}
+    const r=await fetch(SB+path,{...fetchOpts,headers});
+    if(ret){
+      const t=await r.text();
+      if(!r.ok){console.error('Erro Supabase:',r.status,t);return[];}
+      try{return JSON.parse(t);}catch{return[];}
+    }
     return {ok:r.ok,status:r.status};
   }catch(e){console.error('Erro rede:',e);if(opts.ret)return[];return{ok:false,status:0};}
 }
@@ -1123,16 +1129,30 @@ async function carregarPedidos(){
 }
 
 async function salvarTudo(){
+  if(salvandoTudo)return;
   toast('Salvando...','info',10000);
   const ativos=clientesAtivos(coordAtual);
   if(!ativos.length){toast('Nenhum cliente ativo','error',2000);return;}
-  // Delete existing records for this coord/mes/ano then reinsert
-  const del=await sb('/rest/v1/pedidos?coordenador=eq.'+encodeURIComponent(coordAtual)+'&mes=eq.'+mesAtual+'&ano=eq.'+anoAtual,{method:'DELETE'});
-  if(!del||!del.ok){toast('⚠ Erro ao salvar ('+((del&&del.status)||'sem conexão')+')','error',4000);return;}
-  const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,click:(dadosLocais[c.nome]||{}).click||0,updated_at:new Date().toISOString()}));
-  const res=await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(rows)});
-  if(!res||!res.ok){toast('⚠ Erro ao salvar ('+((res&&res.status)||'sem conexão')+')','error',4000);}
-  else{toast('✓ Salvo com sucesso!','ok',2000);}
+  salvandoTudo=true;
+  const filtro='coordenador=eq.'+encodeURIComponent(coordAtual)+'&mes=eq.'+mesAtual+'&ano=eq.'+anoAtual;
+  try{
+    const anteriores=await sb('/rest/v1/pedidos?'+filtro+'&select=*',{ret:true});
+    const backup=Array.isArray(anteriores)?anteriores.map(r=>({
+      coordenador:r.coordenador,mes:r.mes,ano:r.ano,cliente:r.cliente,
+      gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0,updated_at:r.updated_at
+    })):[];
+    const del=await sb('/rest/v1/pedidos?'+filtro,{method:'DELETE'});
+    if(!del||!del.ok){toast('⚠ Erro ao salvar ('+((del&&del.status)||'sem conexão')+')','error',4000);return;}
+    const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,click:(dadosLocais[c.nome]||{}).click||0,updated_at:new Date().toISOString()}));
+    const res=await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(rows)});
+    if(!res||!res.ok){
+      if(backup.length)await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(backup)});
+      toast('⚠ Erro ao salvar. Os dados anteriores foram restaurados.','error',5000);return;
+    }
+    toast('✓ Salvo com sucesso!','ok',2000);
+  }finally{
+    salvandoTudo=false;
+  }
 }
 
 function renderPedHeader(){
@@ -1245,7 +1265,7 @@ function fecharModalInativar(){g('modal-inativar').classList.remove('open');}
 async function confirmarReativar(){
   const desde=parseInt(g('reativar-mes').value);
   const ate=parseInt(g('reativar-ate').value);
-  const res=await sb('/rest/v1/clientes?id=eq.'+_toggleId,{method:'PATCH',body:JSON.stringify({ativo_desde:desde,inativo_desde:ate})});
+  const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(_toggleId),{method:'PATCH',body:JSON.stringify({ativo_desde:desde,inativo_desde:ate})});
   if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
   toast('✓ Cliente reativado!','ok');
   fecharModalReativar();
@@ -1256,7 +1276,7 @@ async function confirmarReativar(){
 
 async function confirmarInativar(){
   const desde=parseInt(g('inativar-mes').value);
-  const res=await sb('/rest/v1/clientes?id=eq.'+_toggleId,{method:'PATCH',body:JSON.stringify({inativo_desde:desde})});
+  const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(_toggleId),{method:'PATCH',body:JSON.stringify({inativo_desde:desde})});
   if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
   toast('Cliente inativado!','ok');
   fecharModalInativar();
@@ -1637,7 +1657,8 @@ let vdEditCliId=null;
 let vdSalvandoPedido=false;
 let vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
 let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0}};
-const vdFmt=v=>'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 async function irVendas(){
   if(!isAdmin)vdCoordFiltro=coordAtual;
@@ -1684,7 +1705,7 @@ function vdRenderMetrics(){
   const real=confirmados.reduce((s,p)=>s+(Number(p.total_caixas)||(p.pedidos_vendas_itens||[]).reduce((a,i)=>a+Number(i.qty_caixas||0),0)),0);
   const valor=confirmados.reduce((s,p)=>s+Number(p.total||0),0);
   g('vd-total-pedidos').textContent=vdPedidos.length;
-  g('vd-total-pedidos-sub').textContent=vdPedidos.filter(p=>p.status==='previsao').length+' previsões · '+vdPedidos.filter(p=>p.status==='pedido').length+' pra faturar';
+  g('vd-total-pedidos-sub').textContent=vdPedidos.filter(p=>p.status==='previsao').length+' previsões · '+vdPedidos.filter(p=>p.status==='pedido'&&p.tipo==='in').length+' pra faturar';
   g('vd-total-valor').textContent=vdFmt(valor);
   g('vd-total-valor-sub').textContent=real+' caixas no total';
   const pctReal=meta>0?Math.round(real/meta*100):0;
@@ -1736,12 +1757,12 @@ function vdCardHTML(p){
     '<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>'+
     '<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button></div>':'';
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
-    '<div class="vd-card-row"><div class="vd-card-cli">'+p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
+    '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
       '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+
       '<span class="vd-badge vd-b-skus">'+cx+' cx</span>'+
       '<span class="vd-badge vd-b-prazo">'+(p.prazo_tipo==='avista'?'À vista':'Parcelado')+'</span>'+
-      (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+p.coordenador+'</span>':'')+
+      (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+
       (stEnd?'<span class="vd-badge vd-b-done">'+stEnd+'</span>':'')+
     '</div>'+
     '<div style="font-size:11px;color:var(--muted);margin-top:6px">'+skusLista+'</div>'+acoesGestor+
@@ -1766,7 +1787,7 @@ function vdGoNovo(){
 function vdPopCliSel(){
   const at=clientesAtivos(coordAtual);
   g('vf-cli').innerHTML='<option value="">— Selecione —</option>'+
-    at.map(c=>'<option value="'+c.id+'">'+c.nome+(c.uf?' ('+c.uf+')':'')+'</option>').join('');
+    at.map(c=>'<option value="'+vdEsc(c.id)+'">'+vdEsc(c.nome)+(c.uf?' ('+vdEsc(c.uf)+')':'')+'</option>').join('');
 }
 
 function vdAplicarFicha(){
@@ -1842,28 +1863,55 @@ async function vdSalvarPedido(){
   const liberarSalvamento=()=>{vdSalvandoPedido=false;btnSalvar.disabled=false};
   toast('Salvando...','',8000);
   let pedidoId=vdEditPedidoId;
-  if(vdEditPedidoId){
-    const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+vdEditPedidoId,{method:'PATCH',body:JSON.stringify(ped)});
-    if(!r||!r.ok){liberarSalvamento();toast('Erro ao salvar pedido','error');return}
-    await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+vdEditPedidoId,{method:'DELETE'});
-  }else{
-    const j=await sb('/rest/v1/pedidos_vendas',{
-      method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(ped),ret:true
-    });
-    if(!Array.isArray(j)||!j[0]||!j[0].id){
-      liberarSalvamento();
-      toast('Erro ao criar pedido','error');return
+  const original=vdEditPedidoId?vdPedidos.find(p=>p.id===vdEditPedidoId):null;
+  const itensOriginais=(original&&original.pedidos_vendas_itens||[]).map(i=>({
+    pedido_id:vdEditPedidoId,sku:i.sku,qty_caixas:i.qty_caixas,valor_pacote:i.valor_pacote,
+    packs_por_caixa:i.packs_por_caixa,subtotal:i.subtotal
+  }));
+  const pedOriginal=original?{
+    coordenador:original.coordenador,cliente_id:original.cliente_id,cliente_nome:original.cliente_nome,
+    cliente_uf:original.cliente_uf,tipo:original.tipo,prazo_tipo:original.prazo_tipo,
+    parcela_1_dias:original.parcela_1_dias,parcela_2_dias:original.parcela_2_dias,
+    parcela_3_dias:original.parcela_3_dias,total:original.total,total_caixas:original.total_caixas,
+    observacao:original.observacao,mes:original.mes,ano:original.ano,status:original.status
+  }:null;
+  try{
+    if(vdEditPedidoId){
+      const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'PATCH',body:JSON.stringify(ped)});
+      if(!r||!r.ok){toast('Erro ao salvar pedido','error');return}
+      const del=await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'DELETE'});
+      if(!del||!del.ok){
+        await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'PATCH',body:JSON.stringify(pedOriginal)});
+        toast('Não foi possível atualizar os itens','error');return
+      }
+    }else{
+      const j=await sb('/rest/v1/pedidos_vendas',{
+        method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(ped),ret:true
+      });
+      if(!Array.isArray(j)||!j[0]||!j[0].id){toast('Erro ao criar pedido','error');return}
+      pedidoId=j[0].id;
     }
-    pedidoId=j[0].id;
+    const itensIns=itens.map(i=>Object.assign({},i,{pedido_id:pedidoId}));
+    const r2=await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',body:JSON.stringify(itensIns)});
+    if(!r2||!r2.ok){
+      if(vdEditPedidoId){
+        if(itensOriginais.length)await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',body:JSON.stringify(itensOriginais)});
+        await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'PATCH',body:JSON.stringify(pedOriginal)});
+      }else{
+        await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(pedidoId),{method:'DELETE'});
+      }
+      toast('Erro ao salvar itens. A alteração foi desfeita.','error');return
+    }
+    toast('✓ Pedido salvo!','ok');
+    await vdCarregar();
+    show('s-vendas');
+    renderNav('nav-vendas','vendas');
+  }catch(e){
+    console.error('Erro ao salvar pedido:',e);
+    toast('Erro inesperado ao salvar pedido','error');
+  }finally{
+    liberarSalvamento();
   }
-  const itensIns=itens.map(i=>Object.assign({},i,{pedido_id:pedidoId}));
-  const r2=await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',body:JSON.stringify(itensIns)});
-  if(!r2||!r2.ok){liberarSalvamento();toast('Erro ao salvar itens','error');return}
-  toast('✓ Pedido salvo!','ok');
-  await vdCarregar();
-  show('s-vendas');
-  renderNav('nav-vendas','vendas');
-  liberarSalvamento();
 }
 
 function vdAbrirDet(id){
@@ -1871,14 +1919,14 @@ function vdAbrirDet(id){
   vdDetAtual=p;
   g('vd-det-title').textContent=p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'');
   const itens=p.pedidos_vendas_itens||[];
-  const itensHTML=itens.map(i=>'<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span>'+i.sku+' · '+i.qty_caixas+' cx × '+i.packs_por_caixa+' × '+vdFmt(i.valor_pacote)+'</span><strong>'+vdFmt(i.subtotal)+'</strong></div>').join('');
+  const itensHTML=itens.map(i=>'<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)"><span>'+vdEsc(i.sku)+' · '+Number(i.qty_caixas||0)+' cx × '+Number(i.packs_por_caixa||0)+' × '+vdFmt(i.valor_pacote)+'</span><strong>'+vdFmt(i.subtotal)+'</strong></div>').join('');
   const parc=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(x=>x).map(x=>x+'d').join(' / '):'À vista';
   g('vd-det-body').innerHTML=
     '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+p.status+'</strong></div>'+
     '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span></div>'+
     itensHTML+
     '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total</span><span>'+vdFmt(p.total)+'</span></div>'+
-    (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+p.observacao+'</div>':'')+
+    (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+vdEsc(p.observacao)+'</div>':'')+
     '<button class="vd-btn vd-btn-out" style="width:100%;margin-top:10px" onclick="vdEditarPedido()">✏️ Editar</button>';
   g('vd-det-fim').textContent=p.tipo==='in'?'Faturado':'Entregue';
   g('modal-vd-det').classList.add('open');
@@ -1886,7 +1934,7 @@ function vdAbrirDet(id){
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
 async function vdMoverStatus(novo){
   if(!vdDetAtual)return;
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+vdDetAtual.id,{method:'PATCH',body:JSON.stringify({status:novo})});
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'PATCH',body:JSON.stringify({status:novo})});
   if(!r||!r.ok){toast('Erro','error');return}
   toast('✓ Status atualizado','ok');
   vdFecharDet();await vdCarregar();
@@ -1898,7 +1946,7 @@ async function vdMoverFinal(){
 async function vdExcluirPedido(){
   if(!vdDetAtual)return;
   if(!confirm('Excluir este pedido?'))return;
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+vdDetAtual.id,{method:'DELETE'});
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
   if(!r||!r.ok){toast('Erro','error');return}
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
@@ -1913,7 +1961,7 @@ async function vdExcluirPedidoPorId(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   if(!confirm('Excluir o pedido de '+p.cliente_nome+'?'))return;
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+id,{method:'DELETE'});
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
   if(!r||!r.ok){toast('Erro ao excluir pedido','error');return}
   toast('Pedido excluido','ok');
   await vdCarregar();
@@ -1921,6 +1969,7 @@ async function vdExcluirPedidoPorId(id){
 function vdEditarPedido(){
   if(!vdDetAtual)return;
   const p=vdDetAtual;
+  if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
   vdEditPedidoId=p.id;
   vdForm={tipo:p.tipo,prazo:p.prazo_tipo,skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
   (p.pedidos_vendas_itens||[]).forEach(i=>{vdForm.skus[i.sku]={q:i.qty_caixas,v:i.valor_pacote}});
@@ -1953,8 +2002,8 @@ function vdRenderFichaList(){
     const skLista=VD_SKUS.filter(s=>parseFloat(sk[s])>0).map(s=>s+':'+vdFmt(sk[s])).join(' · ')||'sem ficha configurada';
     const ativo=c.ativo_desde<=mesAtual&&c.inativo_desde>mesAtual;
     return '<div class="vd-ficha-card" onclick="vdAbrirFichaCli(\''+c.id+'\')">'+
-      '<div class="vd-ficha-info"><div class="n">'+c.nome+(c.uf?' · '+c.uf:'')+(!ativo?' <span style="color:var(--red);font-size:11px">(inativo)</span>':'')+'</div>'+
-      '<div class="m">'+(c.def_tipo?(c.def_tipo.toUpperCase()+' · '):'')+skLista+'</div></div>'+
+      '<div class="vd-ficha-info"><div class="n">'+vdEsc(c.nome)+(c.uf?' · '+vdEsc(c.uf):'')+(!ativo?' <span style="color:var(--red);font-size:11px">(inativo)</span>':'')+'</div>'+
+      '<div class="m">'+(c.def_tipo?(vdEsc(c.def_tipo.toUpperCase())+' · '):'')+vdEsc(skLista)+'</div></div>'+
       '<div style="font-size:20px;color:var(--muted)">›</div></div>';
   }).join(''):'<div class="vd-empty">Nenhum cliente cadastrado. Cadastre primeiro na aba Clientes.</div>';
 }
@@ -2002,7 +2051,7 @@ async function vdSalvarFicha(){
     def_p3:vdCliForm.prazo==='parcelado'?(parseInt(g('vdc-p3').value)||null):null,
     def_skus:vdCliForm.skus
   };
-  const r=await sb('/rest/v1/clientes?id=eq.'+vdEditCliId,{method:'PATCH',body:JSON.stringify(payload)});
+  const r=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(vdEditCliId),{method:'PATCH',body:JSON.stringify(payload)});
   if(!r||!r.ok){toast('Erro ao salvar ficha','error');return}
   toast('✓ Ficha salva','ok');
   vdFecharFichaCli();
@@ -2029,6 +2078,7 @@ function vdExportarPDF(){
   doc.setTextColor(0);
   let y=92,totalGeral=0;
   const tots={GR:{cx:0,r:0},GM:{cx:0,r:0},CM:{cx:0,r:0},CC:{cx:0,r:0}};
+  const semDetalhe={cx:0,r:0};
   lista.forEach((p,idx)=>{
     if(y>740){doc.addPage();y=50}
     doc.setFillColor(26,26,24);
@@ -2043,10 +2093,19 @@ function vdExportarPDF(){
     const stTxt=p.status==='faturado'?'Faturado':p.status==='entregue'?'Entregue':p.status==='pedido'?'Pedido feito':'Previsão';
     doc.text((p.tipo==='in'?'IN (com NF)':'OFF (sem NF)')+'  ·  '+prazoTxt+'  ·  Status: '+stTxt,48,y+2);
     y+=14;doc.setTextColor(0);
-    const linhas=(p.pedidos_vendas_itens||[]).map(i=>{
-      tots[i.sku].cx+=i.qty_caixas;tots[i.sku].r+=Number(i.subtotal||0);
+    const itensPedido=p.pedidos_vendas_itens||[];
+    const linhas=itensPedido.map(i=>{
+      if(tots[i.sku]){
+        tots[i.sku].cx+=Number(i.qty_caixas||0);tots[i.sku].r+=Number(i.subtotal||0);
+      }else{
+        semDetalhe.cx+=Number(i.qty_caixas||0);semDetalhe.r+=Number(i.subtotal||0);
+      }
       return [i.sku,i.qty_caixas+' cx',i.packs_por_caixa+' pac',vdFmt(i.valor_pacote),vdFmt(i.subtotal)];
     });
+    if(!linhas.length){
+      semDetalhe.cx+=Number(p.total_caixas||0);semDetalhe.r+=Number(p.total||0);
+      linhas.push(['SEM DETALHE',Number(p.total_caixas||0)+' cx','—','—',vdFmt(p.total)]);
+    }
     doc.autoTable({
       startY:y,
       head:[['SKU','Caixas','Pacotes/cx','R$/Pacote','Subtotal']],
@@ -2072,7 +2131,9 @@ function vdExportarPDF(){
   doc.autoTable({
     startY:y,
     head:[['SKU','Total Caixas','Total R$']],
-    body:VD_SKUS.map(s=>[s,tots[s].cx+' cx',vdFmt(tots[s].r)]).concat([['TOTAL GERAL','',vdFmt(totalGeral)]]),
+    body:VD_SKUS.map(s=>[s,tots[s].cx+' cx',vdFmt(tots[s].r)])
+      .concat(semDetalhe.cx||semDetalhe.r?[['SEM DETALHE',semDetalhe.cx+' cx',vdFmt(semDetalhe.r)]]:[])
+      .concat([['TOTAL GERAL','',vdFmt(totalGeral)]]),
     theme:'grid',
     styles:{fontSize:9,cellPadding:5},
     headStyles:{fillColor:[26,26,24],textColor:[255,255,255]},
