@@ -335,6 +335,7 @@ body{background:var(--canvas);color:var(--ink)}
     <select id="login-coord">
       <option value="">Selecione seu nome...</option>
       <option value="admin">👁 Leandro (Gestor)</option>
+      <option value="diretoria">📊 Diretoria (Somente leitura)</option>
       <option value="Igor Cater">Igor Cater</option>
       <option value="Marcio Vit">Marcio Vit</option>
       <option value="Vitor Valle">Vitor Valle</option>
@@ -546,9 +547,9 @@ body{background:var(--canvas);color:var(--ink)}
     <button class="vd-chip on" data-f="todos" onclick="vdSetFiltro('todos')">Todos</button>
     <button class="vd-chip" data-f="faturar" onclick="vdSetFiltro('faturar')">⚠ Pra faturar</button>
     <button class="vd-chip" data-f="pendente" onclick="vdSetFiltro('pendente')">Pendentes</button>
-    <button class="vd-chip vd-chip-new" onclick="vdGoNovo()">+ Novo pedido</button>
-    <button class="vd-chip" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
-    <button class="vd-chip vd-chip-pdf" onclick="vdExportarPDF()">📄 PDF</button>
+    <button class="vd-chip vd-chip-new no-diretoria" onclick="vdGoNovo()">+ Novo pedido</button>
+    <button class="vd-chip no-diretoria" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
+    <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF</button>
   </div>
   <div class="vd-section">
     <div class="vd-kanban">
@@ -557,7 +558,7 @@ body{background:var(--canvas);color:var(--ink)}
       <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Faturado / Entregue</h4><span class="vd-kanban-count" id="vd-c-fim">0</span></div><div id="vd-col-fim"></div></div>
     </div>
   </div>
-  <button class="vd-fab" onclick="vdGoNovo()" title="Novo pedido">+</button>
+  <button class="vd-fab no-diretoria" onclick="vdGoNovo()" title="Novo pedido">+</button>
   <div class="bottom-nav" id="nav-vendas"></div>
 </div>
 
@@ -702,7 +703,7 @@ body{background:var(--canvas);color:var(--ink)}
 const SB='https://rpxrjawzkkpnzancmcif.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
 
-const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
+const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','diretoria':'5fed8fa8c4a6813740e5cf8bc55c80e19028a44975f28acad227403d248e564c','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
 const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
 const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const METAS_PADRAO=JSON.parse(JSON.stringify(METAS));
@@ -716,7 +717,7 @@ async function sha256(txt){
   return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-let user=null,isAdmin=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear();
+let user=null,isAdmin=false,isDiretoria=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear();
 let dadosLocais={},clientesDB={},pedidosCarregados=false,coordPedCarregado=null,mesPedCarregado=null;
 let cliCoordAtual=COORD_KEYS[0];
 let salvandoTudo=false;
@@ -885,6 +886,7 @@ function renderNav(navId,active){
 }
 
 function navTo(id){
+  if(isDiretoria && !['dash','vendas'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
   if(id==='dash'){irDash();}
   else if(id==='ped'){irPed();}
   else if(id==='cli'){irCli();}
@@ -900,8 +902,8 @@ async function login(){
   if(!coord){g('login-err').textContent='Selecione seu nome';g('login-err').style.display='block';return;}
   const senhaHash=await sha256(senha);
   if(SENHAS_HASH[coord]!==senhaHash){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
-  user=coord;isAdmin=coord==='admin';
-  coordAtual=isAdmin?COORD_KEYS[0]:coord;
+  user=coord;isAdmin=coord==='admin';isDiretoria=coord==='diretoria';
+  coordAtual=(isAdmin||isDiretoria)?COORD_KEYS[0]:coord;
   cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
   loadMetasLocal();
   setupShell();
@@ -925,7 +927,7 @@ async function irDash(){
   show('s-dash');
   renderNav('nav-dash','dash');
   g('dash-greeting').textContent='Olá,';
-  g('dash-name').textContent=isAdmin?'Leandro':coordAtual;
+  g('dash-name').textContent=isAdmin?'Leandro':(isDiretoria?'Diretoria':coordAtual);
   g('dash-mes').value=mesAtual;
   g('dash-mes').onchange=function(){mesAtual=parseInt(this.value);pedidosCarregados=false;carregarDashboard();};
   await carregarClientes();
@@ -937,7 +939,7 @@ async function carregarDashboard(silencioso=false){
   dashCarregando=true;
   if(!silencioso)g('dash-content').innerHTML='<div class="loading">Carregando...</div>';
   try{
-    if(isAdmin){
+    if(isAdmin||isDiretoria){
       const [anoData,vendas]=await Promise.all([
         sb(`/rest/v1/pedidos_vendas?ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true}),
         sb(`/rest/v1/pedidos_vendas?mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)`,{ret:true})
@@ -1396,10 +1398,11 @@ function setupShell(){
   if(sourceLogo)g('side-brand-logo').src=sourceLogo.src;
   g('shell-mes').innerHTML=MESES.map((m,i)=>`<option value="${i}">${m} ${anoAtual}</option>`).join('');
   g('shell-mes').value=mesAtual;
-  g('side-user-name').textContent=isAdmin?'Leandro':user;
-  g('side-user-role').textContent=isAdmin?'Gestor':'Coordenador';
-  g('side-avatar').textContent=(isAdmin?'L':String(user||'U').charAt(0)).toUpperCase();
+  g('side-user-name').textContent=isAdmin?'Leandro':(isDiretoria?'Diretoria':user);
+  g('side-user-role').textContent=isAdmin?'Gestor':(isDiretoria?'Somente leitura':'Coordenador');
+  g('side-avatar').textContent=(isAdmin?'L':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'block':'none');
+  document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
 }
 
 function updateSideNav(active){
@@ -1428,7 +1431,7 @@ function setMesGlobal(value){
 }
 
 function logout(){
-  user=null;isAdmin=false;coordAtual=null;dadosLocais={};pedidosCarregados=false;
+  user=null;isAdmin=false;isDiretoria=false;coordAtual=null;dadosLocais={};pedidosCarregados=false;
   g('login-senha').value='';g('login-coord').value='';g('login-err').style.display='none';
   show('s-login');
 }
@@ -1856,7 +1859,8 @@ function vdDashboardResumoHTML(lista){
 }
 
 async function irVendas(){
-  if(!isAdmin)vdCoordFiltro=coordAtual;
+  if(isDiretoria)vdCoordFiltro='todos';
+  else if(!isAdmin)vdCoordFiltro=coordAtual;
   else if(vdCoordFiltro!=='todos'&&!COORD_KEYS.includes(vdCoordFiltro))vdCoordFiltro='todos';
   show('s-vendas');
   renderNav('nav-vendas','vendas');
@@ -1868,15 +1872,15 @@ async function irVendas(){
 
 function vdRenderCoordTabs(){
   const el=g('vd-coord-tabs');
-  el.style.display=isAdmin?'flex':'none';
-  if(!isAdmin){el.innerHTML='';return}
+  el.style.display=(isAdmin||isDiretoria)?'flex':'none';
+  if(!(isAdmin||isDiretoria)){el.innerHTML='';return}
   el.innerHTML=['todos',...COORD_KEYS].map(c=>
     '<button class="admin-tab '+(c===vdCoordFiltro?'active':'')+'" onclick="vdSetCoord(\''+c+'\')">'+(c==='todos'?'Todos':c)+'</button>'
   ).join('');
 }
 
 async function vdSetCoord(c){
-  if(!isAdmin||(c!=='todos'&&!COORD_KEYS.includes(c)))return;
+  if(!(isAdmin||isDiretoria)||(c!=='todos'&&!COORD_KEYS.includes(c)))return;
   vdCoordFiltro=c;
   if(c!=='todos')coordAtual=c;
   vdRenderCoordTabs();
@@ -1967,6 +1971,7 @@ function vdCardHTML(p){
 }
 
 function vdGoNovo(){
+  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o pedido','error');return}
   vdEditPedidoId=null;
   vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
@@ -2249,6 +2254,7 @@ function vdEditarPedido(){
 }
 
 function vdIrFicha(){
+  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador para abrir as fichas','error');return}
   show('s-vficha');
   renderNav('nav-vficha','vendas');
@@ -2321,6 +2327,7 @@ async function vdSalvarFicha(){
 }
 
 function vdExportarPDF(){
+  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
   const lista=vdPedidosFiltrados();
   if(!lista.length){toast('Nenhum pedido no filtro atual','error');return}
   const {jsPDF}=window.jspdf;
