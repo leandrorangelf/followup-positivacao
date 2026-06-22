@@ -1830,8 +1830,8 @@ function vdCardHTML(p){
   const stEnd=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Faturado parcial':'';
   const acoesGestor=isAdmin?'<div class="vd-card-actions">'+
     (x.saldoCx>0?'<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>':'')+
-    (x.faturadoCx===0?'<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>':'')+
-    (x.faturadoCx===0?'<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>':'')+'</div>':'';
+    '<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>'+
+    '<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>'+'</div>':'';
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
@@ -2082,10 +2082,10 @@ async function vdMoverFinal(){
 async function vdExcluirPedido(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   if(!vdDetAtual)return;
-  if(vdResumoPedido(vdDetAtual).faturadoCx>0){toast('Pedido com faturamento não pode ser excluído','error');return}
-  if(!confirm('Excluir este pedido?'))return;
+  if(!confirm('Excluir este pedido? Esta ação não pode ser desfeita.'))return;
+  await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
-  if(!r||!r.ok){toast('Erro','error');return}
+  if(!r||!r.ok){toast('Erro ao excluir','error');return}
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
 }
@@ -2098,18 +2098,17 @@ function vdEditarPedidoPorId(id){
 async function vdExcluirPedidoPorId(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
-  if(vdResumoPedido(p).faturadoCx>0){toast('Pedido com faturamento não pode ser excluído','error');return}
-  if(!confirm('Excluir o pedido de '+p.cliente_nome+'?'))return;
+  if(!confirm('Excluir o pedido de '+p.cliente_nome+'? Esta ação não pode ser desfeita.'))return;
+  await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(id),{method:'DELETE'});
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
   if(!r||!r.ok){toast('Erro ao excluir pedido','error');return}
-  toast('Pedido excluido','ok');
+  toast('Pedido excluído','ok');
   await vdCarregar();
 }
 function vdEditarPedido(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   if(!vdDetAtual)return;
   const p=vdDetAtual;
-  if(vdResumoPedido(p).faturadoCx>0){toast('Pedido com faturamento não pode ser alterado','error');return}
   if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
   vdEditPedidoId=p.id;
   vdForm={tipo:p.tipo,prazo:p.prazo_tipo,skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
@@ -2245,11 +2244,13 @@ function vdExportarPDF(){
     doc.text(vdFmt(p.total),pageW-48,y+14,{align:'right'});
     doc.setTextColor(0);doc.setFont(undefined,'normal');
     y+=27;
-    doc.setFontSize(9);doc.setTextColor(80);
-    const prazoTxt=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(x=>x).map(x=>x+'d').join(' / '):'À vista';
+    doc.setFontSize(8.5);doc.setTextColor(80);
+    const prazoTxt=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(v=>v).map(v=>v+'d').join(' / '):'À vista';
     const stTxt=x.status==='parcial'?'Faturado parcial':x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':'Pedido confirmado';
-    doc.text((p.tipo==='in'?'IN (com NF)':'OFF (sem NF)')+'  ·  '+prazoTxt+'  ·  Status: '+stTxt,48,y+2);
-    y+=14;doc.setTextColor(0);
+    doc.text('Fiscal: '+(p.tipo==='in'?'IN (com NF)':'OFF (sem NF)'),48,y+10);
+    doc.text('Prazo: '+prazoTxt,220,y+10);
+    doc.text('Status: '+stTxt,pageW-200,y+10);
+    y+=22;doc.setTextColor(0);
     const linhas=x.itens.map(i=>{
       const pedido=Number(i.qty_caixas||0),faturado=Math.min(pedido,Number(i.qty_faturada||0)),saldo=Math.max(0,pedido-faturado);
       const alvo=tots[i.sku]||semDetalhe;alvo.pedido+=pedido;alvo.faturado+=faturado;alvo.saldo+=saldo;alvo.valor+=Number(i.subtotal||0);
@@ -2261,11 +2262,11 @@ function vdExportarPDF(){
     }
     doc.autoTable({
       startY:y,
-      head:[['Produto','Pedido','Já faturado','Faturar / saldo','Pacotes/cx','Valor negociado/pac','Subtotal pedido']],
+      head:[['Produto','Pedido','Faturado','Saldo','Pcts/cx','Vlr negoc./pac','Subtotal']],
       body:linhas,theme:'grid',
-      styles:{fontSize:8,cellPadding:4},
-      headStyles:{fillColor:[245,244,240],textColor:[26,26,24],fontStyle:'bold'},
-      columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'},4:{halign:'right'},5:{halign:'right'},6:{halign:'right',fontStyle:'bold'}},
+      styles:{fontSize:8,cellPadding:4.5},
+      headStyles:{fillColor:[245,244,240],textColor:[26,26,24],fontStyle:'bold',fontSize:7.5},
+      columnStyles:{0:{fontStyle:'bold',cellWidth:52},1:{halign:'right',cellWidth:58},2:{halign:'right',cellWidth:62},3:{halign:'right',fontStyle:'bold',cellWidth:52},4:{halign:'right',cellWidth:48},5:{halign:'right',cellWidth:90},6:{halign:'right',fontStyle:'bold',cellWidth:72}},
       margin:{left:48,right:48,top:42,bottom:36},
       rowPageBreak:'avoid',showHead:'everyPage'
     });
