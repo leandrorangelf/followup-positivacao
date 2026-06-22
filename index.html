@@ -528,7 +528,7 @@ body{background:var(--canvas);color:var(--ink)}
   <div class="vd-header"><h2>Vendas</h2><div class="sub" id="vd-sub">— · —</div></div>
   <div class="vd-metrics">
     <div class="vd-metric"><div class="lbl">Total de pedidos</div><div class="val" id="vd-total-pedidos">—</div><div class="vsub" id="vd-total-pedidos-sub">—</div></div>
-    <div class="vd-metric"><div class="lbl">Valor vendido</div><div class="val" id="vd-total-valor">—</div><div class="vsub" id="vd-total-valor-sub">—</div></div>
+    <div class="vd-metric"><div class="lbl">Valor confirmado</div><div class="val" id="vd-total-valor">—</div><div class="vsub" id="vd-total-valor-sub">—</div></div>
     <div class="vd-metric"><div class="lbl">Realizado (caixas vendidas)</div><div class="val" id="vd-real">—</div><div class="vsub" id="vd-real-sub">— de — cx</div><div class="bar"><span id="vd-real-bar" style="width:0;background:var(--green)"></span></div></div>
     <div class="vd-metric"><div class="lbl">Cobertura</div><div class="val" id="vd-cob">—</div><div class="vsub" id="vd-cob-sub">— de — clientes</div><div class="bar"><span id="vd-cob-bar" style="width:0;background:var(--accent)"></span></div></div>
   </div>
@@ -1680,10 +1680,11 @@ function vdRenderMetrics(){
   const geral=vdCoordFiltro==='todos';
   const coords=geral?COORD_KEYS:[vdCoordFiltro];
   const meta=coords.reduce((s,c)=>s+(METAS[c]?METAS[c][mesAtual]:0),0);
-  const real=vdPedidos.reduce((s,p)=>s+(p.total_caixas||(p.pedidos_vendas_itens||[]).reduce((a,i)=>a+(i.qty_caixas||0),0)),0);
-  const valor=vdPedidos.reduce((s,p)=>s+Number(p.total||0),0);
+  const confirmados=vdPedidos.filter(p=>p.status!=='previsao');
+  const real=confirmados.reduce((s,p)=>s+(Number(p.total_caixas)||(p.pedidos_vendas_itens||[]).reduce((a,i)=>a+Number(i.qty_caixas||0),0)),0);
+  const valor=confirmados.reduce((s,p)=>s+Number(p.total||0),0);
   g('vd-total-pedidos').textContent=vdPedidos.length;
-  g('vd-total-pedidos-sub').textContent=vdPedidos.filter(p=>p.status==='pedido').length+' aguardando faturamento';
+  g('vd-total-pedidos-sub').textContent=vdPedidos.filter(p=>p.status==='previsao').length+' previsões · '+vdPedidos.filter(p=>p.status==='pedido').length+' pra faturar';
   g('vd-total-valor').textContent=vdFmt(valor);
   g('vd-total-valor-sub').textContent=real+' caixas no total';
   const pctReal=meta>0?Math.round(real/meta*100):0;
@@ -1692,7 +1693,7 @@ function vdRenderMetrics(){
   g('vd-real-bar').style.width=Math.min(100,pctReal)+'%';
   g('vd-real-bar').style.background=pctReal>=80?'var(--green)':pctReal>=50?'var(--amber)':'var(--red)';
   const ativos=coords.flatMap(c=>clientesAtivos(c).map(cli=>({coord:c,...cli})));
-  const ids=new Set(vdPedidos.map(p=>p.coordenador+'|'+p.cliente_id));
+  const ids=new Set(confirmados.map(p=>p.coordenador+'|'+p.cliente_id));
   const pos=ids.size;
   const pctCob=ativos.length>0?Math.round(pos/ativos.length*100):0;
   g('vd-cob').textContent=pctCob+'%';
@@ -1726,8 +1727,10 @@ function vdRenderKanban(){
 
 function vdCardHTML(p){
   const itens=p.pedidos_vendas_itens||[];
-  const cx=itens.reduce((s,i)=>s+i.qty_caixas,0);
-  const skusLista=itens.map(i=>i.sku+':'+i.qty_caixas).join(' · ');
+  const cxItens=itens.reduce((s,i)=>s+Number(i.qty_caixas||0),0);
+  const cx=cxItens||Number(p.total_caixas||0);
+  const skusLista=itens.length?itens.map(i=>i.sku+':'+i.qty_caixas).join(' · '):
+    (cx>0?'Detalhamento de SKUs não registrado':'Sem itens registrados');
   const stEnd=p.status==='faturado'?'Faturado':p.status==='entregue'?'Entregue':'';
   const acoesGestor=isAdmin?'<div class="vd-card-actions">'+
     '<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>'+
