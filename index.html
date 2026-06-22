@@ -246,7 +246,8 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-header{background:var(--text);color:#fff;padding:18px 22px}
 .vd-header h2{font-size:22px;font-weight:600}
 .vd-header .sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
-.vd-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px 22px 6px;max-width:1540px;margin:0 auto}
+.vd-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px 22px 6px;max-width:1540px;margin:0 auto}
+@media(max-width:900px){.vd-metrics{grid-template-columns:1fr 1fr}}
 .vd-metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
 .vd-metric .lbl{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
 .vd-metric .val{font-size:28px;font-weight:700}
@@ -526,6 +527,8 @@ body{background:var(--canvas);color:var(--ink)}
 <div id="s-vendas" class="screen" style="display:none">
   <div class="vd-header"><h2>Vendas</h2><div class="sub" id="vd-sub">— · —</div></div>
   <div class="vd-metrics">
+    <div class="vd-metric"><div class="lbl">Total de pedidos</div><div class="val" id="vd-total-pedidos">—</div><div class="vsub" id="vd-total-pedidos-sub">—</div></div>
+    <div class="vd-metric"><div class="lbl">Valor vendido</div><div class="val" id="vd-total-valor">—</div><div class="vsub" id="vd-total-valor-sub">—</div></div>
     <div class="vd-metric"><div class="lbl">Realizado (caixas vendidas)</div><div class="val" id="vd-real">—</div><div class="vsub" id="vd-real-sub">— de — cx</div><div class="bar"><span id="vd-real-bar" style="width:0;background:var(--green)"></span></div></div>
     <div class="vd-metric"><div class="lbl">Cobertura</div><div class="val" id="vd-cob">—</div><div class="vsub" id="vd-cob-sub">— de — clientes</div><div class="bar"><span id="vd-cob-bar" style="width:0;background:var(--accent)"></span></div></div>
   </div>
@@ -1627,6 +1630,7 @@ const VD_SKUS=['GR','GM','CM','CC'];
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50};
 let vdPedidos=[];
 let vdFiltro='todos';
+let vdCoordFiltro='todos';
 let vdEditPedidoId=null;
 let vdDetAtual=null;
 let vdEditCliId=null;
@@ -1636,11 +1640,13 @@ let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0}};
 const vdFmt=v=>'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 
 async function irVendas(){
+  if(!isAdmin)vdCoordFiltro=coordAtual;
+  else if(vdCoordFiltro!=='todos'&&!COORD_KEYS.includes(vdCoordFiltro))vdCoordFiltro='todos';
   show('s-vendas');
   renderNav('nav-vendas','vendas');
   updateSideNav('vendas');
   vdRenderCoordTabs();
-  g('vd-sub').textContent=coordAtual+' · '+MESES[mesAtual]+'/'+anoAtual;
+  g('vd-sub').textContent=(vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro)+' · '+MESES[mesAtual]+'/'+anoAtual;
   await vdCarregar();
 }
 
@@ -1648,36 +1654,45 @@ function vdRenderCoordTabs(){
   const el=g('vd-coord-tabs');
   el.style.display=isAdmin?'flex':'none';
   if(!isAdmin){el.innerHTML='';return}
-  el.innerHTML=COORD_KEYS.map(c=>
-    '<button class="admin-tab '+(c===coordAtual?'active':'')+'" onclick="vdSetCoord(\''+c+'\')">'+c+'</button>'
+  el.innerHTML=['todos',...COORD_KEYS].map(c=>
+    '<button class="admin-tab '+(c===vdCoordFiltro?'active':'')+'" onclick="vdSetCoord(\''+c+'\')">'+(c==='todos'?'Todos':c)+'</button>'
   ).join('');
 }
 
 async function vdSetCoord(c){
-  if(!isAdmin||!COORD_KEYS.includes(c))return;
-  coordAtual=c;
+  if(!isAdmin||(c!=='todos'&&!COORD_KEYS.includes(c)))return;
+  vdCoordFiltro=c;
+  if(c!=='todos')coordAtual=c;
   vdRenderCoordTabs();
-  g('vd-sub').textContent=coordAtual+' · '+MESES[mesAtual]+'/'+anoAtual;
+  g('vd-sub').textContent=(c==='todos'?'Todos os coordenadores':c)+' · '+MESES[mesAtual]+'/'+anoAtual;
   await vdCarregar();
 }
 
 async function vdCarregar(){
-  const d=await sb('/rest/v1/pedidos_vendas?coordenador=eq.'+encodeURIComponent(coordAtual)+'&mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
+  const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
+  const d=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
   vdPedidos=Array.isArray(d)?d:[];
   vdRenderMetrics();
   vdRenderKanban();
 }
 
 function vdRenderMetrics(){
-  const meta=METAS[coordAtual]?METAS[coordAtual][mesAtual]:0;
+  const geral=vdCoordFiltro==='todos';
+  const coords=geral?COORD_KEYS:[vdCoordFiltro];
+  const meta=coords.reduce((s,c)=>s+(METAS[c]?METAS[c][mesAtual]:0),0);
   const real=vdPedidos.reduce((s,p)=>s+(p.total_caixas||(p.pedidos_vendas_itens||[]).reduce((a,i)=>a+(i.qty_caixas||0),0)),0);
+  const valor=vdPedidos.reduce((s,p)=>s+Number(p.total||0),0);
+  g('vd-total-pedidos').textContent=vdPedidos.length;
+  g('vd-total-pedidos-sub').textContent=vdPedidos.filter(p=>p.status==='pedido').length+' aguardando faturamento';
+  g('vd-total-valor').textContent=vdFmt(valor);
+  g('vd-total-valor-sub').textContent=real+' caixas no total';
   const pctReal=meta>0?Math.round(real/meta*100):0;
   g('vd-real').textContent=pctReal+'%';
   g('vd-real-sub').textContent=real+' de '+meta+' cx';
   g('vd-real-bar').style.width=Math.min(100,pctReal)+'%';
   g('vd-real-bar').style.background=pctReal>=80?'var(--green)':pctReal>=50?'var(--amber)':'var(--red)';
-  const ativos=clientesAtivos(coordAtual);
-  const ids=new Set(vdPedidos.map(p=>p.cliente_id));
+  const ativos=coords.flatMap(c=>clientesAtivos(c).map(cli=>({coord:c,...cli})));
+  const ids=new Set(vdPedidos.map(p=>p.coordenador+'|'+p.cliente_id));
   const pos=ids.size;
   const pctCob=ativos.length>0?Math.round(pos/ativos.length*100):0;
   g('vd-cob').textContent=pctCob+'%';
@@ -1723,6 +1738,7 @@ function vdCardHTML(p){
       '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+
       '<span class="vd-badge vd-b-skus">'+cx+' cx</span>'+
       '<span class="vd-badge vd-b-prazo">'+(p.prazo_tipo==='avista'?'À vista':'Parcelado')+'</span>'+
+      (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+p.coordenador+'</span>':'')+
       (stEnd?'<span class="vd-badge vd-b-done">'+stEnd+'</span>':'')+
     '</div>'+
     '<div style="font-size:11px;color:var(--muted);margin-top:6px">'+skusLista+'</div>'+acoesGestor+
@@ -1730,6 +1746,7 @@ function vdCardHTML(p){
 }
 
 function vdGoNovo(){
+  if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o pedido','error');return}
   vdEditPedidoId=null;
   vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
   g('vfn-title').textContent='Novo Pedido';
@@ -1919,6 +1936,7 @@ function vdEditarPedido(){
 }
 
 function vdIrFicha(){
+  if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador para abrir as fichas','error');return}
   show('s-vficha');
   renderNav('nav-vficha','vendas');
   updateSideNav('vendas');
@@ -1996,7 +2014,8 @@ function vdExportarPDF(){
   const doc=new jsPDF({unit:'pt',format:'a4'});
   const pageW=doc.internal.pageSize.getWidth();
   const titulo='Pedidos · '+(vdFiltro==='faturar'?'Pra Faturar (IN)':vdFiltro==='pendente'?'Pendentes':'Todos');
-  const sub=coordAtual+' · '+MESES[mesAtual]+'/'+anoAtual+' · '+lista.length+' pedidos';
+  const escopo=vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro;
+  const sub=escopo+' · '+MESES[mesAtual]+'/'+anoAtual+' · '+lista.length+' pedidos';
   doc.setFontSize(16);doc.setFont(undefined,'bold');
   doc.text('Cleantabaco · Vendas',40,42);
   doc.setFontSize(11);doc.setFont(undefined,'normal');
@@ -2012,7 +2031,7 @@ function vdExportarPDF(){
     doc.setFillColor(26,26,24);
     doc.rect(40,y,pageW-80,22,'F');
     doc.setTextColor(255);doc.setFontSize(10);doc.setFont(undefined,'bold');
-    doc.text((idx+1)+'. '+p.cliente_nome+(p.cliente_uf?'  ('+p.cliente_uf+')':''),48,y+14);
+    doc.text((idx+1)+'. '+p.cliente_nome+(p.cliente_uf?'  ('+p.cliente_uf+')':'')+(vdCoordFiltro==='todos'?' · '+p.coordenador:''),48,y+14);
     doc.text(vdFmt(p.total),pageW-48,y+14,{align:'right'});
     doc.setTextColor(0);doc.setFont(undefined,'normal');
     y+=24;
@@ -2057,7 +2076,7 @@ function vdExportarPDF(){
     columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right',fontStyle:'bold'}},
     margin:{left:40,right:40}
   });
-  doc.save('Pedidos_'+coordAtual.replace(/ /g,'_')+'_'+MESES[mesAtual]+'_'+anoAtual+'.pdf');
+  doc.save('Pedidos_'+escopo.replace(/ /g,'_')+'_'+MESES[mesAtual]+'_'+anoAtual+'.pdf');
   toast('✓ PDF gerado','ok');
 }
 // ===================== FIM MÓDULO VENDAS =====================
