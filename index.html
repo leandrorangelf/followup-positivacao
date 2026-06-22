@@ -2343,7 +2343,13 @@ function vdExportarPDF(){
   doc.text(sub,40,72);
   doc.text('Gerado em '+new Date().toLocaleString('pt-BR'),pageW-40,72,{align:'right'});
   doc.setFillColor(245,244,240);doc.roundedRect(40,82,pageW-80,42,6,6,'F');
-  const resumoTopo=[['PEDIDO',geral.pedidoCx+' cx'],['FATURADO',geral.faturadoCx+' cx'],['SALDO',geral.saldoCx+' cx'],['VALOR NEGOCIADO',vdFmt(geral.pedidoValor)],['VALOR FATURADO',vdFmt(geral.faturadoValor)]];
+  const resumoFiscal=lista.reduce((acc,p)=>{
+    const x=vdResumoPedido(p);
+    if(p.tipo==='off'){acc.offPedidos+=1;acc.offCx+=x.pedidoCx}
+    else{acc.inPedidos+=1;acc.inCx+=x.pedidoCx}
+    return acc;
+  },{inPedidos:0,inCx:0,offPedidos:0,offCx:0});
+  const resumoTopo=[['PEDIDO',geral.pedidoCx+' cx'],['FATURADO',geral.faturadoCx+' cx'],['SALDO',geral.saldoCx+' cx'],['IN · COM NF',resumoFiscal.inPedidos+' ped · '+resumoFiscal.inCx+' cx'],['OFF · SEM NF',resumoFiscal.offPedidos+' ped · '+resumoFiscal.offCx+' cx'],['VALOR NEGOCIADO',vdFmt(geral.pedidoValor)],['VALOR FATURADO',vdFmt(geral.faturadoValor)]];
   const resumoLargura=(pageW-110)/resumoTopo.length;
   resumoTopo.forEach((item,i)=>{
     const x=55+i*resumoLargura;
@@ -2368,9 +2374,15 @@ function vdExportarPDF(){
     doc.setFontSize(8.5);doc.setTextColor(80);
     const prazoTxt=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(v=>v).map(v=>v+'d').join(' / '):'À vista';
     const stTxt=x.status==='parcial'?'Faturado parcial':x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':'Pedido confirmado';
-    doc.text('Fiscal: '+(p.tipo==='in'?'IN (com NF)':'OFF (sem NF)'),48,y+10);
-    doc.text('Prazo: '+prazoTxt,220,y+10);
-    doc.text('Status: '+stTxt,pageW-200,y+10);
+    const isOff=p.tipo==='off';
+    doc.setFillColor(isOff?254:220,isOff?243:252,isOff?199:231);
+    doc.setDrawColor(isOff?245:187,isOff?158:247,isOff?11:208);
+    doc.roundedRect(48,y+1,104,16,4,4,'FD');
+    doc.setFont(undefined,'bold');doc.setTextColor(isOff?146:22,isOff?64:101,isOff?14:52);
+    doc.text(isOff?'OFF · SEM NF':'IN · COM NF',56,y+12);
+    doc.setFont(undefined,'normal');doc.setTextColor(80);
+    doc.text('Prazo: '+prazoTxt,170,y+12);
+    doc.text('Status: '+stTxt,pageW-200,y+12);
     y+=22;doc.setTextColor(0);
     const linhas=x.itens.map(i=>{
       const pedido=Number(i.qty_caixas||0),faturado=Math.min(pedido,Number(i.qty_faturada||0)),saldo=Math.max(0,pedido-faturado);
