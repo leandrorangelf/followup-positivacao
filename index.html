@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -271,6 +272,10 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-card-cli{font-size:13px;font-weight:600;flex:1;line-height:1.3}
 .vd-card-tot{font-size:13px;font-weight:700;white-space:nowrap}
 .vd-card-meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.vd-card-actions{display:flex;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
+.vd-card-action{flex:1;border:1px solid var(--border);border-radius:7px;padding:6px 8px;background:var(--card);color:var(--text);font:600 11px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}
+.vd-card-action:hover{border-color:var(--accent);color:var(--accent)}
+.vd-card-action.delete:hover{border-color:var(--red);color:var(--red)}
 .vd-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px}
 .vd-b-in{background:var(--green-bg);color:var(--green)}
 .vd-b-off{background:var(--amber-bg);color:var(--amber)}
@@ -1623,6 +1628,7 @@ let vdFiltro='todos';
 let vdEditPedidoId=null;
 let vdDetAtual=null;
 let vdEditCliId=null;
+let vdSalvandoPedido=false;
 let vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
 let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0}};
 const vdFmt=v=>'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -1688,6 +1694,9 @@ function vdCardHTML(p){
   const cx=itens.reduce((s,i)=>s+i.qty_caixas,0);
   const skusLista=itens.map(i=>i.sku+':'+i.qty_caixas).join(' · ');
   const stEnd=p.status==='faturado'?'Faturado':p.status==='entregue'?'Entregue':'';
+  const acoesGestor=isAdmin?'<div class="vd-card-actions">'+
+    '<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>'+
+    '<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button></div>':'';
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
@@ -1696,7 +1705,7 @@ function vdCardHTML(p){
       '<span class="vd-badge vd-b-prazo">'+(p.prazo_tipo==='avista'?'À vista':'Parcelado')+'</span>'+
       (stEnd?'<span class="vd-badge vd-b-done">'+stEnd+'</span>':'')+
     '</div>'+
-    '<div style="font-size:11px;color:var(--muted);margin-top:6px">'+skusLista+'</div>'+
+    '<div style="font-size:11px;color:var(--muted);margin-top:6px">'+skusLista+'</div>'+acoesGestor+
   '</div>';
 }
 
@@ -1764,6 +1773,7 @@ function vdRecalc(){
 }
 
 async function vdSalvarPedido(){
+  if(vdSalvandoPedido)return;
   const cli_id=g('vf-cli').value;
   if(!cli_id){toast('Escolha o cliente','error');return}
   const at=clientesAtivos(coordAtual);
@@ -1786,24 +1796,34 @@ async function vdSalvarPedido(){
     total,total_caixas:totCx,observacao:g('vf-obs').value||null,mes:mesAtual,ano:anoAtual
   };
   if(!vdEditPedidoId)ped.status='previsao';
+  vdSalvandoPedido=true;
+  const btnSalvar=g('vf-btn-save');
+  btnSalvar.disabled=true;
+  const liberarSalvamento=()=>{vdSalvandoPedido=false;btnSalvar.disabled=false};
   toast('Salvando...','',8000);
   let pedidoId=vdEditPedidoId;
   if(vdEditPedidoId){
     const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+vdEditPedidoId,{method:'PATCH',body:JSON.stringify(ped)});
-    if(!r||!r.ok){toast('Erro ao salvar pedido','error');return}
+    if(!r||!r.ok){liberarSalvamento();toast('Erro ao salvar pedido','error');return}
     await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+vdEditPedidoId,{method:'DELETE'});
   }else{
-    const r=await sb('/rest/v1/pedidos_vendas',{method:'POST',body:JSON.stringify(ped)});
-    if(!r||!r.ok){toast('Erro ao criar pedido','error');return}
-    const j=await r.json();pedidoId=j[0].id;
+    const j=await sb('/rest/v1/pedidos_vendas',{
+      method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(ped),ret:true
+    });
+    if(!Array.isArray(j)||!j[0]||!j[0].id){
+      liberarSalvamento();
+      toast('Erro ao criar pedido','error');return
+    }
+    pedidoId=j[0].id;
   }
   const itensIns=itens.map(i=>Object.assign({},i,{pedido_id:pedidoId}));
   const r2=await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',body:JSON.stringify(itensIns)});
-  if(!r2||!r2.ok){toast('Erro ao salvar itens','error');return}
+  if(!r2||!r2.ok){liberarSalvamento();toast('Erro ao salvar itens','error');return}
   toast('✓ Pedido salvo!','ok');
   await vdCarregar();
   show('s-vendas');
   renderNav('nav-vendas','vendas');
+  liberarSalvamento();
 }
 
 function vdAbrirDet(id){
@@ -1842,6 +1862,21 @@ async function vdExcluirPedido(){
   if(!r||!r.ok){toast('Erro','error');return}
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
+}
+function vdEditarPedidoPorId(id){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  vdDetAtual=p;
+  vdEditarPedido();
+}
+async function vdExcluirPedidoPorId(id){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(!confirm('Excluir o pedido de '+p.cliente_nome+'?'))return;
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+id,{method:'DELETE'});
+  if(!r||!r.ok){toast('Erro ao excluir pedido','error');return}
+  toast('Pedido excluido','ok');
+  await vdCarregar();
 }
 function vdEditarPedido(){
   if(!vdDetAtual)return;
