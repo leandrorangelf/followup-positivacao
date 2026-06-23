@@ -2330,16 +2330,22 @@ async function vdSalvarFicha(){
   vdRenderFichaList();
 }
 
-function vdExportarPDF(){
+async function vdExportarPDF(){
   if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
-  const lista=vdPedidosParaFaturamento();
+  // Busca TODOS os pedidos IN com saldo pendente (sem filtro de mês)
+  // para não perder pedidos de meses anteriores ainda não faturados
+  toast('Buscando pedidos pendentes...','info');
+  const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
+  const todos=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
+  const listaTodos=Array.isArray(todos)?todos:[];
+  const lista=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0);
   if(!lista.length){toast('Nenhum pedido aguardando faturamento','error');return}
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'pt',format:'a4',orientation:'landscape'});
   const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight();
   const titulo='RELATÓRIO PARA FATURAMENTO';
   const escopo=vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro;
-  const sub=escopo+' · '+MESES[mesAtual]+'/'+anoAtual+' · '+lista.length+' pedidos aguardando faturamento';
+  const sub=escopo+' · '+anoAtual+' · '+lista.length+' pedidos aguardando faturamento (todos os meses)';
   const geral=vdResumoLista(lista);
   const fitText=(value,maxWidth)=>{
     let text=String(value||'');
