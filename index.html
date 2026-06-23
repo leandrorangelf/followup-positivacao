@@ -2381,6 +2381,7 @@ async function vdExportarPDF(){
     doc.roundedRect(40,y,pageW-80,24,4,4,'F');
     doc.setTextColor(255);doc.setFontSize(10);doc.setFont(undefined,'bold');
     const cabecalho=(idx+1)+'. '+p.cliente_nome+(p.cliente_uf?' ('+p.cliente_uf+')':'')+' · '+p.coordenador;
+    const isOff=vdTipoPedido(p)==='off';
     doc.text(fitText(cabecalho,pageW-260),48,y+16);
     if(!isOff){doc.text(vdFmt(x.saldoValor),pageW-48,y+14,{align:'right'});}
     doc.setTextColor(0);doc.setFont(undefined,'normal');
@@ -2388,7 +2389,6 @@ async function vdExportarPDF(){
     doc.setFontSize(8.5);doc.setTextColor(80);
     const prazoTxt=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(v=>v).map(v=>v+'d').join(' / '):'À vista';
     const stTxt=x.status==='parcial'?'Faturado parcial':'Pedido confirmado';
-    const isOff=vdTipoPedido(p)==='off';
     if(isOff){doc.setFillColor(255,237,213);doc.setDrawColor(253,186,116);}
     else{doc.setFillColor(220,252,231);doc.setDrawColor(187,247,208);}
     doc.roundedRect(48,y+1,isOff?128:108,16,4,4,'FD');
