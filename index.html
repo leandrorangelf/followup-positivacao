@@ -931,6 +931,7 @@ function renderNav(navId,active){
 
 function navTo(id){
   if(isDiretoria && !['dash','vendas'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
+  if(user==='vagner'&&['cli','metas','ped'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
   if(id==='dash'){irDash();}
   else if(id==='ped'){irPed();}
   else if(id==='cli'){irCli();}
@@ -2108,7 +2109,12 @@ async function vdSalvarPedido(){
     parcela_3_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p3').value)||null):null,
     total,total_caixas:totCx,observacao:g('vf-obs').value||null,mes:mesAtual,ano:anoAtual
   };
-  if(!vdEditPedidoId)ped.status='pedido';
+  if(!vdEditPedidoId){ped.status='pedido';ped.criado_por=user;}
+  // Vagner: só pode editar pedidos que ele mesmo criou
+  if(user==='vagner'&&vdEditPedidoId){
+    const pedChk=vdPedidos.find(p=>p.id===vdEditPedidoId);
+    if(!pedChk||pedChk.criado_por!=='vagner'){toast('Você só pode editar pedidos que você mesmo criou','error');return;}
+  }
   vdSalvandoPedido=true;
   const btnSalvar=g('vf-btn-save');
   btnSalvar.disabled=true;
@@ -2190,15 +2196,17 @@ function vdAbrirDet(id){
     (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+vdEsc(p.observacao)+'</div>':'')+
     (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
   g('vd-det-fim').textContent=p.tipo==='in'?'Confirmar faturamento':'Confirmar entrega';
-  g('vd-det-fim').style.display=isAdmin&&x.saldoCx>0?'block':'none';
-  g('vd-det-editar').style.display=isAdmin&&x.faturadoCx===0?'block':'none';
-  g('vd-det-excluir').style.display=isAdmin?'block':'none';
+  const vagnerDono=user==='vagner'&&p.criado_por==='vagner';
+  g('vd-det-fim').style.display=(isAdmin&&user!=='vagner'&&x.saldoCx>0)?'block':'none';
+  g('vd-det-editar').style.display=(isAdmin&&(user!=='vagner'||vagnerDono)&&x.faturadoCx===0)?'block':'none';
+  g('vd-det-excluir').style.display=(isAdmin&&user!=='vagner')?'block':'none';
   g('modal-vd-det').classList.add('open');
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
 function vdAbrirFaturamentoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdAbrirFaturamento(id)}}
 function vdAbrirFaturamento(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  if(user==='vagner'){toast('Vagner não pode confirmar faturamento','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   const x=vdResumoPedido(p);
   if(!x.detalhado||x.itens.some(i=>!i.id)){toast('Edite este pedido e informe os SKUs antes de faturar','error');return}
@@ -2270,6 +2278,7 @@ async function vdMoverFinal(){
 }
 async function vdExcluirPedido(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  if(user==='vagner'){toast('Vagner não pode excluir pedidos','error');return}
   if(!vdDetAtual)return;
   if(!confirm('Excluir este pedido? Esta ação não pode ser desfeita.'))return;
   await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
@@ -2287,6 +2296,7 @@ function vdEditarPedidoPorId(id){
 }
 async function vdExcluirPedidoPorId(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  if(user==='vagner'){toast('Vagner não pode excluir pedidos','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   if(!confirm('Excluir o pedido de '+p.cliente_nome+'? Esta ação não pode ser desfeita.'))return;
   await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(id),{method:'DELETE'});
