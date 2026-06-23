@@ -1567,7 +1567,8 @@ editarCliente=async function(id){
   if(duplicado){toast('Já existe um cliente com esse nome','error');return;}
   const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({nome:limpo})});
   if(!res||!res.ok){toast('Não foi possível editar','error');return;}
-  await carregarClientes();renderCliCoordTabs();renderCliList();toast('Cliente atualizado','ok');pedidosCarregados=false;
+  await sb('/rest/v1/pedidos_vendas?cliente_id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({cliente_nome:limpo})});
+  await carregarClientes();renderCliCoordTabs();renderCliList();toast('Cliente atualizado (pedidos também)','ok');pedidosCarregados=false;
 };
 
 excluirCliente=async function(id){
