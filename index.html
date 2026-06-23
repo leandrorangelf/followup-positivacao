@@ -2338,12 +2338,13 @@ async function vdExportarPDF(){
   const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
   const todos=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
   const listaTodos=Array.isArray(todos)?todos:[];
-  const lista=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0);
+  // Inclui IN e OFF — OFF gera romaneio de entrega sem NF
+  const lista=listaTodos.filter(p=>vdResumoPedido(p).saldoCx>0);
   if(!lista.length){toast('Nenhum pedido aguardando faturamento','error');return}
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'pt',format:'a4',orientation:'landscape'});
   const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight();
-  const titulo='RELATÓRIO PARA FATURAMENTO';
+  const titulo='RELATÓRIO PARA FATURAMENTO / ROMANEIO';
   const escopo=vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro;
   const sub=escopo+' · '+anoAtual+' · '+lista.length+' pedidos aguardando faturamento (todos os meses)';
   const geral=vdResumoLista(lista);
@@ -2385,13 +2386,15 @@ async function vdExportarPDF(){
     doc.setFontSize(8.5);doc.setTextColor(80);
     const prazoTxt=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(v=>v).map(v=>v+'d').join(' / '):'À vista';
     const stTxt=x.status==='parcial'?'Faturado parcial':'Pedido confirmado';
-    doc.setFillColor(220,252,231);
-    doc.setDrawColor(187,247,208);
-    doc.roundedRect(48,y+1,104,16,4,4,'FD');
-    doc.setFont(undefined,'bold');doc.setTextColor(22,101,52);
-    doc.text('IN · COM NF',56,y+12);
+    const isOff=vdTipoPedido(p)==='off';
+    if(isOff){doc.setFillColor(255,237,213);doc.setDrawColor(253,186,116);}
+    else{doc.setFillColor(220,252,231);doc.setDrawColor(187,247,208);}
+    doc.roundedRect(48,y+1,isOff?128:108,16,4,4,'FD');
+    doc.setFont(undefined,'bold');
+    if(isOff){doc.setTextColor(154,52,18);doc.text('OFF · SEM NF · ROMANEIO',56,y+12);}
+    else{doc.setTextColor(22,101,52);doc.text('IN · COM NF',56,y+12);}
     doc.setFont(undefined,'normal');doc.setTextColor(80);
-    doc.text('Prazo: '+prazoTxt,170,y+12);
+    doc.text('Prazo: '+prazoTxt,(isOff?190:170),y+12);
     doc.text('Status: '+stTxt,pageW-200,y+12);
     y+=22;doc.setTextColor(0);
     const linhas=x.itens.map(i=>{
