@@ -2462,6 +2462,14 @@ async function vdExportarPDF(){
   doc.save('Faturamento_'+escopo.replace(/ /g,'_')+'_'+MESES[mesAtual]+'_'+anoAtual+'.pdf');
   toast('PDF para faturamento gerado','ok');
 }
+async function corrigirNomeClientePedidos(nomeAntigo,nomeNovo){
+  const nomeAnt=nomeAntigo.trim().toUpperCase(),nomeNov=nomeNovo.trim().toUpperCase();
+  if(!nomeAnt||!nomeNov){toast('Informe nomes válidos','error');return}
+  if(!confirm(`Atualizar todos os pedidos com "${nomeAnt}" para "${nomeNov}"?`))return;
+  const res=await sb('/rest/v1/pedidos_vendas?cliente_nome=eq.'+encodeURIComponent(nomeAnt),{method:'PATCH',body:JSON.stringify({cliente_nome:nomeNov})});
+  if(!res||!res.ok){toast('Erro ao atualizar pedidos','error');return}
+  pedidosCarregados=false;await vdCarregar();toast('Pedidos atualizados com sucesso','ok');
+}
 setInterval(()=>{
   if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true);
 },30000);
