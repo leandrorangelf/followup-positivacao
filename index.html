@@ -2463,6 +2463,7 @@ async function vdExportarPDF(){
   toast('PDF para faturamento gerado','ok');
 }
 async function corrigirNomeClientePedidos(nomeAntigo,nomeNovo){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   const nomeAnt=nomeAntigo.trim().toUpperCase(),nomeNov=nomeNovo.trim().toUpperCase();
   if(!nomeAnt||!nomeNov){toast('Informe nomes válidos','error');return}
   if(!confirm(`Atualizar todos os pedidos com "${nomeAnt}" para "${nomeNov}"?`))return;
