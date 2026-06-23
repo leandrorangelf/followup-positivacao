@@ -1825,6 +1825,7 @@ let vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0
 let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0}};
 const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const vdTipoPedido=p=>String(p?.tipo||'in').toLowerCase();
 
 function vdResumoPedido(p){
   const itens=p.pedidos_vendas_itens||[];
@@ -1903,7 +1904,7 @@ function vdRenderMetrics(){
   const resumo=vdResumoLista(vdPedidos);
   const real=resumo.pedidoCx;
   g('vd-total-pedidos').textContent=resumo.pedidos;
-  g('vd-total-pedidos-sub').textContent=resumo.parciais+' parciais · '+vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&p.tipo==='in').length+' pra faturar';
+  g('vd-total-pedidos-sub').textContent=resumo.parciais+' parciais · '+vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&vdTipoPedido(p)!=='off').length+' pra faturar';
   g('vd-total-valor').textContent=vdFmt(resumo.pedidoValor);
   g('vd-total-valor-sub').textContent=real+' caixas confirmadas';
   const pctReal=meta>0?Math.round(real/meta*100):0;
@@ -1931,7 +1932,7 @@ function vdSetFiltro(f){
   vdRenderKanban();
 }
 function vdPedidosParaFaturamento(){
-  return vdPedidos.filter(p=>p.tipo==='in'&&vdResumoPedido(p).saldoCx>0);
+  return vdPedidos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0);
 }
 function vdPedidosFiltrados(){
   if(vdFiltro==='faturar')return vdPedidosParaFaturamento();
