@@ -2402,19 +2402,24 @@ async function vdExportarPDF(){
       const valorSaldo=saldo*Number(i.packs_por_caixa||0)*Number(i.valor_pacote||0);
       const alvo=tots[i.sku]||semDetalhe;alvo.pedido+=pedido;alvo.faturado+=faturado;alvo.saldo+=saldo;
       if(alvo.valorSaldo!==undefined)alvo.valorSaldo+=valorSaldo;else alvo.valor+=valorSaldo;
-      return [i.sku,pedido+' cx',faturado+' cx',saldo+' cx',Number(i.packs_por_caixa||0),vdFmt(i.valor_pacote),vdFmt(valorSaldo)];
+      return isOff?[i.sku,pedido+' cx',faturado+' cx',saldo+' cx']:[i.sku,pedido+' cx',faturado+' cx',saldo+' cx',Number(i.packs_por_caixa||0),vdFmt(i.valor_pacote),vdFmt(valorSaldo)];
     });
     if(!linhas.length){
       semDetalhe.pedido+=x.pedidoCx;semDetalhe.faturado+=x.faturadoCx;semDetalhe.saldo+=x.saldoCx;semDetalhe.valor+=x.saldoValor;
-      linhas.push(['SEM DETALHE',x.pedidoCx+' cx',x.faturadoCx+' cx',x.saldoCx+' cx','-','-',vdFmt(x.saldoValor)]);
+      linhas.push(isOff?['SEM DETALHE',x.pedidoCx+' cx',x.faturadoCx+' cx',x.saldoCx+' cx']:['SEM DETALHE',x.pedidoCx+' cx',x.faturadoCx+' cx',x.saldoCx+' cx','-','-',vdFmt(x.saldoValor)]);
     }
+    const tabelaHeadOff=['Produto','Pedido','Já faturado','Faturar agora'];
+    const tabelaHeadIN=['Produto','Pedido','Já faturado','Faturar agora','Pcts/cx','Vlr pac.','Valor a faturar'];
+    const tabelaHead=isOff?tabelaHeadOff:tabelaHeadIN;
+    const colStylesOff={0:{fontStyle:'bold',cellWidth:80},1:{halign:'right',cellWidth:70},2:{halign:'right',cellWidth:70},3:{halign:'right',fontStyle:'bold',cellWidth:80}};
+    const colStylesIN={0:{fontStyle:'bold',cellWidth:52},1:{halign:'right',cellWidth:58},2:{halign:'right',cellWidth:62},3:{halign:'right',fontStyle:'bold',cellWidth:72},4:{halign:'right',cellWidth:48},5:{halign:'right',cellWidth:80},6:{halign:'right',fontStyle:'bold',cellWidth:82}};
     doc.autoTable({
       startY:y,
-      head:[['Produto','Pedido','Já faturado','Faturar agora','Pcts/cx','Vlr pac.','Valor a faturar']],
+      head:[tabelaHead],
       body:linhas,theme:'grid',
       styles:{fontSize:8,cellPadding:4.5},
       headStyles:{fillColor:[245,244,240],textColor:[26,26,24],fontStyle:'bold',fontSize:7.5},
-      columnStyles:{0:{fontStyle:'bold',cellWidth:52},1:{halign:'right',cellWidth:58},2:{halign:'right',cellWidth:62},3:{halign:'right',fontStyle:'bold',cellWidth:72},4:{halign:'right',cellWidth:48},5:{halign:'right',cellWidth:80},6:{halign:'right',fontStyle:'bold',cellWidth:82}},
+      columnStyles:isOff?colStylesOff:colStylesIN,
       margin:{left:48,right:48,top:42,bottom:36},
       rowPageBreak:'avoid',showHead:'everyPage'
     });
@@ -2433,22 +2438,26 @@ async function vdExportarPDF(){
     }
     y+=10;
   });
-  if(y>pageH-180){doc.addPage();y=42}
-  doc.setDrawColor(200);doc.line(40,y,pageW-40,y);y+=14;
-  doc.setFontSize(11);doc.setFont(undefined,'bold');
-  doc.text('RESUMO POR PRODUTO',40,y);y+=14;
-  doc.autoTable({
-    startY:y,
-    head:[['Produto','Pedido','Já faturado','A faturar','Valor a faturar']],
-    body:VD_SKUS.map(s=>[s,tots[s].pedido+' cx',tots[s].faturado+' cx',tots[s].saldo+' cx',vdFmt(tots[s].valorSaldo)])
-      .concat(semDetalhe.pedido||semDetalhe.valor?[['SEM DETALHE',semDetalhe.pedido+' cx',semDetalhe.faturado+' cx',semDetalhe.saldo+' cx',vdFmt(semDetalhe.valor)]]:[])
-      .concat([['TOTAL GERAL',geral.pedidoCx+' cx',geral.faturadoCx+' cx',geral.saldoCx+' cx',vdFmt(geral.saldoValor)]]),
-    theme:'grid',
-    styles:{fontSize:9,cellPadding:5},
-    headStyles:{fillColor:[26,26,24],textColor:[255,255,255]},
-    columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'},4:{halign:'right',fontStyle:'bold'}},
-    margin:{left:40,right:40}
-  });
+  const temOFF=lista.some(p=>vdTipoPedido(p)==='off');
+  const temIN=lista.some(p=>vdTipoPedido(p)!=='off');
+  if(temIN){
+    if(y>pageH-180){doc.addPage();y=42}
+    doc.setDrawColor(200);doc.line(40,y,pageW-40,y);y+=14;
+    doc.setFontSize(11);doc.setFont(undefined,'bold');
+    doc.text('RESUMO POR PRODUTO',40,y);y+=14;
+    doc.autoTable({
+      startY:y,
+      head:[['Produto','Pedido','Já faturado','A faturar','Valor a faturar']],
+      body:VD_SKUS.map(s=>[s,tots[s].pedido+' cx',tots[s].faturado+' cx',tots[s].saldo+' cx',vdFmt(tots[s].valorSaldo)])
+        .concat(semDetalhe.pedido||semDetalhe.valor?[['SEM DETALHE',semDetalhe.pedido+' cx',semDetalhe.faturado+' cx',semDetalhe.saldo+' cx',vdFmt(semDetalhe.valor)]]:[])
+        .concat([['TOTAL GERAL',geral.pedidoCx+' cx',geral.faturadoCx+' cx',geral.saldoCx+' cx',vdFmt(geral.saldoValor)]]),
+      theme:'grid',
+      styles:{fontSize:9,cellPadding:5},
+      headStyles:{fillColor:[26,26,24],textColor:[255,255,255]},
+      columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'},4:{halign:'right',fontStyle:'bold'}},
+      margin:{left:40,right:40}
+    });
+  }
   doc.save('Faturamento_'+escopo.replace(/ /g,'_')+'_'+MESES[mesAtual]+'_'+anoAtual+'.pdf');
   toast('PDF para faturamento gerado','ok');
 }
