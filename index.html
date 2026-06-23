@@ -2361,7 +2361,9 @@ async function vdExportarPDF(){
   doc.text(sub,40,72);
   doc.text('Gerado em '+new Date().toLocaleString('pt-BR'),pageW-40,72,{align:'right'});
   doc.setFillColor(245,244,240);doc.roundedRect(40,82,pageW-80,42,6,6,'F');
-  const resumoTopo=[['PEDIDOS',geral.pedidos],['PEDIDO',geral.pedidoCx+' cx'],['JÁ FATURADO',geral.faturadoCx+' cx'],['A FATURAR',geral.saldoCx+' cx'],['VALOR A FATURAR',vdFmt(geral.saldoValor)]];
+  const temOFF=lista.some(p=>vdTipoPedido(p)==='off');
+  const temIN=lista.some(p=>vdTipoPedido(p)!=='off');
+  const resumoTopo=temOFF&&!temIN?[['PEDIDOS',geral.pedidos],['PEDIDO',geral.pedidoCx+' cx'],['JÁ FATURADO',geral.faturadoCx+' cx'],['A FATURAR',geral.saldoCx+' cx']]:[['PEDIDOS',geral.pedidos],['PEDIDO',geral.pedidoCx+' cx'],['JÁ FATURADO',geral.faturadoCx+' cx'],['A FATURAR',geral.saldoCx+' cx'],['VALOR A FATURAR',vdFmt(geral.saldoValor)]];
   const resumoLargura=(pageW-110)/resumoTopo.length;
   resumoTopo.forEach((item,i)=>{
     const x=55+i*resumoLargura;
@@ -2380,7 +2382,7 @@ async function vdExportarPDF(){
     doc.setTextColor(255);doc.setFontSize(10);doc.setFont(undefined,'bold');
     const cabecalho=(idx+1)+'. '+p.cliente_nome+(p.cliente_uf?' ('+p.cliente_uf+')':'')+' · '+p.coordenador;
     doc.text(fitText(cabecalho,pageW-260),48,y+16);
-    doc.text(vdFmt(x.saldoValor),pageW-48,y+14,{align:'right'});
+    if(!isOff){doc.text(vdFmt(x.saldoValor),pageW-48,y+14,{align:'right'});}
     doc.setTextColor(0);doc.setFont(undefined,'normal');
     y+=27;
     doc.setFontSize(8.5);doc.setTextColor(80);
@@ -2438,8 +2440,6 @@ async function vdExportarPDF(){
     }
     y+=10;
   });
-  const temOFF=lista.some(p=>vdTipoPedido(p)==='off');
-  const temIN=lista.some(p=>vdTipoPedido(p)!=='off');
   if(temIN){
     if(y>pageH-180){doc.addPage();y=42}
     doc.setDrawColor(200);doc.line(40,y,pageW-40,y);y+=14;
