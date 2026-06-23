@@ -322,6 +322,21 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-ficha-info .n{font-size:14px;font-weight:600}
 .vd-ficha-info .m{font-size:11px;color:var(--muted);margin-top:2px}
 .vd-fab{position:fixed;bottom:88px;right:22px;width:58px;height:58px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:30px;font-weight:300;box-shadow:0 6px 20px rgba(29,78,216,.4);cursor:pointer;z-index:30}
+
+/* LOG */
+.log-item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.log-item:last-child{border-bottom:0}
+.log-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;flex-shrink:0;margin-top:2px}
+.log-icon.criar{background:#DCFCE7;color:#166534}
+.log-icon.editar{background:#EFF6FF;color:#1D4ED8}
+.log-icon.excluir{background:#FEE2E2;color:#991B1B}
+.log-icon.faturar{background:#FEF3C7;color:#92400E}
+.log-body{min-width:0}
+.log-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.log-detail{font-size:11px;color:#667085;line-height:1.5}
+.log-meta{font-size:10px;color:#9CA3AF;white-space:nowrap;text-align:right}
+.log-user{font-weight:700;color:var(--purple)}
+.log-empty{text-align:center;padding:48px;color:#9CA3AF;font-size:13px}
 </style>
 </head>
 <body>
@@ -335,6 +350,7 @@ body{background:var(--canvas);color:var(--ink)}
     <select id="login-coord">
       <option value="">Selecione seu nome...</option>
       <option value="admin">👁 Leandro (Gestor)</option>
+      <option value="vagner">👁 Vagner (Gerente)</option>
       <option value="diretoria">📊 Diretoria (Somente leitura)</option>
       <option value="Igor Cater">Igor Cater</option>
       <option value="Marcio Vit">Marcio Vit</option>
@@ -359,6 +375,7 @@ body{background:var(--canvas);color:var(--ink)}
     <div class="side-sub admin-only">
       <button class="side-sub-link" id="side-cli" onclick="navTo('cli')">Clientes</button>
       <button class="side-sub-link" id="side-metas" onclick="navTo('metas')">Metas</button>
+      <button class="side-sub-link" id="side-log" onclick="navTo('log')">Log de atividades</button>
     </div>
     <button class="side-link" onclick="logout()"><span>Sair</span><span>Encerrar</span></button>
     <div class="side-user">
@@ -697,13 +714,40 @@ body{background:var(--canvas);color:var(--ink)}
 
 <!-- ===================== FIM MÓDULO VENDAS ===================== -->
 
+<!-- LOG DE ATIVIDADES -->
+<div id="s-log" class="screen" style="display:none">
+  <div class="page-pad">
+    <div class="section-head">
+      <div><div class="section-title">Log de atividades</div><div class="section-sub">Registro de criações, alterações e exclusões de pedidos.</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="log-filtro-usuario" class="client-filter" onchange="carregarLog()" style="min-width:160px">
+          <option value="">Todos os usuários</option>
+          <option value="admin">Leandro</option>
+          <option value="vagner">Vagner</option>
+        </select>
+        <select id="log-filtro-acao" class="client-filter" onchange="carregarLog()" style="min-width:140px">
+          <option value="">Todas as ações</option>
+          <option value="criar">Criação</option>
+          <option value="editar">Edição</option>
+          <option value="excluir">Exclusão</option>
+          <option value="faturar">Faturamento</option>
+        </select>
+        <button class="secondary-btn" onclick="carregarLog()">↺ Atualizar</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div id="log-content"><div class="loading">Carregando...</div></div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const SB='https://rpxrjawzkkpnzancmcif.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
 
-const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','diretoria':'5fed8fa8c4a6813740e5cf8bc55c80e19028a44975f28acad227403d248e564c','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
+const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','vagner':'f4ec1b0e9ecf3baec9c32537f106e4004feb9a312773d6eeede18efdffbbe94c','diretoria':'5fed8fa8c4a6813740e5cf8bc55c80e19028a44975f28acad227403d248e564c','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
 const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
 const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const METAS_PADRAO=JSON.parse(JSON.stringify(METAS));
@@ -862,7 +906,7 @@ async function sb(path,opts={}){
 
 // ── SCREENS ──
 function show(id){
-  ['s-login','s-dash','s-ped','s-cli','s-metas','s-vendas','s-vfn','s-vficha'].forEach(s=>g(s).style.display='none');
+  ['s-login','s-dash','s-ped','s-cli','s-metas','s-vendas','s-vfn','s-vficha','s-log'].forEach(s=>g(s).style.display='none');
   g(id).style.display=(id==='s-login')?'flex':'block';
   g('app-shell').classList.toggle('visible',id!=='s-login');
   toggleMenu(false);
@@ -891,6 +935,7 @@ function navTo(id){
   else if(id==='ped'){irPed();}
   else if(id==='cli'){irCli();}
   else if(id==='metas'){irMetas();}
+  else if(id==='log'){irLog();}
   else if(id==='vendas'){irVendas();}
   else if(id==='vficha'){irVendas();vdIrFicha();}
 }
@@ -902,7 +947,7 @@ async function login(){
   if(!coord){g('login-err').textContent='Selecione seu nome';g('login-err').style.display='block';return;}
   const senhaHash=await sha256(senha);
   if(SENHAS_HASH[coord]!==senhaHash){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
-  user=coord;isAdmin=coord==='admin';isDiretoria=coord==='diretoria';
+  user=coord;isAdmin=(coord==='admin'||coord==='vagner');isDiretoria=coord==='diretoria';
   coordAtual=(isAdmin||isDiretoria)?COORD_KEYS[0]:coord;
   cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
   loadMetasLocal();
@@ -927,7 +972,7 @@ async function irDash(){
   show('s-dash');
   renderNav('nav-dash','dash');
   g('dash-greeting').textContent='Olá,';
-  g('dash-name').textContent=isAdmin?'Leandro':(isDiretoria?'Diretoria':coordAtual);
+  g('dash-name').textContent=user==='admin'?'Leandro':user==='vagner'?'Vagner':(isDiretoria?'Diretoria':coordAtual);
   g('dash-mes').value=mesAtual;
   g('dash-mes').onchange=function(){mesAtual=parseInt(this.value);pedidosCarregados=false;carregarDashboard();};
   await carregarClientes();
@@ -1398,16 +1443,16 @@ function setupShell(){
   if(sourceLogo)g('side-brand-logo').src=sourceLogo.src;
   g('shell-mes').innerHTML=MESES.map((m,i)=>`<option value="${i}">${m} ${anoAtual}</option>`).join('');
   g('shell-mes').value=mesAtual;
-  g('side-user-name').textContent=isAdmin?'Leandro':(isDiretoria?'Diretoria':user);
-  g('side-user-role').textContent=isAdmin?'Gestor':(isDiretoria?'Somente leitura':'Coordenador');
-  g('side-avatar').textContent=(isAdmin?'L':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
+  g('side-user-name').textContent=user==='admin'?'Leandro':user==='vagner'?'Vagner':(isDiretoria?'Diretoria':user);
+  g('side-user-role').textContent=(user==='admin'||user==='vagner')?'Gerente':(isDiretoria?'Somente leitura':'Coordenador');
+  g('side-avatar').textContent=(user==='admin'?'L':user==='vagner'?'V':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'block':'none');
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
 }
 
 function updateSideNav(active){
-  const titles={dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento'};
-  ['dash','ped','cli','metas','vendas'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
+  const titles={dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',log:'Log de atividades'};
+  ['dash','ped','cli','metas','vendas','log'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
   if(g('topbar-title'))g('topbar-title').textContent=titles[active]||'Follow-up Positivação';
   if(g('shell-mes'))g('shell-mes').value=mesAtual;
 }
@@ -1422,7 +1467,7 @@ function setMesGlobal(value){
   mesAtual=parseInt(value,10);
   pedidosCarregados=false;
   if(g('dash-mes'))g('dash-mes').value=mesAtual;
-  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas'].find(id=>g(id).style.display!=='none');
+  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-log'].find(id=>g(id).style.display!=='none');
   if(visible==='s-dash')carregarDashboard();
   else if(visible==='s-ped')carregarPedidos();
   else if(visible==='s-cli')renderCliList();
@@ -2110,6 +2155,15 @@ async function vdSalvarPedido(){
       toast('Erro ao salvar itens. A alteração foi desfeita.','error');return
     }
     toast('✓ Pedido salvo!','ok');
+    // LOG
+    const acao=vdEditPedidoId?'editar':'criar';
+    const cliNome=cli.nome+(cli.uf?' ('+cli.uf+')':'');
+    const totalCxLog=itens.reduce((s,i)=>s+i.qty_caixas,0);
+    const totalValLog=itens.reduce((s,i)=>s+i.subtotal,0);
+    auditLog(acao,
+      (acao==='criar'?'Novo pedido criado':'Pedido editado')+' · '+cliNome,
+      'Coordenador: '+coordAtual+' · SKUs: '+itens.map(i=>i.sku+' '+i.qty_caixas+'cx').join(', ')+' · Total: '+vdFmt(totalValLog)+' ('+totalCxLog+' cx)'
+    );
     await vdCarregar();
     show('s-vendas');
     renderNav('nav-vendas','vendas');
@@ -2194,6 +2248,10 @@ async function vdSalvarFaturamento(){
     })});
     if(!r2||!r2.ok){toast('Caixas registradas, mas a observação não foi salva','error')}
     else toast(completo?'Pedido faturado por completo':'Faturamento parcial registrado','ok');
+    auditLog('faturar',
+      (completo?'Faturamento completo':'Faturamento parcial')+' · '+p.cliente_nome,
+      'Coordenador: '+p.coordenador+' · '+totalAgora+' cx faturadas agora · saldo restante: '+Math.max(0,x.saldoCx-totalAgora)+' cx'
+    );
     vdFecharFaturamento();await vdCarregar();
   }finally{
     vdFaturando=false;g('vd-fat-salvar').disabled=false;
@@ -2217,6 +2275,7 @@ async function vdExcluirPedido(){
   await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
   if(!r||!r.ok){toast('Erro ao excluir','error');return}
+  auditLog('excluir','Pedido excluído · '+vdDetAtual.cliente_nome,'Coordenador: '+vdDetAtual.coordenador+' · '+MESES[vdDetAtual.mes]+'/'+vdDetAtual.ano+' · Total: '+vdFmt(vdDetAtual.total));
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
 }
@@ -2233,6 +2292,7 @@ async function vdExcluirPedidoPorId(id){
   await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(id),{method:'DELETE'});
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
   if(!r||!r.ok){toast('Erro ao excluir pedido','error');return}
+  auditLog('excluir','Pedido excluído · '+p.cliente_nome,'Coordenador: '+p.coordenador+' · '+MESES[p.mes]+'/'+p.ano+' · Total: '+vdFmt(p.total));
   toast('Pedido excluído','ok');
   await vdCarregar();
 }
@@ -2471,6 +2531,62 @@ async function corrigirNomeClientePedidos(nomeAntigo,nomeNovo){
   if(!res||!res.ok){toast('Erro ao atualizar pedidos','error');return}
   pedidosCarregados=false;await vdCarregar();toast('Pedidos atualizados com sucesso','ok');
 }
+// ===================== LOG DE AUDITORIA =====================
+async function auditLog(acao, descricao, detalhes){
+  if(!isAdmin)return; // só gestores geram log
+  try{
+    await sb('/rest/v1/audit_log',{
+      method:'POST',
+      headers:{'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        usuario:user,
+        acao, // criar | editar | excluir | faturar
+        descricao,
+        detalhes: detalhes||null,
+        criado_em: new Date().toISOString()
+      })
+    });
+  }catch(e){console.warn('Log não registrado:',e);}
+}
+
+async function irLog(){
+  if(!isAdmin){toast('Acesso restrito ao gestor','error');return;}
+  show('s-log');
+  updateSideNav('log');
+  await carregarLog();
+}
+
+async function carregarLog(){
+  if(!g('log-content'))return;
+  g('log-content').innerHTML='<div class="loading">Carregando...</div>';
+  const filtroUser=g('log-filtro-usuario')?.value||'';
+  const filtroAcao=g('log-filtro-acao')?.value||'';
+  let url='/rest/v1/audit_log?order=criado_em.desc&limit=200';
+  if(filtroUser)url+='&usuario=eq.'+encodeURIComponent(filtroUser);
+  if(filtroAcao)url+='&acao=eq.'+encodeURIComponent(filtroAcao);
+  const data=await sb(url,{ret:true});
+  if(!Array.isArray(data)||!data.length){
+    g('log-content').innerHTML='<div class="log-empty">📋 Nenhum registro encontrado.</div>';
+    return;
+  }
+  const iconMap={criar:'➕',editar:'✏️',excluir:'🗑️',faturar:'💰'};
+  const userLabel={admin:'Leandro',vagner:'Vagner'};
+  g('log-content').innerHTML=data.map(r=>{
+    const dt=new Date(r.criado_em);
+    const dataFmt=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const icon=iconMap[r.acao]||'📝';
+    return `<div class="log-item">
+      <div class="log-icon ${r.acao}">${icon}</div>
+      <div class="log-body">
+        <div class="log-title">${r.descricao||'—'}</div>
+        ${r.detalhes?`<div class="log-detail">${r.detalhes}</div>`:''}
+      </div>
+      <div class="log-meta"><span class="log-user">${userLabel[r.usuario]||r.usuario}</span><br>${dataFmt}</div>
+    </div>`;
+  }).join('');
+}
+// ===================== FIM LOG DE AUDITORIA =====================
+
 setInterval(()=>{
   if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true);
 },30000);
