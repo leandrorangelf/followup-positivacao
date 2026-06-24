@@ -323,6 +323,25 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-ficha-info .m{font-size:11px;color:var(--muted);margin-top:2px}
 .vd-fab{position:fixed;bottom:88px;right:22px;width:58px;height:58px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:30px;font-weight:300;box-shadow:0 6px 20px rgba(29,78,216,.4);cursor:pointer;z-index:30}
 
+
+/* PREVISÃO DE PEDIDOS */
+.prev-note{max-width:1540px;margin:10px auto 0;padding:0 22px;color:var(--muted);font-size:12px;line-height:1.45}
+.prev-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-top:12px}
+.prev-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;cursor:pointer}
+.prev-card:hover{border-color:var(--purple)}
+.prev-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.prev-card-cli{font-size:14px;font-weight:750;line-height:1.3}
+.prev-card-total{font-size:14px;font-weight:800;white-space:nowrap}
+.prev-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.prev-items{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.45}
+.prev-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px;padding-top:9px;border-top:1px solid var(--border)}
+.prev-action{border:1px solid var(--border);border-radius:7px;padding:6px 9px;background:var(--card);font:700 11px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;color:var(--text)}
+.prev-action:hover{border-color:var(--purple);color:var(--purple)}
+.prev-action.delete:hover{border-color:var(--red);color:var(--red)}
+.prev-b-alta{background:#DCFCE7;color:#166534}.prev-b-media{background:#FEF3C7;color:#92400E}.prev-b-baixa{background:#F3F4F6;color:#6B7280}
+.prev-b-status{background:#E0E7FF;color:#3730A3}
+@media(max-width:680px){.prev-list{grid-template-columns:1fr}.prev-note{padding:0 14px}.prev-card-top{flex-direction:column}.prev-card-total{white-space:normal}}
+
 /* LOG */
 .log-item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
 .log-item:last-child{border-bottom:0}
@@ -331,6 +350,7 @@ body{background:var(--canvas);color:var(--ink)}
 .log-icon.editar{background:#EFF6FF;color:#1D4ED8}
 .log-icon.excluir{background:#FEE2E2;color:#991B1B}
 .log-icon.faturar{background:#FEF3C7;color:#92400E}
+.log-icon.previsao{background:#EEE7FF;color:#6547d9}
 .log-body{min-width:0}
 .log-title{font-size:13px;font-weight:700;margin-bottom:2px}
 .log-detail{font-size:11px;color:#667085;line-height:1.5}
@@ -371,6 +391,7 @@ body{background:var(--canvas);color:var(--ink)}
     <div class="side-nav-label">MENU</div>
     <button class="side-link" id="side-dash" onclick="navTo('dash')"><span>Dashboard</span><span>Visão geral</span></button>
     <button class="side-link" id="side-vendas" onclick="navTo('vendas')"><span>Vendas</span><span>Pedidos & faturamento</span></button>
+    <button class="side-link" id="side-prev" onclick="navTo('prev')"><span>Previsão</span><span>Pedidos futuros</span></button>
     <button class="side-link" id="side-gestao" type="button"><span>Gestão</span><span>Aberto</span></button>
     <div class="side-sub admin-only">
       <button class="side-sub-link" id="side-cli" onclick="navTo('cli')">Clientes</button>
@@ -622,6 +643,50 @@ body{background:var(--canvas);color:var(--ink)}
   <div class="bottom-nav" id="nav-vfn"></div>
 </div>
 
+
+<!-- PREVISÃO DE PEDIDOS -->
+<div id="s-prev" class="screen" style="display:none">
+  <div class="vd-header"><h2>Previsão de pedidos</h2><div class="sub" id="prev-sub">— · —</div></div>
+  <div class="prev-note">Previsão é apenas intenção comercial. Não entra em faturamento, não soma venda realizada, não entra na meta e não aparece no PDF de faturamento.</div>
+  <div class="vd-metrics">
+    <div class="vd-metric"><div class="lbl">Previsões abertas</div><div class="val" id="prev-total">—</div><div class="vsub" id="prev-total-sub">—</div></div>
+    <div class="vd-metric"><div class="lbl">Caixas previstas</div><div class="val" id="prev-cx">—</div><div class="vsub">Não faturável</div></div>
+    <div class="vd-metric"><div class="lbl">Valor previsto</div><div class="val" id="prev-valor">—</div><div class="vsub">Estimativa comercial</div></div>
+  </div>
+  <div class="vd-coord-tabs" id="prev-coord-tabs" style="display:none"></div>
+  <div class="vd-filter">
+    <button class="vd-chip on" data-prev-status="aberta" onclick="prevSetStatus('aberta')">Abertas</button>
+    <button class="vd-chip" data-prev-status="todas" onclick="prevSetStatus('todas')">Todas</button>
+    <button class="vd-chip vd-chip-new no-diretoria" onclick="prevNovo()">+ Nova previsão</button>
+  </div>
+  <div class="vd-section">
+    <div id="prev-list" class="prev-list"></div>
+  </div>
+  <div class="bottom-nav" id="nav-prev"></div>
+</div>
+
+<!-- MODAL NOVA/EDITAR PREVISÃO -->
+<div class="modal-bg" id="modal-prev-form">
+  <div class="modal">
+    <div class="modal-title" id="prev-form-title">Nova previsão</div>
+    <div class="modal-sub">Registro interno para Vagner acompanhar pedidos prováveis. Não gera pedido real.</div>
+    <div class="vd-field"><label>Cliente</label><select id="prev-cli" onchange="prevAplicarFicha()"></select></div>
+    <div class="vd-field"><label>Mês da previsão</label><select id="prev-mes"></select></div>
+    <div class="vd-field"><label>Probabilidade</label><select id="prev-prob"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select></div>
+    <div class="vd-field"><label>Status</label><select id="prev-status"><option value="aberta">Aberta</option><option value="ganha">Ganha</option><option value="perdida">Perdida</option><option value="cancelada">Cancelada</option></select></div>
+    <div class="vd-field"><label>SKUs previstos</label><div id="prev-skus"></div></div>
+    <div class="vd-field"><label>Observação</label><textarea id="prev-obs" placeholder="Ex.: cliente sinalizou compra no início do mês, aguardando aprovação interna"></textarea></div>
+    <div class="vd-total-box" style="margin:12px 0">
+      <div><div class="l">Total previsto</div><div class="v" id="prev-form-total">R$ 0,00</div></div>
+      <div style="text-align:right"><div class="l">Caixas</div><div class="v" id="prev-form-cx" style="font-size:20px">0</div></div>
+    </div>
+    <div class="vd-btnrow" style="margin:0">
+      <button class="vd-btn vd-btn-out" onclick="prevFecharForm()">Cancelar</button>
+      <button class="vd-btn vd-btn-pri" id="prev-save" onclick="prevSalvar()">Salvar previsão</button>
+    </div>
+  </div>
+</div>
+
 <!-- VENDAS · FICHAS DE CLIENTE -->
 <div id="s-vficha" class="screen" style="display:none">
   <div class="vd-header"><h2>Fichas de Vendas</h2><div class="sub">Configure preços e prazos padrão por cliente</div></div>
@@ -731,6 +796,7 @@ body{background:var(--canvas);color:var(--ink)}
           <option value="editar">Edição</option>
           <option value="excluir">Exclusão</option>
           <option value="faturar">Faturamento</option>
+          <option value="previsao">Previsão</option>
         </select>
         <button class="secondary-btn" onclick="carregarLog()">↺ Atualizar</button>
       </div>
@@ -906,7 +972,7 @@ async function sb(path,opts={}){
 
 // ── SCREENS ──
 function show(id){
-  ['s-login','s-dash','s-ped','s-cli','s-metas','s-vendas','s-vfn','s-vficha','s-log'].forEach(s=>g(s).style.display='none');
+  ['s-login','s-dash','s-ped','s-cli','s-metas','s-vendas','s-prev','s-vfn','s-vficha','s-log'].forEach(s=>g(s).style.display='none');
   g(id).style.display=(id==='s-login')?'flex':'block';
   g('app-shell').classList.toggle('visible',id!=='s-login');
   toggleMenu(false);
@@ -916,6 +982,7 @@ function renderNav(navId,active){
   const tabs=isAdmin?[
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'vendas',icon:'💰',label:'Vendas'},
+    {id:'prev',icon:'🔮',label:'Previsão'},
     {id:'cli',icon:'👥',label:'Clientes'},
   ]:[
     {id:'dash',icon:'📊',label:'Dashboard'},
@@ -930,14 +997,16 @@ function renderNav(navId,active){
 }
 
 function navTo(id){
-  if(isDiretoria && !['dash','vendas'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
+  if(isDiretoria && !['dash','vendas','prev'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
   if(user==='vagner'&&['cli','metas','ped'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
+  if(id==='prev'&&!isAdmin&&!isDiretoria){toast('Previsão disponível apenas para gerência','error');return;}
   if(id==='dash'){irDash();}
   else if(id==='ped'){irPed();}
   else if(id==='cli'){irCli();}
   else if(id==='metas'){irMetas();}
   else if(id==='log'){irLog();}
   else if(id==='vendas'){irVendas();}
+  else if(id==='prev'){irPrev();}
   else if(id==='vficha'){irVendas();vdIrFicha();}
 }
 
@@ -1449,11 +1518,12 @@ function setupShell(){
   g('side-avatar').textContent=(user==='admin'?'L':user==='vagner'?'V':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'block':'none');
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
+  if(g('side-prev'))g('side-prev').style.display=(isAdmin||isDiretoria)?'flex':'none';
 }
 
 function updateSideNav(active){
-  const titles={dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',log:'Log de atividades'};
-  ['dash','ped','cli','metas','vendas','log'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
+  const titles={dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',prev:'Previsão de pedidos',log:'Log de atividades'};
+  ['dash','ped','cli','metas','vendas','prev','log'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
   if(g('topbar-title'))g('topbar-title').textContent=titles[active]||'Follow-up Positivação';
   if(g('shell-mes'))g('shell-mes').value=mesAtual;
 }
@@ -1468,12 +1538,13 @@ function setMesGlobal(value){
   mesAtual=parseInt(value,10);
   pedidosCarregados=false;
   if(g('dash-mes'))g('dash-mes').value=mesAtual;
-  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-log'].find(id=>g(id).style.display!=='none');
+  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-prev','s-log'].find(id=>g(id).style.display!=='none');
   if(visible==='s-dash')carregarDashboard();
   else if(visible==='s-ped')carregarPedidos();
   else if(visible==='s-cli')renderCliList();
   else if(visible==='s-metas')renderMetas();
   else if(visible==='s-vendas')vdCarregar();
+  else if(visible==='s-prev')prevCarregar();
 }
 
 function logout(){
@@ -2541,6 +2612,162 @@ async function corrigirNomeClientePedidos(nomeAntigo,nomeNovo){
   if(!res||!res.ok){toast('Erro ao atualizar pedidos','error');return}
   pedidosCarregados=false;await vdCarregar();toast('Pedidos atualizados com sucesso','ok');
 }
+
+// ===================== PREVISÃO DE PEDIDOS =====================
+let prevPedidos=[];
+let prevCoordFiltro='todos';
+let prevStatusFiltro='aberta';
+let prevEditId=null;
+let prevSalvando=false;
+let prevForm={skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
+
+function prevResetForm(){prevForm={skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};}
+function prevResumo(p){
+  const itens=p.previsoes_pedidos_itens||[];
+  const cx=Number(p.total_caixas)||itens.reduce((s,i)=>s+Number(i.qty_caixas||0),0);
+  const valor=Number(p.total)||itens.reduce((s,i)=>s+Number(i.subtotal||0),0);
+  return{itens,cx,valor};
+}
+function prevResumoLista(lista){return(lista||[]).reduce((r,p)=>{const x=prevResumo(p);r.qtd+=1;r.cx+=x.cx;r.valor+=x.valor;if(p.probabilidade==='alta')r.alta+=1;return r},{qtd:0,cx:0,valor:0,alta:0});}
+
+async function irPrev(){
+  if(!isAdmin&&!isDiretoria){toast('Previsão disponível apenas para gerência','error');return;}
+  if(isDiretoria)prevCoordFiltro='todos';
+  else if(prevCoordFiltro!=='todos'&&!COORD_KEYS.includes(prevCoordFiltro))prevCoordFiltro='todos';
+  show('s-prev');renderNav('nav-prev','prev');updateSideNav('prev');
+  await carregarClientes();
+  prevRenderCoordTabs();
+  await prevCarregar();
+}
+function prevRenderCoordTabs(){
+  const el=g('prev-coord-tabs');
+  el.style.display=(isAdmin||isDiretoria)?'flex':'none';
+  el.innerHTML=['todos',...COORD_KEYS].map(c=>'<button class="admin-tab '+(c===prevCoordFiltro?'active':'')+'" onclick="prevSetCoord(\''+c+'\')">'+(c==='todos'?'Todos':c)+'</button>').join('');
+}
+async function prevSetCoord(c){
+  if(!(isAdmin||isDiretoria)||(c!=='todos'&&!COORD_KEYS.includes(c)))return;
+  prevCoordFiltro=c;if(c!=='todos')coordAtual=c;
+  prevRenderCoordTabs();await prevCarregar();
+}
+function prevSetStatus(st){
+  prevStatusFiltro=st;
+  document.querySelectorAll('.vd-chip[data-prev-status]').forEach(b=>b.classList.toggle('on',b.dataset.prevStatus===st));
+  prevRenderLista();
+}
+async function prevCarregar(){
+  const filtroCoord=prevCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(prevCoordFiltro)+'&';
+  const d=await sb('/rest/v1/previsoes_pedidos?'+filtroCoord+'previsao_mes=eq.'+mesAtual+'&previsao_ano=eq.'+anoAtual+'&select=*,previsoes_pedidos_itens(*)&order=created_at.desc',{ret:true});
+  prevPedidos=Array.isArray(d)?d:[];
+  g('prev-sub').textContent=(prevCoordFiltro==='todos'?'Todos os coordenadores':prevCoordFiltro)+' · '+MESES[mesAtual]+'/'+anoAtual;
+  prevRenderMetrics();prevRenderLista();
+}
+function prevRenderMetrics(){
+  const abertas=prevPedidos.filter(p=>p.status==='aberta');
+  const r=prevResumoLista(abertas);
+  g('prev-total').textContent=r.qtd;
+  g('prev-total-sub').textContent=r.alta+' com probabilidade alta';
+  g('prev-cx').textContent=r.cx.toLocaleString('pt-BR')+' cx';
+  g('prev-valor').textContent=vdFmt(r.valor);
+}
+function prevListaFiltrada(){return prevStatusFiltro==='todas'?prevPedidos:prevPedidos.filter(p=>p.status==='aberta');}
+function prevRenderLista(){
+  const lista=prevListaFiltrada();
+  g('prev-list').innerHTML=lista.map(prevCardHTML).join('')||'<div class="vd-empty" style="grid-column:1/-1">Nenhuma previsão neste período.</div>';
+}
+function prevCardHTML(p){
+  const x=prevResumo(p);
+  const itens=x.itens.length?x.itens.map(i=>vdEsc(i.sku)+': '+Number(i.qty_caixas||0)+' cx').join(' · '):'Sem detalhamento de SKUs';
+  const probLabel={alta:'Alta',media:'Média',baixa:'Baixa'}[p.probabilidade]||'Média';
+  const stLabel={aberta:'Aberta',ganha:'Ganha',perdida:'Perdida',cancelada:'Cancelada'}[p.status]||p.status;
+  const acoes=(!isDiretoria)?'<div class="prev-actions"><button class="prev-action" onclick="event.stopPropagation();prevEditar(\''+p.id+'\')">Editar</button><button class="prev-action delete" onclick="event.stopPropagation();prevExcluir(\''+p.id+'\')">Excluir</button></div>':'';
+  return '<div class="prev-card" onclick="prevEditar(\''+p.id+'\')">'+
+    '<div class="prev-card-top"><div class="prev-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="prev-card-total">'+vdFmt(x.valor)+'</div></div>'+
+    '<div class="prev-meta"><span class="vd-badge prev-b-'+vdEsc(p.probabilidade||'media')+'">Prob. '+probLabel+'</span><span class="vd-badge prev-b-status">'+stLabel+'</span><span class="vd-badge vd-b-skus">'+x.cx+' cx previstas</span>'+(prevCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+
+    '<div class="prev-items">'+itens+'</div>'+(p.observacao?'<div class="prev-items" style="background:var(--bg);border-radius:7px;padding:7px">'+vdEsc(p.observacao)+'</div>':'')+acoes+'</div>';
+}
+function prevNovo(){
+  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(prevCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar a previsão','error');return}
+  prevEditId=null;prevResetForm();
+  g('prev-form-title').textContent='Nova previsão';
+  prevPopMes();prevPopCli();prevRenderSkus();
+  g('prev-cli').value='';g('prev-prob').value='media';g('prev-status').value='aberta';g('prev-obs').value='';
+  prevRecalc();g('modal-prev-form').classList.add('open');
+}
+function prevPopMes(){
+  g('prev-mes').innerHTML=MESES.map((m,i)=>'<option value="'+i+'">'+m+' '+anoAtual+'</option>').join('');
+  g('prev-mes').value=mesAtual;
+}
+function prevPopCli(){
+  const at=clientesAtivos(prevCoordFiltro);
+  g('prev-cli').innerHTML='<option value="">— Selecione —</option>'+at.map(c=>'<option value="'+vdEsc(c.id)+'">'+vdEsc(c.nome)+(c.uf?' ('+vdEsc(c.uf)+')':'')+'</option>').join('');
+}
+function prevAplicarFicha(){
+  const id=g('prev-cli').value;if(!id)return;
+  const c=clientesAtivos(prevCoordFiltro).find(x=>x.id===id);if(!c)return;
+  const sk=c.def_skus||{};VD_SKUS.forEach(s=>{prevForm.skus[s]={q:prevForm.skus[s]?.q||0,v:parseFloat(sk[s])||prevForm.skus[s]?.v||0}});
+  prevRenderSkus();prevRecalc();
+}
+function prevRenderSkus(){
+  g('prev-skus').innerHTML=VD_SKUS.map(s=>'<div class="vd-sku-line"><div class="vd-sku-lbl">'+s+'</div><input type="number" min="0" placeholder="cx" value="'+(prevForm.skus[s].q||'')+'" oninput="prevUpdSku(\''+s+'\',\'q\',this.value)"><input type="number" min="0" step="0.01" placeholder="R$/pac" value="'+(prevForm.skus[s].v||'')+'" oninput="prevUpdSku(\''+s+'\',\'v\',this.value)"></div><div class="vd-sku-info">'+VD_PACKS[s]+' pac/cx</div><div class="vd-sku-sub" id="prev-sub-'+s+'">Subtotal: '+vdFmt(0)+'</div>').join('');
+}
+function prevUpdSku(s,k,v){prevForm.skus[s][k]=parseFloat(v)||0;prevRecalc()}
+function prevRecalc(){
+  let total=0,cx=0;
+  VD_SKUS.forEach(s=>{const sub=(prevForm.skus[s].q||0)*VD_PACKS[s]*(prevForm.skus[s].v||0);const el=g('prev-sub-'+s);if(el)el.textContent='Subtotal: '+vdFmt(sub);total+=sub;cx+=prevForm.skus[s].q||0;});
+  g('prev-form-total').textContent=vdFmt(total);g('prev-form-cx').textContent=cx;
+}
+function prevFecharForm(){g('modal-prev-form').classList.remove('open');prevEditId=null;}
+async function prevSalvar(){
+  if(prevSalvando)return;
+  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  const cliId=g('prev-cli').value;if(!cliId){toast('Escolha o cliente','error');return}
+  const cli=clientesAtivos(prevCoordFiltro).find(c=>c.id===cliId);if(!cli){toast('Cliente inválido','error');return}
+  const itens=VD_SKUS.filter(s=>(prevForm.skus[s].q||0)>0&&(prevForm.skus[s].v||0)>0).map(s=>({sku:s,qty_caixas:prevForm.skus[s].q,valor_pacote:prevForm.skus[s].v,packs_por_caixa:VD_PACKS[s],subtotal:prevForm.skus[s].q*VD_PACKS[s]*prevForm.skus[s].v}));
+  if(!itens.length){toast('Adicione ao menos 1 SKU com qtd e valor','error');return}
+  const total=itens.reduce((s,i)=>s+i.subtotal,0),totalCx=itens.reduce((s,i)=>s+i.qty_caixas,0);
+  const payload={coordenador:prevCoordFiltro,cliente_id:cli.id,cliente_nome:cli.nome,cliente_uf:cli.uf||null,probabilidade:g('prev-prob').value,status:g('prev-status').value,previsao_mes:parseInt(g('prev-mes').value,10),previsao_ano:anoAtual,total,total_caixas:totalCx,observacao:g('prev-obs').value||null,criado_por:user};
+  prevSalvando=true;g('prev-save').disabled=true;toast('Salvando previsão...','info',8000);
+  try{
+    let id=prevEditId;
+    if(prevEditId){
+      const r=await sb('/rest/v1/previsoes_pedidos?id=eq.'+encodeURIComponent(prevEditId),{method:'PATCH',body:JSON.stringify(payload)});
+      if(!r||!r.ok){toast('Erro ao salvar previsão','error');return}
+      const del=await sb('/rest/v1/previsoes_pedidos_itens?previsao_id=eq.'+encodeURIComponent(prevEditId),{method:'DELETE'});
+      if(!del||!del.ok){toast('Não foi possível atualizar os itens da previsão','error');return}
+    }else{
+      const j=await sb('/rest/v1/previsoes_pedidos',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload),ret:true});
+      if(!Array.isArray(j)||!j[0]||!j[0].id){toast('Erro ao criar previsão. Rode o SQL no Supabase antes.','error');return}
+      id=j[0].id;
+    }
+    const r2=await sb('/rest/v1/previsoes_pedidos_itens',{method:'POST',body:JSON.stringify(itens.map(i=>Object.assign({},i,{previsao_id:id})))});
+    if(!r2||!r2.ok){toast('Erro ao salvar itens da previsão','error');return}
+    auditLog('previsao',(prevEditId?'Previsão editada':'Nova previsão')+' · '+cli.nome,'Coordenador: '+prevCoordFiltro+' · '+totalCx+' cx · '+vdFmt(total));
+    toast('✓ Previsão salva','ok');prevFecharForm();await prevCarregar();
+  }catch(e){console.error('Erro previsão:',e);toast('Erro inesperado na previsão','error')}
+  finally{prevSalvando=false;g('prev-save').disabled=false;}
+}
+function prevEditar(id){
+  if(isDiretoria){toast('Diretoria visualiza, mas não edita','info');return}
+  const p=prevPedidos.find(x=>x.id===id);if(!p)return;
+  prevEditId=id;prevCoordFiltro=p.coordenador;coordAtual=p.coordenador;prevRenderCoordTabs();prevResetForm();
+  (p.previsoes_pedidos_itens||[]).forEach(i=>{if(prevForm.skus[i.sku])prevForm.skus[i.sku]={q:Number(i.qty_caixas||0),v:Number(i.valor_pacote||0)}});
+  g('prev-form-title').textContent='Editar previsão';prevPopMes();prevPopCli();prevRenderSkus();
+  g('prev-cli').value=p.cliente_id;g('prev-mes').value=p.previsao_mes;g('prev-prob').value=p.probabilidade||'media';g('prev-status').value=p.status||'aberta';g('prev-obs').value=p.observacao||'';
+  prevRecalc();g('modal-prev-form').classList.add('open');
+}
+async function prevExcluir(id){
+  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  const p=prevPedidos.find(x=>x.id===id);if(!p)return;
+  if(!confirm('Excluir a previsão de '+p.cliente_nome+'? Isso não afeta pedidos reais.'))return;
+  await sb('/rest/v1/previsoes_pedidos_itens?previsao_id=eq.'+encodeURIComponent(id),{method:'DELETE'});
+  const r=await sb('/rest/v1/previsoes_pedidos?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
+  if(!r||!r.ok){toast('Erro ao excluir previsão','error');return}
+  auditLog('excluir','Previsão excluída · '+p.cliente_nome,'Coordenador: '+p.coordenador+' · '+MESES[p.previsao_mes]+'/'+p.previsao_ano);
+  toast('Previsão excluída','ok');await prevCarregar();
+}
+// ===================== FIM PREVISÃO DE PEDIDOS =====================
+
 // ===================== LOG DE AUDITORIA =====================
 async function auditLog(acao, descricao, detalhes){
   if(!isAdmin)return; // só gestores geram log
@@ -2579,7 +2806,7 @@ async function carregarLog(){
     g('log-content').innerHTML='<div class="log-empty">📋 Nenhum registro encontrado.</div>';
     return;
   }
-  const iconMap={criar:'➕',editar:'✏️',excluir:'🗑️',faturar:'💰'};
+  const iconMap={criar:'➕',editar:'✏️',excluir:'🗑️',faturar:'💰',previsao:'🔮'};
   const userLabel={admin:'Leandro',vagner:'Vagner'};
   g('log-content').innerHTML=data.map(r=>{
     const dt=new Date(r.criado_em);
