@@ -1944,6 +1944,7 @@ renderCoordDash=function(anoData){
 const VD_SKUS=['GR','GM','CM','CC'];
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50};
 let vdPedidos=[];
+let vdForecastOrigemId=null,vdForecastOrigemLabel='';
 let vdFiltro='todos';
 let vdCoordFiltro='todos';
 let vdEditPedidoId=null;
@@ -2106,6 +2107,7 @@ function vdCardHTML(p){
 }
 
 function vdGoNovo(){
+  vdForecastOrigemId=null;vdForecastOrigemLabel='';
   if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o pedido','error');return}
   vdEditPedidoId=null;
@@ -2131,6 +2133,40 @@ function vdGoForecast(){
   forecastCoordFiltro=coordForecast;
   forecastStatusFiltro='aberto';
   forecastNovo();
+}
+
+function forecastConverterPedido(id){
+  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  const p=forecastPedidos.find(x=>x.id===id);if(!p)return;
+  if(p.status!=='aberto'){toast('Somente forecast aberto pode virar pedido','error');return}
+  if(!forecastCoordPermitido()&&p.coordenador!==user){toast('Você só pode converter seu próprio forecast','error');return}
+  if(!confirm('Converter o forecast de '+p.cliente_nome+' em pedido real? Ele sairá dos forecasts abertos após salvar o pedido.'))return;
+  vdForecastOrigemId=p.id;
+  vdForecastOrigemLabel=p.cliente_nome;
+  vdEditPedidoId=null;
+  coordAtual=p.coordenador;
+  vdCoordFiltro=p.coordenador;
+  vdForm={tipo:p.tipo||'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
+  const cli=(clientesDB[coordAtual]||[]).find(c=>c.id===p.cliente_id);
+  if(cli){
+    if(cli.def_tipo)vdForm.tipo=cli.def_tipo;
+    if(cli.def_prazo)vdForm.prazo=cli.def_prazo;
+    const sk=cli.def_skus||{};
+    VD_SKUS.forEach(s=>{vdForm.skus[s].v=parseFloat(sk[s])||0});
+  }
+  vdForm.tipo=p.tipo||vdForm.tipo||'in';
+  (p.forecast_pedidos_itens||[]).forEach(i=>{if(vdForm.skus[i.sku])vdForm.skus[i.sku].q=Number(i.qty_caixas||0)});
+  g('vfn-title').textContent='Converter Forecast em Pedido';
+  g('vf-btn-save').textContent='Salvar Pedido Real';
+  vdPopCliSel();
+  g('vf-cli').value=p.cliente_id||'';
+  vdRenderSkus();
+  vdSetTipo(vdForm.tipo);vdSetPrazo(vdForm.prazo);
+  if(cli&&cli.def_prazo){g('vf-p1').value=cli.def_p1||'';g('vf-p2').value=cli.def_p2||'';g('vf-p3').value=cli.def_p3||'';}else{g('vf-p1').value='';g('vf-p2').value='';g('vf-p3').value='';}
+  const baseObs='Convertido do Forecast: '+p.cliente_nome+' · '+MESES[p.forecast_mes]+'/'+p.forecast_ano+'.';
+  g('vf-obs').value=p.observacao?(baseObs+' Obs forecast: '+p.observacao):baseObs;
+  vdRecalc();
+  show('s-vfn');renderNav('nav-vfn','vendas');updateSideNav('vendas');
 }
 
 function vdPopCliSel(){
@@ -2256,6 +2292,17 @@ async function vdSalvarPedido(){
       }
       toast('Erro ao salvar itens. A alteração foi desfeita.','error');return
     }
+    let forecastConvertidoOk=false;
+    const forecastOrigemAtual=vdForecastOrigemId;
+    const forecastOrigemLabelAtual=vdForecastOrigemLabel;
+    if(forecastOrigemAtual&&!vdEditPedidoId){
+      const rf=await sb('/rest/v1/forecast_pedidos?id=eq.'+encodeURIComponent(forecastOrigemAtual),{method:'PATCH',body:JSON.stringify({status:'convertido',updated_at:new Date().toISOString()})});
+      if(rf&&rf.ok){
+        forecastConvertidoOk=true;
+      }else{
+        toast('Pedido salvo, mas o Forecast não foi arquivado. Exclua ou marque convertido manualmente.','error',7000);
+      }
+    }
     toast('✓ Pedido salvo!','ok');
     // LOG
     const acao=vdEditPedidoId?'editar':'criar';
@@ -2266,6 +2313,10 @@ async function vdSalvarPedido(){
       (acao==='criar'?'Novo pedido criado':'Pedido editado')+' · '+cliNome,
       'Coordenador: '+coordAtual+' · SKUs: '+itens.map(i=>i.sku+' '+i.qty_caixas+'cx').join(', ')+' · Total: '+vdFmt(totalValLog)+' ('+totalCxLog+' cx)'
     );
+    if(forecastOrigemAtual&&forecastConvertidoOk){
+      auditLog('editar','Forecast convertido em pedido · '+(forecastOrigemLabelAtual||cliNome),'Coordenador: '+coordAtual+' · Pedido real criado · '+totalCxLog+' cx');
+      vdForecastOrigemId=null;vdForecastOrigemLabel='';
+    }
     await vdCarregar();
     show('s-vendas');
     renderNav('nav-vendas','vendas');
@@ -2688,7 +2739,7 @@ function forecastCardHTML(p){
   const probLabel={alta:'Alta',media:'Média',baixa:'Baixa'}[p.probabilidade]||'Média';
   const stLabel={aberto:'Aberto',convertido:'Convertido',perdido:'Perdido',cancelado:'Cancelado'}[p.status]||p.status;
   const tipo=String(p.tipo||'in').toLowerCase();
-  const acoes=(!isDiretoria)?'<div class="forecast-actions"><button class="forecast-action" onclick="event.stopPropagation();forecastEditar(\''+p.id+'\')">Editar</button><button class="forecast-action delete" onclick="event.stopPropagation();forecastExcluir(\''+p.id+'\')">Excluir</button></div>':'';
+  const acoes=(!isDiretoria)?'<div class="forecast-actions">'+(p.status==='aberto'?'<button class="forecast-action" onclick="event.stopPropagation();forecastConverterPedido(\''+p.id+'\')">Virar pedido</button>':'')+'<button class="forecast-action" onclick="event.stopPropagation();forecastEditar(\''+p.id+'\')">Editar</button><button class="forecast-action delete" onclick="event.stopPropagation();forecastExcluir(\''+p.id+'\')">Excluir</button></div>':'';
   return '<div class="forecast-card" onclick="forecastEditar(\''+p.id+'\')">'+
     '<div class="forecast-card-top"><div class="forecast-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="forecast-card-cx">'+x.cx+' cx</div></div>'+
     '<div class="forecast-meta"><span class="vd-badge forecast-b-'+tipo+'">'+tipo.toUpperCase()+'</span><span class="vd-badge forecast-b-'+vdEsc(p.probabilidade||'media')+'">Chance '+probLabel+'</span><span class="vd-badge forecast-b-status">'+stLabel+'</span>'+(forecastCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+
