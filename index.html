@@ -1094,10 +1094,10 @@ async function carregarTodosPedidos(){
   const data=await sb(`/rest/v1/pedidos?mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true});
   todosPedidosMes={};
   COORD_KEYS.forEach(c=>{todosPedidosMes[c]={};});
-  if(Array.isArray(data))data.forEach(r=>{if(todosPedidosMes[r.coordenador])todosPedidosMes[r.coordenador][r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
+  if(Array.isArray(data))data.forEach(r=>{if(todosPedidosMes[r.coordenador])todosPedidosMes[r.coordenador][r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,gtwin:r.gtwin||0,ck:r.ck||0,click:r.click||0};});
 }
 
-function totCliD(d,cli,mes){const x=d[cli]||{};const base=(x.gr||0)+(x.gm||0)+(x.cm||0)+(x.cc||0);return(mes===undefined?mesAtual:mes)<4?base+(x.click||0):base;}
+function totCliD(d,cli,mes){const x=d[cli]||{};const base=(x.gr||0)+(x.gm||0)+(x.cm||0)+(x.cc||0)+(x.gtwin||0)+(x.ck||0);return(mes===undefined?mesAtual:mes)<4?base+(x.click||0):base;}
 
 function renderCoordDash(anoData){
   const coord=coordAtual;
@@ -1288,7 +1288,7 @@ async function setCoord(c){coordAtual=c;renderAdminTabs();await carregarPedidos(
 async function carregarPedidos(){
   const data=await sb(`/rest/v1/pedidos?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*`,{ret:true});
   dadosLocais={};
-  if(Array.isArray(data))data.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0};});
+  if(Array.isArray(data))data.forEach(r=>{dadosLocais[r.cliente]={gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,gtwin:r.gtwin||0,ck:r.ck||0,click:r.click||0};});
   pedidosCarregados=true;coordPedCarregado=coordAtual;mesPedCarregado=mesAtual;
   await carregarClientes();
   renderPedHeader();renderClientes();renderPedSummary();
@@ -1305,11 +1305,11 @@ async function salvarTudo(){
     const anteriores=await sb('/rest/v1/pedidos?'+filtro+'&select=*',{ret:true});
     const backup=Array.isArray(anteriores)?anteriores.map(r=>({
       coordenador:r.coordenador,mes:r.mes,ano:r.ano,cliente:r.cliente,
-      gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,click:r.click||0,updated_at:r.updated_at
+      gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,gtwin:r.gtwin||0,ck:r.ck||0,click:r.click||0,updated_at:r.updated_at
     })):[];
     const del=await sb('/rest/v1/pedidos?'+filtro,{method:'DELETE'});
     if(!del||!del.ok){toast('⚠ Erro ao salvar ('+((del&&del.status)||'sem conexão')+')','error',4000);return;}
-    const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,click:(dadosLocais[c.nome]||{}).click||0,updated_at:new Date().toISOString()}));
+    const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,gtwin:(dadosLocais[c.nome]||{}).gtwin||0,ck:(dadosLocais[c.nome]||{}).ck||0,click:(dadosLocais[c.nome]||{}).click||0,updated_at:new Date().toISOString()}));
     const res=await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(rows)});
     if(!res||!res.ok){
       if(backup.length)await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(backup)});
@@ -1328,7 +1328,7 @@ function renderPedHeader(){
   g('meta-val').textContent=meta;
 }
 
-function totCli(cli){const d=dadosLocais[cli]||{};const base=(d.gr||0)+(d.gm||0)+(d.cm||0)+(d.cc||0);return mesAtual<4?base+(d.click||0):base;}
+function totCli(cli){const d=dadosLocais[cli]||{};const base=(d.gr||0)+(d.gm||0)+(d.cm||0)+(d.cc||0)+(d.gtwin||0)+(d.ck||0);return mesAtual<4?base+(d.click||0):base;}
 function skusCli(cli){const d=dadosLocais[cli]||{};return SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length;}
 function st(cli){const n=skusCli(cli);return n===0?'sem':n<=2?'parc':'ok';}
 function stLabel(s){return s==='ok'?'Feito':s==='parc'?'Parcial':'Pendente';}
@@ -1751,7 +1751,7 @@ function vdAgruparVendasPorCliente(lista,coordFiltro){
     if(coordFiltro&&coordFiltro!=='todos'&&p.coordenador!==coordFiltro)return;
     const nome=p.cliente_nome||p.cliente;
     if(!nome)return;
-    if(!out[nome])out[nome]={gr:0,gm:0,cm:0,cc:0,click:0};
+    if(!out[nome])out[nome]={gr:0,gm:0,cm:0,cc:0,gtwin:0,ck:0,click:0};
     const itens=Array.isArray(p.pedidos_vendas_itens)?p.pedidos_vendas_itens:[];
     if(itens.length){
       itens.forEach(i=>{
@@ -1761,6 +1761,8 @@ function vdAgruparVendasPorCliente(lista,coordFiltro){
         else if(sk==='GM')out[nome].gm+=q;
         else if(sk==='CM')out[nome].cm+=q;
         else if(sk==='CC')out[nome].cc+=q;
+        else if(sk==='GTWIN')out[nome].gtwin+=q;
+        else if(sk==='CK')out[nome].ck+=q;
       });
     }else{
       out[nome].gr+=Number(p.total_caixas||0);
@@ -1775,7 +1777,7 @@ function vdVolumePedidoDash(p){
 }
 
 function vdSkuDash(lista){
-  const sku={GR:0,GM:0,CM:0,CC:0};
+  const sku={GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0};
   (Array.isArray(lista)?lista:[]).forEach(p=>{
     const itens=Array.isArray(p.pedidos_vendas_itens)?p.pedidos_vendas_itens:[];
     if(itens.length){
@@ -1888,7 +1890,7 @@ renderCoordDash=function(anoData){
       <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length}</div></div><div class="attention-list">${pendentes.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.nome}</strong><br><small style="color:#7c879c">${coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
     </div>
     <div class="dash-lower">
-      <section class="panel"><div class="panel-title-row"><div class="panel-title">Clientes da carteira</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Status</th><th>Volume vendido</th><th>SKUs</th></tr></thead><tbody>${rows.map(c=>{const d=dadosLocais[c.nome]||{},vol=totCliD(d,c.nome),skus=Object.entries({GR:d.gr||0,GM:d.gm||0,CM:d.cm||0,CC:d.cc||0}).filter(([k,v])=>v>0).map(([k,v])=>`${k}: ${v}`).join(' · ')||'-';return`<tr><td class="table-name">${c.nome}</td><td>${vol>0?'Com venda':'Sem venda'}</td><td>${vol.toLocaleString('pt-BR')} cx</td><td>${skus}</td></tr>`}).join('')}</tbody></table></div></section>
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Clientes da carteira</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Status</th><th>Volume vendido</th><th>SKUs</th></tr></thead><tbody>${rows.map(c=>{const d=dadosLocais[c.nome]||{},vol=totCliD(d,c.nome),skus=Object.entries({GR:d.gr||0,GM:d.gm||0,CM:d.cm||0,CC:d.cc||0,GTwin:d.gtwin||0,CK:d.ck||0}).filter(([k,v])=>v>0).map(([k,v])=>`${k}: ${v}`).join(' · ')||'-';return`<tr><td class="table-name">${c.nome}</td><td>${vol>0?'Com venda':'Sem venda'}</td><td>${vol.toLocaleString('pt-BR')} cx</td><td>${skus}</td></tr>`}).join('')}</tbody></table></div></section>
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Mix de SKUs vendidos</div><div class="panel-note">${volume.toLocaleString('pt-BR')} cx</div></div>${Object.entries(sku).map(([k,v],i)=>`<div class="sku-row"><div class="sku-row-top"><strong>${k}</strong><span>${Math.round(v/skuTotal*100)}% · ${v.toLocaleString('pt-BR')} cx</span></div><div class="sku-track"><div class="sku-fill" style="width:${Math.round(v/skuTotal*100)}%;opacity:${1-i*.14}"></div></div></div>`).join('')}</section>
     </div>`;
   updateSideNav('dash');
@@ -1917,8 +1919,8 @@ renderCoordDash=function(anoData){
     return{label:m.slice(0,3),pct:mt?Math.min(140,Math.round(vol/mt*100)):0};
   });
   const trendMax=Math.max(100,...trend.map(t=>t.pct));
-  const sku={GR:0,GM:0,CM:0,CC:0};
-  Object.values(dadosLocais).forEach(v=>{sku.GR+=v.gr||0;sku.GM+=v.gm||0;sku.CM+=v.cm||0;sku.CC+=v.cc||0;});
+  const sku={GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0};
+  Object.values(dadosLocais).forEach(v=>{sku.GR+=v.gr||0;sku.GM+=v.gm||0;sku.CM+=v.cm||0;sku.CC+=v.cc||0;sku.GTWIN+=v.gtwin||0;sku.CK+=v.ck||0;});
   const skuTotal=Math.max(1,Object.values(sku).reduce((s,v)=>s+v,0));
   const rows=ativos.slice().sort((a,b)=>totCliD(dadosLocais,a.nome)-totCliD(dadosLocais,b.nome)||a.nome.localeCompare(b.nome));
 
@@ -1941,8 +1943,10 @@ renderCoordDash=function(anoData){
   updateSideNav('dash');
 };
 
-const VD_SKUS=['GR','GM','CM','CC'];
-const VD_PACKS={GR:48,GM:48,CM:50,CC:50};
+const VD_SKUS=['GR','GM','CM','CC','GTWIN','CK'];
+const VD_SKU_LABELS={GR:'GR',GM:'GM',CM:'CM',CC:'CC',GTWIN:'GTwin',CK:'CK'};
+const VD_PACKS={GR:48,GM:48,CM:50,CC:50,GTWIN:50,CK:50};
+function vdSkuLabel(s){return VD_SKU_LABELS[String(s||'').toUpperCase()]||String(s||'');}
 let vdPedidos=[];
 let vdForecastOrigemId=null,vdForecastOrigemLabel='';
 let vdFiltro='todos';
@@ -1953,8 +1957,8 @@ let vdEditCliId=null;
 let vdSalvandoPedido=false;
 let vdFatPedidoId=null;
 let vdFaturando=false;
-let vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
-let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0}};
+let vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
+let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0}};
 const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const vdTipoPedido=p=>String(p?.tipo||'in').toLowerCase();
@@ -2086,7 +2090,7 @@ function vdRenderKanban(){
 
 function vdCardHTML(p){
   const x=vdResumoPedido(p),itens=x.itens,cx=x.pedidoCx;
-  const skusLista=itens.length?itens.map(i=>i.sku+': '+i.qty_caixas+' ped. / '+Number(i.qty_faturada||0)+' fat.').join(' · '):
+  const skusLista=itens.length?itens.map(i=>vdSkuLabel(i.sku)+': '+i.qty_caixas+' ped. / '+Number(i.qty_faturada||0)+' fat.').join(' · '):
     (cx>0?'Detalhamento de SKUs não registrado':'Sem itens registrados');
   const stEnd=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Faturado parcial':'';
   const acoesGestor=isAdmin?'<div class="vd-card-actions">'+
@@ -2111,7 +2115,7 @@ function vdGoNovo(){
   if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o pedido','error');return}
   vdEditPedidoId=null;
-  vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
+  vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   g('vfn-title').textContent='Novo Pedido';
   g('vf-btn-save').textContent='Salvar Pedido';
   vdPopCliSel();
@@ -2146,7 +2150,7 @@ function forecastConverterPedido(id){
   vdEditPedidoId=null;
   coordAtual=p.coordenador;
   vdCoordFiltro=p.coordenador;
-  vdForm={tipo:p.tipo||'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
+  vdForm={tipo:p.tipo||'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   const cli=(clientesDB[coordAtual]||[]).find(c=>c.id===p.cliente_id);
   if(cli){
     if(cli.def_tipo)vdForm.tipo=cli.def_tipo;
@@ -2191,7 +2195,7 @@ function vdAplicarFicha(){
 
 function vdRenderSkus(){
   g('vf-skus').innerHTML=VD_SKUS.map(s=>
-    '<div class="vd-sku-line"><div class="vd-sku-lbl">'+s+'</div>'+
+    '<div class="vd-sku-line"><div class="vd-sku-lbl">'+vdSkuLabel(s)+'</div>'+
     '<input type="number" min="0" placeholder="cx" value="'+(vdForm.skus[s].q||'')+'" oninput="vdUpdSku(\''+s+'\',\'q\',this.value)">'+
     '<input type="number" min="0" step="0.01" placeholder="R$/pac" value="'+(vdForm.skus[s].v||'')+'" oninput="vdUpdSku(\''+s+'\',\'v\',this.value)"></div>'+
     '<div class="vd-sku-info">'+VD_PACKS[s]+' pac/cx</div>'+
@@ -2311,7 +2315,7 @@ async function vdSalvarPedido(){
     const totalValLog=itens.reduce((s,i)=>s+i.subtotal,0);
     auditLog(acao,
       (acao==='criar'?'Novo pedido criado':'Pedido editado')+' · '+cliNome,
-      'Coordenador: '+coordAtual+' · SKUs: '+itens.map(i=>i.sku+' '+i.qty_caixas+'cx').join(', ')+' · Total: '+vdFmt(totalValLog)+' ('+totalCxLog+' cx)'
+      'Coordenador: '+coordAtual+' · SKUs: '+itens.map(i=>vdSkuLabel(i.sku)+' '+i.qty_caixas+'cx').join(', ')+' · Total: '+vdFmt(totalValLog)+' ('+totalCxLog+' cx)'
     );
     if(forecastOrigemAtual&&forecastConvertidoOk){
       auditLog('editar','Forecast convertido em pedido · '+(forecastOrigemLabelAtual||cliNome),'Coordenador: '+coordAtual+' · Pedido real criado · '+totalCxLog+' cx');
@@ -2332,7 +2336,7 @@ function vdAbrirDet(id){
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   const x=vdResumoPedido(p);vdDetAtual=p;
   g('vd-det-title').textContent=p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'');
-  const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(i.sku)+'</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
+  const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuLabel(i.sku))+'</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
   const parc=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(x=>x).map(x=>x+'d').join(' / '):'À vista';
   g('vd-det-body').innerHTML=
     '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+(x.status==='parcial'?'Faturado parcial':x.status==='pedido'?'Pedido confirmado':x.status==='entregue'?'Entregue':'Faturado')+'</strong></div>'+
@@ -2363,7 +2367,7 @@ function vdAbrirFaturamento(id){
   g('vd-fat-sub').textContent=p.cliente_nome+' · informe apenas as caixas que saíram agora';
   g('vd-fat-itens').innerHTML=x.itens.map(i=>{
     const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0),saldo=Math.max(0,ped-fat);
-    return '<div class="vd-fat-row"><strong>'+vdEsc(i.sku)+'</strong><span>'+ped+' cx</span><span>'+fat+' cx</span><input class="vd-fat-input" data-id="'+vdEsc(i.id)+'" type="number" min="0" max="'+saldo+'" step="1" value="0" oninput="vdAtualizarFatResumo()"></div>';
+    return '<div class="vd-fat-row"><strong>'+vdEsc(vdSkuLabel(i.sku))+'</strong><span>'+ped+' cx</span><span>'+fat+' cx</span><input class="vd-fat-input" data-id="'+vdEsc(i.id)+'" type="number" min="0" max="'+saldo+'" step="1" value="0" oninput="vdAtualizarFatResumo()"></div>';
   }).join('');
   g('vd-fat-pedido').textContent=x.pedidoCx;
   g('vd-fat-ja').textContent=x.faturadoCx;
@@ -2459,7 +2463,7 @@ function vdEditarPedido(){
   const p=vdDetAtual;
   if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
   vdEditPedidoId=p.id;
-  vdForm={tipo:p.tipo,prazo:p.prazo_tipo,skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0}}};
+  vdForm={tipo:p.tipo,prazo:p.prazo_tipo,skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   (p.pedidos_vendas_itens||[]).forEach(i=>{vdForm.skus[i.sku]={q:i.qty_caixas,v:i.valor_pacote}});
   g('vfn-title').textContent='Editar Pedido';
   g('vf-btn-save').textContent='Salvar Alterações';
@@ -2488,7 +2492,7 @@ function vdRenderFichaList(){
   const lista=(clientesDB[coordAtual]||[]).slice().sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   g('vd-ficha-list').innerHTML=lista.length?lista.map(c=>{
     const sk=c.def_skus||{};
-    const skLista=VD_SKUS.filter(s=>parseFloat(sk[s])>0).map(s=>s+':'+vdFmt(sk[s])).join(' · ')||'sem ficha configurada';
+    const skLista=VD_SKUS.filter(s=>parseFloat(sk[s])>0).map(s=>vdSkuLabel(s)+':'+vdFmt(sk[s])).join(' · ')||'sem ficha configurada';
     const ativo=c.ativo_desde<=mesAtual&&c.inativo_desde>mesAtual;
     return '<div class="vd-ficha-card" onclick="vdAbrirFichaCli(\''+c.id+'\')">'+
       '<div class="vd-ficha-info"><div class="n">'+vdEsc(c.nome)+(c.uf?' · '+vdEsc(c.uf):'')+(!ativo?' <span style="color:var(--red);font-size:11px">(inativo)</span>':'')+'</div>'+
@@ -2506,7 +2510,7 @@ function vdAbrirFichaCli(id){
   g('vdc-obs').value=c.obs_venda||'';
   vdCliForm.tipo=c.def_tipo||'in';
   vdCliForm.prazo=c.def_prazo||'avista';
-  vdCliForm.skus={GR:0,GM:0,CM:0,CC:0};
+  vdCliForm.skus={GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0};
   if(c.def_skus)VD_SKUS.forEach(s=>{vdCliForm.skus[s]=parseFloat(c.def_skus[s])||0});
   g('vdc-p1').value=c.def_p1||'';g('vdc-p2').value=c.def_p2||'';g('vdc-p3').value=c.def_p3||'';
   vdSetCliTipo(vdCliForm.tipo);vdSetCliPrazo(vdCliForm.prazo);
@@ -2522,7 +2526,7 @@ function vdSetCliPrazo(p){
 }
 function vdRenderCliSku(){
   g('vdc-skus').innerHTML=VD_SKUS.map(s=>
-    '<div class="vd-sku-line"><div class="vd-sku-lbl">'+s+'</div>'+
+    '<div class="vd-sku-line"><div class="vd-sku-lbl">'+vdSkuLabel(s)+'</div>'+
     '<div style="font-size:11px;color:var(--muted)">'+VD_PACKS[s]+' pac/cx</div>'+
     '<input type="number" min="0" step="0.01" placeholder="R$/pac" value="'+(vdCliForm.skus[s]||'')+'" oninput="vdCliForm.skus[\''+s+'\']=parseFloat(this.value)||0"></div>'
   ).join('');
@@ -2590,7 +2594,7 @@ async function vdExportarPDF(){
   });
   doc.setTextColor(0);
   let y=140;
-  const tots={GR:{pedido:0,faturado:0,saldo:0,valorSaldo:0},GM:{pedido:0,faturado:0,saldo:0,valorSaldo:0},CM:{pedido:0,faturado:0,saldo:0,valorSaldo:0},CC:{pedido:0,faturado:0,saldo:0,valorSaldo:0}};
+  const tots=Object.fromEntries(VD_SKUS.map(s=>[s,{pedido:0,faturado:0,saldo:0,valorSaldo:0}]));
   const semDetalhe={pedido:0,faturado:0,saldo:0,valor:0};
   lista.forEach((p,idx)=>{
     const x=vdResumoPedido(p);
@@ -2622,7 +2626,7 @@ async function vdExportarPDF(){
       const valorSaldo=saldo*Number(i.packs_por_caixa||0)*Number(i.valor_pacote||0);
       const alvo=tots[i.sku]||semDetalhe;alvo.pedido+=pedido;alvo.faturado+=faturado;alvo.saldo+=saldo;
       if(alvo.valorSaldo!==undefined)alvo.valorSaldo+=valorSaldo;else alvo.valor+=valorSaldo;
-      return isOff?[i.sku,pedido+' cx',faturado+' cx',saldo+' cx']:[i.sku,pedido+' cx',faturado+' cx',saldo+' cx',Number(i.packs_por_caixa||0),vdFmt(i.valor_pacote),vdFmt(valorSaldo)];
+      return isOff?[vdSkuLabel(i.sku),pedido+' cx',faturado+' cx',saldo+' cx']:[vdSkuLabel(i.sku),pedido+' cx',faturado+' cx',saldo+' cx',Number(i.packs_por_caixa||0),vdFmt(i.valor_pacote),vdFmt(valorSaldo)];
     });
     if(!linhas.length){
       semDetalhe.pedido+=x.pedidoCx;semDetalhe.faturado+=x.faturadoCx;semDetalhe.saldo+=x.saldoCx;semDetalhe.valor+=x.saldoValor;
@@ -2666,7 +2670,7 @@ async function vdExportarPDF(){
     doc.autoTable({
       startY:y,
       head:[['Produto','Pedido','Já faturado','A faturar','Valor a faturar']],
-      body:VD_SKUS.map(s=>[s,tots[s].pedido+' cx',tots[s].faturado+' cx',tots[s].saldo+' cx',vdFmt(tots[s].valorSaldo)])
+      body:VD_SKUS.map(s=>[vdSkuLabel(s),tots[s].pedido+' cx',tots[s].faturado+' cx',tots[s].saldo+' cx',vdFmt(tots[s].valorSaldo)])
         .concat(semDetalhe.pedido||semDetalhe.valor?[['SEM DETALHE',semDetalhe.pedido+' cx',semDetalhe.faturado+' cx',semDetalhe.saldo+' cx',vdFmt(semDetalhe.valor)]]:[])
         .concat([['TOTAL GERAL',geral.pedidoCx+' cx',geral.faturadoCx+' cx',geral.saldoCx+' cx',vdFmt(geral.saldoValor)]]),
       theme:'grid',
@@ -2691,11 +2695,11 @@ async function corrigirNomeClientePedidos(nomeAntigo,nomeNovo){
 
 // ===================== FORECAST COMERCIAL =====================
 let forecastPedidos=[],forecastCoordFiltro='todos',forecastStatusFiltro='aberto',forecastEditId=null,forecastSalvando=false;
-let forecastForm={tipo:'in',skus:{GR:0,GM:0,CM:0,CC:0}};
-function forecastResetForm(){forecastForm={tipo:'in',skus:{GR:0,GM:0,CM:0,CC:0}};forecastEditId=null;}
+let forecastForm={tipo:'in',skus:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0}};
+function forecastResetForm(){forecastForm={tipo:'in',skus:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0}};forecastEditId=null;}
 function forecastCoordPermitido(){return isAdmin||isDiretoria;}
 function forecastResumoLista(lista){
-  const r={qtd:lista.length,cx:0,alta:0,inCx:0,offCx:0,skus:{GR:0,GM:0,CM:0,CC:0}};
+  const r={qtd:lista.length,cx:0,alta:0,inCx:0,offCx:0,skus:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0}};
   lista.forEach(p=>{r.cx+=Number(p.total_caixas||0);if(p.probabilidade==='alta')r.alta++;if(p.tipo==='off')r.offCx+=Number(p.total_caixas||0);else r.inCx+=Number(p.total_caixas||0);(p.forecast_pedidos_itens||[]).forEach(i=>{if(r.skus[i.sku]!=null)r.skus[i.sku]+=Number(i.qty_caixas||0);});});
   return r;
 }
@@ -2735,7 +2739,7 @@ function forecastRenderMetrics(){
 function forecastRenderLista(){const lista=forecastListaFiltrada();g('forecast-list').innerHTML=lista.map(forecastCardHTML).join('')||'<div class="vd-empty" style="grid-column:1/-1">Nenhum forecast neste período.</div>';}
 function forecastCardHTML(p){
   const x=forecastResumo(p);
-  const itens=x.itens.length?x.itens.map(i=>vdEsc(i.sku)+': '+Number(i.qty_caixas||0)+' cx').join(' · '):'Sem SKUs';
+  const itens=x.itens.length?x.itens.map(i=>vdEsc(vdSkuLabel(i.sku))+': '+Number(i.qty_caixas||0)+' cx').join(' · '):'Sem SKUs';
   const probLabel={alta:'Alta',media:'Média',baixa:'Baixa'}[p.probabilidade]||'Média';
   const stLabel={aberto:'Aberto',convertido:'Convertido',perdido:'Perdido',cancelado:'Cancelado'}[p.status]||p.status;
   const tipo=String(p.tipo||'in').toLowerCase();
@@ -2754,7 +2758,7 @@ function forecastNovo(){
 function forecastPopMes(){g('forecast-mes').innerHTML=MESES.map((m,i)=>'<option value="'+i+'">'+m+' '+anoAtual+'</option>').join('');g('forecast-mes').value=mesAtual;}
 function forecastPopCli(){const at=clientesAtivos(forecastCoordFiltro);g('forecast-cli').innerHTML='<option value="">— Selecione —</option>'+at.map(c=>'<option value="'+vdEsc(c.id)+'">'+vdEsc(c.nome)+(c.uf?' ('+vdEsc(c.uf)+')':'')+'</option>').join('');}
 function forecastSetTipo(t){forecastForm.tipo=t;document.querySelectorAll('[data-fv]').forEach(b=>b.classList.toggle('on',b.dataset.fv===t));}
-function forecastRenderSkus(){g('forecast-skus').innerHTML=VD_SKUS.map(s=>'<div class="forecast-sku-line"><div class="vd-sku-lbl">'+s+'</div><input type="number" min="0" step="1" placeholder="qtd de caixas" value="'+(forecastForm.skus[s]||'')+'" oninput="forecastUpdSku(\''+s+'\',this.value)"></div>').join('');}
+function forecastRenderSkus(){g('forecast-skus').innerHTML=VD_SKUS.map(s=>'<div class="forecast-sku-line"><div class="vd-sku-lbl">'+vdSkuLabel(s)+'</div><input type="number" min="0" step="1" placeholder="qtd de caixas" value="'+(forecastForm.skus[s]||'')+'" oninput="forecastUpdSku(\''+s+'\',this.value)"></div>').join('');}
 function forecastUpdSku(s,v){forecastForm.skus[s]=parseFloat(v)||0;forecastRecalc();}
 function forecastRecalc(){let cx=0;VD_SKUS.forEach(s=>cx+=forecastForm.skus[s]||0);g('forecast-form-cx').textContent=cx.toLocaleString('pt-BR')+' cx';}
 function forecastFecharForm(){g('modal-forecast-form').classList.remove('open');forecastEditId=null;}
