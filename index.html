@@ -3046,6 +3046,175 @@ setInterval(()=>{
   if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true);
 },30000);
 // ===================== FIM MÓDULO VENDAS =====================
+
+
+/* =========================================================
+   DASHBOARD - INTELIGÊNCIA DE CLIENTES E HISTÓRICO DE VENDAS
+   Usa pedidos_vendas como histórico real para ranking, recompra,
+   clientes parados e dia da semana com mais pedidos.
+========================================================= */
+let dashHistoricoVendas=[];
+let dashUltimaCargaHistorico='';
+const dashBaseRenderAdminDash=renderAdminDash;
+const dashBaseRenderCoordDash=renderCoordDash;
+
+function dashPedidoValido(p){
+  const st=String(p?.status||'').toLowerCase();
+  return !['cancelado','cancelada','rejeitado','rejeitada','perdido','perdida','excluido','excluida'].includes(st);
+}
+function dashCoordPermitido(p,coord){return !coord||coord==='todos'||p.coordenador===coord;}
+function dashNumero(v){return Number(v||0)||0;}
+function dashPedidoCx(p){return vdResumoPedido(p).pedidoCx||dashNumero(p.total_caixas);}
+function dashPedidoValor(p){return dashNumero(p.total)||vdResumoPedido(p).pedidoValor||0;}
+function dashDataRealRaw(p){return p?.created_at||p?.criado_em||p?.data_pedido||p?.data_venda||p?.faturado_at||p?.updated_at||null;}
+function dashDataPedido(p){
+  const raw=dashDataRealRaw(p);
+  if(raw){const d=new Date(raw);if(!isNaN(d.getTime()))return d;}
+  const ano=Number(p?.ano||anoAtual),mes=Number(p?.mes||0);
+  return new Date(ano,isNaN(mes)?0:mes,1,12,0,0);
+}
+function dashTemDataReal(p){return !!dashDataRealRaw(p);}
+function dashBaseDate(){
+  const hoje=new Date();
+  if(anoAtual===hoje.getFullYear()&&mesAtual===hoje.getMonth())return hoje;
+  return new Date(anoAtual,mesAtual+1,0,23,59,59);
+}
+function dashDiffDias(a,b){return Math.max(0,Math.round((b-a)/86400000));}
+function dashAddDias(d,n){const x=new Date(d);x.setDate(x.getDate()+Math.round(n||0));return x;}
+function dashFmtData(d){return d&&!isNaN(d.getTime())?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}):'—';}
+function dashFmtDataLong(d){return d&&!isNaN(d.getTime())?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}):'—';}
+function dashClienteKey(coord,id,nome){return String(coord||'')+'|'+(id!==undefined&&id!==null&&String(id)!==''?String(id):String(nome||'').trim().toUpperCase());}
+function dashSkuFavorito(skuMap){
+  const best=Object.entries(skuMap||{}).sort((a,b)=>b[1]-a[1])[0];
+  return best&&best[1]>0?vdSkuLabel(best[0])+' · '+vdFmtQtd(best[1])+' cx':'—';
+}
+function dashHistFiltrado(coordFiltro){
+  return (Array.isArray(dashHistoricoVendas)?dashHistoricoVendas:[]).filter(p=>dashPedidoValido(p)&&dashCoordPermitido(p,coordFiltro));
+}
+function dashAnaliseClientes(hist,coordFiltro){
+  const base=dashBaseDate();
+  const grupos={};
+  const ativos=(coordFiltro&&coordFiltro!=='todos'?clientesAtivos(coordFiltro).map(c=>({coord:coordFiltro,...c})):COORD_KEYS.flatMap(coord=>clientesAtivos(coord).map(c=>({coord,...c}))));
+  ativos.forEach(c=>{
+    const key=dashClienteKey(c.coord,c.id,c.nome);
+    grupos[key]={key,coord:c.coord,id:c.id,nome:c.nome,pedidos:0,totalCx:0,totalValor:0,sku:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0},datas:[],ultima:null,primeira:null,ativo:true};
+  });
+  (hist||[]).forEach(p=>{
+    const nome=p.cliente_nome||p.cliente||'Cliente sem nome';
+    const key=dashClienteKey(p.coordenador,p.cliente_id,nome);
+    if(!grupos[key])grupos[key]={key,coord:p.coordenador||'',id:p.cliente_id,nome,pedidos:0,totalCx:0,totalValor:0,sku:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0},datas:[],ultima:null,primeira:null,ativo:false};
+    const gpo=grupos[key],dt=dashDataPedido(p),cx=dashPedidoCx(p);
+    gpo.pedidos+=1;gpo.totalCx+=cx;gpo.totalValor+=dashPedidoValor(p);gpo.datas.push(dt);
+    if(!gpo.ultima||dt>gpo.ultima)gpo.ultima=dt;
+    if(!gpo.primeira||dt<gpo.primeira)gpo.primeira=dt;
+    const itens=Array.isArray(p.pedidos_vendas_itens)?p.pedidos_vendas_itens:[];
+    if(itens.length){itens.forEach(i=>{const sk=String(i.sku||'').toUpperCase();if(gpo.sku[sk]!==undefined)gpo.sku[sk]+=dashNumero(i.qty_caixas);});}
+    else{gpo.sku.GR+=cx;}
+  });
+  return Object.values(grupos).map(gpo=>{
+    const datas=gpo.datas.slice().sort((a,b)=>a-b);
+    const diffs=[];
+    for(let i=1;i<datas.length;i++){const d=dashDiffDias(datas[i-1],datas[i]);if(d>0)diffs.push(d);}
+    const media=diffs.length?Math.round(diffs.reduce((s,v)=>s+v,0)/diffs.length):null;
+    const diasSem=gpo.ultima?dashDiffDias(gpo.ultima,base):null;
+    const proxima=(gpo.ultima&&media)?dashAddDias(gpo.ultima,media):null;
+    const atraso=(media!==null&&diasSem!==null)?diasSem-media:null;
+    return Object.assign(gpo,{mediaDias:media,diasSemCompra:diasSem,proximaCompra:proxima,atrasoDias:atraso,skuFavorito:dashSkuFavorito(gpo.sku)});
+  });
+}
+function dashStatusRecompra(c){
+  if(!c.ultima)return {txt:'Nunca comprou',cls:'danger',sub:'sem histórico de venda'};
+  if(c.mediaDias===null)return {txt:'Histórico curto',cls:c.diasSemCompra>45?'danger':'warn',sub:c.diasSemCompra+' dias sem compra'};
+  if(c.atrasoDias>7)return {txt:'Atrasado',cls:'danger',sub:c.atrasoDias+' dias acima da média'};
+  if(c.atrasoDias>=-3)return {txt:'No prazo',cls:'warn',sub:'próxima compra próxima'};
+  return {txt:'Recente',cls:'good',sub:c.diasSemCompra+' dias sem compra'};
+}
+function dashBadgeStatus(st){
+  const color=st.cls==='danger'?'#991B1B':st.cls==='warn'?'#92400E':'#166534';
+  const bg=st.cls==='danger'?'#FEE2E2':st.cls==='warn'?'#FEF3C7':'#DCFCE7';
+  return '<span style="display:inline-block;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;background:'+bg+';color:'+color+'">'+vdEsc(st.txt)+'</span>';
+}
+function dashDiaSemanaHTML(hist){
+  const labels=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const rows=labels.map((l,i)=>({i,label:l,pedidos:0,cx:0,real:0}));
+  (hist||[]).forEach(p=>{const d=dashDataPedido(p),idx=d.getDay();rows[idx].pedidos++;rows[idx].cx+=dashPedidoCx(p);if(dashTemDataReal(p))rows[idx].real++;});
+  const max=Math.max(1,...rows.map(r=>r.pedidos));
+  const forte=rows.slice().sort((a,b)=>b.pedidos-a.pedidos||b.cx-a.cx)[0];
+  const semData=(hist||[]).filter(p=>!dashTemDataReal(p)).length;
+  return '<section class="panel"><div class="panel-title-row"><div><div class="panel-title">Dia que mais entra pedido</div><div class="panel-note">Histórico por data de lançamento</div></div><div class="panel-note"><strong>'+vdEsc(forte?.label||'—')+'</strong> é o mais forte</div></div>'+ 
+    '<div class="attention-list">'+rows.map(r=>'<div class="attention-row"><span><strong>'+r.label+'</strong><br><small style="color:#7c879c">'+vdFmtQtd(r.cx)+' cx no histórico</small></span><span style="display:flex;align-items:center;gap:8px;min-width:135px;justify-content:flex-end"><span class="mini-progress"><span style="width:'+Math.round(r.pedidos/max*100)+'%"></span></span><strong>'+r.pedidos+'</strong></span></div>').join('')+'</div>'+ 
+    (semData?'<div class="panel-note" style="margin-top:10px;color:var(--warning)">Obs.: '+semData+' pedido(s) sem data diária; usei o mês como aproximação.</div>':'')+'</section>';
+}
+function dashTopClientesHTML(analise){
+  const top=analise.filter(c=>c.pedidos>0).sort((a,b)=>b.totalCx-a.totalCx||b.totalValor-a.totalValor).slice(0,10);
+  return '<section class="panel"><div class="panel-title-row"><div><div class="panel-title">Clientes que mais compram</div><div class="panel-note">Ranking pelo histórico de vendas</div></div><div class="panel-note">Top '+top.length+'</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Coord.</th><th>Pedidos</th><th>Volume</th><th>Valor</th><th>Produto principal</th><th>Última compra</th></tr></thead><tbody>'+ 
+    (top.length?top.map(c=>'<tr><td class="table-name">'+vdEsc(c.nome)+'</td><td>'+vdEsc(c.coord||'—')+'</td><td>'+c.pedidos+'</td><td>'+vdFmtQtd(c.totalCx)+' cx</td><td>'+vdFmt(c.totalValor)+'</td><td>'+vdEsc(c.skuFavorito)+'</td><td>'+dashFmtDataLong(c.ultima)+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">Nenhum histórico de venda encontrado.</td></tr>')+ 
+    '</tbody></table></div></section>';
+}
+function dashClientesParadosHTML(analise){
+  const lista=analise.slice().sort((a,b)=>{
+    const ra=(a.atrasoDias!==null?a.atrasoDias:(a.diasSemCompra??9999));
+    const rb=(b.atrasoDias!==null?b.atrasoDias:(b.diasSemCompra??9999));
+    return rb-ra;
+  }).slice(0,12);
+  return '<section class="panel"><div class="panel-title-row"><div><div class="panel-title">Clientes parados e previsão de recompra</div><div class="panel-note">Média calculada pelo intervalo entre pedidos</div></div><div class="panel-note">'+lista.length+' em atenção</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Última compra</th><th>Dias sem comprar</th><th>Média entre compras</th><th>Próxima prevista</th><th>Status</th></tr></thead><tbody>'+ 
+    (lista.length?lista.map(c=>{const st=dashStatusRecompra(c);return '<tr><td class="table-name">'+vdEsc(c.nome)+'<br><small style="color:#7c879c">'+vdEsc(c.coord||'—')+' · '+vdEsc(c.skuFavorito)+'</small></td><td>'+dashFmtDataLong(c.ultima)+'</td><td>'+(c.diasSemCompra===null?'—':c.diasSemCompra+' dias')+'</td><td>'+(c.mediaDias===null?'Histórico insuficiente':c.mediaDias+' dias')+'</td><td>'+(c.proximaCompra?dashFmtDataLong(c.proximaCompra):'—')+'</td><td>'+dashBadgeStatus(st)+'<br><small style="color:#7c879c">'+vdEsc(st.sub)+'</small></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">Nenhum cliente ativo encontrado.</td></tr>')+ 
+    '</tbody></table></div></section>';
+}
+function dashIntelKpisHTML(hist,analise){
+  const recorrentes=analise.filter(c=>c.mediaDias!==null).length;
+  const medias=analise.filter(c=>c.mediaDias!==null).map(c=>c.mediaDias);
+  const mediaGeral=medias.length?Math.round(medias.reduce((s,v)=>s+v,0)/medias.length):0;
+  const atrasados=analise.filter(c=>dashStatusRecompra(c).cls==='danger').length;
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const count=[0,0,0,0,0,0,0];hist.forEach(p=>count[dashDataPedido(p).getDay()]++);
+  const topDia=count.reduce((best,v,i)=>v>count[best]?i:best,0);
+  return '<div class="dash-kpis" style="margin-top:18px"><div class="dash-kpi"><div class="dash-kpi-label">Pedidos no histórico</div><div class="dash-kpi-value">'+hist.length+'</div><div class="dash-kpi-sub">base da análise comercial</div></div><div class="dash-kpi"><div class="dash-kpi-label">Clientes recorrentes</div><div class="dash-kpi-value">'+recorrentes+'</div><div class="dash-kpi-sub good">com média de recompra</div></div><div class="dash-kpi"><div class="dash-kpi-label">Média de recompra</div><div class="dash-kpi-value">'+(mediaGeral||'—')+' <small style="font-size:14px">dias</small></div><div class="dash-kpi-sub">média da carteira</div></div><div class="dash-kpi"><div class="dash-kpi-label">Atenção / parados</div><div class="dash-kpi-value" style="color:var(--danger)">'+atrasados+'</div><div class="dash-kpi-sub bad">fora da média ou sem histórico</div></div></div><div class="panel" style="margin-bottom:18px"><div class="panel-title-row"><div><div class="panel-title">Leitura rápida</div><div class="panel-note">Histórico + previsão</div></div></div><div class="attention-list"><div class="attention-row"><span>Dia mais forte para entrada de pedido</span><strong>'+dias[topDia]+'</strong></div><div class="attention-row"><span>Clientes com padrão suficiente para prever recompra</span><strong>'+recorrentes+'</strong></div><div class="attention-row"><span>Clientes que precisam cobrança comercial</span><strong class="attention-count">'+atrasados+'</strong></div></div></div>';
+}
+function dashInteligenciaHTML(coordFiltro){
+  const hist=dashHistFiltrado(coordFiltro);
+  const analise=dashAnaliseClientes(hist,coordFiltro);
+  return '<div style="margin-top:18px"><div class="section-head"><div><div class="section-title">Inteligência de clientes</div><div class="section-sub">Quem compra mais, frequência de compra, clientes parados, previsão de recompra e melhor dia para pedidos.</div></div></div>'+ 
+    dashIntelKpisHTML(hist,analise)+ 
+    '<div class="dash-lower" style="align-items:start">'+dashTopClientesHTML(analise)+dashDiaSemanaHTML(hist)+'</div>'+ 
+    '<div style="margin-top:18px">'+dashClientesParadosHTML(analise)+'</div></div>';
+}
+function dashAppendInteligencia(coordFiltro){
+  const el=g('dash-content');
+  if(!el)return;
+  el.insertAdjacentHTML('beforeend',dashInteligenciaHTML(coordFiltro));
+}
+
+carregarDashboard=async function(silencioso=false){
+  if(dashCarregando)return;
+  dashCarregando=true;
+  if(!silencioso)g('dash-content').innerHTML='<div class="loading">Carregando histórico de vendas...</div>';
+  try{
+    const coordFiltro=(isAdmin||isDiretoria)?'todos':coordAtual;
+    const coordQuery=(coordFiltro==='todos')?'':'coordenador=eq.'+encodeURIComponent(coordFiltro)+'&';
+    let hist=await sb('/rest/v1/pedidos_vendas?'+coordQuery+'select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
+    if(!Array.isArray(hist))hist=[];
+    hist=hist.filter(dashPedidoValido);
+    dashHistoricoVendas=hist;
+    dashUltimaCargaHistorico=new Date().toISOString();
+    const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
+    const vendasMes=anoData.filter(p=>Number(p.mes)===Number(mesAtual));
+    vendasDashboard=vendasMes;
+    if(isAdmin||isDiretoria){
+      dashBaseRenderAdminDash(anoData);
+      dashAppendInteligencia('todos');
+    }else{
+      dadosLocais=vdAgruparVendasPorCliente(vendasMes,coordAtual);
+      dashBaseRenderCoordDash(anoData);
+      dashAppendInteligencia(coordAtual);
+    }
+  }catch(e){
+    console.error(e);
+    g('dash-content').innerHTML='<div class="empty">Não foi possível carregar o histórico de vendas. Verifique a tabela pedidos_vendas.</div>';
+  }finally{
+    dashCarregando=false;
+  }
+};
 </script>
 </body>
 </html>
