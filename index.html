@@ -578,10 +578,10 @@ body{background:var(--canvas);color:var(--ink)}
   <div class="vd-header"><h2>Vendas</h2><div class="sub" id="vd-sub">— · —</div></div>
   <div class="vd-metrics">
     <div class="vd-metric"><div class="lbl">Total de pedidos</div><div class="val" id="vd-total-pedidos">—</div><div class="vsub" id="vd-total-pedidos-sub">—</div></div>
-    <div class="vd-metric"><div class="lbl">Valor vendido</div><div class="val" id="vd-total-valor">—</div><div class="vsub" id="vd-total-valor-sub">Pedidos confirmados</div></div>
+    <div class="vd-metric"><div class="lbl">Valor lançado</div><div class="val" id="vd-total-valor">—</div><div class="vsub" id="vd-total-valor-sub">Não é base de comissão</div></div>
     <div class="vd-metric"><div class="lbl">Caixas vendidas</div><div class="val" id="vd-real">—</div><div class="vsub" id="vd-real-sub">— de — cx</div><div class="bar"><span id="vd-real-bar" style="width:0;background:var(--green)"></span></div></div>
-    <div class="vd-metric"><div class="lbl">Caixas faturadas</div><div class="val" id="vd-fat-cx">—</div><div class="vsub" id="vd-fat-valor">—</div></div>
-    <div class="vd-metric"><div class="lbl">Saldo pendente</div><div class="val" id="vd-saldo-cx">—</div><div class="vsub" id="vd-saldo-valor">—</div></div>
+    <div class="vd-metric"><div class="lbl">Faturado / comissão</div><div class="val" id="vd-fat-cx">—</div><div class="vsub" id="vd-fat-valor">—</div></div>
+    <div class="vd-metric"><div class="lbl">Saldo não faturado</div><div class="val" id="vd-saldo-cx">—</div><div class="vsub" id="vd-saldo-valor">GNRE separada</div></div>
     <div class="vd-metric"><div class="lbl">Cobertura</div><div class="val" id="vd-cob">—</div><div class="vsub" id="vd-cob-sub">— de — clientes</div><div class="bar"><span id="vd-cob-bar" style="width:0;background:var(--accent)"></span></div></div>
   </div>
   <div class="vd-coord-tabs" id="vd-coord-tabs" style="display:none"></div>
@@ -589,19 +589,19 @@ body{background:var(--canvas);color:var(--ink)}
     <button class="vd-chip on" data-f="todos" onclick="vdSetFiltro('todos')">Todos</button>
     <button class="vd-chip" data-f="faturar" onclick="vdSetFiltro('faturar')">⚠ Pra faturar</button>
     <button class="vd-chip" data-f="pendente" onclick="vdSetFiltro('pendente')">Pendentes</button>
-    <button class="vd-chip vd-chip-new no-diretoria" onclick="vdGoNovo()">+ Pedido real</button>
-    <button class="vd-chip vd-chip-forecast no-diretoria" onclick="vdGoForecast()">+ Forecast</button>
-    <button class="vd-chip no-diretoria" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
-    <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF</button>
+    <button class="vd-chip vd-chip-new no-diretoria no-vagner" onclick="vdGoNovo()">+ Pedido real</button>
+    <button class="vd-chip vd-chip-forecast no-diretoria no-vagner" onclick="vdGoForecast()">+ Forecast</button>
+    <button class="vd-chip no-diretoria no-vagner" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
+    <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF GNRE</button>
   </div>
   <div class="vd-section">
     <div class="vd-kanban">
-      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Pra faturar</h4><span class="vd-kanban-count" id="vd-c-prev">0</span></div><div id="vd-col-prev"></div></div>
-      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Faturado parcial</h4><span class="vd-kanban-count" id="vd-c-ped">0</span></div><div id="vd-col-ped"></div></div>
+      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Aguardando GNRE</h4><span class="vd-kanban-count" id="vd-c-prev">0</span></div><div id="vd-col-prev"></div></div>
+      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Liberado / parcial</h4><span class="vd-kanban-count" id="vd-c-ped">0</span></div><div id="vd-col-ped"></div></div>
       <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Faturado / Entregue</h4><span class="vd-kanban-count" id="vd-c-fim">0</span></div><div id="vd-col-fim"></div></div>
     </div>
   </div>
-  <button class="vd-fab no-diretoria" onclick="vdGoNovo()" title="Novo pedido real">+</button>
+  <button class="vd-fab no-diretoria no-vagner" onclick="vdGoNovo()" title="Novo pedido real">+</button>
   <div class="bottom-nav" id="nav-vendas"></div>
 </div>
 
@@ -754,7 +754,7 @@ body{background:var(--canvas);color:var(--ink)}
   <div class="vd-filter">
     <button class="vd-chip on" data-forecast-status="aberto" onclick="forecastSetStatus('aberto')">Abertos</button>
     <button class="vd-chip" data-forecast-status="todos" onclick="forecastSetStatus('todos')">Todos</button>
-    <button class="vd-chip vd-chip-new no-diretoria" onclick="forecastNovo()">+ Lançar forecast</button>
+    <button class="vd-chip vd-chip-new no-diretoria no-vagner" onclick="forecastNovo()">+ Lançar forecast</button>
   </div>
   <div class="vd-section">
     <div id="forecast-list" class="forecast-list"></div>
@@ -1532,6 +1532,7 @@ function setupShell(){
   g('side-avatar').textContent=(user==='admin'?'L':user==='vagner'?'V':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'block':'none');
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
+  document.querySelectorAll('.no-vagner').forEach(el=>el.style.display=(user==='vagner')?'none':'');
 }
 
 function updateSideNav(active){
@@ -1962,6 +1963,13 @@ let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0}}
 const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const vdTipoPedido=p=>String(p?.tipo||'in').toLowerCase();
+const vdPodeEditar=()=>user==='admin';
+function vdParseValor(v){return Number(String(v||'').replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''))||0;}
+function vdGnreStatus(p){if(vdTipoPedido(p)==='off')return 'isenta';return String(p?.gnre_status||'pendente').toLowerCase();}
+function vdGnreLiberada(p){const st=vdGnreStatus(p);return vdTipoPedido(p)==='off'||st==='paga'||st==='isenta';}
+function vdGnreLabel(p){const st=vdGnreStatus(p);return ({pendente:'GNRE pendente',enviada:'GNRE enviada',calculada:'GNRE calculada',paga:'GNRE paga',isenta:'GNRE isenta'})[st]||'GNRE pendente';}
+function vdGnreBadgeHTML(p){const st=vdGnreStatus(p);const cls=st==='paga'||st==='isenta'?'vd-b-done':st==='calculada'?'vd-b-partial':'vd-b-prazo';return '<span class=\"vd-badge '+cls+'\">'+vdGnreLabel(p)+'</span>';}
+function vdPedidoPrecisaGnre(p){return vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p);}
 
 function vdResumoPedido(p){
   const itens=p.pedidos_vendas_itens||[];
@@ -1988,9 +1996,9 @@ function vdResumoLista(lista){
 function vdDashboardResumoHTML(lista){
   const r=vdResumoLista(lista);
   return `<div class="dash-kpis">
-    <div class="dash-kpi"><div class="dash-kpi-label">Vendido confirmado</div><div class="dash-kpi-value">${r.pedidoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.pedidoValor)}</div></div>
-    <div class="dash-kpi"><div class="dash-kpi-label">Faturado</div><div class="dash-kpi-value" style="color:var(--success)">${r.faturadoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.faturadoValor)}</div></div>
-    <div class="dash-kpi"><div class="dash-kpi-label">Saldo a faturar</div><div class="dash-kpi-value" style="color:var(--warning)">${r.saldoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">${vdFmt(r.saldoValor)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Pedido lançado</div><div class="dash-kpi-value">${r.pedidoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.pedidoValor)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Faturado / comissão</div><div class="dash-kpi-value" style="color:var(--success)">${r.faturadoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.faturadoValor)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Saldo não faturado</div><div class="dash-kpi-value" style="color:var(--warning)">${r.saldoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">${vdFmt(r.saldoValor)}</div></div>
     <div class="dash-kpi"><div class="dash-kpi-label">Faturamentos parciais</div><div class="dash-kpi-value">${r.parciais}</div><div class="dash-kpi-sub ${r.parciais?'bad':'good'}">${r.pedidos} pedidos confirmados</div></div>
   </div>`;
 }
@@ -2039,19 +2047,23 @@ function vdRenderMetrics(){
   const meta=coords.reduce((s,c)=>s+(METAS[c]?METAS[c][mesAtual]:0),0);
   const resumo=vdResumoLista(vdPedidos);
   const real=resumo.pedidoCx;
+  const aguardandoGnre=vdPedidos.filter(p=>vdPedidoPrecisaGnre(p));
+  const liberados=vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
+  const cxAguardandoGnre=aguardandoGnre.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
+  const cxLiberadas=liberados.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
   g('vd-total-pedidos').textContent=resumo.pedidos;
-  g('vd-total-pedidos-sub').textContent=resumo.parciais+' parciais · '+vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&vdTipoPedido(p)!=='off').length+' pra faturar';
+  g('vd-total-pedidos-sub').textContent=aguardandoGnre.length+' aguardando GNRE · '+liberados.length+' liberados';
   g('vd-total-valor').textContent=vdFmt(resumo.pedidoValor);
-  g('vd-total-valor-sub').textContent=real+' caixas confirmadas';
+  g('vd-total-valor-sub').textContent='Lançado · comissão só no faturado';
   const pctReal=meta>0?Math.round(real/meta*100):0;
   g('vd-real').textContent=real+' cx';
   g('vd-real-sub').textContent=pctReal+'% da meta · '+meta+' cx';
   g('vd-real-bar').style.width=Math.min(100,pctReal)+'%';
   g('vd-real-bar').style.background=pctReal>=80?'var(--green)':pctReal>=50?'var(--amber)':'var(--red)';
   g('vd-fat-cx').textContent=resumo.faturadoCx+' cx';
-  g('vd-fat-valor').textContent=vdFmt(resumo.faturadoValor);
+  g('vd-fat-valor').textContent=vdFmt(resumo.faturadoValor)+' · base comissão';
   g('vd-saldo-cx').textContent=resumo.saldoCx+' cx';
-  g('vd-saldo-valor').textContent=vdFmt(resumo.saldoValor);
+  g('vd-saldo-valor').textContent=cxLiberadas+' cx liberadas · '+cxAguardandoGnre+' cx em GNRE';
   const ativos=coords.flatMap(c=>clientesAtivos(c).map(cli=>({coord:c,...cli})));
   const ids=new Set(vdPedidos.map(p=>p.coordenador+'|'+p.cliente_id));
   const pos=ids.size;
@@ -2068,7 +2080,7 @@ function vdSetFiltro(f){
   vdRenderKanban();
 }
 function vdPedidosParaFaturamento(){
-  return vdPedidos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0);
+  return vdPedidos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
 }
 function vdPedidosFiltrados(){
   if(vdFiltro==='faturar')return vdPedidosParaFaturamento();
@@ -2079,7 +2091,7 @@ function vdPedidosFiltrados(){
 function vdRenderKanban(){
   const lista=vdPedidosFiltrados();
   const cols={prev:[],ped:[],fim:[]};
-  lista.forEach(p=>{const st=vdResumoPedido(p).status;if(st==='pedido')cols.prev.push(p);else if(st==='parcial')cols.ped.push(p);else cols.fim.push(p);});
+  lista.forEach(p=>{const st=vdResumoPedido(p).status;if(st==='faturado'||st==='entregue')cols.fim.push(p);else if(vdPedidoPrecisaGnre(p))cols.prev.push(p);else cols.ped.push(p);});
   g('vd-c-prev').textContent=cols.prev.length;
   g('vd-c-ped').textContent=cols.ped.length;
   g('vd-c-fim').textContent=cols.fim.length;
@@ -2093,16 +2105,27 @@ function vdCardHTML(p){
   const skusLista=itens.length?itens.map(i=>vdSkuLabel(i.sku)+': '+i.qty_caixas+' ped. / '+Number(i.qty_faturada||0)+' fat.').join(' · '):
     (cx>0?'Detalhamento de SKUs não registrado':'Sem itens registrados');
   const stEnd=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Faturado parcial':'';
-  const acoesGestor=isAdmin?'<div class="vd-card-actions">'+
-    (x.saldoCx>0?'<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>':'')+
-    '<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>'+
-    '<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>'+'</div>':'';
+  let acoesGestor='';
+  if(vdPodeEditar()){
+    const gnreSt=vdGnreStatus(p);
+    const botoes=[];
+    if(x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)){
+      if(gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">Enviar GNRE</button>');
+      botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Valor GNRE</button>');
+      if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">GNRE paga</button>');
+      botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar</button>');
+    }
+    if(x.saldoCx>0&&vdGnreLiberada(p))botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>');
+    if(x.faturadoCx===0)botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>');
+    botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
+    acoesGestor='<div class="vd-card-actions">'+botoes.join('')+'</div>';
+  }
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
       '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+
       '<span class="vd-badge vd-b-skus">'+cx+' ped. · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</span>'+
-      '<span class="vd-badge vd-b-prazo">'+(p.prazo_tipo==='avista'?'À vista':'Parcelado')+'</span>'+
+      '<span class="vd-badge vd-b-prazo">'+(p.prazo_tipo==='avista'?'À vista':'Parcelado')+'</span>'+vdGnreBadgeHTML(p)+
       (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
     '</div>'+
@@ -2112,7 +2135,7 @@ function vdCardHTML(p){
 
 function vdGoNovo(){
   vdForecastOrigemId=null;vdForecastOrigemLabel='';
-  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o pedido','error');return}
   vdEditPedidoId=null;
   vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
@@ -2128,7 +2151,7 @@ function vdGoNovo(){
 }
 
 function vdGoForecast(){
-  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   const coordForecast=(isAdmin||isDiretoria)?vdCoordFiltro:user;
   if(!coordForecast||coordForecast==='todos'){
     toast('Escolha um coordenador antes de lançar Forecast','error');
@@ -2140,7 +2163,7 @@ function vdGoForecast(){
 }
 
 function forecastConverterPedido(id){
-  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   const p=forecastPedidos.find(x=>x.id===id);if(!p)return;
   if(p.status!=='aberto'){toast('Somente forecast aberto pode virar pedido','error');return}
   if(!forecastCoordPermitido()&&p.coordenador!==user){toast('Você só pode converter seu próprio forecast','error');return}
@@ -2245,12 +2268,8 @@ async function vdSalvarPedido(){
     parcela_3_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p3').value)||null):null,
     total,total_caixas:totCx,observacao:g('vf-obs').value||null,mes:mesAtual,ano:anoAtual
   };
-  if(!vdEditPedidoId){ped.status='pedido';ped.criado_por=user;}
-  // Vagner: só pode editar pedidos que ele mesmo criou
-  if(user==='vagner'&&vdEditPedidoId){
-    const pedChk=vdPedidos.find(p=>p.id===vdEditPedidoId);
-    if(!pedChk||pedChk.criado_por!=='vagner'){toast('Você só pode editar pedidos que você mesmo criou','error');return;}
-  }
+  if(!vdEditPedidoId){ped.status='pedido';ped.criado_por=user;ped.gnre_status=vdForm.tipo==='off'?'isenta':'pendente';}
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   vdSalvandoPedido=true;
   const btnSalvar=g('vf-btn-save');
   btnSalvar.disabled=true;
@@ -2338,19 +2357,20 @@ function vdAbrirDet(id){
   g('vd-det-title').textContent=p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'');
   const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuLabel(i.sku))+'</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
   const parc=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(x=>x).map(x=>x+'d').join(' / '):'À vista';
+  const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta / OFF':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
   g('vd-det-body').innerHTML=
     '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+(x.status==='parcial'?'Faturado parcial':x.status==='pedido'?'Pedido confirmado':x.status==='entregue'?'Entregue':'Faturado')+'</strong></div>'+
-    '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span></div>'+
+    '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span>'+vdGnreBadgeHTML(p)+'</div>'+
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>GNRE:</strong> '+vdEsc(gnreDetalhe)+'</div>'+
     itensHTML+
     '<div class="vd-fat-summary"><div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div><div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div><div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div></div>'+ 
     '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
     (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+vdEsc(p.observacao)+'</div>':'')+
     (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
   g('vd-det-fim').textContent=p.tipo==='in'?'Confirmar faturamento':'Confirmar entrega';
-  const vagnerDono=user==='vagner'&&p.criado_por==='vagner';
-  g('vd-det-fim').style.display=(isAdmin&&user!=='vagner'&&x.saldoCx>0)?'block':'none';
-  g('vd-det-editar').style.display=(isAdmin&&(user!=='vagner'||vagnerDono)&&x.faturadoCx===0)?'block':'none';
-  g('vd-det-excluir').style.display=(isAdmin&&user!=='vagner')?'block':'none';
+  g('vd-det-fim').style.display=(vdPodeEditar()&&x.saldoCx>0&&vdGnreLiberada(p))?'block':'none';
+  g('vd-det-editar').style.display=(vdPodeEditar()&&x.faturadoCx===0)?'block':'none';
+  g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
   g('modal-vd-det').classList.add('open');
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
@@ -2359,6 +2379,7 @@ function vdAbrirFaturamento(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   if(user==='vagner'){toast('Vagner não pode confirmar faturamento','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(!vdGnreLiberada(p)){toast('GNRE precisa estar paga ou isenta antes de faturar','error');return}
   const x=vdResumoPedido(p);
   if(!x.detalhado||x.itens.some(i=>!i.id)){toast('Edite este pedido e informe os SKUs antes de faturar','error');return}
   if(x.saldoCx<=0){toast('Pedido já faturado por completo','info');return}
@@ -2416,6 +2437,41 @@ async function vdSalvarFaturamento(){
     vdFaturando=false;g('vd-fat-salvar').disabled=false;
   }
 }
+
+async function vdAtualizarGnre(id,payload,msg){
+  if(!vdPodeEditar()){toast('Acesso restrito ao gestor','error');return}
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(vdTipoPedido(p)==='off'){toast('Pedido OFF não precisa GNRE','info');return}
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(payload)});
+  if(!r||!r.ok){toast('Erro ao atualizar GNRE. Rode o SQL de GNRE no Supabase.','error');return}
+  auditLog('editar','GNRE atualizada · '+p.cliente_nome,'Status: '+(payload.gnre_status||vdGnreStatus(p))+(payload.gnre_valor!=null?' · Valor: '+vdFmt(payload.gnre_valor):''));
+  toast(msg||'GNRE atualizada','ok');
+  await vdCarregar();
+}
+async function vdMarcarGnreEnviada(id){
+  await vdAtualizarGnre(id,{gnre_status:'enviada',gnre_enviado_at:new Date().toISOString()},'GNRE marcada como enviada ao Fabiano');
+}
+async function vdAbrirGnreValor(id){
+  if(!vdPodeEditar()){toast('Acesso restrito ao gestor','error');return}
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  const atual=p.gnre_valor?String(p.gnre_valor).replace('.',','):'';
+  const v=prompt('Valor da GNRE para '+p.cliente_nome+' (use vírgula ou ponto):',atual);
+  if(v===null)return;
+  const valor=vdParseValor(v);
+  if(valor<=0&&!confirm('Salvar GNRE com valor zero?'))return;
+  await vdAtualizarGnre(id,{gnre_status:'calculada',gnre_valor:valor,gnre_retornado_at:new Date().toISOString()},'Valor da GNRE salvo');
+}
+async function vdMarcarGnrePaga(id){
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(!p.gnre_valor&&!confirm('Este pedido não tem valor GNRE informado. Marcar como paga mesmo assim?'))return;
+  await vdAtualizarGnre(id,{gnre_status:'paga',gnre_pago_at:new Date().toISOString()},'GNRE paga. Pedido liberado para faturamento');
+}
+async function vdMarcarGnreIsenta(id){
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(!confirm('Marcar GNRE como isenta para '+p.cliente_nome+'? O pedido será liberado para faturamento.'))return;
+  await vdAtualizarGnre(id,{gnre_status:'isenta',gnre_pago_at:new Date().toISOString()},'GNRE isenta. Pedido liberado para faturamento');
+}
+
 async function vdMoverStatus(novo){
   if(!vdDetAtual)return;
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'PATCH',body:JSON.stringify({status:novo})});
@@ -2440,7 +2496,7 @@ async function vdExcluirPedido(){
   vdFecharDet();await vdCarregar();
 }
 function vdEditarPedidoPorId(id){
-  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  if(!isAdmin||user==='vagner'){toast('Perfil somente leitura','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   vdDetAtual=p;
   vdEditarPedido();
@@ -2458,7 +2514,7 @@ async function vdExcluirPedidoPorId(id){
   await vdCarregar();
 }
 function vdEditarPedido(){
-  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
+  if(!isAdmin||user==='vagner'){toast('Perfil somente leitura','error');return}
   if(!vdDetAtual)return;
   const p=vdDetAtual;
   if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
@@ -2480,7 +2536,7 @@ function vdEditarPedido(){
 }
 
 function vdIrFicha(){
-  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador para abrir as fichas','error');return}
   show('s-vficha');
   renderNav('nav-vficha','vendas');
@@ -2554,134 +2610,86 @@ async function vdSalvarFicha(){
 
 async function vdExportarPDF(){
   if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
-  // Busca TODOS os pedidos IN com saldo pendente (sem filtro de mês)
-  // para não perder pedidos de meses anteriores ainda não faturados
-  toast('Buscando pedidos pendentes...','info');
+  toast('Buscando pedidos aguardando GNRE...','info');
   const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
   const todos=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
   const listaTodos=Array.isArray(todos)?todos:[];
-  // Inclui IN e OFF — OFF gera romaneio de entrega sem NF
-  const lista=listaTodos.filter(p=>vdResumoPedido(p).saldoCx>0);
-  if(!lista.length){toast('Nenhum pedido aguardando faturamento','error');return}
+  const lista=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p));
+  if(!lista.length){toast('Nenhum pedido aguardando GNRE','error');return}
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'pt',format:'a4',orientation:'landscape'});
   const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight();
-  const titulo='RELATÓRIO PARA FATURAMENTO / ROMANEIO';
   const escopo=vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro;
-  const sub=escopo+' · '+anoAtual+' · '+lista.length+' pedidos aguardando faturamento (todos os meses)';
-  const geral=vdResumoLista(lista);
   const fitText=(value,maxWidth)=>{
     let text=String(value||'');
     if(doc.getTextWidth(text)<=maxWidth)return text;
     while(text.length>3&&doc.getTextWidth(text+'...')>maxWidth)text=text.slice(0,-1);
     return text+'...';
   };
+  const geral=vdResumoLista(lista);
   doc.setFontSize(17);doc.setFont(undefined,'bold');doc.setTextColor(26);
-  doc.text('CLEANTABACO · FATURAMENTO',40,38);
-  doc.setFontSize(12);doc.text(titulo,40,57);
+  doc.text('CLEANTABACO · GNRE',40,38);
+  doc.setFontSize(12);doc.text('RELATÓRIO PARA CÁLCULO DE GNRE · SEM VALORES COMERCIAIS',40,57);
   doc.setFontSize(9);doc.setTextColor(120);
-  doc.text(sub,40,72);
+  doc.text(escopo+' · '+anoAtual+' · '+lista.length+' pedidos aguardando GNRE',40,72);
   doc.text('Gerado em '+new Date().toLocaleString('pt-BR'),pageW-40,72,{align:'right'});
   doc.setFillColor(245,244,240);doc.roundedRect(40,82,pageW-80,42,6,6,'F');
-  const temOFF=lista.some(p=>vdTipoPedido(p)==='off');
-  const temIN=lista.some(p=>vdTipoPedido(p)!=='off');
-  const resumoTopo=temOFF&&!temIN?[['PEDIDOS',geral.pedidos],['PEDIDO',geral.pedidoCx+' cx'],['JÁ FATURADO',geral.faturadoCx+' cx'],['A FATURAR',geral.saldoCx+' cx']]:[['PEDIDOS',geral.pedidos],['PEDIDO',geral.pedidoCx+' cx'],['JÁ FATURADO',geral.faturadoCx+' cx'],['A FATURAR',geral.saldoCx+' cx'],['VALOR A FATURAR',vdFmt(geral.saldoValor)]];
+  const resumoTopo=[['PEDIDOS',geral.pedidos],['CAIXAS',geral.saldoCx+' cx'],['TIPO','IN / COM NF'],['USO','Fabiano / GNRE'],['VALORES','OCULTOS']];
   const resumoLargura=(pageW-110)/resumoTopo.length;
   resumoTopo.forEach((item,i)=>{
     const x=55+i*resumoLargura;
     doc.setFont(undefined,'normal');doc.setFontSize(8);doc.setTextColor(90);doc.text(item[0],x,98);
     doc.setFont(undefined,'bold');doc.setFontSize(12);doc.setTextColor(26);doc.text(fitText(item[1],resumoLargura-12),x,116);
   });
-  doc.setTextColor(0);
-  let y=140;
-  const tots=Object.fromEntries(VD_SKUS.map(s=>[s,{pedido:0,faturado:0,saldo:0,valorSaldo:0}]));
-  const semDetalhe={pedido:0,faturado:0,saldo:0,valor:0};
+  let y=144;
+  const tots=Object.fromEntries(VD_SKUS.map(s=>[s,{saldo:0}]));
   lista.forEach((p,idx)=>{
     const x=vdResumoPedido(p);
-    if(y>pageH-190){doc.addPage();y=42}
-    doc.setFillColor(26,26,24);
-    doc.roundedRect(40,y,pageW-80,24,4,4,'F');
+    if(y>pageH-170){doc.addPage();y=42}
+    doc.setFillColor(26,26,24);doc.roundedRect(40,y,pageW-80,24,4,4,'F');
     doc.setTextColor(255);doc.setFontSize(10);doc.setFont(undefined,'bold');
     const cabecalho=(idx+1)+'. '+p.cliente_nome+(p.cliente_uf?' ('+p.cliente_uf+')':'')+' · '+p.coordenador;
-    const isOff=vdTipoPedido(p)==='off';
-    doc.text(fitText(cabecalho,pageW-260),48,y+16);
-    if(!isOff){doc.text(vdFmt(x.saldoValor),pageW-48,y+14,{align:'right'});}
-    doc.setTextColor(0);doc.setFont(undefined,'normal');
-    y+=27;
-    doc.setFontSize(8.5);doc.setTextColor(80);
-    const prazoTxt=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(v=>v).map(v=>v+'d').join(' / '):'À vista';
-    const stTxt=x.status==='parcial'?'Faturado parcial':'Pedido confirmado';
-    if(isOff){doc.setFillColor(255,237,213);doc.setDrawColor(253,186,116);}
-    else{doc.setFillColor(220,252,231);doc.setDrawColor(187,247,208);}
-    doc.roundedRect(48,y+1,isOff?128:108,16,4,4,'FD');
-    doc.setFont(undefined,'bold');
-    if(isOff){doc.setTextColor(154,52,18);doc.text('OFF · SEM NF · ROMANEIO',56,y+12);}
-    else{doc.setTextColor(22,101,52);doc.text('IN · COM NF',56,y+12);}
-    doc.setFont(undefined,'normal');doc.setTextColor(80);
-    doc.text('Prazo: '+prazoTxt,(isOff?190:170),y+12);
-    doc.text('Status: '+stTxt,pageW-200,y+12);
-    y+=22;doc.setTextColor(0);
+    doc.text(fitText(cabecalho,pageW-120),48,y+16);
+    y+=29;
+    doc.setFontSize(8.5);doc.setTextColor(80);doc.setFont(undefined,'normal');
+    doc.text('Status GNRE: '+vdGnreLabel(p)+' · Pedido: '+MESES[p.mes]+'/'+p.ano+' · IN/OFF: '+String(p.tipo||'in').toUpperCase(),48,y);
+    y+=12;
     const linhas=x.itens.map(i=>{
       const pedido=Number(i.qty_caixas||0),faturado=Math.min(pedido,Number(i.qty_faturada||0)),saldo=Math.max(0,pedido-faturado);
-      const valorSaldo=saldo*Number(i.packs_por_caixa||0)*Number(i.valor_pacote||0);
-      const alvo=tots[i.sku]||semDetalhe;alvo.pedido+=pedido;alvo.faturado+=faturado;alvo.saldo+=saldo;
-      if(alvo.valorSaldo!==undefined)alvo.valorSaldo+=valorSaldo;else alvo.valor+=valorSaldo;
-      return isOff?[vdSkuLabel(i.sku),pedido+' cx',faturado+' cx',saldo+' cx']:[vdSkuLabel(i.sku),pedido+' cx',faturado+' cx',saldo+' cx',Number(i.packs_por_caixa||0),vdFmt(i.valor_pacote),vdFmt(valorSaldo)];
+      if(tots[i.sku])tots[i.sku].saldo+=saldo;
+      return [vdSkuLabel(i.sku),pedido+' cx',faturado+' cx',saldo+' cx'];
     });
-    if(!linhas.length){
-      semDetalhe.pedido+=x.pedidoCx;semDetalhe.faturado+=x.faturadoCx;semDetalhe.saldo+=x.saldoCx;semDetalhe.valor+=x.saldoValor;
-      linhas.push(isOff?['SEM DETALHE',x.pedidoCx+' cx',x.faturadoCx+' cx',x.saldoCx+' cx']:['SEM DETALHE',x.pedidoCx+' cx',x.faturadoCx+' cx',x.saldoCx+' cx','-','-',vdFmt(x.saldoValor)]);
-    }
-    const tabelaHeadOff=['Produto','Pedido','Já faturado','Faturar agora'];
-    const tabelaHeadIN=['Produto','Pedido','Já faturado','Faturar agora','Pcts/cx','Vlr pac.','Valor a faturar'];
-    const tabelaHead=isOff?tabelaHeadOff:tabelaHeadIN;
-    const colStylesOff={0:{fontStyle:'bold',cellWidth:80},1:{halign:'right',cellWidth:70},2:{halign:'right',cellWidth:70},3:{halign:'right',fontStyle:'bold',cellWidth:80}};
-    const colStylesIN={0:{fontStyle:'bold',cellWidth:52},1:{halign:'right',cellWidth:58},2:{halign:'right',cellWidth:62},3:{halign:'right',fontStyle:'bold',cellWidth:72},4:{halign:'right',cellWidth:48},5:{halign:'right',cellWidth:80},6:{halign:'right',fontStyle:'bold',cellWidth:82}};
     doc.autoTable({
       startY:y,
-      head:[tabelaHead],
-      body:linhas,theme:'grid',
-      styles:{fontSize:8,cellPadding:4.5},
-      headStyles:{fillColor:[245,244,240],textColor:[26,26,24],fontStyle:'bold',fontSize:7.5},
-      columnStyles:isOff?colStylesOff:colStylesIN,
+      head:[['Produto','Pedido','Já faturado','Saldo para GNRE']],
+      body:linhas.length?linhas:[['SEM DETALHE',x.pedidoCx+' cx',x.faturadoCx+' cx',x.saldoCx+' cx']],
+      theme:'grid',
+      styles:{fontSize:8.5,cellPadding:5},
+      headStyles:{fillColor:[245,244,240],textColor:[26,26,24],fontStyle:'bold'},
+      columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'}},
       margin:{left:48,right:48,top:42,bottom:36},
       rowPageBreak:'avoid',showHead:'everyPage'
     });
-    y=doc.lastAutoTable.finalY+4;
-    const observacoes=[p.observacao?'Pedido: '+p.observacao:'',p.faturamento_observacao?'Faturamento anterior: '+p.faturamento_observacao:''].filter(Boolean).join(' · ');
-    if(observacoes){
-      doc.setFontSize(9);doc.setTextColor(80);
-      const txt=doc.splitTextToSize(observacoes,pageW-110);
-      const alturaObs=8+txt.length*11;
-      if(y+alturaObs>pageH-36){
-        doc.addPage();y=42;
-        doc.setFont(undefined,'bold');doc.setTextColor(26);doc.text(fitText('Observações · '+p.cliente_nome,pageW-96),48,y);doc.setFont(undefined,'normal');doc.setTextColor(80);y+=10;
-      }
-      doc.text(txt,48,y+8);
-      y+=8+txt.length*11;doc.setTextColor(0);
+    y=doc.lastAutoTable.finalY+8;
+    if(p.observacao){
+      doc.setFontSize(8.5);doc.setTextColor(80);
+      const txt=doc.splitTextToSize('Obs: '+p.observacao,pageW-110);
+      doc.text(txt,48,y+4);y+=txt.length*10+10;
     }
-    y+=10;
   });
-  if(temIN){
-    if(y>pageH-180){doc.addPage();y=42}
-    doc.setDrawColor(200);doc.line(40,y,pageW-40,y);y+=14;
-    doc.setFontSize(11);doc.setFont(undefined,'bold');
-    doc.text('RESUMO POR PRODUTO',40,y);y+=14;
-    doc.autoTable({
-      startY:y,
-      head:[['Produto','Pedido','Já faturado','A faturar','Valor a faturar']],
-      body:VD_SKUS.map(s=>[vdSkuLabel(s),tots[s].pedido+' cx',tots[s].faturado+' cx',tots[s].saldo+' cx',vdFmt(tots[s].valorSaldo)])
-        .concat(semDetalhe.pedido||semDetalhe.valor?[['SEM DETALHE',semDetalhe.pedido+' cx',semDetalhe.faturado+' cx',semDetalhe.saldo+' cx',vdFmt(semDetalhe.valor)]]:[])
-        .concat([['TOTAL GERAL',geral.pedidoCx+' cx',geral.faturadoCx+' cx',geral.saldoCx+' cx',vdFmt(geral.saldoValor)]]),
-      theme:'grid',
-      styles:{fontSize:9,cellPadding:5},
-      headStyles:{fillColor:[26,26,24],textColor:[255,255,255]},
-      columnStyles:{0:{fontStyle:'bold'},1:{halign:'right'},2:{halign:'right'},3:{halign:'right',fontStyle:'bold'},4:{halign:'right',fontStyle:'bold'}},
-      margin:{left:40,right:40}
-    });
-  }
-  doc.save('Faturamento_'+escopo.replace(/ /g,'_')+'_'+MESES[mesAtual]+'_'+anoAtual+'.pdf');
-  toast('PDF para faturamento gerado','ok');
+  if(y>pageH-120){doc.addPage();y=42}
+  doc.setDrawColor(200);doc.line(40,y,pageW-40,y);y+=14;
+  doc.setFontSize(11);doc.setFont(undefined,'bold');doc.setTextColor(26);
+  doc.text('RESUMO POR PRODUTO · SEM VALORES',40,y);y+=14;
+  doc.autoTable({
+    startY:y,
+    head:[['Produto','Saldo para GNRE']],
+    body:VD_SKUS.map(s=>[vdSkuLabel(s),tots[s].saldo+' cx']).concat([['TOTAL GERAL',geral.saldoCx+' cx']]),
+    theme:'grid',styles:{fontSize:9,cellPadding:5},headStyles:{fillColor:[26,26,24],textColor:[255,255,255]},
+    columnStyles:{0:{fontStyle:'bold'},1:{halign:'right',fontStyle:'bold'}},margin:{left:40,right:40}
+  });
+  doc.save('GNRE_sem_valores_'+escopo.replace(/ /g,'_')+'_'+MESES[mesAtual]+'_'+anoAtual+'.pdf');
+  toast('PDF GNRE sem valores gerado','ok');
 }
 async function corrigirNomeClientePedidos(nomeAntigo,nomeNovo){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
@@ -2743,14 +2751,14 @@ function forecastCardHTML(p){
   const probLabel={alta:'Alta',media:'Média',baixa:'Baixa'}[p.probabilidade]||'Média';
   const stLabel={aberto:'Aberto',convertido:'Convertido',perdido:'Perdido',cancelado:'Cancelado'}[p.status]||p.status;
   const tipo=String(p.tipo||'in').toLowerCase();
-  const acoes=(!isDiretoria)?'<div class="forecast-actions">'+(p.status==='aberto'?'<button class="forecast-action" onclick="event.stopPropagation();forecastConverterPedido(\''+p.id+'\')">Virar pedido</button>':'')+'<button class="forecast-action" onclick="event.stopPropagation();forecastEditar(\''+p.id+'\')">Editar</button><button class="forecast-action delete" onclick="event.stopPropagation();forecastExcluir(\''+p.id+'\')">Excluir</button></div>':'';
+  const acoes=(!isDiretoria&&user!=='vagner')?'<div class="forecast-actions">'+(p.status==='aberto'?'<button class="forecast-action" onclick="event.stopPropagation();forecastConverterPedido(\''+p.id+'\')">Virar pedido</button>':'')+'<button class="forecast-action" onclick="event.stopPropagation();forecastEditar(\''+p.id+'\')">Editar</button><button class="forecast-action delete" onclick="event.stopPropagation();forecastExcluir(\''+p.id+'\')">Excluir</button></div>':'';
   return '<div class="forecast-card" onclick="forecastEditar(\''+p.id+'\')">'+
     '<div class="forecast-card-top"><div class="forecast-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="forecast-card-cx">'+x.cx+' cx</div></div>'+
     '<div class="forecast-meta"><span class="vd-badge forecast-b-'+tipo+'">'+tipo.toUpperCase()+'</span><span class="vd-badge forecast-b-'+vdEsc(p.probabilidade||'media')+'">Chance '+probLabel+'</span><span class="vd-badge forecast-b-status">'+stLabel+'</span>'+(forecastCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+
     '<div class="forecast-items">'+itens+'</div>'+(p.observacao?'<div class="forecast-items" style="background:var(--bg);border-radius:7px;padding:7px">'+vdEsc(p.observacao)+'</div>':'')+acoes+'</div>';
 }
 function forecastNovo(){
-  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   if(forecastCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o forecast','error');return}
   forecastResetForm();g('forecast-form-title').textContent='Novo forecast';forecastPopMes();forecastPopCli();forecastRenderSkus();forecastSetTipo('in');
   g('forecast-cli').value='';g('forecast-prob').value='media';g('forecast-status').value='aberto';g('forecast-obs').value='';forecastRecalc();g('modal-forecast-form').classList.add('open');
@@ -2763,7 +2771,7 @@ function forecastUpdSku(s,v){forecastForm.skus[s]=parseFloat(v)||0;forecastRecal
 function forecastRecalc(){let cx=0;VD_SKUS.forEach(s=>cx+=forecastForm.skus[s]||0);g('forecast-form-cx').textContent=cx.toLocaleString('pt-BR')+' cx';}
 function forecastFecharForm(){g('modal-forecast-form').classList.remove('open');forecastEditId=null;}
 async function forecastSalvar(){
-  if(forecastSalvando)return;if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(forecastSalvando)return;if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   if(!forecastCoordFiltro||forecastCoordFiltro==='todos'){toast('Escolha um coordenador','error');return}
   const cliId=g('forecast-cli').value;if(!cliId){toast('Escolha o cliente','error');return}
   const cli=clientesAtivos(forecastCoordFiltro).find(c=>c.id===cliId);if(!cli){toast('Cliente inválido','error');return}
@@ -2792,7 +2800,7 @@ async function forecastSalvar(){
   finally{forecastSalvando=false;g('forecast-save').disabled=false;}
 }
 function forecastEditar(id){
-  if(isDiretoria){toast('Diretoria visualiza, mas não edita','info');return}
+  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','info');return}
   const p=forecastPedidos.find(x=>x.id===id);if(!p)return;
   if(!forecastCoordPermitido()&&p.coordenador!==user){toast('Você só pode editar seu próprio forecast','error');return}
   forecastEditId=id;forecastCoordFiltro=p.coordenador;forecastRenderCoordTabs();forecastResetForm();forecastForm.tipo=p.tipo||'in';
@@ -2802,7 +2810,7 @@ function forecastEditar(id){
   forecastRecalc();g('modal-forecast-form').classList.add('open');
 }
 async function forecastExcluir(id){
-  if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
+  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   const p=forecastPedidos.find(x=>x.id===id);if(!p)return;
   if(!forecastCoordPermitido()&&p.coordenador!==user){toast('Você só pode excluir seu próprio forecast','error');return}
   if(!confirm('Excluir o forecast de '+p.cliente_nome+'? Isso não afeta pedidos reais.'))return;
