@@ -284,7 +284,11 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-prod-row{display:grid;grid-template-columns:minmax(70px,1fr) repeat(3,minmax(48px,.7fr));gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid #edf0f5;font-size:11px}
 .vd-prod-row:last-child{border-bottom:0}
 .vd-prod-head{background:var(--soft);color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
-.vd-prod-name{font-weight:800;color:var(--ink)}
+.vd-prod-name{font-weight:800;color:var(--ink);min-width:0}
+.vd-prod-code{display:inline-flex;align-items:center;justify-content:center;min-width:44px;padding:2px 6px;margin-right:6px;border-radius:6px;background:#111b31;color:#fff;font-size:10px;font-weight:850;letter-spacing:.03em}
+.vd-prod-full{font-weight:850;word-break:break-word}
+.vd-gnre-valor{border-color:#f5d08a;background:#fffaf0}
+.vd-gnre-valor strong{font-size:12px;color:#92400E}
 .vd-prod-val{font-weight:750;text-align:right;white-space:nowrap}
 .vd-card-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .vd-info-pill{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:11px;line-height:1.25}
@@ -350,6 +354,10 @@ body{background:var(--canvas);color:var(--ink)}
 .forecast-card-cx{font-size:14px;font-weight:800;white-space:nowrap}
 .forecast-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
 .forecast-items{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.45}
+.forecast-oper .vd-prod-row{grid-template-columns:minmax(130px,1fr) minmax(70px,.35fr)}
+.forecast-oper .vd-prod-head span:last-child,.forecast-oper .vd-prod-val{text-align:right}
+.forecast-observacao{font-size:11px;color:var(--muted);margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px;line-height:1.45}
+.forecast-observacao strong{display:block;color:var(--ink);font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .forecast-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px;padding-top:9px;border-top:1px solid var(--border)}
 .forecast-action{border:1px solid var(--border);border-radius:7px;padding:6px 9px;background:var(--card);font:700 11px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;color:var(--text)}
 .forecast-action:hover{border-color:var(--purple);color:var(--purple)}
@@ -1959,8 +1967,12 @@ renderCoordDash=function(anoData){
 
 const VD_SKUS=['GR','GM','CM','CC','GTWIN','CK'];
 const VD_SKU_LABELS={GR:'GR',GM:'GM',CM:'CM',CC:'CC',GTWIN:'GTwin',CK:'CK'};
+const VD_SKU_FULL={GR:'GUDANG RED',GM:'GUDANG MENTA',CM:'CRETEC MENTA',CC:'CRETEC CEREJA',GTWIN:'GUDANG TWIN TEN',CK:'CLICK'};
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50,GTWIN:50,CK:50};
 function vdSkuLabel(s){return VD_SKU_LABELS[String(s||'').toUpperCase()]||String(s||'');}
+function vdSkuFull(s){return VD_SKU_FULL[String(s||'').toUpperCase()]||vdSkuLabel(s);}
+function vdSkuPdfName(s){return vdSkuFull(s)+' ('+vdSkuLabel(s)+')';}
+function vdSkuCardName(s){return '<span class=\"vd-prod-code\">'+vdEsc(vdSkuLabel(s))+'</span><span class=\"vd-prod-full\">'+vdEsc(vdSkuFull(s))+'</span>'; }
 let vdPedidos=[];
 let vdForecastOrigemId=null,vdForecastOrigemLabel='';
 let vdFiltro='todos';
@@ -2145,7 +2157,7 @@ function vdCardHTML(p){
       '<div class="vd-prod-row vd-prod-head"><span>Produto</span><span class="vd-prod-val">Pedido</span><span class="vd-prod-val">Fat.</span><span class="vd-prod-val">Saldo</span></div>'+
       itens.map(i=>{
         const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0),saldo=Math.max(0,ped-fat);
-        return '<div class="vd-prod-row"><span class="vd-prod-name">'+vdEsc(vdSkuLabel(i.sku))+'</span><span class="vd-prod-val">'+ped+' cx</span><span class="vd-prod-val">'+fat+' cx</span><span class="vd-prod-val">'+saldo+' cx</span></div>';
+        return '<div class="vd-prod-row"><span class="vd-prod-name">'+vdSkuCardName(i.sku)+'</span><span class="vd-prod-val">'+ped+' cx</span><span class="vd-prod-val">'+fat+' cx</span><span class="vd-prod-val">'+saldo+' cx</span></div>';
       }).join('')+
     '</div>'
   ):'<div class="vd-card-oper"><div class="vd-prod-row"><span class="vd-prod-name">Sem SKUs registrados</span><span></span><span></span><span></span></div></div>';
@@ -2170,6 +2182,8 @@ function vdCardHTML(p){
     botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
   }
   if(botoes.length)acoes='<div class="vd-card-actions">'+botoes.join('')+'</div>';
+  const gnreValor=vdTipoPedido(p)==='off'?'Isento':(Number(p.gnre_valor||0)>0?vdFmt(p.gnre_valor):'Não informado');
+  const pedidoCompetencia=MESES[p.mes]+'/'+p.ano;
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
@@ -2178,7 +2192,9 @@ function vdCardHTML(p){
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
     '</div>'+ 
     '<div class="vd-card-info">'+
+      '<div class="vd-info-pill"><span>Competência</span>'+vdEsc(pedidoCompetencia)+'</div>'+
       '<div class="vd-info-pill"><span>Prazo</span>'+vdEsc(prazo)+'</div>'+ 
+      '<div class="vd-info-pill vd-gnre-valor"><span>Valor GNRE</span><strong>'+vdEsc(gnreValor)+'</strong></div>'+
       '<div class="vd-info-pill"><span>Resumo</span>'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</div>'+ 
     '</div>'+itensHTML+vdAnexosHTML(p)+acoes+
   '</div>';
@@ -2406,7 +2422,7 @@ function vdAbrirDet(id){
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   const x=vdResumoPedido(p);vdDetAtual=p;
   g('vd-det-title').textContent=p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'');
-  const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuLabel(i.sku))+'</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
+  const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuFull(i.sku))+' ('+vdEsc(vdSkuLabel(i.sku))+')</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
   const parc=vdPrazoLabel(p);
   const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta / OFF':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
   g('vd-det-body').innerHTML=
@@ -2742,13 +2758,25 @@ async function vdExportarPDF(){
     const cabecalho=(idx+1)+'. '+p.cliente_nome+(p.cliente_uf?' ('+p.cliente_uf+')':'')+' · '+p.coordenador;
     doc.text(fitText(cabecalho,pageW-120),48,y+16);
     y+=29;
-    doc.setFontSize(8.5);doc.setTextColor(80);doc.setFont(undefined,'normal');
-    doc.text('Status GNRE: '+vdGnreLabel(p)+' · Pedido: '+MESES[p.mes]+'/'+p.ano+' · IN/OFF: '+String(p.tipo||'in').toUpperCase(),48,y);
-    y+=12;
+    const tipoPdf=String(p.tipo||'in').toUpperCase();
+    doc.autoTable({
+      startY:y,
+      body:[[
+        {content:'STATUS GNRE',styles:{fontStyle:'bold',textColor:[90,90,90],fillColor:[245,244,240]}},
+        {content:vdGnreLabel(p),styles:{fontStyle:'bold'}},
+        {content:'MÊS',styles:{fontStyle:'bold',textColor:[90,90,90],fillColor:[245,244,240]}},
+        {content:MESES[p.mes]+'/'+p.ano,styles:{fontStyle:'bold'}},
+        {content:'IN/OFF',styles:{fontStyle:'bold',textColor:[90,90,90],fillColor:[245,244,240]}},
+        {content:tipoPdf,styles:{fontStyle:'bold'}}
+      ]],
+      theme:'grid',styles:{fontSize:9,cellPadding:5},margin:{left:48,right:48},
+      columnStyles:{0:{cellWidth:78},1:{cellWidth:130},2:{cellWidth:42},3:{cellWidth:82},4:{cellWidth:56},5:{cellWidth:48}}
+    });
+    y=doc.lastAutoTable.finalY+8;
     const linhas=x.itens.map(i=>{
       const pedido=Number(i.qty_caixas||0),faturado=Math.min(pedido,Number(i.qty_faturada||0)),saldo=Math.max(0,pedido-faturado);
       if(tots[i.sku])tots[i.sku].saldo+=saldo;
-      return [vdSkuLabel(i.sku),pedido+' cx',faturado+' cx',saldo+' cx'];
+      return [vdSkuPdfName(i.sku),pedido+' cx',faturado+' cx',saldo+' cx'];
     });
     doc.autoTable({
       startY:y,
@@ -2775,7 +2803,7 @@ async function vdExportarPDF(){
   doc.autoTable({
     startY:y,
     head:[['Produto','Saldo para GNRE']],
-    body:VD_SKUS.map(s=>[vdSkuLabel(s),tots[s].saldo+' cx']).concat([['TOTAL GERAL',geral.saldoCx+' cx']]),
+    body:VD_SKUS.map(s=>[vdSkuPdfName(s),tots[s].saldo+' cx']).concat([['TOTAL GERAL',geral.saldoCx+' cx']]),
     theme:'grid',styles:{fontSize:9,cellPadding:5},headStyles:{fillColor:[26,26,24],textColor:[255,255,255]},
     columnStyles:{0:{fontStyle:'bold'},1:{halign:'right',fontStyle:'bold'}},margin:{left:40,right:40}
   });
@@ -2838,15 +2866,29 @@ function forecastRenderMetrics(){
 function forecastRenderLista(){const lista=forecastListaFiltrada();g('forecast-list').innerHTML=lista.map(forecastCardHTML).join('')||'<div class="vd-empty" style="grid-column:1/-1">Nenhum forecast neste período.</div>';}
 function forecastCardHTML(p){
   const x=forecastResumo(p);
-  const itens=x.itens.length?x.itens.map(i=>vdEsc(vdSkuLabel(i.sku))+': '+Number(i.qty_caixas||0)+' cx').join(' · '):'Sem SKUs';
   const probLabel={alta:'Alta',media:'Média',baixa:'Baixa'}[p.probabilidade]||'Média';
   const stLabel={aberto:'Aberto',convertido:'Convertido',perdido:'Perdido',cancelado:'Cancelado'}[p.status]||p.status;
   const tipo=String(p.tipo||'in').toLowerCase();
+  const periodo=MESES[p.forecast_mes]+'/'+p.forecast_ano;
+  const itensHTML=x.itens.length?(
+    '<div class="vd-card-oper forecast-oper">'+
+      '<div class="vd-prod-row vd-prod-head"><span>Produto previsto</span><span class="vd-prod-val">Caixas</span></div>'+
+      x.itens.map(i=>{
+        const qtd=Number(i.qty_caixas||0);
+        return '<div class="vd-prod-row"><span class="vd-prod-name">'+vdSkuCardName(i.sku)+'</span><span class="vd-prod-val">'+qtd+' cx</span></div>';
+      }).join('')+
+    '</div>'
+  ):'<div class="vd-card-oper forecast-oper"><div class="vd-prod-row"><span class="vd-prod-name">Sem SKUs previstos</span><span></span></div></div>';
   const acoes=(!isDiretoria&&user!=='vagner')?'<div class="forecast-actions">'+(p.status==='aberto'?'<button class="forecast-action" onclick="event.stopPropagation();forecastConverterPedido(\''+p.id+'\')">Virar pedido</button>':'')+'<button class="forecast-action" onclick="event.stopPropagation();forecastEditar(\''+p.id+'\')">Editar</button><button class="forecast-action delete" onclick="event.stopPropagation();forecastExcluir(\''+p.id+'\')">Excluir</button></div>':'';
-  return '<div class="forecast-card" onclick="forecastEditar(\''+p.id+'\')">'+
-    '<div class="forecast-card-top"><div class="forecast-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="forecast-card-cx">'+x.cx+' cx</div></div>'+
-    '<div class="forecast-meta"><span class="vd-badge forecast-b-'+tipo+'">'+tipo.toUpperCase()+'</span><span class="vd-badge forecast-b-'+vdEsc(p.probabilidade||'media')+'">Chance '+probLabel+'</span><span class="vd-badge forecast-b-status">'+stLabel+'</span>'+(forecastCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+
-    '<div class="forecast-items">'+itens+'</div>'+(p.observacao?'<div class="forecast-items" style="background:var(--bg);border-radius:7px;padding:7px">'+vdEsc(p.observacao)+'</div>':'')+acoes+'</div>';
+  const click=(!isDiretoria&&user!=='vagner')?' onclick="forecastEditar(\''+p.id+'\')"':'';
+  return '<div class="forecast-card"'+click+'>'+ 
+    '<div class="forecast-card-top"><div class="forecast-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="forecast-card-cx">'+x.cx+' cx previstas</div></div>'+ 
+    '<div class="forecast-meta"><span class="vd-badge forecast-b-'+tipo+'">'+tipo.toUpperCase()+'</span><span class="vd-badge forecast-b-'+vdEsc(p.probabilidade||'media')+'">Chance '+probLabel+'</span><span class="vd-badge forecast-b-status">'+stLabel+'</span>'+(forecastCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+ 
+    '<div class="vd-card-info">'+
+      '<div class="vd-info-pill"><span>Mês previsto</span>'+vdEsc(periodo)+'</div>'+ 
+      '<div class="vd-info-pill"><span>Total forecast</span>'+x.cx+' cx · não faturável</div>'+ 
+    '</div>'+itensHTML+
+    (p.observacao?'<div class="forecast-observacao"><strong>Observação</strong>'+vdEsc(p.observacao)+'</div>':'')+acoes+'</div>';
 }
 function forecastNovo(){
   if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
