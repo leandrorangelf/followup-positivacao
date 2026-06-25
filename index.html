@@ -280,6 +280,19 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-card-action.invoice{flex-basis:100%;background:var(--green);border-color:var(--green);color:#fff}
 .vd-card-action:hover{border-color:var(--accent);color:var(--accent)}
 .vd-card-action.delete:hover{border-color:var(--red);color:var(--red)}
+.vd-card-oper{margin-top:10px;border:1px solid var(--border);border-radius:10px;background:#fff;overflow:hidden}
+.vd-prod-row{display:grid;grid-template-columns:minmax(70px,1fr) repeat(3,minmax(48px,.7fr));gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid #edf0f5;font-size:11px}
+.vd-prod-row:last-child{border-bottom:0}
+.vd-prod-head{background:var(--soft);color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.vd-prod-name{font-weight:800;color:var(--ink)}
+.vd-prod-val{font-weight:750;text-align:right;white-space:nowrap}
+.vd-card-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.vd-info-pill{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:11px;line-height:1.25}
+.vd-info-pill span{display:block;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vd-attach-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.vd-attach-link{font-size:10px;font-weight:700;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--accent);padding:4px 8px;text-decoration:none}
+.vd-attach-link:hover{border-color:var(--accent)}
+@media(max-width:680px){.vd-prod-row{grid-template-columns:1fr repeat(3,42px);font-size:10px}.vd-card-info{grid-template-columns:1fr}}
 .vd-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px}
 .vd-b-in{background:var(--green-bg);color:var(--green)}
 .vd-b-off{background:var(--amber-bg);color:var(--amber)}
@@ -1967,8 +1980,32 @@ const vdPodeEditar=()=>user==='admin';
 function vdParseValor(v){return Number(String(v||'').replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''))||0;}
 function vdGnreStatus(p){if(vdTipoPedido(p)==='off')return 'isenta';return String(p?.gnre_status||'pendente').toLowerCase();}
 function vdGnreLiberada(p){const st=vdGnreStatus(p);return vdTipoPedido(p)==='off'||st==='paga'||st==='isenta';}
-function vdGnreLabel(p){const st=vdGnreStatus(p);return ({pendente:'GNRE pendente',enviada:'GNRE enviada',calculada:'GNRE calculada',paga:'GNRE paga',isenta:'GNRE isenta'})[st]||'GNRE pendente';}
-function vdGnreBadgeHTML(p){const st=vdGnreStatus(p);const cls=st==='paga'||st==='isenta'?'vd-b-done':st==='calculada'?'vd-b-partial':'vd-b-prazo';return '<span class=\"vd-badge '+cls+'\">'+vdGnreLabel(p)+'</span>';}
+function vdGnreLabel(p){
+  const st=vdGnreStatus(p);
+  if(st==='paga')return 'GNRE paga';
+  if(st==='isenta')return 'GNRE isenta';
+  if(p?.gnre_pagamento_informado_at||p?.gnre_comprovante_url)return 'Pagamento informado';
+  if(p?.gnre_arquivo_url&&st!=='calculada')return 'GNRE anexada';
+  return ({pendente:'GNRE pendente',enviada:'GNRE enviada',calculada:'GNRE calculada'})[st]||'GNRE pendente';
+}
+function vdGnreBadgeHTML(p){
+  const st=vdGnreStatus(p);
+  const informado=!!(p?.gnre_pagamento_informado_at||p?.gnre_comprovante_url);
+  const cls=st==='paga'||st==='isenta'?'vd-b-done':informado||st==='calculada'?'vd-b-partial':'vd-b-prazo';
+  return '<span class=\"vd-badge '+cls+'\">'+vdGnreLabel(p)+'</span>';
+}
+function vdPrazoLabel(p){
+  if((p?.prazo_tipo||'avista')!=='parcelado')return 'À vista';
+  const parcelas=[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(v=>v!==null&&v!==undefined&&String(v)!=='').map(v=>v+'d');
+  return parcelas.length?'Parcelado: '+parcelas.join(' / '):'Parcelado';
+}
+function vdAnexosHTML(p){
+  const links=[];
+  if(p?.gnre_arquivo_url)links.push('<a class=\"vd-attach-link\" href=\"'+vdEsc(p.gnre_arquivo_url)+'\" target=\"_blank\" onclick=\"event.stopPropagation()\">📄 GNRE</a>');
+  if(p?.gnre_comprovante_url)links.push('<a class=\"vd-attach-link\" href=\"'+vdEsc(p.gnre_comprovante_url)+'\" target=\"_blank\" onclick=\"event.stopPropagation()\">✅ Comprovante</a>');
+  return links.length?'<div class=\"vd-attach-line\">'+links.join('')+'</div>':'';
+}
+function vdPodeAnexarGnre(){return !isDiretoria&&user!=='vagner';}
 function vdPedidoPrecisaGnre(p){return vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p);}
 
 function vdResumoPedido(p){
@@ -2102,34 +2139,48 @@ function vdRenderKanban(){
 
 function vdCardHTML(p){
   const x=vdResumoPedido(p),itens=x.itens,cx=x.pedidoCx;
-  const skusLista=itens.length?itens.map(i=>vdSkuLabel(i.sku)+': '+i.qty_caixas+' ped. / '+Number(i.qty_faturada||0)+' fat.').join(' · '):
-    (cx>0?'Detalhamento de SKUs não registrado':'Sem itens registrados');
+  const prazo=vdPrazoLabel(p);
+  const itensHTML=itens.length?(
+    '<div class="vd-card-oper">'+
+      '<div class="vd-prod-row vd-prod-head"><span>Produto</span><span class="vd-prod-val">Pedido</span><span class="vd-prod-val">Fat.</span><span class="vd-prod-val">Saldo</span></div>'+
+      itens.map(i=>{
+        const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0),saldo=Math.max(0,ped-fat);
+        return '<div class="vd-prod-row"><span class="vd-prod-name">'+vdEsc(vdSkuLabel(i.sku))+'</span><span class="vd-prod-val">'+ped+' cx</span><span class="vd-prod-val">'+fat+' cx</span><span class="vd-prod-val">'+saldo+' cx</span></div>';
+      }).join('')+
+    '</div>'
+  ):'<div class="vd-card-oper"><div class="vd-prod-row"><span class="vd-prod-name">Sem SKUs registrados</span><span></span><span></span><span></span></div></div>';
   const stEnd=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Faturado parcial':'';
-  let acoesGestor='';
+  let acoes='';
+  const botoes=[];
+  const precisaGnre=x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p);
+  if(precisaGnre&&vdPodeAnexarGnre()){
+    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar GNRE</button>');
+    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>');
+  }
   if(vdPodeEditar()){
     const gnreSt=vdGnreStatus(p);
-    const botoes=[];
-    if(x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)){
-      if(gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">Enviar GNRE</button>');
+    if(precisaGnre){
+      if(gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">Enviado Fabiano</button>');
       botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Valor GNRE</button>');
-      if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">GNRE paga</button>');
+      if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar paga</button>');
       botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar</button>');
     }
     if(x.saldoCx>0&&vdGnreLiberada(p))botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>');
     if(x.faturadoCx===0)botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>');
     botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
-    acoesGestor='<div class="vd-card-actions">'+botoes.join('')+'</div>';
   }
+  if(botoes.length)acoes='<div class="vd-card-actions">'+botoes.join('')+'</div>';
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
-      '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+
-      '<span class="vd-badge vd-b-skus">'+cx+' ped. · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</span>'+
-      '<span class="vd-badge vd-b-prazo">'+(p.prazo_tipo==='avista'?'À vista':'Parcelado')+'</span>'+vdGnreBadgeHTML(p)+
+      '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+vdGnreBadgeHTML(p)+
       (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
-    '</div>'+
-    '<div style="font-size:11px;color:var(--muted);margin-top:6px">'+skusLista+'</div>'+acoesGestor+
+    '</div>'+ 
+    '<div class="vd-card-info">'+
+      '<div class="vd-info-pill"><span>Prazo</span>'+vdEsc(prazo)+'</div>'+ 
+      '<div class="vd-info-pill"><span>Resumo</span>'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</div>'+ 
+    '</div>'+itensHTML+vdAnexosHTML(p)+acoes+
   '</div>';
 }
 
@@ -2356,12 +2407,14 @@ function vdAbrirDet(id){
   const x=vdResumoPedido(p);vdDetAtual=p;
   g('vd-det-title').textContent=p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'');
   const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuLabel(i.sku))+'</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
-  const parc=p.prazo_tipo==='parcelado'?'Parcelado: '+[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(x=>x).map(x=>x+'d').join(' / '):'À vista';
+  const parc=vdPrazoLabel(p);
   const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta / OFF':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
   g('vd-det-body').innerHTML=
     '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+(x.status==='parcial'?'Faturado parcial':x.status==='pedido'?'Pedido confirmado':x.status==='entregue'?'Entregue':'Faturado')+'</strong></div>'+
     '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span>'+vdGnreBadgeHTML(p)+'</div>'+
     '<div style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>GNRE:</strong> '+vdEsc(gnreDetalhe)+'</div>'+
+    vdAnexosHTML(p)+
+    (vdPodeAnexarGnre()&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)?'<div class="vd-card-actions" style="margin-bottom:10px"><button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar GNRE</button><button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button></div>':'')+
     itensHTML+
     '<div class="vd-fat-summary"><div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div><div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div><div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div></div>'+ 
     '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
@@ -2436,6 +2489,44 @@ async function vdSalvarFaturamento(){
   }finally{
     vdFaturando=false;g('vd-fat-salvar').disabled=false;
   }
+}
+
+async function vdUploadGnreStorage(file,path){
+  const headers={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type||'application/octet-stream','x-upsert':'true'};
+  const r=await fetch(SB+'/storage/v1/object/gnre-comprovantes/'+path,{method:'POST',headers,body:file});
+  if(!r.ok){const t=await r.text().catch(()=>String(r.status));console.error('Erro upload GNRE:',r.status,t);return null;}
+  return SB+'/storage/v1/object/public/gnre-comprovantes/'+path.split('/').map(encodeURIComponent).join('/');
+}
+function vdAbrirUploadGnre(id,tipo){
+  if(!vdPodeAnexarGnre()){toast('Perfil somente leitura','error');return}
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(vdTipoPedido(p)==='off'){toast('Pedido OFF não precisa GNRE','info');return}
+  const input=document.createElement('input');
+  input.type='file';input.accept='.pdf,image/*';
+  input.onchange=async()=>{const file=input.files&&input.files[0];if(file)await vdSalvarUploadGnre(id,tipo,file);};
+  input.click();
+}
+async function vdSalvarUploadGnre(id,tipo,file){
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(file.size>10*1024*1024){toast('Arquivo acima de 10MB','error');return}
+  toast('Enviando arquivo...','info',3500);
+  const safeName=String(file.name||'arquivo').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(0,90);
+  const path='pedidos/'+id+'/'+tipo+'_'+Date.now()+'_'+safeName;
+  const url=await vdUploadGnreStorage(file,path);
+  if(!url){toast('Erro ao anexar. Confira bucket/políticas do Storage.','error');return}
+  const agora=new Date().toISOString();
+  let payload={};
+  if(tipo==='gnre'){
+    payload={gnre_arquivo_url:url,gnre_arquivo_nome:file.name,gnre_arquivo_at:agora,gnre_arquivo_por:user};
+    if(vdGnreStatus(p)==='pendente')payload.gnre_status='enviada';
+  }else{
+    payload={gnre_comprovante_url:url,gnre_comprovante_nome:file.name,gnre_comprovante_at:agora,gnre_comprovante_por:user,gnre_pagamento_informado_at:agora,gnre_pagamento_informado_por:user};
+  }
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(payload)});
+  if(!r||!r.ok){toast('Arquivo subiu, mas não consegui salvar no pedido. Rode o SQL de anexos.','error');return}
+  auditLog('editar',(tipo==='gnre'?'GNRE anexada':'Comprovante GNRE anexado')+' · '+p.cliente_nome,'Usuário: '+user+' · Arquivo: '+file.name);
+  toast(tipo==='gnre'?'GNRE anexada':'Comprovante anexado. Gestão precisa confirmar o pagamento.','ok');
+  await vdCarregar();
 }
 
 async function vdAtualizarGnre(id,payload,msg){
