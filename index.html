@@ -2969,7 +2969,7 @@ async function forecastSalvar(){
   finally{forecastSalvando=false;g('forecast-save').disabled=false;}
 }
 function forecastEditar(id){
-  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','info');return}
+  if(isDiretoria){toast('Perfil somente leitura','info');return}
   const p=forecastPedidos.find(x=>x.id===id);if(!p)return;
   if(!forecastCoordPermitido()&&p.coordenador!==user){toast('Você só pode editar seu próprio forecast','error');return}
   forecastEditId=id;forecastCoordFiltro=p.coordenador;forecastRenderCoordTabs();forecastResetForm();forecastForm.tipo=p.tipo||'in';
