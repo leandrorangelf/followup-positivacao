@@ -2927,7 +2927,7 @@ function forecastCardHTML(p){
     (p.observacao?'<div class="forecast-observacao"><strong>Observação</strong>'+vdEsc(p.observacao)+'</div>':'')+acoes+'</div>';
 }
 function forecastNovo(){
-  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
+  if(isDiretoria){toast('Perfil somente leitura','error');return}
   if(forecastCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o forecast','error');return}
   forecastResetForm();g('forecast-form-title').textContent='Novo forecast';forecastPopMes();forecastPopCli();forecastRenderSkus();forecastSetTipo('in');
   g('forecast-cli').value='';g('forecast-prob').value='media';g('forecast-status').value='aberto';g('forecast-obs').value='';forecastRecalc();g('modal-forecast-form').classList.add('open');
