@@ -1669,7 +1669,8 @@ renderCliList=function(){
   g('cli-list').innerHTML=todos.map(c=>{
     const ativoNesteMes=c.ativo_desde<=mesAtual&&c.inativo_desde>mesAtual;
     const statusLabel=ativoNesteMes?`Ativo desde ${MESES[c.ativo_desde]||'início'}`:`Inativo desde ${MESES[c.inativo_desde]||'?'}`;
-    return `<div class="cli-item ${ativoNesteMes?'':'inativo'}"><div class="cli-nome"><strong>${c.nome}</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">${statusLabel}</div></div><div class="cli-actions"><button class="client-edit" onclick="editarCliente('${c.id}')">Editar</button><button class="client-edit" onclick="abrirToggle('${c.id}',${ativoNesteMes})">${ativoNesteMes?'Inativar':'Reativar'}</button><button class="client-edit client-delete" onclick="excluirCliente('${c.id}')">Excluir</button></div></div>`;
+    const cliAcoes=user==='vagner'?'':`<div class="cli-actions"><button class="client-edit" onclick="editarCliente('${c.id}')">Editar</button><button class="client-edit" onclick="abrirToggle('${c.id}',${ativoNesteMes})">${ativoNesteMes?'Inativar':'Reativar'}</button><button class="client-edit client-delete" onclick="excluirCliente('${c.id}')">Excluir</button></div>`;
+    return `<div class="cli-item ${ativoNesteMes?'':'inativo'}"><div class="cli-nome"><strong>${c.nome}</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">${statusLabel}</div></div>${cliAcoes}</div>`;
   }).join('')||'<div class="empty">Nenhum cliente cadastrado.</div>';
   g('cli-add-input').value='';updateSideNav('cli');
 };
