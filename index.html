@@ -1629,11 +1629,13 @@ function renderMetas(){
 }
 
 function salvarMeta(coord,index){
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const val=Math.max(0,parseInt(g('goal-'+index).value,10)||0);
   METAS[coord][mesAtual]=val;persistMetas();renderMetas();toast('Meta atualizada','ok');pedidosCarregados=false;
 }
 
 function excluirMeta(coord,index){
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   if(!confirm(`Excluir a meta de ${coord} em ${MESES[mesAtual]}?`))return;
   METAS[coord][mesAtual]=0;persistMetas();renderMetas();toast('Meta excluída','ok');pedidosCarregados=false;
 }
