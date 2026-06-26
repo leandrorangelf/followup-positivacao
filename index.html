@@ -2979,7 +2979,7 @@ function forecastEditar(id){
   forecastRecalc();g('modal-forecast-form').classList.add('open');
 }
 async function forecastExcluir(id){
-  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
+  if(isDiretoria){toast('Perfil somente leitura','error');return}
   const p=forecastPedidos.find(x=>x.id===id);if(!p)return;
   if(!forecastCoordPermitido()&&p.coordenador!==user){toast('Você só pode excluir seu próprio forecast','error');return}
   if(!confirm('Excluir o forecast de '+p.cliente_nome+'? Isso não afeta pedidos reais.'))return;
