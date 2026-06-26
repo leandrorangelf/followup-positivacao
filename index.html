@@ -2940,7 +2940,7 @@ function forecastUpdSku(s,v){forecastForm.skus[s]=parseFloat(v)||0;forecastRecal
 function forecastRecalc(){let cx=0;VD_SKUS.forEach(s=>cx+=forecastForm.skus[s]||0);g('forecast-form-cx').textContent=cx.toLocaleString('pt-BR')+' cx';}
 function forecastFecharForm(){g('modal-forecast-form').classList.remove('open');forecastEditId=null;}
 async function forecastSalvar(){
-  if(forecastSalvando)return;if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
+  if(forecastSalvando)return;if(isDiretoria){toast('Perfil somente leitura','error');return}
   if(!forecastCoordFiltro||forecastCoordFiltro==='todos'){toast('Escolha um coordenador','error');return}
   const cliId=g('forecast-cli').value;if(!cliId){toast('Escolha o cliente','error');return}
   const cli=clientesAtivos(forecastCoordFiltro).find(c=>c.id===cliId);if(!cli){toast('Cliente inválido','error');return}
