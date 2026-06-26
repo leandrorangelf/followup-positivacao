@@ -1537,8 +1537,9 @@ function renderCliList(){
     const badgeClass=ativoNesteMes?'badge-ok':'badge-inativo';
     const btnClass=ativoNesteMes?'btn-toggle-ativo':'btn-toggle-inativo';
     const btnLabel=ativoNesteMes?'Inativar agora':'Reativar agora';
+    const ufBadge=c.uf?`<span class="badge" style="background:${VD_UFS_ISENTO_GNRE.includes(String(c.uf).toUpperCase())?'#e6f4ea;color:#1b7e3a':'#f0f0f0;color:#555'};font-size:9px;margin-left:4px">${c.uf}${VD_UFS_ISENTO_GNRE.includes(String(c.uf).toUpperCase())?'·isento GNRE':''}</span>`:'';
     return `<div class="cli-item ${ativoNesteMes?'':'inativo'}">
-      <div class="cli-nome">${c.nome}</div>
+      <div class="cli-nome">${c.nome}${ufBadge}</div>
       <div class="cli-actions">
         <span class="badge ${badgeClass}" style="white-space:nowrap;font-size:9px">${statusLabel}</span>
         <button class="btn-toggle ${btnClass}"
