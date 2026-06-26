@@ -1646,6 +1646,7 @@ function restaurarMetasPadrao(){
 }
 
 async function editarCliente(id){
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const cli=(clientesDB[cliCoordAtual]||[]).find(c=>String(c.id)===String(id));if(!cli)return;
   const nome=prompt('Novo nome do cliente:',cli.nome);if(nome===null)return;
   const limpo=nome.trim().toUpperCase();if(!limpo){toast('Informe um nome válido','error');return;}
