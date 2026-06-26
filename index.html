@@ -1689,7 +1689,8 @@ renderCliList=function(){
     const ativoNesteMes=c.ativo_desde<=mesAtual&&c.inativo_desde>mesAtual;
     const statusLabel=ativoNesteMes?`Ativo desde ${MESES[c.ativo_desde]||'início'}`:`Inativo desde ${MESES[c.inativo_desde]||'?'}`;
     const cliAcoes=user==='vagner'?'':`<div class="cli-actions"><button class="client-edit" onclick="editarCliente('${c.id}')">Editar</button><button class="client-edit" onclick="abrirToggle('${c.id}',${ativoNesteMes})">${ativoNesteMes?'Inativar':'Reativar'}</button><button class="client-edit client-delete" onclick="excluirCliente('${c.id}')">Excluir</button></div>`;
-    return `<div class="cli-item ${ativoNesteMes?'':'inativo'}"><div class="cli-nome"><strong>${c.nome}</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">${statusLabel}</div></div>${cliAcoes}</div>`;
+    const ufTag=c.uf?`<span style="display:inline-block;padding:1px 7px;border-radius:6px;font-size:10px;font-weight:600;margin-left:6px;background:${VD_UFS_ISENTO_GNRE.includes(String(c.uf).toUpperCase())?'#e6f4ea;color:#1b7e3a':'#f0f0f0;color:#555'}">${c.uf}${VD_UFS_ISENTO_GNRE.includes(String(c.uf).toUpperCase())?' · isento GNRE':''}</span>`:''
+    return `<div class="cli-item ${ativoNesteMes?'':'inativo'}"><div class="cli-nome"><strong>${c.nome}</strong>${ufTag}<div style="font-size:10px;color:var(--muted);margin-top:3px">${statusLabel}</div></div>${cliAcoes}</div>`;
   }).join('')||'<div class="empty">Nenhum cliente cadastrado.</div>';
   g('cli-add-input').value='';updateSideNav('cli');
 };
