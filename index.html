@@ -1725,6 +1725,7 @@ adicionarCliente=async function(){
 };
 
 editarCliente=async function(id){
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const encontrado=findClienteGlobal(id);if(!encontrado)return;
   const nome=prompt('Novo nome do cliente:',encontrado.cliente.nome);if(nome===null)return;
   const limpo=nome.trim().toUpperCase();if(!limpo){toast('Informe um nome válido','error');return;}
