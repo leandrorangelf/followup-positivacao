@@ -1620,7 +1620,8 @@ function renderMetas(){
   g('goals-period-title').textContent=`Metas de ${MESES[mesAtual]} ${anoAtual}`;
   g('goals-body').innerHTML=COORD_KEYS.map((coord,i)=>{
     const realizado=realizadoCoord(coord),meta=METAS[coord][mesAtual]||0,pct=meta?Math.round(realizado/meta*100):0;
-    return `<tr><td class="table-name">${coord}</td><td><input id="goal-${i}" type="number" min="0" value="${meta}"></td><td>${realizado.toLocaleString('pt-BR')} cx</td><td><strong style="color:${corPct(pct)}">${pct}%</strong></td><td><div class="goal-actions"><button class="primary-btn" onclick="salvarMeta('${coord}',${i})">Salvar</button><button class="danger-btn" onclick="excluirMeta('${coord}',${i})">Excluir</button></div></td></tr>`;
+    const metaAcoes=user==='vagner'?'':`<div class="goal-actions"><button class="primary-btn" onclick="salvarMeta('${coord}',${i})">Salvar</button><button class="danger-btn" onclick="excluirMeta('${coord}',${i})">Excluir</button></div>`;
+    return `<tr><td class="table-name">${coord}</td><td><input id="goal-${i}" type="number" min="0" value="${meta}" ${user==='vagner'?'disabled':''}></td><td>${realizado.toLocaleString('pt-BR')} cx</td><td><strong style="color:${corPct(pct)}">${pct}%</strong></td><td>${metaAcoes}</td></tr>`;
   }).join('');
   const header=['Coordenador',...MESES.map(m=>m.slice(0,3))].map((v,i)=>`<div class="annual-cell annual-head ${i===0?'annual-coord':''}">${v}</div>`).join('');
   const rows=COORD_KEYS.map(c=>`<div class="annual-cell annual-coord">${c}</div>${METAS[c].map((v,i)=>`<div class="annual-cell" style="${i===mesAtual?'background:var(--purple-soft);color:var(--purple);font-weight:800':''}">${v||'—'}</div>`).join('')}`).join('');
