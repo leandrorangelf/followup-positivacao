@@ -2915,8 +2915,8 @@ function forecastCardHTML(p){
       x.itens.map(i=>vdSkuResumoLinhaHTML(i,'qty_caixas')).join('')+
     '</div>'
   ):'<div class="vd-card-oper forecast-oper"><div class="vd-prod-row"><span class="vd-prod-name">Sem SKUs previstos</span><span></span></div></div>';
-  const acoes=(!isDiretoria&&user!=='vagner')?'<div class="forecast-actions">'+(p.status==='aberto'?'<button class="forecast-action" onclick="event.stopPropagation();forecastConverterPedido(\''+p.id+'\')">Virar pedido</button>':'')+'<button class="forecast-action" onclick="event.stopPropagation();forecastEditar(\''+p.id+'\')">Editar</button><button class="forecast-action delete" onclick="event.stopPropagation();forecastExcluir(\''+p.id+'\')">Excluir</button></div>':'';
-  const click=(!isDiretoria&&user!=='vagner')?' onclick="forecastEditar(\''+p.id+'\')"':'';
+  const acoes=(!isDiretoria)?'<div class="forecast-actions">'+(p.status==='aberto'?'<button class="forecast-action" onclick="event.stopPropagation();forecastConverterPedido(\''+p.id+'\')">Virar pedido</button>':'')+'<button class="forecast-action" onclick="event.stopPropagation();forecastEditar(\''+p.id+'\')">Editar</button><button class="forecast-action delete" onclick="event.stopPropagation();forecastExcluir(\''+p.id+'\')">Excluir</button></div>':'';
+  const click=(!isDiretoria)?' onclick="forecastEditar(\''+p.id+'\')"':'';
   return '<div class="forecast-card"'+click+'>'+ 
     '<div class="forecast-card-top"><div class="forecast-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="forecast-card-cx">'+x.cx+' cx previstas</div></div>'+ 
     '<div class="forecast-meta"><span class="vd-badge forecast-b-'+tipo+'">'+tipo.toUpperCase()+'</span><span class="vd-badge forecast-b-'+vdEsc(p.probabilidade||'media')+'">Chance '+probLabel+'</span><span class="vd-badge forecast-b-status">'+stLabel+'</span>'+(forecastCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+ 
