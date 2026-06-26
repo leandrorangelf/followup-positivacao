@@ -1147,7 +1147,7 @@ async function login(){
   cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
   const temMetasLocais=loadMetasLocal();
   if(isAdmin&&temMetasLocais)await sincronizarMetasLocaisBanco();
-  await carregarMetas();
+  else await carregarMetas();
   setupShell();
   irDash();
 }
@@ -1747,7 +1747,14 @@ async function carregarRealizadoMetas(){
 async function irMetas(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return;}
   show('s-metas');renderNav('nav-dash','metas');
-  await carregarClientes();await carregarMetas();await carregarRealizadoMetas();renderMetas();
+  await carregarClientes();
+  if(loadMetasLocal()){
+    await sincronizarMetasLocaisBanco();
+  }else{
+    await carregarMetas();
+  }
+  await carregarRealizadoMetas();
+  renderMetas();
 }
 
 function realizadoCoord(coord){
