@@ -2775,14 +2775,37 @@ async function vdSalvarFicha(){
   vdRenderFichaList();
 }
 
+let vdPdfListaCompleta=[];
 async function vdExportarPDF(){
   if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
   toast('Buscando pedidos aguardando GNRE...','info');
   const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
   const todos=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
   const listaTodos=Array.isArray(todos)?todos:[];
-  const lista=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p));
-  if(!lista.length){toast('Nenhum pedido aguardando GNRE','error');return}
+  vdPdfListaCompleta=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p));
+  if(!vdPdfListaCompleta.length){toast('Nenhum pedido aguardando GNRE','error');return}
+  const ul=g('pdf-gnre-lista');
+  ul.innerHTML=vdPdfListaCompleta.map((p,i)=>{
+    const x=vdResumoPedido(p);
+    const comp=MESES[p.mes]+'/'+p.ano;
+    const gnreSt=vdGnreLabel(p);
+    return '<label style="display:flex;align-items:flex-start;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border);cursor:pointer">'+
+      '<input type="checkbox" id="pdf-chk-'+p.id+'" style="margin-top:2px;width:18px;height:18px;flex-shrink:0" checked>'+
+      '<span style="flex:1;font-size:13px">'+
+        '<strong>'+vdEsc(p.cliente_nome)+(p.cliente_uf?' ('+vdEsc(p.cliente_uf)+')':'')+'</strong>'+
+        '<span style="color:var(--muted);margin-left:6px">'+vdEsc(p.coordenador)+'</span><br>'+
+        '<span style="color:var(--muted)">'+vdEsc(comp)+' · '+x.saldoCx+' cx saldo · '+vdEsc(gnreSt)+'</span>'+
+      '</span></label>';
+  }).join('');
+  g('modal-pdf-gnre').classList.add('open');
+}
+function vdPdfSelecionarTodos(val){
+  vdPdfListaCompleta.forEach(p=>{const el=g('pdf-chk-'+p.id);if(el)el.checked=val;});
+}
+async function vdGerarPDFSelecionados(){
+  const lista=vdPdfListaCompleta.filter(p=>{const el=g('pdf-chk-'+p.id);return el&&el.checked;});
+  if(!lista.length){toast('Selecione ao menos um pedido','error');return}
+  g('modal-pdf-gnre').classList.remove('open');
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({unit:'pt',format:'a4',orientation:'landscape'});
   const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight();
