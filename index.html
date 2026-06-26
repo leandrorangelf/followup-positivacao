@@ -717,6 +717,23 @@ body{background:var(--canvas);color:var(--ink)}
   </div>
 </div>
 
+<!-- MODAL SELEÇÃO PDF GNRE -->
+<div class="modal-bg" id="modal-pdf-gnre">
+  <div class="modal">
+    <div class="modal-title">Gerar PDF GNRE</div>
+    <div class="modal-sub">Selecione os pedidos que deseja incluir no PDF</div>
+    <div style="margin:10px 0 6px;display:flex;gap:8px">
+      <button class="btn-close" style="flex:1;padding:8px;font-size:12px" onclick="vdPdfSelecionarTodos(true)">Marcar todos</button>
+      <button class="btn-close" style="flex:1;padding:8px;font-size:12px" onclick="vdPdfSelecionarTodos(false)">Desmarcar todos</button>
+    </div>
+    <div id="pdf-gnre-lista" style="margin:8px 0;max-height:50vh;overflow-y:auto"></div>
+    <div class="vd-btnrow" style="margin:0">
+      <button class="vd-btn vd-btn-out" onclick="g('modal-pdf-gnre').classList.remove('open')">Cancelar</button>
+      <button class="vd-btn vd-btn-pri" onclick="vdGerarPDFSelecionados()">Gerar PDF</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL FICHA CLIENTE -->
 <div class="modal-bg" id="modal-vd-cli">
   <div class="modal">
