@@ -953,6 +953,7 @@ let cliCoordAtual=COORD_KEYS[0];
 let salvandoTudo=false;
 let vendasDashboard=[],dashCarregando=false;
 let metasRealizadoMes={};
+let metasLocaisCarregadas=false;
 
 // ── UTILS ──
 const g=id=>document.getElementById(id);
@@ -1144,7 +1145,8 @@ async function login(){
   user=coord;isAdmin=(coord==='admin'||coord==='vagner');isDiretoria=coord==='diretoria';
   coordAtual=(isAdmin||isDiretoria)?COORD_KEYS[0]:coord;
   cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
-  loadMetasLocal();
+  const temMetasLocais=loadMetasLocal();
+  if(isAdmin&&temMetasLocais)await sincronizarMetasLocaisBanco();
   await carregarMetas();
   setupShell();
   irDash();
@@ -1691,6 +1693,20 @@ function persistMetas(){
   localStorage.setItem('clean-followup-metas',JSON.stringify(METAS));
 }
 
+loadMetasLocal=function(){
+  metasLocaisCarregadas=false;
+  try{
+    const saved=JSON.parse(localStorage.getItem('clean-followup-metas')||'null');
+    if(saved)COORD_KEYS.forEach(c=>{
+      if(Array.isArray(saved[c])&&saved[c].length===12){
+        METAS[c]=saved[c].map(v=>Math.max(0,parseInt(v,10)||0));
+        metasLocaisCarregadas=true;
+      }
+    });
+  }catch(e){console.warn('Metas locais nao carregadas',e);}
+  return metasLocaisCarregadas;
+};
+
 async function carregarMetas(){
   const data=await sb('/rest/v1/metas_mensais?ano=eq.'+anoAtual+'&select=coordenador,mes,meta_cx',{ret:true});
   if(Array.isArray(data)&&data.length){
@@ -1709,6 +1725,14 @@ async function salvarMetaBanco(coord,mes,valor){
   if(patch&&patch.ok)return true;
   const post=await sb('/rest/v1/metas_mensais',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(payload)});
   return !!(post&&post.ok);
+}
+
+async function sincronizarMetasLocaisBanco(){
+  const resultados=[];
+  for(const coord of COORD_KEYS){
+    for(let mes=0;mes<12;mes++)resultados.push(await salvarMetaBanco(coord,mes,METAS[coord][mes]||0));
+  }
+  return resultados.every(Boolean);
 }
 
 async function carregarRealizadoMetas(){
