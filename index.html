@@ -1711,6 +1711,7 @@ abrirToggle=function(id,ativoNesteMes){
 };
 
 adicionarCliente=async function(){
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const nome=g('cli-add-input').value.trim().toUpperCase();
   const proprietario=g('cli-add-owner').value;
   if(!nome){toast('Digite o nome do cliente','error');return;}
