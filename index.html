@@ -1656,6 +1656,7 @@ async function editarCliente(id){
 }
 
 async function excluirCliente(id){
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const cli=(clientesDB[cliCoordAtual]||[]).find(c=>String(c.id)===String(id));if(!cli)return;
   if(!confirm(`Excluir ${cli.nome}? O histórico de pedidos vinculado ao nome não será apagado.`))return;
   const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
