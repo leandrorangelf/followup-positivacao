@@ -1738,6 +1738,7 @@ editarCliente=async function(id){
 };
 
 excluirCliente=async function(id){
+  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const encontrado=findClienteGlobal(id);if(!encontrado)return;
   if(!confirm(`Excluir ${encontrado.cliente.nome}? O histórico de pedidos não será apagado.`))return;
   const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'DELETE'});
