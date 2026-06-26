@@ -422,7 +422,8 @@ body{background:var(--canvas);color:var(--ink)}
     <div class="side-sub admin-only">
       <button class="side-sub-link" id="side-cli" onclick="navTo('cli')">Clientes</button>
       <button class="side-sub-link" id="side-metas" onclick="navTo('metas')">Metas</button>
-      <button class="side-sub-link" id="side-log" onclick="navTo('log')">Log de atividades</button>
+      <button class="side-sub-link" id="side-ped" onclick="navTo('ped')">Pedidos</button>
+      <button class="side-sub-link admin-only-item" id="side-log" onclick="navTo('log')">Log de atividades</button>
     </div>
     <button class="side-link" onclick="logout()"><span>Sair</span><span>Encerrar</span></button>
     <div class="side-user">
@@ -1016,11 +1017,13 @@ function show(id){
 }
 
 function renderNav(navId,active){
-  const tabs=isAdmin?[
+  const tabs=(isAdmin||user==='vagner')?[
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'vendas',icon:'💰',label:'Vendas'},
     {id:'forecast',icon:'🔮',label:'Forecast'},
     {id:'cli',icon:'👥',label:'Clientes'},
+    {id:'metas',icon:'🎯',label:'Metas'},
+    {id:'ped',icon:'📋',label:'Pedidos'},
   ]:[
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'vendas',icon:'💰',label:'Vendas'},
@@ -1036,7 +1039,7 @@ function renderNav(navId,active){
 
 function navTo(id){
   if(isDiretoria && !['dash','vendas','forecast'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
-  if(user==='vagner'&&['cli','metas','ped'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
+  if(user==='vagner'&&['log'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
   if(id==='dash'){irDash();}
   else if(id==='ped'){irPed();}
   else if(id==='cli'){irCli();}
@@ -1554,6 +1557,7 @@ function setupShell(){
   g('side-user-role').textContent=(user==='admin'||user==='vagner')?'Gerente':(isDiretoria?'Somente leitura':'Coordenador');
   g('side-avatar').textContent=(user==='admin'?'L':user==='vagner'?'V':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'block':'none');
+  document.querySelectorAll('.admin-only-item').forEach(el=>el.style.display=(isAdmin&&user!=='vagner')?'':'none');
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
   document.querySelectorAll('.no-vagner').forEach(el=>el.style.display=(user==='vagner')?'none':'');
 }
