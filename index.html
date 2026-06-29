@@ -7,6 +7,9 @@
 <title>Follow-up Positivação</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datamaps/0.5.9/datamaps.bra.min.js"></script>
 <style>
 
 :root{--bg:#F5F4F0;--card:#fff;--border:#E2E0D8;--text:#1A1A18;--muted:#7A7870;--accent:#1D4ED8;--accent-light:#EFF6FF;--green:#166534;--green-bg:#DCFCE7;--amber:#92400E;--amber-bg:#FEF3C7;--gray:#6B7280;--gray-bg:#F3F4F6;--red:#991B1B;--red-bg:#FEE2E2}
@@ -226,6 +229,7 @@ body{background:var(--canvas);color:var(--ink)}
 .attention-list{display:flex;flex-direction:column;gap:0}.attention-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #edf0f5;font-size:12px}.attention-row:last-child{border-bottom:0}.attention-count{font-weight:800;color:var(--danger)}
 .dash-lower{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:18px}
 .data-table{width:100%;border-collapse:collapse;font-size:12px}.data-table th{text-align:left;color:#7c879c;font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:0 10px 10px;border-bottom:1px solid var(--line)}.data-table td{padding:12px 10px;border-bottom:1px solid #edf0f5}.data-table tbody tr:hover{background:#faf9ff}.table-name{font-weight:720}.mini-progress{width:86px;height:6px;background:#e9edf4;border-radius:99px;overflow:hidden}.mini-progress span{display:block;height:100%;background:var(--purple);border-radius:99px}
+.state-map-panel{margin-bottom:18px}.state-map-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:18px;align-items:center}.state-map-canvas{width:100%;height:430px;min-height:320px}.state-map-canvas svg{max-width:100%;height:auto}.state-map-canvas .datamaps-subunit{cursor:pointer;transition:fill .18s,stroke .18s}.state-map-legend{display:flex;align-items:center;gap:9px;font-size:10px;color:#7c879c;margin-top:10px}.state-map-scale{height:8px;flex:1;border-radius:99px;background:linear-gradient(90deg,#eef2ff,#a7b7ff,#6547d9,#2e1d7c)}.state-rank{display:flex;flex-direction:column;gap:9px}.state-rank-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:12px}.state-rank-uf{font-weight:850;color:var(--ink)}.state-rank-bar{height:8px;background:#eceff5;border-radius:99px;overflow:hidden}.state-rank-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--purple-2),var(--purple));border-radius:99px}.state-rank-value{font-weight:850;white-space:nowrap}.state-map-empty{height:320px;display:grid;place-items:center;text-align:center;color:#9CA3AF;font-size:12px;border:1px dashed var(--line);border-radius:12px;background:#fbfcff}.hoverinfo{border:1px solid var(--line)!important;border-radius:8px!important;box-shadow:0 12px 30px rgba(17,27,49,.16)!important;padding:8px 10px!important;color:var(--ink)!important}
 .sku-row{margin-bottom:16px}.sku-row-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}.sku-track{height:9px;background:#eceff5;border-radius:99px;overflow:hidden}.sku-fill{height:100%;border-radius:99px;background:var(--purple)}
 .sku-qty-list{display:flex;flex-direction:column;gap:10px}.sku-qty-item{border:1px solid #edf0f5;border-radius:10px;padding:10px;background:#fbfcff}.sku-qty-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:7px}.sku-qty-name{min-width:0}.sku-qty-code{display:inline-flex;align-items:center;justify-content:center;min-width:44px;padding:3px 7px;border-radius:7px;background:var(--navy);color:#fff;font-size:10px;font-weight:850;margin-right:7px}.sku-qty-full{font-size:12px;font-weight:800;color:var(--ink)}.sku-qty-numbers{text-align:right;font-size:12px;font-weight:850;white-space:nowrap}.sku-qty-numbers small{display:block;color:#7c879c;font-size:10px;font-weight:700;margin-top:2px}.sku-qty-pct{font-size:10px;color:#7c879c;font-weight:800}.sku-qty-empty{padding:18px;text-align:center;color:#9CA3AF;font-size:12px;border:1px dashed var(--line);border-radius:10px;background:#fbfcff}
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px}.section-title{font-size:27px;font-weight:850;letter-spacing:-.04em}.section-sub{font-size:13px;color:#748097;margin-top:5px}.primary-btn,.secondary-btn,.danger-btn{border:0;border-radius:9px;padding:10px 14px;font:700 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}.primary-btn{background:var(--purple);color:#fff}.secondary-btn{background:#fff;color:var(--ink);border:1px solid var(--line)}.danger-btn{background:#fff;color:var(--danger);border:1px solid #f0caca}
@@ -236,10 +240,10 @@ body{background:var(--canvas);color:var(--ink)}
 .mobile-overlay{display:none}
 
 @media(max-width:1000px){
- .side-nav{transform:translateX(-100%);transition:.25s}.side-nav.open{transform:translateX(0)}.topbar{left:0;padding:0 16px}.menu-toggle{display:block}.screen:not(#s-login){margin-left:0}.mobile-overlay.open{display:block;position:fixed;inset:0;background:rgba(8,15,29,.5);z-index:65}.dash-kpis{grid-template-columns:repeat(2,1fr)}.dash-kpi:nth-child(2){border-right:0}.dash-kpi:nth-child(-n+2){border-bottom:1px solid var(--line)}.dash-grid,.dash-lower{grid-template-columns:1fr}#s-ped .fab-wrap,#s-cli .cli-add-wrap{left:0}
+ .side-nav{transform:translateX(-100%);transition:.25s}.side-nav.open{transform:translateX(0)}.topbar{left:0;padding:0 16px}.menu-toggle{display:block}.screen:not(#s-login){margin-left:0}.mobile-overlay.open{display:block;position:fixed;inset:0;background:rgba(8,15,29,.5);z-index:65}.dash-kpis{grid-template-columns:repeat(2,1fr)}.dash-kpi:nth-child(2){border-right:0}.dash-kpi:nth-child(-n+2){border-bottom:1px solid var(--line)}.dash-grid,.dash-lower,.state-map-layout{grid-template-columns:1fr}#s-ped .fab-wrap,#s-cli .cli-add-wrap{left:0}
 }
 @media(max-width:680px){
- .topbar-title{font-size:17px}.topbar-period span{display:none}.topbar select{min-width:120px}.page-pad,#dash-content{padding:18px 14px 90px!important}.dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-kpi{padding:16px 14px;min-height:118px;border-right:1px solid var(--line)!important;border-bottom:1px solid var(--line)}.dash-kpi:nth-child(even){border-right:0!important}.dash-kpi:nth-child(n+3){border-bottom:0}.dash-kpi-value{font-size:25px}.dash-kpi-label{font-size:11px}.dash-kpi-sub{font-size:10px}.trend-bars{gap:7px;height:220px}.panel{padding:15px}.dash-lower{display:block}.dash-lower>.panel{margin-bottom:14px}.data-table{min-width:650px}.table-scroll{overflow-x:auto}#s-ped .ped-summary{padding:18px 14px 10px;grid-template-columns:1fr}#s-ped .client-list,#s-cli .cli-list{grid-template-columns:1fr;padding-left:14px;padding-right:14px}#s-ped .admin-tabs,#s-ped .sec-title{padding-left:14px;padding-right:14px}#s-cli .cli-coord-tabs{padding:18px 14px 10px}#s-ped .fab-wrap,#s-cli .cli-add-wrap{padding:10px 14px}.section-title{font-size:23px}
+ .topbar-title{font-size:17px}.topbar-period span{display:none}.topbar select{min-width:120px}.page-pad,#dash-content{padding:18px 14px 90px!important}.dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-kpi{padding:16px 14px;min-height:118px;border-right:1px solid var(--line)!important;border-bottom:1px solid var(--line)}.dash-kpi:nth-child(even){border-right:0!important}.dash-kpi:nth-child(n+3){border-bottom:0}.dash-kpi-value{font-size:25px}.dash-kpi-label{font-size:11px}.dash-kpi-sub{font-size:10px}.trend-bars{gap:7px;height:220px}.panel{padding:15px}.dash-lower{display:block}.dash-lower>.panel{margin-bottom:14px}.data-table{min-width:650px}.table-scroll{overflow-x:auto}.state-map-canvas{height:330px}.state-rank-row{grid-template-columns:34px minmax(0,1fr) auto}#s-ped .ped-summary{padding:18px 14px 10px;grid-template-columns:1fr}#s-ped .client-list,#s-cli .cli-list{grid-template-columns:1fr;padding-left:14px;padding-right:14px}#s-ped .admin-tabs,#s-ped .sec-title{padding-left:14px;padding-right:14px}#s-cli .cli-coord-tabs{padding:18px 14px 10px}#s-ped .fab-wrap,#s-cli .cli-add-wrap{padding:10px 14px}.section-title{font-size:23px}
 }
 @media(max-width:680px){.client-management-toolbar{align-items:stretch;flex-direction:column}.client-search{min-width:0;width:100%}.client-filter{width:100%}.client-count{padding:0 2px}#s-cli .cli-list{padding-bottom:160px}.cli-item{grid-template-columns:1fr;gap:10px}.client-owner{justify-content:space-between}.client-owner-select{flex:1}.cli-actions{justify-content:flex-start;flex-wrap:wrap}.cli-add-row{flex-wrap:wrap}.cli-add-input{flex:1 1 100%}.cli-add-owner{flex:1}.btn-add{flex:1}}
 /* ======= MÓDULO VENDAS ======= */
@@ -2043,6 +2047,114 @@ function vdSkuDash(lista){
   return sku;
 }
 
+const DASH_UF_NOMES={AC:'Acre',AL:'Alagoas',AP:'Amapa',AM:'Amazonas',BA:'Bahia',CE:'Ceara',DF:'Distrito Federal',ES:'Espirito Santo',GO:'Goias',MA:'Maranhao',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Para',PB:'Paraiba',PR:'Parana',PE:'Pernambuco',PI:'Piaui',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondonia',RR:'Roraima',SC:'Santa Catarina',SP:'Sao Paulo',SE:'Sergipe',TO:'Tocantins'};
+const DASH_UFS=Object.keys(DASH_UF_NOMES);
+function dashNormTxt(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z ]/g,'').trim();}
+function dashUfValida(uf){uf=String(uf||'').trim().toUpperCase();return DASH_UFS.includes(uf)?uf:'';}
+function dashUfPorNomeEstado(nome){
+  const alvo=dashNormTxt(nome);
+  return Object.keys(DASH_UF_NOMES).find(uf=>dashNormTxt(DASH_UF_NOMES[uf])===alvo)||'';
+}
+function dashClienteUfFallback(p){
+  const coord=p?.coordenador;
+  const lista=clientesDB&&clientesDB[coord]?clientesDB[coord]:[];
+  const id=String(p?.cliente_id||'');
+  const nome=String(p?.cliente_nome||p?.cliente||'').trim().toUpperCase();
+  const cli=lista.find(c=>(id&&String(c.id||'')===id)||(nome&&String(c.nome||'').trim().toUpperCase()===nome));
+  return dashUfValida(cli?.uf);
+}
+function dashUfPedido(p){
+  return dashUfValida(p?.cliente_uf)||dashClienteUfFallback(p);
+}
+function dashCaixasPorUf(lista){
+  const porUf={};
+  DASH_UFS.forEach(uf=>{porUf[uf]={uf,nome:DASH_UF_NOMES[uf],cx:0,pedidos:0,clientes:new Set()};});
+  (Array.isArray(lista)?lista:[]).forEach(p=>{
+    const uf=dashUfPedido(p);
+    if(!uf)return;
+    const cx=vdVolumePedidoDash(p);
+    porUf[uf].cx+=cx;
+    porUf[uf].pedidos+=1;
+    porUf[uf].clientes.add(String(p.cliente_id||p.cliente_nome||p.cliente||''));
+  });
+  return Object.values(porUf).map(r=>({uf:r.uf,nome:r.nome,cx:r.cx,pedidos:r.pedidos,clientes:r.clientes.size}));
+}
+function dashMapColor(cx,max){
+  if(!cx)return'#eef2ff';
+  const t=max?Math.max(.18,Math.min(1,cx/max)):0;
+  if(t>.82)return'#2e1d7c';
+  if(t>.62)return'#4f35b4';
+  if(t>.42)return'#6547d9';
+  if(t>.24)return'#8b79ee';
+  return'#b9c4ff';
+}
+function dashMapaEstadosPanelHTML(lista,titulo,nota){
+  const rows=dashCaixasPorUf(lista);
+  const top=rows.filter(r=>r.cx>0).sort((a,b)=>b.cx-a.cx||a.uf.localeCompare(b.uf)).slice(0,8);
+  const max=Math.max(1,...rows.map(r=>r.cx));
+  const total=rows.reduce((s,r)=>s+r.cx,0);
+  const rank=top.length?top.map(r=>'<div class="state-rank-row"><div class="state-rank-uf">'+r.uf+'</div><div class="state-rank-bar"><span style="width:'+Math.max(4,Math.round(r.cx/max*100))+'%"></span></div><div class="state-rank-value">'+vdFmtQtd(r.cx)+' cx</div></div>').join(''):'<div class="empty" style="padding:20px 0">Nenhuma venda com UF no periodo.</div>';
+  return '<section class="panel state-map-panel"><div class="panel-title-row"><div><div class="panel-title">'+vdEsc(titulo)+'</div><div class="panel-note">'+vdEsc(nota)+'</div></div><div class="panel-note"><strong>'+vdFmtQtd(total)+'</strong> cx mapeadas</div></div><div class="state-map-layout"><div><div id="dash-br-map" class="state-map-canvas"></div><div class="state-map-legend"><span>Menor</span><div class="state-map-scale"></div><span>Maior</span></div></div><div class="state-rank">'+rank+'</div></div></section>';
+}
+function dashRenderMapaBrasil(containerId,rows){
+  const el=g(containerId);
+  if(!el)return;
+  el.innerHTML='';
+  const max=Math.max(1,...rows.map(r=>r.cx||0));
+  const porUf={};
+  rows.forEach(r=>{porUf[r.uf]=r;});
+  if(typeof Datamaps==='undefined'||typeof d3==='undefined'){
+    el.innerHTML='<div class="state-map-empty">Mapa indisponivel agora.<br>O ranking por UF continua ao lado.</div>';
+    return;
+  }
+  try{
+    const mapa=new Datamaps({
+      element:el,
+      scope:'bra',
+      responsive:false,
+      width:el.clientWidth||620,
+      height:el.clientHeight||430,
+      setProjection:function(element){
+        const width=element.clientWidth||620;
+        const height=element.clientHeight||430;
+        const projection=d3.geo.mercator()
+          .center([-54,-15])
+          .scale(Math.min(width*1.2,height*1.72))
+          .translate([width/2,height/2]);
+        const path=d3.geo.path().projection(projection);
+        return{path,projection};
+      },
+      fills:{defaultFill:'#eef2ff'},
+      geographyConfig:{
+        borderColor:'#ffffff',
+        borderWidth:1,
+        popupOnHover:false,
+        highlightOnHover:true,
+        highlightFillColor:'#111b31',
+        highlightBorderColor:'#ffffff',
+        highlightBorderWidth:1.4
+      },
+      done:function(map){
+        map.svg.selectAll('.datamaps-subunit').each(function(d){
+          let uf='';
+          if(d&&d.id&&/^BR\.[A-Z]{2}$/.test(d.id))uf=d.id.slice(3);
+          if(!uf)uf=dashUfPorNomeEstado(d?.properties?.name);
+          const r=porUf[uf]||{uf,nome:DASH_UF_NOMES[uf]||d?.properties?.name||'',cx:0,pedidos:0,clientes:0};
+          const label=(r.uf?r.uf+' - ':'')+(r.nome||'Estado')+': '+vdFmtQtd(r.cx)+' cx';
+          d3.select(this).style('fill',dashMapColor(r.cx,max)).style('stroke','#fff').append('title').text(label);
+        });
+      }
+    });
+    window.addEventListener('resize',function(){mapa.resize();});
+  }catch(e){
+    console.error(e);
+    el.innerHTML='<div class="state-map-empty">Nao foi possivel renderizar o mapa.<br>Confira o ranking por UF ao lado.</div>';
+  }
+}
+function dashAgendaMapaEstados(lista){
+  setTimeout(function(){dashRenderMapaBrasil('dash-br-map',dashCaixasPorUf(lista));},0);
+}
+
 renderAdminDash=function(anoData){
   const vendasMes=vdListaDashboard(anoData,mesAtual,'todos');
   vendasDashboard=vendasMes;
@@ -2095,10 +2207,12 @@ renderAdminDash=function(anoData){
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de vendas realizadas</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
       <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes}</div></div><div class="attention-list">${pendingNames.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.name}</strong><br><small style="color:#7c879c">${p.coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
     </div>
+    ${dashMapaEstadosPanelHTML(vendasMes,'Caixas vendidas por estado','Mapa do Brasil por UF em '+MESES[mesAtual]+' '+anoAtual)}
     <div class="dash-lower">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Performance por coordenador</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Coordenador</th><th>Positivação</th><th>Volume vendido</th><th>Meta</th><th>Cumprimento</th><th>Sem venda</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="table-name">${r.coord}</td><td>${r.pctPos}%</td><td>${r.volume.toLocaleString('pt-BR')} cx</td><td>${r.meta.toLocaleString('pt-BR')} cx</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-progress"><span style="width:${Math.min(100,r.pctMeta)}%"></span></div><strong>${r.pctMeta}%</strong></div></td><td>${r.pendentes}</td></tr>`).join('')}</tbody></table></div></section>
       ${vdSkuQtdPanelHTML(sku,'Qtd por produto vendido',MESES[mesAtual]+' '+anoAtual)}
     </div>`;
+  dashAgendaMapaEstados(vendasMes);
   updateSideNav('dash');
 };
 
@@ -2140,10 +2254,12 @@ renderCoordDash=function(anoData){
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de vendas realizadas</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
       <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length}</div></div><div class="attention-list">${pendentes.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.nome}</strong><br><small style="color:#7c879c">${coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
     </div>
+    ${dashMapaEstadosPanelHTML(vendasMes,'Caixas vendidas por estado','Mapa do Brasil da carteira em '+MESES[mesAtual]+' '+anoAtual)}
     <div class="dash-lower">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Clientes da carteira</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Status</th><th>Volume vendido</th><th>SKUs</th></tr></thead><tbody>${rows.map(c=>{const d=dadosLocais[c.nome]||{},vol=totCliD(d,c.nome),skus=Object.entries({GR:d.gr||0,GM:d.gm||0,CM:d.cm||0,CC:d.cc||0,GTwin:d.gtwin||0,CK:d.ck||0}).filter(([k,v])=>v>0).map(([k,v])=>`${k}: ${v}`).join(' · ')||'-';return`<tr><td class="table-name">${c.nome}</td><td>${vol>0?'Com venda':'Sem venda'}</td><td>${vol.toLocaleString('pt-BR')} cx</td><td>${skus}</td></tr>`}).join('')}</tbody></table></div></section>
       ${vdSkuQtdPanelHTML(sku,'Qtd por produto vendido',MESES[mesAtual]+' '+anoAtual)}
     </div>`;
+  dashAgendaMapaEstados(vendasMes);
   updateSideNav('dash');
 };
 
@@ -2187,10 +2303,12 @@ renderCoordDash=function(anoData){
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de performance</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
       <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length+parciais.length}</div></div><div class="attention-list">${pendentes.slice(0,5).map(c=>`<div class="attention-row"><span><strong>${c.nome}</strong><br><small style="color:#7c879c">Sem pedido no período</small></span><span class="attention-count">Pendente</span></div>`).join('')}${parciais.slice(0,3).map(c=>`<div class="attention-row"><span><strong>${c.nome}</strong><br><small style="color:#7c879c">Mix de SKUs incompleto</small></span><span style="font-weight:800;color:var(--warning)">Parcial</span></div>`).join('')||(!pendentes.length?'<div class="empty">Nenhuma pendência no período.</div>':'')}</div></aside>
     </div>
+    ${dashMapaEstadosPanelHTML(vendasDashboard,'Caixas vendidas por estado','Mapa do Brasil da carteira em '+MESES[mesAtual]+' '+anoAtual)}
     <div class="dash-lower">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Minha carteira</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Status</th><th>Volume</th><th>Mix de SKUs</th></tr></thead><tbody>${rows.map(c=>{const d=dadosLocais[c.nome]||{},vol=totCliD(dadosLocais,c.nome),mix=VD_SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length,status=vol>0?(mix===VD_SKUS.length?'Completo':'Parcial'):'Pendente';return`<tr><td class="table-name">${c.nome}</td><td><span class="badge badge-${status==='Completo'?'ok':status==='Parcial'?'parc':'sem'}">${status}</span></td><td>${vol.toLocaleString('pt-BR')} cx</td><td>${mix} de ${VD_SKUS.length}</td></tr>`;}).join('')||'<tr><td colspan="4" class="empty">Nenhum cliente ativo.</td></tr>'}</tbody></table></div></section>
       ${vdSkuQtdPanelHTML(sku,'Qtd por produto vendido',MESES[mesAtual]+' '+anoAtual)}
     </div>`;
+  dashAgendaMapaEstados(vendasDashboard);
   updateSideNav('dash');
 };
 
