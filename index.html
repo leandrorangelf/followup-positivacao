@@ -467,6 +467,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <option value="admin">👁 Leandro (Gestor)</option>
       <option value="vagner">👁 Vagner (Gerente)</option>
       <option value="diretoria">📊 Diretoria (Somente leitura)</option>
+      <option value="fabiano">Fabiano (Faturamento)</option>
       <option value="Igor Cater">Igor Cater</option>
       <option value="Marcio Vit">Marcio Vit</option>
       <option value="Vitor Valle">Vitor Valle</option>
@@ -682,9 +683,9 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <button class="vd-chip on" data-f="todos" onclick="vdSetFiltro('todos')">Todos</button>
     <button class="vd-chip" data-f="faturar" onclick="vdSetFiltro('faturar')">⚠ Pra faturar</button>
     <button class="vd-chip" data-f="pendente" onclick="vdSetFiltro('pendente')">Pendentes</button>
-    <button class="vd-chip vd-chip-new no-diretoria no-vagner" onclick="vdGoNovo()">+ Pedido real</button>
-    <button class="vd-chip vd-chip-forecast no-diretoria no-vagner" onclick="vdGoForecast()">+ Forecast</button>
-    <button class="vd-chip no-diretoria no-vagner" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
+    <button class="vd-chip vd-chip-new no-diretoria no-vagner no-fabiano" onclick="vdGoNovo()">+ Pedido real</button>
+    <button class="vd-chip vd-chip-forecast no-diretoria no-vagner no-fabiano" onclick="vdGoForecast()">+ Forecast</button>
+    <button class="vd-chip no-diretoria no-vagner no-fabiano" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
     <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF GNRE</button>
   </div>
   <div class="vd-section">
@@ -694,7 +695,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Faturado / Entregue</h4><span class="vd-kanban-count" id="vd-c-fim">0</span></div><div id="vd-col-fim"></div></div>
     </div>
   </div>
-  <button class="vd-fab no-diretoria no-vagner" onclick="vdGoNovo()" title="Novo pedido real">+</button>
+  <button class="vd-fab no-diretoria no-vagner no-fabiano" onclick="vdGoNovo()" title="Novo pedido real">+</button>
   <div class="bottom-nav" id="nav-vendas"></div>
 </div>
 
@@ -955,7 +956,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 const SB='https://rpxrjawzkkpnzancmcif.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweHJqYXd6a2twbnphbmNtY2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk5NDksImV4cCI6MjA5NDk0NTk0OX0.RJ2-Jn50RcT_FnRblUZJIIYCD2ijWPMDImg_2o1SSaU';
 
-const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','vagner':'f4ec1b0e9ecf3baec9c32537f106e4004feb9a312773d6eeede18efdffbbe94c','diretoria':'5fed8fa8c4a6813740e5cf8bc55c80e19028a44975f28acad227403d248e564c','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
+const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','vagner':'f4ec1b0e9ecf3baec9c32537f106e4004feb9a312773d6eeede18efdffbbe94c','fabiano':'67b8957da97dc943f201dcb516de1081ad24e97f92ab4527f68162adf78eae09','diretoria':'5fed8fa8c4a6813740e5cf8bc55c80e19028a44975f28acad227403d248e564c','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
 const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
 const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const METAS_PADRAO=JSON.parse(JSON.stringify(METAS));
@@ -979,6 +980,7 @@ let metasLocaisCarregadas=false;
 
 // ── UTILS ──
 const g=id=>document.getElementById(id);
+const isFabiano=()=>user==='fabiano';
 function corPct(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
 
 function renderAdminPrem(coord, pctMeta, pctPos, pctTop4, meta, tot){
@@ -1123,7 +1125,9 @@ function show(id){
 }
 
 function renderNav(navId,active){
-  const tabs=(isAdmin||user==='vagner')?[
+  const tabs=isFabiano()?[
+    {id:'vendas',icon:'💰',label:'Vendas'},
+  ]:(isAdmin||user==='vagner')?[
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'vendas',icon:'💰',label:'Vendas'},
     {id:'forecast',icon:'🔮',label:'Forecast'},
@@ -1145,6 +1149,7 @@ function renderNav(navId,active){
 
 function navTo(id){
   if(isDiretoria && !['dash','vendas','forecast'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
+  if(isFabiano()&&id!=='vendas'){toast('Fabiano acessa apenas Vendas e faturamento','error');return;}
   if(user==='vagner'&&['log'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
   if(id==='dash'){irDash();}
   else if(id==='ped'){irPed();}
@@ -1165,13 +1170,14 @@ async function login(){
   const senhaHash=await sha256(senha);
   if(SENHAS_HASH[coord]!==senhaHash){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
   user=coord;isAdmin=(coord==='admin'||coord==='vagner');isDiretoria=coord==='diretoria';
-  coordAtual=(isAdmin||isDiretoria)?COORD_KEYS[0]:coord;
+  coordAtual=(isAdmin||isDiretoria||isFabiano())?COORD_KEYS[0]:coord;
   cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
   const temMetasLocais=loadMetasLocal();
   if(isAdmin&&temMetasLocais)await sincronizarMetasLocaisBanco();
   else await carregarMetas();
   setupShell();
-  irDash();
+  if(isFabiano()){vdFiltro='pendente';irVendas();}
+  else irDash();
 }
 
 // ── CLIENTES DB ──
@@ -1191,7 +1197,7 @@ async function irDash(){
   show('s-dash');
   renderNav('nav-dash','dash');
   g('dash-greeting').textContent='Olá,';
-  g('dash-name').textContent=user==='admin'?'Leandro':user==='vagner'?'Vagner':(isDiretoria?'Diretoria':coordAtual);
+  g('dash-name').textContent=user==='admin'?'Leandro':user==='vagner'?'Vagner':(isFabiano()?'Fabiano':(isDiretoria?'Diretoria':coordAtual));
   g('dash-mes').value=mesAtual;
   g('dash-mes').onchange=function(){mesAtual=parseInt(this.value);pedidosCarregados=false;carregarDashboard();};
   await carregarClientes();
@@ -1663,13 +1669,15 @@ function setupShell(){
   if(sourceLogo)g('side-brand-logo').src=sourceLogo.src;
   g('shell-mes').innerHTML=MESES.map((m,i)=>`<option value="${i}">${m} ${anoAtual}</option>`).join('');
   g('shell-mes').value=mesAtual;
-  g('side-user-name').textContent=user==='admin'?'Leandro':user==='vagner'?'Vagner':(isDiretoria?'Diretoria':user);
-  g('side-user-role').textContent=(user==='admin'||user==='vagner')?'Gerente':(isDiretoria?'Somente leitura':'Coordenador');
-  g('side-avatar').textContent=(user==='admin'?'L':user==='vagner'?'V':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
+  g('side-user-name').textContent=user==='admin'?'Leandro':user==='vagner'?'Vagner':(isFabiano()?'Fabiano':(isDiretoria?'Diretoria':user));
+  g('side-user-role').textContent=(user==='admin'||user==='vagner')?'Gerente':(isFabiano()?'Faturamento':(isDiretoria?'Somente leitura':'Coordenador'));
+  g('side-avatar').textContent=(user==='admin'?'L':user==='vagner'?'V':isFabiano()?'F':isDiretoria?'D':String(user||'U').charAt(0)).toUpperCase();
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'block':'none');
   document.querySelectorAll('.admin-only-item').forEach(el=>el.style.display=(isAdmin&&user!=='vagner')?'':'none');
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
   document.querySelectorAll('.no-vagner').forEach(el=>el.style.display=(user==='vagner')?'none':'');
+  document.querySelectorAll('.no-fabiano').forEach(el=>el.style.display=isFabiano()?'none':'');
+  ['side-dash','side-forecast','side-gestao','side-tv'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
 }
 
 function updateSideNav(active){
@@ -2229,6 +2237,8 @@ const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:
 const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const vdTipoPedido=p=>String(p?.tipo||'in').toLowerCase();
 const vdPodeEditar=()=>user==='admin';
+const vdPodeGerenciarGnre=()=>user==='admin'||isFabiano();
+const vdPodeFaturar=()=>user==='admin'||isFabiano();
 function vdParseValor(v){return Number(String(v||'').replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''))||0;}
 const VD_UFS_ISENTO_GNRE=['RJ','ES'];
 function vdGnreStatus(p){
@@ -2303,11 +2313,14 @@ function vdDashboardResumoHTML(lista){
 
 async function irVendas(){
   if(isDiretoria)vdCoordFiltro='todos';
+  else if(isFabiano())vdCoordFiltro=vdCoordFiltro&&vdCoordFiltro!=='todos'&&COORD_KEYS.includes(vdCoordFiltro)?vdCoordFiltro:'todos';
   else if(!isAdmin)vdCoordFiltro=coordAtual;
   else if(vdCoordFiltro!=='todos'&&!COORD_KEYS.includes(vdCoordFiltro))vdCoordFiltro='todos';
   show('s-vendas');
   renderNav('nav-vendas','vendas');
   updateSideNav('vendas');
+  if(isFabiano()&&vdFiltro==='todos')vdFiltro='pendente';
+  document.querySelectorAll('.vd-filter .vd-chip[data-f]').forEach(c=>c.classList.toggle('on',c.dataset.f===vdFiltro));
   vdRenderCoordTabs();
   g('vd-sub').textContent=(vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro)+' · '+MESES[mesAtual]+'/'+anoAtual;
   await vdCarregar();
@@ -2315,15 +2328,15 @@ async function irVendas(){
 
 function vdRenderCoordTabs(){
   const el=g('vd-coord-tabs');
-  el.style.display=(isAdmin||isDiretoria)?'flex':'none';
-  if(!(isAdmin||isDiretoria)){el.innerHTML='';return}
+  el.style.display=(isAdmin||isDiretoria||isFabiano())?'flex':'none';
+  if(!(isAdmin||isDiretoria||isFabiano())){el.innerHTML='';return}
   el.innerHTML=['todos',...COORD_KEYS].map(c=>
     '<button class="admin-tab '+(c===vdCoordFiltro?'active':'')+'" onclick="vdSetCoord(\''+c+'\')">'+(c==='todos'?'Todos':c)+'</button>'
   ).join('');
 }
 
 async function vdSetCoord(c){
-  if(!(isAdmin||isDiretoria)||(c!=='todos'&&!COORD_KEYS.includes(c)))return;
+  if(!(isAdmin||isDiretoria||isFabiano())||(c!=='todos'&&!COORD_KEYS.includes(c)))return;
   vdCoordFiltro=c;
   if(c!=='todos')coordAtual=c;
   vdRenderCoordTabs();
@@ -2418,15 +2431,19 @@ function vdCardHTML(p){
     botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar GNRE</button>');
     botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>');
   }
-  if(vdPodeEditar()){
+  if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'){
     const gnreSt=vdGnreStatus(p);
+    if(gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
+    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Valor GNRE</button>');
     if(precisaGnre){
-      if(gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">Enviado Fabiano</button>');
-      botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Valor GNRE</button>');
       if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar paga</button>');
       botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar</button>');
     }
-    if(x.saldoCx>0&&vdGnreLiberada(p))botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>');
+  }
+  if(vdPodeFaturar()&&x.saldoCx>0&&vdGnreLiberada(p)){
+    botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>');
+  }
+  if(vdPodeEditar()){
     if(x.faturadoCx===0)botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>');
     botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
   }
@@ -2689,7 +2706,7 @@ function vdAbrirDet(id){
     vdComentarioVagnerHTML(p)+
     (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
   g('vd-det-fim').textContent=p.tipo==='in'?'Confirmar faturamento':'Confirmar entrega';
-  g('vd-det-fim').style.display=(vdPodeEditar()&&x.saldoCx>0&&vdGnreLiberada(p))?'block':'none';
+  g('vd-det-fim').style.display=(vdPodeFaturar()&&x.saldoCx>0&&vdGnreLiberada(p))?'block':'none';
   g('vd-det-editar').style.display=(vdPodeEditar()&&x.faturadoCx===0)?'block':'none';
   g('vd-det-comentar').style.display=user==='vagner'?'block':'none';
   g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
@@ -2734,8 +2751,7 @@ async function vdSalvarComentario(){
   }
 }
 function vdAbrirFaturamento(id){
-  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
-  if(user==='vagner'){toast('Vagner não pode confirmar faturamento','error');return}
+  if(!vdPodeFaturar()){toast('Acesso restrito ao faturamento','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   if(!vdGnreLiberada(p)){toast('GNRE precisa estar paga ou isenta antes de faturar','error');return}
   const x=vdResumoPedido(p);
@@ -2835,7 +2851,7 @@ async function vdSalvarUploadGnre(id,tipo,file){
 }
 
 async function vdAtualizarGnre(id,payload,msg){
-  if(!vdPodeEditar()){toast('Acesso restrito ao gestor','error');return}
+  if(!vdPodeGerenciarGnre()){toast('Acesso restrito a GNRE','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   if(vdTipoPedido(p)==='off'){toast('Pedido OFF não precisa GNRE','info');return}
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(payload)});
@@ -2848,7 +2864,7 @@ async function vdMarcarGnreEnviada(id){
   await vdAtualizarGnre(id,{gnre_status:'enviada',gnre_enviado_at:new Date().toISOString()},'GNRE marcada como enviada ao Fabiano');
 }
 async function vdAbrirGnreValor(id){
-  if(!vdPodeEditar()){toast('Acesso restrito ao gestor','error');return}
+  if(!vdPodeGerenciarGnre()){toast('Acesso restrito a GNRE','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   const atual=p.gnre_valor?String(p.gnre_valor).replace('.',','):'';
   const v=prompt('Valor da GNRE para '+p.cliente_nome+' (use vírgula ou ponto):',atual);
@@ -3268,7 +3284,7 @@ async function forecastExcluir(id){
 
 // ===================== LOG DE AUDITORIA =====================
 function nomeUsuarioLog(u){
-  const labels={admin:'Leandro',vagner:'Vagner',diretoria:'Diretoria','Igor Cater':'Igor Cater','Marcio Vit':'Marcio Vit','Vitor Valle':'Vitor Valle','Rosana':'Rosana'};
+  const labels={admin:'Leandro',vagner:'Vagner',fabiano:'Fabiano',diretoria:'Diretoria','Igor Cater':'Igor Cater','Marcio Vit':'Marcio Vit','Vitor Valle':'Vitor Valle','Rosana':'Rosana'};
   return labels[u]||u||'Usuário';
 }
 async function auditLog(acao, descricao, detalhes){
