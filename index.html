@@ -2167,8 +2167,8 @@ function dashRenderMapaBrasil(containerId,rows){
         const width=element.clientWidth||620;
         const height=element.clientHeight||430;
         const projection=d3.geo.mercator()
-          .center([-54,-15])
-          .scale(Math.min(width*1.2,height*1.72))
+          .center([-54,-17])
+          .scale(Math.min(width*1.1,height*1.55))
           .translate([width/2,height/2]);
         const path=d3.geo.path().projection(projection);
         return{path,projection};
