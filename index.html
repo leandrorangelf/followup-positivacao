@@ -3818,7 +3818,72 @@ function tvPrevisao(realizado){
   const dia=Math.max(1,tvDiaReferencia());
   return Math.round((Number(realizado||0)/dia)*tvDiasMes());
 }
-function tvRender(rows){
+function tvMapColor(cx,max){
+  if(!cx||cx<=0)return'rgba(255,255,255,.07)';
+  const t=Math.pow(cx/max,.45);
+  const r=Math.round(56+t*(168-56));
+  const g2=Math.round(189+t*(139-189));
+  const b=Math.round(248+t*(250-248));
+  return'rgb('+r+','+g2+','+b+')';
+}
+function tvRenderMapaBrasil(containerId,rows){
+  const el=g(containerId);
+  if(!el)return;
+  el.innerHTML='';
+  const max=Math.max(1,...rows.map(r=>r.cx||0));
+  const porUf={};
+  rows.forEach(r=>{porUf[r.uf]=r;});
+  window.tvMapaUfRows=rows;
+  if(typeof Datamaps==='undefined'||typeof d3==='undefined'){el.innerHTML='<div style="display:grid;place-items:center;height:100%;color:#9aa6b8;font-size:13px">Mapa indisponivel</div>';return;}
+  try{
+    const mapa=new Datamaps({
+      element:el,scope:'bra',responsive:false,
+      width:el.clientWidth||560,height:el.clientHeight||380,
+      setProjection:function(element){
+        const w=element.clientWidth||560,h=element.clientHeight||380;
+        const projection=d3.geo.mercator().center([-54,-14]).scale(Math.min(w*1.0,h*1.38)).translate([w/2,h/2+10]);
+        return{path:d3.geo.path().projection(projection),projection};
+      },
+      fills:{defaultFill:'rgba(255,255,255,.07)'},
+      geographyConfig:{borderColor:'rgba(255,255,255,.18)',borderWidth:.8,popupOnHover:false,highlightOnHover:false},
+      done:function(map){
+        map.svg.selectAll('.datamaps-subunit').each(function(d){
+          let uf='';
+          if(d&&d.id&&/^BR\.[A-Z]{2}$/.test(d.id))uf=d.id.slice(3);
+          if(!uf)uf=dashUfPorNomeEstado(d?.properties?.name);
+          const r=porUf[uf]||{uf,nome:DASH_UF_NOMES[uf]||'',cx:0,pedidos:0,clientes:0};
+          const fillColor=tvMapColor(r.cx,max);
+          d3.select(this)
+            .attr('data-uf',uf).attr('data-fill',fillColor)
+            .style('fill',fillColor).style('stroke','rgba(255,255,255,.18)').style('stroke-width',.8)
+            .on('mouseover',function(){d3.select(this).style('fill',d3.rgb(this.getAttribute('data-fill')||fillColor).brighter(.3));})
+            .on('mouseout',function(){d3.select(this).style('fill',this.getAttribute('data-fill')||fillColor);})
+            .on('click',function(){if(uf)tvSelecionarUfMapa(uf);})
+            .append('title').text((r.uf?r.uf+' - ':'')+r.nome+': '+vdFmtQtd(r.cx)+' cx');
+        });
+        tvSelecionarUfMapa(rows.filter(r=>r.cx>0).sort((a,b)=>b.cx-a.cx)[0]?.uf||'');
+      }
+    });
+    window.addEventListener('resize',function(){mapa.resize();});
+  }catch(e){console.error(e);}
+}
+function tvSelecionarUfMapa(uf){
+  uf=dashUfValida(uf);
+  const rows=window.tvMapaUfRows||[];
+  const r=rows.find(x=>x.uf===uf);
+  document.querySelectorAll('.tv-map-rank-row').forEach(btn=>btn.classList.toggle('on',btn.dataset.uf===uf));
+  if(typeof d3!=='undefined'){
+    d3.selectAll('#tv-br-map .datamaps-subunit').style('stroke',function(){return this.getAttribute('data-uf')===uf?'#fff':'rgba(255,255,255,.18)';}).style('stroke-width',function(){return this.getAttribute('data-uf')===uf?2:.8;});
+  }
+  const detail=g('tv-map-detail');
+  if(!detail)return;
+  if(!r||r.cx<=0){detail.innerHTML='<div class="tv-map-detail-title">Selecione um estado</div>';return;}
+  const clientes=(r.clientesLista||[]).slice(0,5);
+  detail.innerHTML='<div class="tv-map-detail-title">'+vdEsc(r.uf+' - '+r.nome)+' · '+vdFmtQtd(r.cx)+' cx</div>'+
+    '<div style="margin-bottom:8px;font-size:12px">'+r.pedidos+' pedido(s) · '+r.clientes+' cliente(s)</div>'+
+    clientes.map(c=>'<div class="tv-map-detail-row"><span>'+vdEsc(c.nome)+'</span><strong>'+vdFmtQtd(c.cx)+' cx</strong></div>').join('');
+}
+function tvRender(rows,vendas){
   const metaGeral=rows.reduce((s,r)=>s+r.meta,0);
   const realizadoGeral=rows.reduce((s,r)=>s+r.realizado,0);
   const pctGeral=tvPct(realizadoGeral,metaGeral);
