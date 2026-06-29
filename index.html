@@ -3290,6 +3290,7 @@ async function vdSalvarFicha(){
   if(!vdEditCliId){toast('Cliente inválido','error');return}
   const payload={
     uf:g('vdc-uf').value||null,
+    origem_padrao:g('vdc-origem').value.trim()||null,
     obs_venda:g('vdc-obs').value||null,
     def_tipo:vdCliForm.tipo,
     def_prazo:vdCliForm.prazo,
