@@ -3052,6 +3052,9 @@ function vdAbrirFaturamento(id){
   g('vd-fat-ja').textContent=x.faturadoCx;
   g('vd-fat-restante').textContent=x.saldoCx;
   g('vd-fat-obs').value=p.faturamento_observacao||'';
+  const cli=(clientesDB[p.coordenador]||[]).find(c=>c.id===p.cliente_id);
+  g('vd-fat-origem').value=p.origem||cli?.origem_padrao||'';
+  g('vd-fat-origem-list').innerHTML=[...new Set(Object.values(clientesDB).flat().map(x=>x.origem_padrao).filter(Boolean))].map(o=>'<option value="'+vdEsc(o)+'">').join('');
   g('modal-vd-fat').classList.add('open');
 }
 function vdAtualizarFatResumo(){
