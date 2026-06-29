@@ -2580,6 +2580,74 @@ function vdComentariosPedidoHTML(p){
 }
 function vdPedidoPrecisaGnre(p){return vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p);}
 
+const PREM_FAIXAS=[{pct:130,valor:5000},{pct:120,valor:4750},{pct:110,valor:4500},{pct:100,valor:4000}];
+const PREM_META_EQUIPE=1500;
+
+function premValorCoord(pct){
+  for(const f of PREM_FAIXAS)if(pct>=f.pct)return f.valor;
+  return 0;
+}
+function premValorGestor(pct){
+  if(pct<=0)return 0;
+  for(let i=0;i<PREM_FAIXAS.length-1;i++){
+    const a=PREM_FAIXAS[i+1],b=PREM_FAIXAS[i];
+    if(pct>=a.pct&&pct<b.pct){
+      const t=(pct-a.pct)/(b.pct-a.pct);
+      return Math.round(a.valor+t*(b.valor-a.valor));
+    }
+  }
+  if(pct>=PREM_FAIXAS[0].pct)return PREM_FAIXAS[0].valor;
+  return Math.round(pct/100*PREM_FAIXAS[PREM_FAIXAS.length-1].valor);
+}
+function premFaixaAtiva(pct){
+  for(const f of PREM_FAIXAS)if(pct>=f.pct)return f.pct;
+  return null;
+}
+function premProxFaixa(pct,meta){
+  for(let i=PREM_FAIXAS.length-1;i>=0;i--){
+    if(pct<PREM_FAIXAS[i].pct){
+      const faltaCx=Math.ceil((PREM_FAIXAS[i].pct/100*meta)-Math.round(pct/100*meta));
+      return{pct:PREM_FAIXAS[i].pct,valor:PREM_FAIXAS[i].valor,faltaCx};
+    }
+  }
+  return null;
+}
+function premPanelHTML(rows,volumeTotal){
+  const fmtR=v=>'R$ '+v.toLocaleString('pt-BR');
+  const coordCards=rows.map(r=>{
+    const pct=r.pctMeta;
+    const valor=premValorCoord(pct);
+    const faixa=premFaixaAtiva(pct);
+    const prox=premProxFaixa(pct,r.meta);
+    const cls=pct>=100?'hit':pct>=80?'close':'miss';
+    const barW=Math.min(100,Math.round(pct/130*100));
+    const barColor=pct>=130?'#16a34a':pct>=120?'#2563eb':pct>=110?'#7c3aed':pct>=100?'#6547d9':'#d97706';
+    const faixasHTML=PREM_FAIXAS.slice().reverse().map(f=>`<span class="prem-faixa${faixa===f.pct?' ativa':''}">${f.pct}%</span>`).join('');
+    const proxHTML=prox?`<div class="prem-prox">Faltam <strong>${prox.faltaCx} cx</strong> para ${prox.pct}% → ${fmtR(prox.valor)}</div>`:'<div class="prem-prox" style="color:#16a34a">✓ Faixa máxima atingida</div>';
+    return`<div class="prem-card">
+      <div class="prem-name">${vdEsc(r.coord)}</div>
+      <div class="prem-valor ${cls}">${valor>0?fmtR(valor):'—'}</div>
+      <div class="prem-pct" style="color:${barColor}">${pct}% da meta · ${r.volume.toLocaleString('pt-BR')} cx</div>
+      <div class="prem-bar-wrap"><div class="prem-bar" style="width:${barW}%;background:${barColor}"></div></div>
+      <div class="prem-faixas">${faixasHTML}</div>
+      ${proxHTML}
+    </div>`;
+  }).join('');
+  const pctEquipe=PREM_META_EQUIPE>0?Math.round(volumeTotal/PREM_META_EQUIPE*100):0;
+  const valorLeandro=premValorGestor(pctEquipe);
+  const barEquipeW=Math.min(100,Math.round(pctEquipe/130*100));
+  const proxEquipe=premProxFaixa(pctEquipe,PREM_META_EQUIPE);
+  const proxEquipeHTML=proxEquipe?`Faltam <strong>${proxEquipe.faltaCx} cx</strong> para ${proxEquipe.pct}% → ${fmtR(proxEquipe.valor)} cada`:'<strong style="color:#86efac">✓ Faixa máxima atingida</strong>';
+  const equipCard=`<div class="prem-equipe-card">
+    <div class="prem-equipe-title">🏆 Leandro &amp; Vagner — equipe total · meta ${PREM_META_EQUIPE.toLocaleString('pt-BR')} cx</div>
+    <div class="prem-equipe-row">
+      <div><div class="prem-equipe-valor">${fmtR(valorLeandro)} <span style="font-size:14px;color:#a5b4fc">cada</span></div><div class="prem-equipe-sub">${pctEquipe}% · ${volumeTotal.toLocaleString('pt-BR')} cx realizadas</div></div>
+      <div class="prem-equipe-bar-wrap"><div class="prem-equipe-bar" style="width:${barEquipeW}%"></div></div>
+      <div style="font-size:12px;color:#c7d2fe;text-align:right">${proxEquipeHTML}</div>
+    </div>
+  </div>`;
+  return`<section class="panel"><div class="panel-title-row"><div class="panel-title">Premiação variável</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="prem-panel">${equipCard}${coordCards}</div></section>`;
+}
 function vdResumoPedido(p){
   const itens=p.pedidos_vendas_itens||[];
   const pedidoCx=Number(p.total_caixas)||itens.reduce((s,i)=>s+Number(i.qty_caixas||0),0);
