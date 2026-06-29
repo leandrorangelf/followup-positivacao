@@ -868,6 +868,10 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="modal">
     <div class="modal-title" id="vdc-title">Ficha de Vendas</div>
     <div class="vd-field"><label>Cliente</label><input id="vdc-nome" readonly style="background:var(--bg)"></div>
+    <div class="vd-field"><label>Origem padrão de expedição</label>
+      <input id="vdc-origem" list="vdc-origem-list" placeholder="Ex.: Fábrica, NEW BLUETEX MG, GB SP...">
+      <datalist id="vdc-origem-list"></datalist>
+    </div>
     <div class="vd-field"><label>Estado (UF)</label>
       <select id="vdc-uf">
         <option value="">—</option>
