@@ -1265,7 +1265,7 @@ async function carregarClientes(){
   const data=await sb('/rest/v1/clientes?select=*&order=nome',{ret:true});
   clientesDB={};
   COORD_KEYS.forEach(c=>{clientesDB[c]=[];});
-  if(Array.isArray(data))data.forEach(r=>{if(clientesDB[r.coordenador])clientesDB[r.coordenador].push({nome:r.nome,ativo:r.ativo,id:r.id,ativo_desde:r.ativo_desde||0,inativo_desde:r.inativo_desde||13,uf:r.uf||null,obs_venda:r.obs_venda||null,def_skus:r.def_skus||null,def_prazo:r.def_prazo||null,def_p1:r.def_p1||null,def_p2:r.def_p2||null,def_p3:r.def_p3||null,def_tipo:r.def_tipo||null});});
+  if(Array.isArray(data))data.forEach(r=>{if(clientesDB[r.coordenador])clientesDB[r.coordenador].push({nome:r.nome,ativo:r.ativo,id:r.id,ativo_desde:r.ativo_desde||0,inativo_desde:r.inativo_desde||13,uf:r.uf||null,origem_padrao:r.origem_padrao||null,obs_venda:r.obs_venda||null,def_skus:r.def_skus||null,def_prazo:r.def_prazo||null,def_p1:r.def_p1||null,def_p2:r.def_p2||null,def_p3:r.def_p3||null,def_tipo:r.def_tipo||null});});
 }
 
 function clientesAtivos(coord){
