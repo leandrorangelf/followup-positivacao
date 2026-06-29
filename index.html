@@ -2752,6 +2752,33 @@ function vdCardHTML(p){
   '</div>';
 }
 
+function vdComplementarPedido(id){
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  const x=vdResumoPedido(p);
+  if(x.saldoCx<=0){toast('Sem saldo para complementar','info');return}
+  vdForecastOrigemId=null;vdForecastOrigemLabel='';
+  vdEditPedidoId=null;
+  vdForm={tipo:p.tipo||'in',prazo:p.prazo_tipo||'avista',skus:{}};
+  VD_SKUS.forEach(s=>{vdForm.skus[s]={q:0,v:0}});
+  x.itens.forEach(i=>{
+    const saldo=Math.max(0,Number(i.qty_caixas||0)-Number(i.qty_faturada||0));
+    const sku=(i.sku||'').toUpperCase();
+    if(saldo>0&&vdForm.skus[sku]!==undefined)vdForm.skus[sku]={q:saldo,v:Number(i.valor_pacote||0)};
+  });
+  g('vfn-title').textContent='Complementar Pedido';
+  g('vf-btn-save').textContent='Salvar Pedido Complementar';
+  vdPopCliSel();
+  setTimeout(()=>{
+    const sel=g('vf-cli');if(sel){sel.value=p.cliente_id;vdOnCliSel();}
+    g('vf-obs').value='Remanescente de pedido parcial faturado em '+new Date(p.faturado_at||p.updated_at||'').toLocaleDateString('pt-BR');
+  },50);
+  vdRenderSkus();
+  vdSetTipo(vdForm.tipo);vdSetPrazo(vdForm.prazo);
+  g('vf-p1').value=p.parcela_1_dias||'';g('vf-p2').value=p.parcela_2_dias||'';g('vf-p3').value=p.parcela_3_dias||'';
+  vdRecalc();
+  show('s-vfn');renderNav('nav-vfn','vendas');
+  toast('Pedido pré-preenchido com o saldo remanescente · '+x.saldoCx+' cx','info',4000);
+}
 function vdGoNovo(){
   vdForecastOrigemId=null;vdForecastOrigemLabel='';
   if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
