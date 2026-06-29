@@ -2428,13 +2428,13 @@ function vdCardHTML(p){
   const botoes=[];
   const precisaGnre=x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p);
   if(precisaGnre&&vdPodeAnexarGnre()){
-    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar GNRE</button>');
-    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>');
+    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>');
+    if(!isFabiano())botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>');
   }
   if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'){
     const gnreSt=vdGnreStatus(p);
-    if(gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
-    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Valor GNRE</button>');
+    if(!isFabiano()&&gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
+    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar valor</button>');
     if(precisaGnre){
       if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar paga</button>');
       botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar</button>');
@@ -2698,7 +2698,7 @@ function vdAbrirDet(id){
     '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span>'+vdGnreBadgeHTML(p)+'</div>'+
     '<div style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>GNRE:</strong> '+vdEsc(gnreDetalhe)+'</div>'+
     vdAnexosHTML(p)+
-    (vdPodeAnexarGnre()&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)?'<div class="vd-card-actions" style="margin-bottom:10px"><button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar GNRE</button><button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button></div>':'')+
+    (vdPodeAnexarGnre()&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)?'<div class="vd-card-actions" style="margin-bottom:10px"><button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>'+(!isFabiano()?'<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>':'')+'</div>':'')+
     itensHTML+
     '<div class="vd-fat-summary"><div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div><div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div><div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div></div>'+ 
     '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
