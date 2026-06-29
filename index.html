@@ -3909,7 +3909,19 @@ function tvRender(rows,vendas){
           '<div><div class="tv-row-bar"><span style="width:'+largura+'%"></span></div><div class="tv-coord-values">Meta: '+tvFmt(r.meta)+' cx</div></div>'+
           '<div class="tv-row-pct">'+r.pct+'%</div>'+
         '</div>';
-      }).join('')+'</div></section>';
+      }).join('')+'</div></section>'+
+    (vendas&&vendas.length?(function(){
+      const ufRows=dashCaixasPorUf(vendas);
+      const top=ufRows.filter(r=>r.cx>0).sort((a,b)=>b.cx-a.cx).slice(0,8);
+      const maxUf=Math.max(1,...top.map(r=>r.cx));
+      const rank=top.map((r,i)=>'<button type="button" class="tv-map-rank-row'+(i===0?' on':'')+'" data-uf="'+r.uf+'" onclick="tvSelecionarUfMapa(\''+r.uf+'\')">'+
+        '<div class="tv-map-rank-uf">'+r.uf+'</div>'+
+        '<div class="tv-map-rank-bar"><span style="width:'+Math.max(4,Math.round(r.cx/maxUf*100))+'%"></span></div>'+
+        '<div class="tv-map-rank-value">'+vdFmtQtd(r.cx)+' cx</div></button>').join('');
+      return '<section class="tv-map-section"><div class="tv-section-title" style="margin-bottom:14px"><strong>Vendas por estado</strong><span>'+MESES[mesAtual]+' '+anoAtual+'</span></div>'+
+        '<div class="tv-map-layout"><div id="tv-br-map" class="tv-map-canvas"></div>'+
+        '<div><div class="tv-map-rank">'+rank+'</div><div id="tv-map-detail" class="tv-map-detail"></div></div></div></section>';
+    })():'');
   const agora=new Date();
   g('tv-update').textContent='Atualizado as '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
