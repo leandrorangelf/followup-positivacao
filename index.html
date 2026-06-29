@@ -471,6 +471,32 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 </head>
 <body>
 
+<!-- REGISTRO DE FATURAMENTO -->
+<div id="s-registro" class="screen">
+  <div class="reg-fat-wrap">
+    <div class="section-head">
+      <div><div class="section-title">Registro de Faturamento</div><div class="section-sub">Histórico de faturamentos confirmados por pedido</div></div>
+    </div>
+    <div class="reg-fat-filters">
+      <select id="reg-mes" onchange="regRender()"></select>
+      <select id="reg-coord" onchange="regRender()">
+        <option value="todos">Todos os coordenadores</option>
+      </select>
+      <select id="reg-tipo" onchange="regRender()">
+        <option value="todos">Todos os tipos</option>
+        <option value="completo">Completo</option>
+        <option value="parcial">Parcial</option>
+        <option value="remanescente">Remanescente</option>
+      </select>
+      <input id="reg-busca" placeholder="Buscar cliente ou origem..." oninput="regRender()" style="min-width:200px">
+    </div>
+    <div class="reg-fat-row reg-fat-head">
+      <span>Data fat.</span><span>Cliente</span><span>Origem</span><span>Coord.</span><span>SKUs faturados</span><span>Cx fat.</span><span>Status</span>
+    </div>
+    <div id="reg-fat-lista"></div>
+  </div>
+</div>
+
 <!-- TV EXTERNA -->
 <div id="s-tv" class="screen">
   <div class="tv-wrap">
