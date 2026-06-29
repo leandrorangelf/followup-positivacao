@@ -294,6 +294,8 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-card-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .vd-info-pill{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:11px;line-height:1.25}
 .vd-info-pill span{display:block;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vd-vagner-note{font-size:11px;color:#1D4ED8;margin-top:8px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px;line-height:1.4;text-align:left}
+.vd-vagner-note strong{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;color:#1E40AF}
 .vd-attach-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .vd-attach-link{font-size:10px;font-weight:700;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--accent);padding:4px 8px;text-decoration:none}
 .vd-attach-link:hover{border-color:var(--accent)}
@@ -757,10 +759,27 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <div class="vd-btnrow" style="margin:0 0 10px">
       <button class="vd-btn vd-btn-pri" id="vd-det-fim" onclick="vdAbrirFaturamentoAtual()">Confirmar faturamento</button>
       <button class="vd-btn vd-btn-out" id="vd-det-editar" onclick="vdEditarPedido()">Editar pedido</button>
+      <button class="vd-btn vd-btn-out" id="vd-det-comentar" onclick="vdAbrirComentarioAtual()">Comentar</button>
     </div>
     <div class="vd-btnrow" style="margin:0">
       <button class="vd-btn vd-btn-out" onclick="vdFecharDet()">Fechar</button>
       <button class="vd-btn vd-btn-del" id="vd-det-excluir" onclick="vdExcluirPedido()">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COMENTARIO VAGNER -->
+<div class="modal-bg" id="modal-vd-coment">
+  <div class="modal">
+    <div class="modal-title" id="vd-coment-title">Comentario no pedido</div>
+    <div class="modal-sub">Use este campo para pedir ajuste, exclusao ou qualquer recado sobre o pedido.</div>
+    <div class="vd-field">
+      <label>Comentario</label>
+      <textarea id="vd-coment-text" placeholder="Ex.: pode excluir este pedido; ajustar para 50 caixas em vez de 100"></textarea>
+    </div>
+    <div class="vd-btnrow" style="margin:0">
+      <button class="vd-btn vd-btn-out" onclick="vdFecharComentario()">Cancelar</button>
+      <button class="vd-btn vd-btn-pri" id="vd-coment-save" onclick="vdSalvarComentario()">Salvar comentario</button>
     </div>
   </div>
 </div>
@@ -2199,6 +2218,7 @@ let vdFiltro='todos';
 let vdCoordFiltro='todos';
 let vdEditPedidoId=null;
 let vdDetAtual=null;
+let vdComentPedidoId=null;
 let vdEditCliId=null;
 let vdSalvandoPedido=false;
 let vdFatPedidoId=null;
@@ -2243,6 +2263,10 @@ function vdAnexosHTML(p){
   return links.length?'<div class=\"vd-attach-line\">'+links.join('')+'</div>':'';
 }
 function vdPodeAnexarGnre(){return !isDiretoria&&user!=='vagner';}
+function vdComentarioVagnerHTML(p){
+  const txt=String(p?.comentario_vagner||'').trim();
+  return txt?'<div class="vd-vagner-note"><strong>Comentario Vagner</strong>'+vdEsc(txt)+'</div>':'';
+}
 function vdPedidoPrecisaGnre(p){return vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p);}
 
 function vdResumoPedido(p){
@@ -2406,6 +2430,7 @@ function vdCardHTML(p){
     if(x.faturadoCx===0)botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>');
     botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
   }
+  if(user==='vagner')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirComentario(\''+p.id+'\')">Comentar</button>');
   if(botoes.length)acoes='<div class="vd-card-actions">'+botoes.join('')+'</div>';
   const gnreValor=vdTipoPedido(p)==='off'?'Isento':(Number(p.gnre_valor||0)>0?vdFmt(p.gnre_valor):'Não informado');
   const pedidoCompetencia=MESES[p.mes]+'/'+p.ano;
@@ -2421,7 +2446,7 @@ function vdCardHTML(p){
       '<div class="vd-info-pill"><span>Prazo</span>'+vdEsc(prazo)+'</div>'+ 
       '<div class="vd-info-pill vd-gnre-valor"><span>Valor GNRE</span><strong>'+vdEsc(gnreValor)+'</strong></div>'+
       '<div class="vd-info-pill"><span>Resumo</span>'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</div>'+ 
-    '</div>'+itensHTML+vdAnexosHTML(p)+acoes+
+    '</div>'+itensHTML+vdAnexosHTML(p)+vdComentarioVagnerHTML(p)+acoes+
   '</div>';
 }
 
@@ -2661,15 +2686,53 @@ function vdAbrirDet(id){
     '<div class="vd-fat-summary"><div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div><div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div><div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div></div>'+ 
     '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
     (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+vdEsc(p.observacao)+'</div>':'')+
+    vdComentarioVagnerHTML(p)+
     (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
   g('vd-det-fim').textContent=p.tipo==='in'?'Confirmar faturamento':'Confirmar entrega';
   g('vd-det-fim').style.display=(vdPodeEditar()&&x.saldoCx>0&&vdGnreLiberada(p))?'block':'none';
   g('vd-det-editar').style.display=(vdPodeEditar()&&x.faturadoCx===0)?'block':'none';
+  g('vd-det-comentar').style.display=user==='vagner'?'block':'none';
   g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
   g('modal-vd-det').classList.add('open');
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
 function vdAbrirFaturamentoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdAbrirFaturamento(id)}}
+function vdAbrirComentarioAtual(){if(vdDetAtual)vdAbrirComentario(vdDetAtual.id)}
+function vdAbrirComentario(id){
+  if(user!=='vagner'){toast('Comentario liberado apenas para o Vagner','error');return}
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  vdComentPedidoId=id;
+  g('vd-coment-title').textContent='Comentario · '+p.cliente_nome+(p.cliente_uf?' / '+p.cliente_uf:'');
+  g('vd-coment-text').value=p.comentario_vagner||'';
+  g('modal-vd-coment').classList.add('open');
+  setTimeout(()=>g('vd-coment-text').focus(),50);
+}
+function vdFecharComentario(){g('modal-vd-coment').classList.remove('open');vdComentPedidoId=null}
+async function vdSalvarComentario(){
+  if(user!=='vagner'){toast('Comentario liberado apenas para o Vagner','error');return}
+  const p=vdPedidos.find(x=>x.id===vdComentPedidoId);if(!p)return;
+  const txt=String(g('vd-coment-text').value||'').trim();
+  const btn=g('vd-coment-save');
+  btn.disabled=true;
+  try{
+    const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({comentario_vagner:txt||null})});
+    if(!r||!r.ok){
+      const msg=r&&r.text?await r.text().catch(()=>String(r.status)):String(r&&r.status||'');
+      console.error('Erro ao salvar comentario do Vagner:',msg);
+      toast('Nao consegui salvar. Rode no Supabase: alter table pedidos_vendas add column comentario_vagner text;','error',9000);
+      return;
+    }
+    p.comentario_vagner=txt||null;
+    if(vdDetAtual&&vdDetAtual.id===p.id)vdDetAtual=p;
+    auditLog('editar','Comentario do Vagner · '+p.cliente_nome,txt||'Comentario removido');
+    toast(txt?'Comentario salvo':'Comentario removido','ok');
+    vdFecharComentario();
+    vdRenderKanban();
+    if(vdDetAtual&&vdDetAtual.id===p.id)vdAbrirDet(p.id);
+  }finally{
+    btn.disabled=false;
+  }
+}
 function vdAbrirFaturamento(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   if(user==='vagner'){toast('Vagner não pode confirmar faturamento','error');return}
