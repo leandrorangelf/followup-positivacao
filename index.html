@@ -3642,6 +3642,58 @@ function registrarAtividade(tipo, descricao, detalhes){
   const det=(tipo&&tipo!==acao?('Módulo: '+tipo+(detalhes?' · '+detalhes:'')):(detalhes||null));
   return auditLog(acao,descricao,det);
 }
+let regPedidos=[];
+async function irRegistro(){
+  show('s-registro');
+  renderNav('nav-registro','registro');
+  updateSideNav('registro');
+  g('reg-fat-lista').innerHTML='<div class="vd-empty">Carregando...</div>';
+  const mesEl=g('reg-mes');
+  if(!mesEl.options.length){
+    MESES.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m+' '+anoAtual;if(i===mesAtual)o.selected=true;mesEl.appendChild(o);});
+  }
+  const coordEl=g('reg-coord');
+  if(coordEl.options.length===1){
+    COORD_KEYS.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;coordEl.appendChild(o);});
+  }
+  if(!isAdmin&&!isFabiano()&&user!=='vagner'){
+    g('reg-coord').value=coordAtual;g('reg-coord').disabled=true;
+  }
+  const mes=parseInt(g('reg-mes').value);
+  const lista=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mes+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=faturado_at.desc.nullslast',{ret:true});
+  regPedidos=Array.isArray(lista)?lista.filter(p=>vdResumoPedido(p).faturadoCx>0||p.is_parcial):[];
+  regRender();
+}
+function regRender(){
+  const mes=parseInt(g('reg-mes').value);
+  const coord=g('reg-coord').value;
+  const tipo=g('reg-tipo').value;
+  const busca=(g('reg-busca').value||'').toLowerCase().trim();
+  let lista=regPedidos.filter(p=>{
+    if(coord!=='todos'&&p.coordenador!==coord)return false;
+    if(tipo==='completo'&&(p.is_parcial||p.parcial_de))return false;
+    if(tipo==='parcial'&&!p.is_parcial)return false;
+    if(tipo==='remanescente'&&!p.parcial_de)return false;
+    if(busca&&!(p.cliente_nome||'').toLowerCase().includes(busca)&&!(p.origem||'').toLowerCase().includes(busca))return false;
+    return true;
+  });
+  if(!lista.length){g('reg-fat-lista').innerHTML='<div class="vd-empty" style="padding:32px 0">Nenhum registro encontrado.</div>';return;}
+  g('reg-fat-lista').innerHTML=lista.map(p=>{
+    const x=vdResumoPedido(p);
+    const fatAt=p.faturado_at?new Date(p.faturado_at).toLocaleDateString('pt-BR'):(p.updated_at?new Date(p.updated_at).toLocaleDateString('pt-BR'):'—');
+    const skusFat=x.itens.filter(i=>Number(i.qty_faturada||0)>0).map(i=>vdSkuLabel(i.sku)+' '+Number(i.qty_faturada)+'cx').join(' · ')||'—';
+    const statusTxt=p.parcial_de?'<span class="reg-fat-rem">↩ Remanescente</span>':p.is_parcial?'<span class="reg-fat-parcial">Parcial</span>':'<span class="reg-fat-completo">Completo</span>';
+    return '<div class="reg-fat-row">'+
+      '<span>'+fatAt+'</span>'+
+      '<span><strong>'+vdEsc(p.cliente_nome)+'</strong>'+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'<br><small style="color:var(--muted)">'+vdEsc(p.coordenador)+'</small></span>'+
+      '<span>'+(p.origem?vdEsc(p.origem):'<span style="color:var(--muted)">—</span>')+'</span>'+
+      '<span>'+(p.faturado_por?vdEsc(p.faturado_por):'<span style="color:var(--muted)">—</span>')+'</span>'+
+      '<span style="font-size:11px">'+vdEsc(skusFat)+'</span>'+
+      '<span><strong>'+x.faturadoCx+'</strong> cx</span>'+
+      '<span>'+statusTxt+'</span>'+
+    '</div>';
+  }).join('');
+}
 async function irLog(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return;}
   show('s-log');
