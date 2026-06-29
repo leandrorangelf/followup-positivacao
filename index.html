@@ -3935,7 +3935,7 @@ async function carregarTv(silencioso=false){
     let vendas=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
     if(!Array.isArray(vendas))vendas=[];
     vendas=vendas.filter(dashPedidoValido);
-    tvRender(tvResumoRows(vendas));
+    tvRender(tvResumoRows(vendas),vendas);
   }catch(e){
     console.error(e);
     g('tv-content').innerHTML='<div class="tv-error">Nao foi possivel carregar o painel da TV.</div>';
