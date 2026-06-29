@@ -2190,12 +2190,16 @@ function dashRenderMapaBrasil(containerId,rows){
           if(!uf)uf=dashUfPorNomeEstado(d?.properties?.name);
           const r=porUf[uf]||{uf,nome:DASH_UF_NOMES[uf]||d?.properties?.name||'',cx:0,pedidos:0,clientes:0};
           const label=(r.uf?r.uf+' - ':'')+(r.nome||'Estado')+': '+vdFmtQtd(r.cx)+' cx';
+          const fillColor=dashMapColor(r.cx,max);
           d3.select(this)
             .attr('data-uf',uf)
-            .style('fill',dashMapColor(r.cx,max))
+            .attr('data-fill',fillColor)
+            .style('fill',fillColor)
             .style('stroke','#fff')
             .style('stroke-width',r.cx>0?1.15:.85)
             .style('opacity',r.cx>0?1:.92)
+            .on('mouseover',function(){d3.select(this).style('fill',d3.rgb(this.getAttribute('data-fill')||fillColor).brighter(.25));})
+            .on('mouseout',function(){d3.select(this).style('fill',this.getAttribute('data-fill')||fillColor);})
             .on('click',function(){if(uf)dashSelecionarUfMapa(uf);})
             .append('title').text(label);
         });
