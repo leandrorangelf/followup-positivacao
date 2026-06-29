@@ -296,6 +296,9 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-info-pill span{display:block;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .vd-vagner-note{font-size:11px;color:#1D4ED8;margin-top:8px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px;line-height:1.4;text-align:left}
 .vd-vagner-note strong{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;color:#1E40AF}
+.vd-fabiano-note{font-size:11px;color:#92400E;margin-top:8px;background:#FFF7ED;border:1px solid #FDBA74;border-radius:8px;padding:8px;line-height:1.4;text-align:left}
+.vd-fabiano-note strong{display:inline-flex;align-items:center;gap:4px;font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin:0 6px 2px 0;color:#9A3412}
+.vd-fabiano-note strong:before{content:'Fabiano comentou';background:#F97316;color:#fff;border-radius:999px;padding:2px 7px;letter-spacing:0;text-transform:none;font-size:10px}
 .vd-attach-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .vd-attach-link{font-size:10px;font-weight:700;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--accent);padding:4px 8px;text-decoration:none}
 .vd-attach-link:hover{border-color:var(--accent)}
@@ -2277,6 +2280,11 @@ function vdComentarioVagnerHTML(p){
   const txt=String(p?.comentario_vagner||'').trim();
   return txt?'<div class="vd-vagner-note"><strong>Comentario Vagner</strong>'+vdEsc(txt)+'</div>':'';
 }
+function vdComentarioFabianoHTML(p){
+  const txt=String(p?.comentario_fabiano||'').trim();
+  return txt?'<div class="vd-fabiano-note"><strong></strong>'+vdEsc(txt)+'</div>':'';
+}
+function vdComentariosPedidoHTML(p){return vdComentarioVagnerHTML(p)+vdComentarioFabianoHTML(p);}
 function vdPedidoPrecisaGnre(p){return vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p);}
 
 function vdResumoPedido(p){
@@ -2447,7 +2455,7 @@ function vdCardHTML(p){
     if(x.faturadoCx===0)botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>');
     botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
   }
-  if(user==='vagner')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirComentario(\''+p.id+'\')">Comentar</button>');
+  if(user==='vagner'||isFabiano())botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirComentario(\''+p.id+'\')">Comentar</button>');
   if(botoes.length)acoes='<div class="vd-card-actions">'+botoes.join('')+'</div>';
   const gnreValor=vdTipoPedido(p)==='off'?'Isento':(Number(p.gnre_valor||0)>0?vdFmt(p.gnre_valor):'Não informado');
   const pedidoCompetencia=MESES[p.mes]+'/'+p.ano;
@@ -2463,7 +2471,7 @@ function vdCardHTML(p){
       '<div class="vd-info-pill"><span>Prazo</span>'+vdEsc(prazo)+'</div>'+ 
       '<div class="vd-info-pill vd-gnre-valor"><span>Valor GNRE</span><strong>'+vdEsc(gnreValor)+'</strong></div>'+
       '<div class="vd-info-pill"><span>Resumo</span>'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</div>'+ 
-    '</div>'+itensHTML+vdAnexosHTML(p)+vdComentarioVagnerHTML(p)+acoes+
+    '</div>'+itensHTML+vdAnexosHTML(p)+vdComentariosPedidoHTML(p)+acoes+
   '</div>';
 }
 
@@ -2703,45 +2711,50 @@ function vdAbrirDet(id){
     '<div class="vd-fat-summary"><div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div><div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div><div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div></div>'+ 
     '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
     (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+vdEsc(p.observacao)+'</div>':'')+
-    vdComentarioVagnerHTML(p)+
+    vdComentariosPedidoHTML(p)+
     (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
   g('vd-det-fim').textContent=p.tipo==='in'?'Confirmar faturamento':'Confirmar entrega';
   g('vd-det-fim').style.display=(vdPodeFaturar()&&x.saldoCx>0&&vdGnreLiberada(p))?'block':'none';
   g('vd-det-editar').style.display=(vdPodeEditar()&&x.faturadoCx===0)?'block':'none';
-  g('vd-det-comentar').style.display=user==='vagner'?'block':'none';
+  g('vd-det-comentar').style.display=(user==='vagner'||isFabiano())?'block':'none';
   g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
   g('modal-vd-det').classList.add('open');
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
 function vdAbrirFaturamentoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdAbrirFaturamento(id)}}
 function vdAbrirComentarioAtual(){if(vdDetAtual)vdAbrirComentario(vdDetAtual.id)}
+function vdPodeComentarPedido(){return user==='vagner'||isFabiano();}
+function vdCampoComentarioPedido(){return isFabiano()?'comentario_fabiano':'comentario_vagner';}
+function vdAutorComentarioPedido(){return isFabiano()?'Fabiano':'Vagner';}
 function vdAbrirComentario(id){
-  if(user!=='vagner'){toast('Comentario liberado apenas para o Vagner','error');return}
+  if(!vdPodeComentarPedido()){toast('Comentario liberado apenas para Vagner e Fabiano','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  const campo=vdCampoComentarioPedido(),autor=vdAutorComentarioPedido();
   vdComentPedidoId=id;
-  g('vd-coment-title').textContent='Comentario · '+p.cliente_nome+(p.cliente_uf?' / '+p.cliente_uf:'');
-  g('vd-coment-text').value=p.comentario_vagner||'';
+  g('vd-coment-title').textContent='Comentario '+autor+' · '+p.cliente_nome+(p.cliente_uf?' / '+p.cliente_uf:'');
+  g('vd-coment-text').value=p[campo]||'';
   g('modal-vd-coment').classList.add('open');
   setTimeout(()=>g('vd-coment-text').focus(),50);
 }
 function vdFecharComentario(){g('modal-vd-coment').classList.remove('open');vdComentPedidoId=null}
 async function vdSalvarComentario(){
-  if(user!=='vagner'){toast('Comentario liberado apenas para o Vagner','error');return}
+  if(!vdPodeComentarPedido()){toast('Comentario liberado apenas para Vagner e Fabiano','error');return}
   const p=vdPedidos.find(x=>x.id===vdComentPedidoId);if(!p)return;
+  const campo=vdCampoComentarioPedido(),autor=vdAutorComentarioPedido();
   const txt=String(g('vd-coment-text').value||'').trim();
   const btn=g('vd-coment-save');
   btn.disabled=true;
   try{
-    const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({comentario_vagner:txt||null})});
+    const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({[campo]:txt||null})});
     if(!r||!r.ok){
       const msg=r&&r.text?await r.text().catch(()=>String(r.status)):String(r&&r.status||'');
-      console.error('Erro ao salvar comentario do Vagner:',msg);
-      toast('Nao consegui salvar. Rode no Supabase: alter table pedidos_vendas add column comentario_vagner text;','error',9000);
+      console.error('Erro ao salvar comentario:',msg);
+      toast('Nao consegui salvar. Rode o SQL de comentarios no Supabase.','error',9000);
       return;
     }
-    p.comentario_vagner=txt||null;
+    p[campo]=txt||null;
     if(vdDetAtual&&vdDetAtual.id===p.id)vdDetAtual=p;
-    auditLog('editar','Comentario do Vagner · '+p.cliente_nome,txt||'Comentario removido');
+    auditLog('editar','Comentario do '+autor+' · '+p.cliente_nome,txt||'Comentario removido');
     toast(txt?'Comentario salvo':'Comentario removido','ok');
     vdFecharComentario();
     vdRenderKanban();
