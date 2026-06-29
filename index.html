@@ -3258,8 +3258,10 @@ function vdAbrirFichaCli(id){
   const c=(clientesDB[coordAtual]||[]).find(x=>x.id===id);if(!c)return;
   g('vdc-title').textContent='Ficha de Vendas';
   g('vdc-nome').value=c.nome;
+  g('vdc-origem').value=c.origem_padrao||'';
   g('vdc-uf').value=c.uf||'';
   g('vdc-obs').value=c.obs_venda||'';
+  g('vdc-origem-list').innerHTML=[...new Set(Object.values(clientesDB).flat().map(x=>x.origem_padrao).filter(Boolean))].map(o=>'<option value="'+vdEsc(o)+'">').join('');
   vdCliForm.tipo=c.def_tipo||'in';
   vdCliForm.prazo=c.def_prazo||'avista';
   vdCliForm.skus={GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0};
