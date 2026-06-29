@@ -830,7 +830,12 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <div class="modal-bg" id="modal-vd-fat">
   <div class="modal">
     <div class="modal-title" id="vd-fat-title">Confirmar faturamento</div>
-    <div class="modal-sub" id="vd-fat-sub">Informe quantas caixas saíram agora. O pedido original será preservado.</div>
+    <div class="modal-sub" id="vd-fat-sub">Informe quantas caixas saíram agora.</div>
+    <div class="vd-fat-origem-row">
+      <label>Origem da expedição</label>
+      <input id="vd-fat-origem" list="vd-fat-origem-list" placeholder="Ex.: Fábrica, NEW BLUETEX MG, GB SP...">
+      <datalist id="vd-fat-origem-list"></datalist>
+    </div>
     <div class="vd-fat-row vd-fat-head"><span>Produto</span><span>Pedido</span><span>Já faturado</span><span>Faturar agora</span></div>
     <div id="vd-fat-itens"></div>
     <div class="vd-fat-summary">
