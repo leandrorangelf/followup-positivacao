@@ -1204,6 +1204,7 @@ function show(id){
 function renderNav(navId,active){
   const tabs=isFabiano()?[
     {id:'vendas',icon:'💰',label:'Vendas'},
+    {id:'registro',icon:'📄',label:'Registro'},
   ]:(isAdmin||user==='vagner')?[
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'vendas',icon:'💰',label:'Vendas'},
@@ -1211,6 +1212,7 @@ function renderNav(navId,active){
     {id:'cli',icon:'👥',label:'Clientes'},
     {id:'metas',icon:'🎯',label:'Metas'},
     {id:'ped',icon:'📋',label:'Pedidos'},
+    {id:'registro',icon:'📄',label:'Registro'},
   ]:[
     {id:'dash',icon:'📊',label:'Dashboard'},
     {id:'vendas',icon:'💰',label:'Vendas'},
