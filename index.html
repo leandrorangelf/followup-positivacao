@@ -2722,6 +2722,9 @@ function vdCardHTML(p){
   if(vdPodeFaturar()&&x.saldoCx>0&&vdGnreLiberada(p)){
     botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>');
   }
+  if(x.status==='parcial'&&vdPodeEditar()){
+    botoes.push('<button class="vd-card-action vd-complementar-btn" onclick="event.stopPropagation();vdComplementarPedido(\''+p.id+'\')">↩ Complementar</button>');
+  }
   if(vdPodeEditar()){
     if(x.faturadoCx===0)botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>');
     botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
