@@ -3922,6 +3922,7 @@ function tvRender(rows,vendas){
         '<div class="tv-map-layout"><div id="tv-br-map" class="tv-map-canvas"></div>'+
         '<div><div class="tv-map-rank">'+rank+'</div><div id="tv-map-detail" class="tv-map-detail"></div></div></div></section>';
     })():'');
+  if(vendas&&vendas.length)setTimeout(function(){tvRenderMapaBrasil('tv-br-map',dashCaixasPorUf(vendas));},0);
   const agora=new Date();
   g('tv-update').textContent='Atualizado as '+agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
