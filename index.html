@@ -294,11 +294,12 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-card-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .vd-info-pill{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:11px;line-height:1.25}
 .vd-info-pill span{display:block;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
-.vd-vagner-note{font-size:11px;color:#1D4ED8;margin-top:8px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px;line-height:1.4;text-align:left}
+.vd-note-stack{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.vd-vagner-note{font-size:11px;color:#1D4ED8;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:8px;line-height:1.4;text-align:left}
 .vd-vagner-note strong{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;color:#1E40AF}
-.vd-fabiano-note{font-size:11px;color:#92400E;margin-top:8px;background:#FFF7ED;border:1px solid #FDBA74;border-radius:8px;padding:8px;line-height:1.4;text-align:left}
-.vd-fabiano-note strong{display:inline-flex;align-items:center;gap:4px;font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin:0 6px 2px 0;color:#9A3412}
-.vd-fabiano-note strong:before{content:'Fabiano comentou';background:#F97316;color:#fff;border-radius:999px;padding:2px 7px;letter-spacing:0;text-transform:none;font-size:10px}
+.vd-fabiano-note{font-size:11px;color:#92400E;background:#FFF7ED;border:1px solid #FDBA74;border-radius:8px;padding:8px;line-height:1.4;text-align:left}
+.vd-fabiano-note strong{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;color:#9A3412}
+.vd-fabiano-note strong span{display:inline-flex;background:#F97316;color:#fff;border-radius:999px;padding:2px 7px;letter-spacing:0;text-transform:none;font-size:10px}
 .vd-attach-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .vd-attach-link{font-size:10px;font-weight:700;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--accent);padding:4px 8px;text-decoration:none}
 .vd-attach-link:hover{border-color:var(--accent)}
@@ -2282,9 +2283,12 @@ function vdComentarioVagnerHTML(p){
 }
 function vdComentarioFabianoHTML(p){
   const txt=String(p?.comentario_fabiano||'').trim();
-  return txt?'<div class="vd-fabiano-note"><strong></strong>'+vdEsc(txt)+'</div>':'';
+  return txt?'<div class="vd-fabiano-note"><strong><span>Fabiano comentou</span></strong>'+vdEsc(txt)+'</div>':'';
 }
-function vdComentariosPedidoHTML(p){return vdComentarioVagnerHTML(p)+vdComentarioFabianoHTML(p);}
+function vdComentariosPedidoHTML(p){
+  const html=vdComentarioVagnerHTML(p)+vdComentarioFabianoHTML(p);
+  return html?'<div class="vd-note-stack">'+html+'</div>':'';
+}
 function vdPedidoPrecisaGnre(p){return vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p);}
 
 function vdResumoPedido(p){
