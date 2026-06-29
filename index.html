@@ -3084,8 +3084,15 @@ async function vdSalvarFaturamento(){
     if(!r||!r.ok){toast('Atualize o banco antes de confirmar o faturamento','error');return}
     const fatDepois=x.faturadoCx+totalAgora,completo=fatDepois>=x.pedidoCx;
     const status=completo?(p.tipo==='off'?'entregue':'faturado'):'pedido';
+    const origem=g('vd-fat-origem').value.trim()||null;
+    const fatSkus={};
+    x.itens.forEach(i=>{const q=agora.get(String(i.id))||0;if(q>0)fatSkus['fat_'+(i.sku||'').toLowerCase()]=Number(p['fat_'+(i.sku||'').toLowerCase()]||0)+q;});
     const r2=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({
-      status,faturamento_observacao:g('vd-fat-obs').value||null,faturado_at:completo?new Date().toISOString():null
+      status,faturamento_observacao:g('vd-fat-obs').value||null,
+      faturado_at:completo?new Date().toISOString():null,
+      origem,faturado_por:user,
+      is_parcial:!completo&&fatDepois>0,
+      ...fatSkus
     })});
     if(!r2||!r2.ok){toast('Caixas registradas, mas a observação não foi salva','error')}
     else toast(completo?'Pedido faturado por completo':'Faturamento parcial registrado','ok');
