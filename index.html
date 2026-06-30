@@ -4603,11 +4603,19 @@ function relFiltrarCoord(v){
   relAba(relAbaAtual);
 }
 
+function relFiltrarOrigem(v){
+  relOrigemFiltro=v;
+  relAba(relAbaAtual);
+}
+
 function relAba(aba){
   relAbaAtual=aba;
   document.querySelectorAll('[id^="rel-tab-"]').forEach(b=>b.classList.toggle('active',b.id==='rel-tab-'+aba));
-  const lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
-  const forecast=relCoordFiltro==='todos'?relForecastDados:relForecastDados.filter(p=>p.coordenador===relCoordFiltro);
+  let lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
+  if(relOrigemFiltro==='fabrica')lista=lista.filter(p=>!vdEhDistribuidora(p));
+  else if(relOrigemFiltro==='dist')lista=lista.filter(p=>vdEhDistribuidora(p));
+  else if(relOrigemFiltro!=='todos')lista=lista.filter(p=>(p.origem||'')===relOrigemFiltro);
+  let forecast=relCoordFiltro==='todos'?relForecastDados:relForecastDados.filter(p=>p.coordenador===relCoordFiltro);
   g('rel-sub').textContent=`${anoAtual} · ${relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro}`;
   if(aba==='inteligencia')relRender(lista);
   else if(aba==='faturado')relRenderFaturado(lista);
