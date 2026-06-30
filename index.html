@@ -1393,14 +1393,14 @@ function clientesAtivos(coord){
 }
 
 // ── DASHBOARD ──
-async function irDash(){
+async function irDash(skipClientes=false){
   show('s-dash');
   renderNav('nav-dash','dash');
   g('dash-greeting').textContent='Olá,';
   g('dash-name').textContent=user==='admin'?'Leandro':user==='vagner'?'Vagner':(isFabiano()?'Fabiano':(isDiretoria?'Diretoria':coordAtual));
   g('dash-mes').value=mesAtual;
   g('dash-mes').onchange=function(){mesAtual=parseInt(this.value);pedidosCarregados=false;carregarDashboard();};
-  await carregarClientes();
+  if(!skipClientes)await carregarClientes();
   carregarDashboard();
 }
 
