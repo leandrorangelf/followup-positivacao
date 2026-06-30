@@ -2730,11 +2730,11 @@ const vdPodeFaturar=()=>user==='admin'||isFabiano();
 function vdParseValor(v){return Number(String(v||'').replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''))||0;}
 const VD_UFS_ISENTO_GNRE=['RJ','ES'];
 function vdGnreStatus(p){
-  if(vdTipoPedido(p)==='off')return 'isenta';
+  if(vdTipoPedido(p)==='off'||vdEhDistribuidora(p))return 'isenta';
   if(VD_UFS_ISENTO_GNRE.includes(String(p?.cliente_uf||'').toUpperCase()))return 'isenta';
   return String(p?.gnre_status||'pendente').toLowerCase();
 }
-function vdGnreLiberada(p){const st=vdGnreStatus(p);return vdTipoPedido(p)==='off'||st==='paga'||st==='isenta';}
+function vdGnreLiberada(p){const st=vdGnreStatus(p);return vdTipoPedido(p)==='off'||vdEhDistribuidora(p)||st==='paga'||st==='isenta';}
 function vdGnreLabel(p){
   const st=vdGnreStatus(p);
   if(st==='paga')return 'GNRE paga';
