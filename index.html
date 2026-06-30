@@ -796,12 +796,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <button class="vd-chip no-diretoria no-vagner no-fabiano" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
     <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF GNRE</button>
   </div>
-  <div class="vd-section">
-    <div class="vd-kanban">
-      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Aguardando GNRE</h4><span class="vd-kanban-count" id="vd-c-prev">0</span></div><div id="vd-col-prev"></div></div>
-      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Liberado / parcial</h4><span class="vd-kanban-count" id="vd-c-ped">0</span></div><div id="vd-col-ped"></div></div>
-      <div class="vd-kanban-col"><div class="vd-kanban-head"><h4>Faturado / Entregue</h4><span class="vd-kanban-count" id="vd-c-fim">0</span></div><div id="vd-col-fim"></div></div>
-    </div>
+  <div class="vd-section" id="vd-lista-wrap">
+    <div id="vd-lista-container"></div>
   </div>
   <button class="vd-fab no-diretoria no-vagner no-fabiano" onclick="vdGoNovo()" title="Novo pedido real">+</button>
   <div class="bottom-nav" id="nav-vendas"></div>
