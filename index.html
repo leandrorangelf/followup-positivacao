@@ -4163,6 +4163,19 @@ function tvRenderMapaBrasil(containerId,rows){
     window.addEventListener('resize',function(){mapa.resize();});
   }catch(e){console.error(e);}
 }
+function inoffFiltrar(uid,tipo){
+  const tbl=g(uid);
+  if(!tbl)return;
+  tbl.querySelectorAll('tbody tr[data-tipo]').forEach(tr=>{
+    tr.style.display=(tipo==='todos'||tr.dataset.tipo===tipo)?'':'none';
+  });
+  const showIn=tipo==='todos'||tipo==='in';
+  const showOff=tipo==='todos'||tipo==='off';
+  const totIn=tbl.querySelector('.inoff-total-in');
+  const totOff=tbl.querySelector('.inoff-total-off');
+  if(totIn)totIn.style.display=showIn?'':'none';
+  if(totOff)totOff.style.display=showOff?'':'none';
+}
 function tvSelecionarInOff(tipo){
   const vendas=window.tvInOffVendas||[];
   const lista=vendas.filter(p=>vdTipoPedido(p)===tipo);
