@@ -2695,25 +2695,26 @@ function renderInOffSection(vendas,showCoord){
   const tdInSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(inSkus[s]||'—')+'</td>').join('');
   const tdOffSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(offSkus[s]||'—')+'</td>').join('');
   const emptyCoord=showCoord?'<td></td>':'';
+  const uid='inoff'+(Date.now()%99999);
   return`<div style="margin:0 16px 16px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)">
   <div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E0D8;flex-wrap:wrap;gap:8px">
     <div style="font-size:14px;font-weight:600">IN vs OFF — ${MESES[mesAtual]} ${anoAtual}</div>
-    <div style="display:flex;gap:12px">
-      <div style="text-align:center"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">IN</div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${inList.length} pedido(s)</div></div>
-      <div style="text-align:center"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">OFF</div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${offList.length} pedido(s)</div></div>
-      <div style="text-align:center"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">Total</div><div style="font-size:20px;font-weight:700">${inCx+offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${vendas.length} pedido(s)</div></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="inoffFiltrar('${uid}','in')" style="text-align:center;background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">IN</div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${inList.length} pedido(s)</div></button>
+      <button onclick="inoffFiltrar('${uid}','off')" style="text-align:center;background:#FFFBEB;border:2px solid #FDE68A;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">OFF</div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${offList.length} pedido(s)</div></button>
+      <button onclick="inoffFiltrar('${uid}','todos')" style="text-align:center;background:#F9F9F7;border:2px solid #E2E0D8;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">Total</div><div style="font-size:20px;font-weight:700">${inCx+offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${vendas.length} pedido(s)</div></button>
     </div>
   </div>
   <div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <table id="${uid}" style="width:100%;border-collapse:collapse;font-size:12px">
       <thead><tr style="background:#FAFAF8;color:#7A7870;font-size:10px;text-transform:uppercase;letter-spacing:.06em">
         <th style="text-align:left;padding:7px 12px">Cliente</th>${thCoord}<th style="padding:7px 8px">Tipo</th>${thSkus}<th style="text-align:center;padding:7px 8px">Total cx</th>
       </tr></thead>
       <tbody>${rows}
-        <tr style="background:#EFF6FF;font-weight:700;font-size:11px;border-top:2px solid #BFDBFE">
+        <tr class="inoff-total-in" style="background:#EFF6FF;font-weight:700;font-size:11px;border-top:2px solid #BFDBFE">
           <td style="padding:7px 12px">TOTAL IN (${inList.length} ped.)</td>${emptyCoord}<td></td>${tdInSkus}<td style="text-align:center;padding:7px 8px">${inCx}</td>
         </tr>
-        <tr style="background:#FFFBEB;font-weight:700;font-size:11px;border-top:1px solid #FDE68A">
+        <tr class="inoff-total-off" style="background:#FFFBEB;font-weight:700;font-size:11px;border-top:1px solid #FDE68A">
           <td style="padding:7px 12px">TOTAL OFF (${offList.length} ped.)</td>${emptyCoord}<td></td>${tdOffSkus}<td style="text-align:center;padding:7px 8px">${offCx}</td>
         </tr>
       </tbody>
