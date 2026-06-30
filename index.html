@@ -1632,20 +1632,30 @@ function renderAdminDash(anoData){
     ${(()=>{
       const fabPeds=vendasDashboard.filter(p=>!vdEhDistribuidora(p));
       const distPeds=vendasDashboard.filter(p=>vdEhDistribuidora(p));
-      const fabCx=fabPeds.reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
-      const fabVal=fabPeds.reduce((s,p)=>s+vdResumoPedido(p).faturadoValor,0);
+      // Fábrica: only count pedidos with status faturado/entregue (parcial also counts its faturadoCx)
+      const fabCx=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
+      const fabCxPendente=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return s+r.saldoCx;},0);
+      const fabVal=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoValor;},0);
       const distCx=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
       const distVal=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
+      // breakdown por distribuidora
+      const distOrigens=[...new Set(distPeds.map(p=>p.origem||'Outra').filter(Boolean))].sort();
+      const distBreakdown=distOrigens.map(orig=>{
+        const cx=distPeds.filter(p=>(p.origem||'Outra')===orig).reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+        return `<div style="display:flex;justify-content:space-between;font-size:11px;color:#1E40AF;padding:2px 0;border-bottom:1px solid rgba(30,64,175,.1)"><span>${vdEsc(orig)}</span><strong>${cx} cx</strong></div>`;
+      }).join('');
       return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 16px 4px">
   <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:12px;padding:14px">
     <div style="font-size:10px;color:#166534;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🏭 Fábrica</div>
     <div style="font-size:22px;font-weight:800;color:#166534;line-height:1">${fabCx} cx</div>
     <div style="font-size:11px;color:#166534;margin-top:3px;opacity:.8">${vdFmt(fabVal)} faturado</div>
+    ${fabCxPendente>0?`<div style="font-size:11px;color:#166534;margin-top:2px;opacity:.6">+ ${fabCxPendente} cx pendentes</div>`:''}
   </div>
   <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:14px">
     <div style="font-size:10px;color:#1E40AF;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🚛 Distribuidoras</div>
     <div style="font-size:22px;font-weight:800;color:#1E40AF;line-height:1">${distCx} cx</div>
     <div style="font-size:11px;color:#1E40AF;margin-top:3px;opacity:.8">${vdFmt(distVal)} em pedidos</div>
+    ${distBreakdown?`<div style="margin-top:8px">${distBreakdown}</div>`:''}
   </div>
 </div>`;
     })()}
