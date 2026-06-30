@@ -3108,11 +3108,10 @@ function vdRenderKanban(){
         <div style="font-weight:600;font-size:13px">${vdEsc(p.cliente_nome)}${p.cliente_uf?` <span style="color:var(--muted);font-weight:400;font-size:11px">· ${vdEsc(p.cliente_uf)}</span>`:''}</div>
         <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;align-items:center">
           <span style="background:${stBg};color:${stClr};border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700">${stLabel}</span>
-          ${showCoord?`<span style="color:var(--muted);font-size:10px">${vdEsc(p.coordenador)}</span>`:''}
         </div>
         ${alertsHTML}
       </td>
-      ${showCoord?''/* coord já inline acima */:''}
+      ${showCoord?`<td class="td-hide" style="font-size:12px;color:var(--muted)">${vdEsc(p.coordenador)}</td>`:''}
       <td class="td-hide">
         <span class="vd-badge ${p.tipo==='in'?'vd-b-in':'vd-b-off'}">${p.tipo.toUpperCase()}</span>
         <div style="margin-top:4px">${vdOrigemBadgeHTML(origemLabel)}</div>
