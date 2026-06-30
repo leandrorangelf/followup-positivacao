@@ -3072,7 +3072,7 @@ function vdSelecionarOrigem(origem){
       // se o modal de detalhe ainda estiver aberto para este pedido, re-renderiza
       if(vdDetAtual&&vdDetAtual.id===pid){
         vdDetAtual.origem=origem||null;
-        vdAbrirDet(vdDetAtual);
+        vdAbrirDet(pid);
       }
       toast('Origem definida: '+(origem||'Fábrica'));
     }).catch(e=>{toast('Erro ao salvar origem','error');console.error(e);});
