@@ -2908,9 +2908,11 @@ function vdPedidosParaFaturamento(){
   return vdPedidos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
 }
 function vdPedidosFiltrados(){
-  if(vdFiltro==='faturar')return vdPedidosParaFaturamento();
-  if(vdFiltro==='pendente')return vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0);
-  return vdPedidos;
+  // Fabiano só vê pedidos da Fábrica
+  const base=isFabiano()?vdPedidos.filter(p=>vdOrigemFaturadoFabiano(p.origem)):vdPedidos;
+  if(vdFiltro==='faturar')return base.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
+  if(vdFiltro==='pendente')return base.filter(p=>vdResumoPedido(p).saldoCx>0);
+  return base;
 }
 
 function vdRenderKanban(){
