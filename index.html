@@ -3014,14 +3014,57 @@ function vdComplementarPedido(id){
   show('s-vfn');renderNav('nav-vfn','vendas');
   toast('Pedido pré-preenchido com o saldo remanescente · '+x.saldoCx+' cx','info',4000);
 }
+const VD_ORIGENS=[
+  {id:'fabrica',label:'Fábrica',grupo:'fabrica',ativa:true},
+  {id:'new_mg',label:'New Bluetex MG',grupo:'new',ativa:true},
+  {id:'new_am',label:'New Bluetex AM',grupo:'new',ativa:true},
+  {id:'new_sc',label:'New Bluetex SC',grupo:'new',ativa:true},
+  {id:'gb_sp',label:'GB SP',grupo:'gb',ativa:true},
+  {id:'gb_ce',label:'GB CE',grupo:'gb',ativa:false},
+  {id:'gb_ma',label:'GB MA',grupo:'gb',ativa:false},
+];
+function vdOrigemGrupo(origem){
+  if(!origem||origem==='Fábrica')return'fabrica';
+  if(String(origem).toLowerCase().startsWith('new'))return'new';
+  if(String(origem).toLowerCase().startsWith('gb'))return'gb';
+  return'fabrica';
+}
+function vdOrigemBadgeHTML(origem){
+  if(!origem)return'';
+  const g2=vdOrigemGrupo(origem);
+  return`<span class="orig-badge ${g2}">${vdEsc(origem)}</span>`;
+}
+function vdOrigemFaturadoFabiano(origem){
+  return!origem||origem==='Fábrica';
+}
+
+function vdAbrirOrigem(){g('modal-origem').style.display='flex';}
+function vdFecharOrigem(){g('modal-origem').style.display='none';}
+function vdSelecionarOrigem(origem){
+  vdFecharOrigem();
+  vdForm.origem=origem;
+  const bar=g('vfn-origem-bar');
+  const lbl=g('vfn-origem-label');
+  if(bar&&lbl){
+    bar.style.display='flex';
+    lbl.innerHTML=vdOrigemBadgeHTML(origem);
+    const grupo=vdOrigemGrupo(origem);
+    bar.style.background=grupo==='fabrica'?'#F0FDF4':grupo==='new'?'#EFF6FF':'#EDE9FE';
+    bar.style.borderColor=grupo==='fabrica'?'#86EFAC':grupo==='new'?'#BFDBFE':'#C4B5FD';
+  }
+  // pedidos de distribuidoras não vão pro fabiano — tipo muda para off automaticamente
+  // mas tipo fiscal (IN/OFF) ainda é escolha do coordenador; apenas bloqueamos a fila do Fabiano
+}
+
 function vdGoNovo(){
   vdForecastOrigemId=null;vdForecastOrigemLabel='';
   if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o pedido','error');return}
   vdEditPedidoId=null;
-  vdForm={tipo:'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
+  vdForm={tipo:'in',prazo:'avista',origem:'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   g('vfn-title').textContent='Novo Pedido';
   g('vf-btn-save').textContent='Salvar Pedido';
+  const bar=g('vfn-origem-bar');if(bar)bar.style.display='none';
   vdPopCliSel();
   vdRenderSkus();
   vdSetTipo('in');vdSetPrazo('avista');
@@ -3029,6 +3072,8 @@ function vdGoNovo(){
   vdRecalc();
   show('s-vfn');
   renderNav('nav-vfn','vendas');
+  // Abre o modal de origem após a tela estar visível
+  setTimeout(vdAbrirOrigem,80);
 }
 
 function vdGoForecast(){
