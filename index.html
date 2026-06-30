@@ -2971,9 +2971,12 @@ function vdPedidosParaFaturamento(){
 function vdPedidosFiltrados(){
   // Fabiano só vê pedidos da Fábrica
   const base=isFabiano()?vdPedidos.filter(p=>vdOrigemFaturadoFabiano(p.origem)):vdPedidos;
-  if(vdFiltro==='faturar')return base.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
-  if(vdFiltro==='pendente')return base.filter(p=>vdResumoPedido(p).saldoCx>0);
-  return base;
+  const baseFiltrada=vdOrigemFiltro==='todos'?base:
+    vdOrigemFiltro==='fabrica'?base.filter(p=>!vdEhDistribuidora(p)):
+    base.filter(p=>vdEhDistribuidora(p)&&(vdOrigemFiltro==='dist'||(p.origem||'')===vdOrigemFiltro));
+  if(vdFiltro==='faturar')return baseFiltrada.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
+  if(vdFiltro==='pendente')return baseFiltrada.filter(p=>vdResumoPedido(p).saldoCx>0);
+  return baseFiltrada;
 }
 
 function vdRenderKanban(){
