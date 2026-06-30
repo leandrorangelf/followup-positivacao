@@ -2935,14 +2935,52 @@ function vdPedidosFiltrados(){
 
 function vdRenderKanban(){
   const lista=vdPedidosFiltrados();
-  const cols={prev:[],ped:[],fim:[]};
-  lista.forEach(p=>{const st=vdResumoPedido(p).status;if(st==='faturado'||st==='entregue')cols.fim.push(p);else if(vdPedidoPrecisaGnre(p))cols.prev.push(p);else cols.ped.push(p);});
-  g('vd-c-prev').textContent=cols.prev.length;
-  g('vd-c-ped').textContent=cols.ped.length;
-  g('vd-c-fim').textContent=cols.fim.length;
-  g('vd-col-prev').innerHTML=cols.prev.map(vdCardHTML).join('')||'<div class="vd-empty">Nenhum</div>';
-  g('vd-col-ped').innerHTML=cols.ped.map(vdCardHTML).join('')||'<div class="vd-empty">Nenhum</div>';
-  g('vd-col-fim').innerHTML=cols.fim.map(vdCardHTML).join('')||'<div class="vd-empty">Nenhum</div>';
+  const grupos=[
+    {label:'Aguardando GNRE',key:'prev',items:[]},
+    {label:'Liberado / Parcial',key:'ped',items:[]},
+    {label:'Faturado / Entregue',key:'fim',items:[]},
+  ];
+  lista.forEach(p=>{
+    const st=vdResumoPedido(p).status;
+    if(st==='faturado'||st==='entregue')grupos[2].items.push(p);
+    else if(vdPedidoPrecisaGnre(p))grupos[0].items.push(p);
+    else grupos[1].items.push(p);
+  });
+  const showCoord=vdCoordFiltro==='todos';
+  const thead=`<thead><tr>
+    <th>Cliente</th>
+    ${showCoord?'<th class="td-hide">Coord.</th>':''}
+    <th class="td-hide">Tipo</th>
+    <th class="td-hide">Origem</th>
+    <th class="td-hide">Status</th>
+    <th>Caixas</th>
+    <th>Valor</th>
+  </tr></thead>`;
+  const rowHTML=p=>{
+    const x=vdResumoPedido(p);
+    const stLabel=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Parcial':'Pedido';
+    const stColor=x.status==='faturado'||x.status==='entregue'?'#166534':x.status==='parcial'?'#92400E':'#1E3A5F';
+    const origemLabel=p.origem||'Fábrica';
+    return `<tr onclick="vdAbrirDet('${p.id}')">
+      <td class="td-cli">${vdEsc(p.cliente_nome)}${p.cliente_uf?' <span style="color:var(--muted);font-weight:400">· '+vdEsc(p.cliente_uf)+'</span>':''}
+        ${(p.parcial_de?'<div class="td-meta"><span class="vd-badge vd-b-remanescente" style="font-size:9px">↩ Rem.</span></div>':'')}
+      </td>
+      ${showCoord?`<td class="td-hide" style="color:var(--muted)">${vdEsc(p.coordenador)}</td>`:''}
+      <td class="td-hide"><span class="vd-badge ${p.tipo==='in'?'vd-b-in':'vd-b-off'}">${p.tipo.toUpperCase()}</span></td>
+      <td class="td-hide">${vdOrigemBadgeHTML(origemLabel)}</td>
+      <td class="td-hide" style="color:${stColor};font-weight:600;font-size:11px">${stLabel}</td>
+      <td style="color:var(--muted)">${x.pedidoCx}<span style="font-size:10px"> cx</span></td>
+      <td>${vdFmt(p.total)}</td>
+    </tr>`;
+  };
+  const html=grupos.map(gr=>{
+    if(!gr.items.length)return'';
+    return`<div class="vd-tbl-group">
+      <div class="vd-tbl-group-head">${gr.label} <span>${gr.items.length}</span></div>
+      <div class="vd-tbl-wrap"><table class="vd-tbl">${thead}<tbody>${gr.items.map(rowHTML).join('')}</tbody></table></div>
+    </div>`;
+  }).join('');
+  g('vd-lista-container').innerHTML=html||'<div class="vd-empty" style="padding:24px;text-align:center">Nenhum pedido encontrado</div>';
 }
 
 function vdCardHTML(p){
