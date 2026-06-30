@@ -4565,7 +4565,7 @@ carregarDashboard=async function(silencioso=false){
 };
 
 // ===================== RELATÓRIOS =====================
-let relDados=[],relForecastDados=[],relCoordFiltro='todos',relCarregando=false,relAbaAtual='inteligencia';
+let relDados=[],relForecastDados=[],relCoordFiltro='todos',relOrigemFiltro='todos',relCarregando=false,relAbaAtual='inteligencia';
 
 async function irRelatorios(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
