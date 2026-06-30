@@ -3338,6 +3338,8 @@ function vdAbrirDet(id){
   g('vd-det-editar').style.display=(vdPodeEditar()&&x.faturadoCx===0)?'block':'none';
   g('vd-det-comentar').style.display=(user==='vagner'||isFabiano())?'block':'none';
   g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
+  const origemBtn=g('vd-det-origem');
+  if(origemBtn)origemBtn.style.display=(vdPodeEditar()&&!isFabiano()&&user!=='vagner'&&!isDiretoria)?'block':'none';
   g('modal-vd-det').classList.add('open');
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
