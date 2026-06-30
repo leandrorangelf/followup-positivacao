@@ -3541,9 +3541,13 @@ function vdEditarPedido(){
   const p=vdDetAtual;
   if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
   vdEditPedidoId=p.id;
-  vdForm={tipo:p.tipo,prazo:p.prazo_tipo,skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
+  vdForm={tipo:p.tipo,prazo:p.prazo_tipo,origem:p.origem||'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   (p.pedidos_vendas_itens||[]).forEach(i=>{vdForm.skus[i.sku]={q:i.qty_caixas,v:i.valor_pacote}});
   g('vfn-title').textContent='Editar Pedido';
+  // mostra barra de origem se houver
+  const bar=g('vfn-origem-bar');const lbl=g('vfn-origem-label');
+  if(bar&&lbl&&p.origem){bar.style.display='flex';lbl.innerHTML=vdOrigemBadgeHTML(p.origem);const gp=vdOrigemGrupo(p.origem);bar.style.background=gp==='fabrica'?'#F0FDF4':gp==='new'?'#EFF6FF':'#EDE9FE';bar.style.borderColor=gp==='fabrica'?'#86EFAC':gp==='new'?'#BFDBFE':'#C4B5FD';}
+  else if(bar)bar.style.display='none';
   g('vf-btn-save').textContent='Salvar Alterações';
   vdPopCliSel();
   setTimeout(()=>{g('vf-cli').value=p.cliente_id},10);
