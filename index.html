@@ -3323,7 +3323,7 @@ function vdAbrirDet(id){
   const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta / OFF':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
   g('vd-det-body').innerHTML=
     '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+(x.status==='parcial'?'Faturado parcial':x.status==='pedido'?'Pedido confirmado':x.status==='entregue'?'Entregue':'Faturado')+'</strong></div>'+
-    '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span>'+vdGnreBadgeHTML(p)+'</div>'+
+    '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span>'+vdGnreBadgeHTML(p)+(p.origem?vdOrigemBadgeHTML(p.origem):'<span class="orig-badge fabrica">Fábrica</span>')+'</div>'+
     '<div style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>GNRE:</strong> '+vdEsc(gnreDetalhe)+'</div>'+
     vdAnexosHTML(p)+
     (vdPodeAnexarGnre()&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)?'<div class="vd-card-actions" style="margin-bottom:10px"><button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>'+(!isFabiano()?'<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>':'')+'</div>':'')+
