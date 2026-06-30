@@ -3383,18 +3383,46 @@ function vdAbrirDet(id){
   const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuFull(i.sku))+' ('+vdEsc(vdSkuLabel(i.sku))+')</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
   const parc=vdPrazoLabel(p);
   const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta / OFF':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
+  const itensGrid=x.itens.length?
+    '<div class="vd-card-oper">'+
+      '<div class="vd-prod-row vd-prod-head"><span>Produto</span><span class="vd-prod-val">Pedido</span><span class="vd-prod-val">Fat.</span><span class="vd-prod-val">Saldo</span></div>'+
+      x.itens.map(i=>{
+        const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0),saldo=Math.max(0,ped-fat);
+        return '<div class="vd-prod-row"><span class="vd-prod-name">'+vdSkuCardName(i.sku)+'<br><small style="color:var(--muted);font-weight:400">'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><span class="vd-prod-val">'+ped+' cx</span><span class="vd-prod-val">'+fat+' cx</span><span class="vd-prod-val"><strong>'+saldo+' cx</strong></span></div>';
+      }).join('')+
+    '</div>'
+    :'<div class="vd-card-oper"><div class="vd-prod-row"><span class="vd-prod-name">Sem SKUs registrados</span><span></span><span></span><span></span></div></div>';
   g('vd-det-body').innerHTML=
-    '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">'+MESES[p.mes]+'/'+p.ano+' · Status: <strong>'+(x.status==='parcial'?'Faturado parcial':x.status==='pedido'?'Pedido confirmado':x.status==='entregue'?'Entregue':'Faturado')+'</strong></div>'+
-    '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span><span class="vd-badge vd-b-prazo">'+parc+'</span>'+vdGnreBadgeHTML(p)+(p.origem?vdOrigemBadgeHTML(p.origem):'<span class="orig-badge fabrica">Fábrica</span>')+'</div>'+
-    '<div style="font-size:12px;color:var(--muted);margin-bottom:10px"><strong>GNRE:</strong> '+vdEsc(gnreDetalhe)+'</div>'+
+    '<div class="vd-card-meta" style="margin-bottom:10px">'+
+      '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+
+      '<span class="vd-badge vd-b-prazo">'+parc+'</span>'+
+      vdGnreBadgeHTML(p)+
+      (p.origem?vdOrigemBadgeHTML(p.origem):'<span class="orig-badge fabrica">Fábrica</span>')+
+      (x.status==='faturado'||x.status==='entregue'||x.status==='parcial'?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+(x.status==='parcial'?'Faturado parcial':x.status==='entregue'?'Entregue':'Faturado')+'</span>':'')+
+      (p.parcial_de?'<span class="vd-badge vd-b-remanescente">↩ Remanescente</span>':'')+
+    '</div>'+
+    '<div class="vd-card-info" style="margin-bottom:10px">'+
+      '<div class="vd-info-pill"><span>Competência</span>'+MESES[p.mes]+'/'+p.ano+'</div>'+
+      '<div class="vd-info-pill"><span>Prazo</span>'+vdEsc(parc)+'</div>'+
+      '<div class="vd-info-pill vd-gnre-valor"><span>GNRE</span><strong>'+vdEsc(gnreDetalhe)+'</strong></div>'+
+      '<div class="vd-info-pill"><span>Coordenador</span>'+vdEsc(p.coordenador||'—')+'</div>'+
+    '</div>'+
     vdAnexosHTML(p)+
-    (vdPodeAnexarGnre()&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)?'<div class="vd-card-actions" style="margin-bottom:10px"><button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>'+(!isFabiano()?'<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>':'')+'</div>':'')+
-    itensHTML+
-    '<div class="vd-fat-summary"><div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div><div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div><div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div></div>'+ 
-    '<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:15px;font-weight:700"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
+    (vdPodeAnexarGnre()&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p)?
+      '<div class="vd-card-actions" style="margin-bottom:10px">'+
+        '<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>'+
+        (!isFabiano()?'<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>':'')+
+      '</div>':'')+
+    itensGrid+
+    '<div class="vd-fat-summary">'+
+      '<div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div>'+
+      '<div class="vd-fat-stat"><strong>'+x.faturadoCx+'</strong><span>Faturado</span></div>'+
+      '<div class="vd-fat-stat"><strong>'+x.saldoCx+'</strong><span>Saldo</span></div>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between;margin-top:12px;font-size:16px;font-weight:700;padding-top:10px;border-top:1px solid var(--border)"><span>Total negociado</span><span>'+vdFmt(p.total)+'</span></div>'+
     (p.observacao?'<div style="font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--bg);border-radius:6px">'+vdEsc(p.observacao)+'</div>':'')+
     vdComentariosPedidoHTML(p)+
-    (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
+    (p.faturamento_observacao?'<div style="font-size:12px;color:var(--amber);margin-top:8px;padding:8px;background:#FFFBEB;border-radius:6px"><strong>Faturamento:</strong> '+vdEsc(p.faturamento_observacao)+'</div>':'');
   g('vd-det-fim').textContent=p.tipo==='in'?'Confirmar faturamento':'Confirmar entrega';
   g('vd-det-fim').style.display=(vdPodeFaturar()&&x.saldoCx>0&&vdGnreLiberada(p))?'block':'none';
   g('vd-det-editar').style.display=(vdPodeEditar()&&x.faturadoCx===0)?'block':'none';
