@@ -3053,10 +3053,9 @@ function vdAbrirOrigemPedido(){
   g('modal-origem').style.display='flex';
 }
 async function vdPatchOrigem(id,origem){
-  const {SUPA_URL,SUPA_KEY}=window;
-  const res=await fetch(`${SUPA_URL}/rest/v1/pedidos_vendas?id=eq.${id}`,{
+  const res=await fetch(`${SB}/rest/v1/pedidos_vendas?id=eq.${id}`,{
     method:'PATCH',
-    headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=minimal'},
+    headers:{'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY,'Prefer':'return=minimal'},
     body:JSON.stringify({origem:origem||null})
   });
   if(!res.ok)throw new Error('PATCH origem falhou: '+res.status);
