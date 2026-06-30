@@ -3192,7 +3192,8 @@ async function vdSalvarPedido(){
     parcela_1_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p1').value)||null):null,
     parcela_2_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p2').value)||null):null,
     parcela_3_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p3').value)||null):null,
-    total,total_caixas:totCx,observacao:g('vf-obs').value||null,mes:mesAtual,ano:anoAtual
+    total,total_caixas:totCx,observacao:g('vf-obs').value||null,mes:mesAtual,ano:anoAtual,
+    origem:vdForm.origem||null
   };
   const _cliUf=String(cli.uf||'').toUpperCase();
   if(!vdEditPedidoId){ped.status='pedido';ped.criado_por=user;ped.gnre_status=(vdForm.tipo==='off'||VD_UFS_ISENTO_GNRE.includes(_cliUf))?'isenta':'pendente';}
