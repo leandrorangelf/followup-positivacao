@@ -4162,6 +4162,23 @@ function tvRenderMapaBrasil(containerId,rows){
     window.addEventListener('resize',function(){mapa.resize();});
   }catch(e){console.error(e);}
 }
+function tvSelecionarInOff(tipo){
+  const vendas=window.tvInOffVendas||[];
+  const lista=vendas.filter(p=>vdTipoPedido(p)===tipo);
+  document.querySelectorAll('.tv-inoff-row').forEach(r=>r.classList.toggle('on',r.dataset.tipo===tipo));
+  const detail=g('tv-inoff-detail');
+  if(!detail)return;
+  if(!lista.length){detail.innerHTML='<div style="color:#9aa6b8">Nenhum pedido '+tipo.toUpperCase()+'</div>';return;}
+  detail.innerHTML='<div class="tv-map-detail-title">'+tipo.toUpperCase()+' — '+lista.length+' pedido(s)</div>'+
+    lista.map(p=>{
+      const itens=p.pedidos_vendas_itens||[];
+      const cx=vdResumoPedido(p).pedidoCx;
+      const skuStr=itens.filter(i=>Number(i.qty_caixas)>0).map(i=>i.sku+': '+i.qty_caixas+'cx').join(' · ');
+      return'<div class="tv-map-detail-row">'+
+        '<span>'+vdEsc(p.cliente_nome)+(p.coordenador?'<br><span style="font-size:10px;opacity:.55">'+vdEsc(p.coordenador)+'</span>':'')+'</span>'+
+        '<div style="text-align:right"><strong>'+cx+' cx</strong>'+(skuStr?'<br><span style="font-size:10px;opacity:.65">'+vdEsc(skuStr)+'</span>':'')+'</div></div>';
+    }).join('');
+}
 function tvSelecionarUfMapa(uf){
   uf=dashUfValida(uf);
   const rows=window.tvMapaUfRows||[];
