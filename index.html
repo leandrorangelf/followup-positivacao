@@ -1398,6 +1398,7 @@ function renderCoordDash(anoData){
       <div class="section-hdr">⏳ Pendentes (${pendentes.length})</div>
       ${pendentes.map(c=>`<div class="pending-item"><span class="pending-name">${c.nome}</span><span class="badge badge-sem">Pendente</span></div>`).join('')}
     </div>`:`<div class="empty">✅ Todos os clientes ativos com pedido!</div>`}
+    ${renderInOffSection(vendasDashboard,false)}
   `;
 }
 
