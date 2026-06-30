@@ -3043,10 +3043,43 @@ function vdOrigemFaturadoFabiano(origem){
   return!origem||origem==='Fábrica';
 }
 
+let vdOrigemPatchId=null; // null = modo novo pedido; id = modo patch de pedido existente
+
 function vdAbrirOrigem(){g('modal-origem').style.display='flex';}
-function vdFecharOrigem(){g('modal-origem').style.display='none';}
+function vdFecharOrigem(){g('modal-origem').style.display='none';vdOrigemPatchId=null;}
+function vdAbrirOrigemPedido(){
+  if(!vdDetAtual){return;}
+  vdOrigemPatchId=vdDetAtual.id;
+  g('modal-origem').style.display='flex';
+}
+async function vdPatchOrigem(id,origem){
+  const {SUPA_URL,SUPA_KEY}=window;
+  const res=await fetch(`${SUPA_URL}/rest/v1/pedidos_vendas?id=eq.${id}`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=minimal'},
+    body:JSON.stringify({origem:origem||null})
+  });
+  if(!res.ok)throw new Error('PATCH origem falhou: '+res.status);
+}
 function vdSelecionarOrigem(origem){
   vdFecharOrigem();
+  if(vdOrigemPatchId){
+    const pid=vdOrigemPatchId;
+    vdOrigemPatchId=null;
+    vdPatchOrigem(pid,origem).then(()=>{
+      // atualiza o pedido no array local
+      const p=vdPedidos.find(x=>x.id===pid);
+      if(p)p.origem=origem||null;
+      // se o modal de detalhe ainda estiver aberto para este pedido, re-renderiza
+      if(vdDetAtual&&vdDetAtual.id===pid){
+        vdDetAtual.origem=origem||null;
+        vdAbrirDet(vdDetAtual);
+      }
+      toast('Origem definida: '+(origem||'Fábrica'));
+    }).catch(e=>{toast('Erro ao salvar origem','error');console.error(e);});
+    return;
+  }
+  // modo novo pedido
   vdForm.origem=origem;
   const bar=g('vfn-origem-bar');
   const lbl=g('vfn-origem-label');
@@ -3057,8 +3090,6 @@ function vdSelecionarOrigem(origem){
     bar.style.background=grupo==='fabrica'?'#F0FDF4':grupo==='new'?'#EFF6FF':'#EDE9FE';
     bar.style.borderColor=grupo==='fabrica'?'#86EFAC':grupo==='new'?'#BFDBFE':'#C4B5FD';
   }
-  // pedidos de distribuidoras não vão pro fabiano — tipo muda para off automaticamente
-  // mas tipo fiscal (IN/OFF) ainda é escolha do coordenador; apenas bloqueamos a fila do Fabiano
 }
 
 function vdGoNovo(){
