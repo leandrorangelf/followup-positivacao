@@ -870,8 +870,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <!-- MODAL ORIGEM DO PEDIDO -->
 <div class="orig-modal-bg" id="modal-origem" style="display:none" onclick="if(event.target===this)vdFecharOrigem()">
   <div class="orig-modal">
-    <div class="orig-modal-title">De onde sai esse pedido?</div>
-    <div class="orig-modal-sub">Selecione a origem antes de preencher o pedido</div>
+    <div class="orig-modal-title" id="orig-modal-title">De onde sai esse pedido?</div>
+    <div class="orig-modal-sub" id="orig-modal-sub">Selecione a origem antes de preencher o pedido</div>
     <div class="orig-grupo-label">Fábrica</div>
     <div class="orig-btns" style="grid-template-columns:1fr">
       <button class="orig-btn grupo-fabrica" onclick="vdSelecionarOrigem('Fábrica')">
