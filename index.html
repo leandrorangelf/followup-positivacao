@@ -860,6 +860,48 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="bottom-nav" id="nav-vficha"></div>
 </div>
 
+<!-- MODAL ORIGEM DO PEDIDO -->
+<div class="orig-modal-bg" id="modal-origem" style="display:none" onclick="if(event.target===this)vdFecharOrigem()">
+  <div class="orig-modal">
+    <div class="orig-modal-title">De onde sai esse pedido?</div>
+    <div class="orig-modal-sub">Selecione a origem antes de preencher o pedido</div>
+    <div class="orig-grupo-label">Fábrica</div>
+    <div class="orig-btns" style="grid-template-columns:1fr">
+      <button class="orig-btn grupo-fabrica" onclick="vdSelecionarOrigem('Fábrica')">
+        <span class="ob-label">Fábrica</span>
+        <span class="ob-sub">Faturado pelo Fabiano · sai da produção direta</span>
+      </button>
+    </div>
+    <div class="orig-grupo-label">New Bluetex</div>
+    <div class="orig-btns">
+      <button class="orig-btn" onclick="vdSelecionarOrigem('New Bluetex MG')">
+        <span class="ob-label">New Bluetex MG</span><span class="ob-sub">Minas Gerais</span>
+      </button>
+      <button class="orig-btn" onclick="vdSelecionarOrigem('New Bluetex AM')">
+        <span class="ob-label">New Bluetex AM</span><span class="ob-sub">Amazonas</span>
+      </button>
+      <button class="orig-btn" onclick="vdSelecionarOrigem('New Bluetex SC')">
+        <span class="ob-label">New Bluetex SC</span><span class="ob-sub">Santa Catarina</span>
+      </button>
+    </div>
+    <div class="orig-grupo-label">GB</div>
+    <div class="orig-btns">
+      <button class="orig-btn" onclick="vdSelecionarOrigem('GB SP')">
+        <span class="ob-label">GB SP</span><span class="ob-sub">São Paulo</span>
+      </button>
+      <button class="orig-btn inativa" onclick="vdSelecionarOrigem('GB CE')">
+        <span class="ob-label">GB CE <span style="font-size:9px;color:#B45309">(inativa)</span></span><span class="ob-sub">Ceará · somente histórico</span>
+      </button>
+      <button class="orig-btn inativa" onclick="vdSelecionarOrigem('GB MA')">
+        <span class="ob-label">GB MA <span style="font-size:9px;color:#B45309">(inativa)</span></span><span class="ob-sub">Maranhão · somente histórico</span>
+      </button>
+    </div>
+    <div style="margin-top:18px">
+      <button class="vd-btn vd-btn-out" style="width:100%" onclick="vdFecharOrigem()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DETALHE PEDIDO -->
 <div class="modal-bg" id="modal-vd-det">
   <div class="modal">
