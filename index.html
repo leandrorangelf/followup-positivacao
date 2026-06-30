@@ -1183,6 +1183,13 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         </select>
         <button class="secondary-btn" onclick="irRelatorios()">↺ Atualizar</button>
       </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+        <button class="admin-tab active" data-rel-st="todos" onclick="relFiltrarStatus('todos')">Todos</button>
+        <button class="admin-tab" data-rel-st="pendente" onclick="relFiltrarStatus('pendente')">⏳ Pendentes</button>
+        <button class="admin-tab" data-rel-st="faturado" onclick="relFiltrarStatus('faturado')">✅ Faturados</button>
+      </div>
+      <div style="display:none">
+      </div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="rel-tabs">
       <button class="admin-tab active" onclick="relAba('inteligencia')" id="rel-tab-inteligencia">Inteligência</button>
