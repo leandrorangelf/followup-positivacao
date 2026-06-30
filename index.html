@@ -4644,6 +4644,12 @@ function relFiltrarOrigem(v){
   relAba(relAbaAtual);
 }
 
+function relFiltrarStatus(v){
+  relStatusFiltro=v;
+  document.querySelectorAll('[data-rel-st]').forEach(b=>b.classList.toggle('active',b.dataset.relSt===v));
+  relAba(relAbaAtual);
+}
+
 function relAba(aba){
   relAbaAtual=aba;
   document.querySelectorAll('[id^="rel-tab-"]').forEach(b=>b.classList.toggle('active',b.id==='rel-tab-'+aba));
@@ -4651,6 +4657,8 @@ function relAba(aba){
   if(relOrigemFiltro==='fabrica')lista=lista.filter(p=>!vdEhDistribuidora(p));
   else if(relOrigemFiltro==='dist')lista=lista.filter(p=>vdEhDistribuidora(p));
   else if(relOrigemFiltro!=='todos')lista=lista.filter(p=>(p.origem||'')===relOrigemFiltro);
+  if(relStatusFiltro==='pendente')lista=lista.filter(p=>vdResumoPedido(p).saldoCx>0);
+  else if(relStatusFiltro==='faturado')lista=lista.filter(p=>{const s=vdResumoPedido(p).status;return s==='faturado'||s==='entregue';});
   let forecast=relCoordFiltro==='todos'?relForecastDados:relForecastDados.filter(p=>p.coordenador===relCoordFiltro);
   g('rel-sub').textContent=`${anoAtual} · ${relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro}`;
   if(aba==='inteligencia')relRender(lista);
