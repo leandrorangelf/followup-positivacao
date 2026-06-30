@@ -4130,11 +4130,43 @@ function relBar(pct,cor){
   return`<div style="height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.min(100,pct)}%;background:${cor};border-radius:99px"></div></div>`;
 }
 
-function relRender(){
-  const lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
-  if(!lista.length){g('rel-content').innerHTML='<div class="empty">Nenhum pedido encontrado para os filtros selecionados.</div>';return;}
+function relPrintWindow(titulo,html){
+  const coord=relCoordFiltro==='todos'?'Todos os coordenadores':relCoordFiltro;
+  const w=window.open('','_blank','width=1100,height=800');
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${titulo}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;color:#111;background:#fff;padding:32px}
+    h1{font-size:18px;font-weight:800;margin-bottom:4px}
+    .sub{font-size:12px;color:#666;margin-bottom:20px}
+    table{width:100%;border-collapse:collapse;margin-bottom:24px}
+    th{background:#1A1A18;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+    th.r,td.r{text-align:right}
+    th.c,td.c{text-align:center}
+    td{padding:7px 10px;border-bottom:1px solid #e5e5e5;vertical-align:top}
+    tr:nth-child(even) td{background:#f9f9f7}
+    .badge-in{background:#DBEAFE;color:#1D4ED8;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}
+    .badge-off{background:#FEF3C7;color:#92400E;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}
+    .badge-alta{background:#DCFCE7;color:#166534;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}
+    .badge-media{background:#FEF9C3;color:#854D0E;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}
+    .total-row td{font-weight:800;background:#f0f0ee;border-top:2px solid #333}
+    .print-btn{position:fixed;top:20px;right:20px;background:#1A1A18;color:#fff;border:0;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;z-index:99}
+    @media print{.print-btn{display:none}body{padding:16px}}
+  </style></head><body>
+  <button class="print-btn" onclick="window.print()">Imprimir / PDF</button>
+  <h1>${titulo}</h1>
+  <div class="sub">Clean Tobacco · ${coord} · ${MESES[mesAtual]} ${anoAtual} · gerado em ${new Date().toLocaleString('pt-BR')}</div>
+  ${html}
+  </body></html>`);
+  w.document.close();
+}
 
-  g('rel-sub').textContent=`Análise de ${anoAtual} · ${lista.length} pedidos · filtro: ${relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro}`;
+function relSkuCols(itens,skus){
+  return skus.map(s=>{const i=itens.find(x=>x.sku===s);return Number(i?.qty_caixas||0)||0;});
+}
+
+function relRender(lista){
+  if(!lista||!lista.length){g('rel-content').innerHTML='<div class="empty">Nenhum pedido encontrado.</div>';return;}
 
   // ── 1. IN vs OFF consolidado ──
   const inList=lista.filter(p=>vdTipoPedido(p)==='in');
