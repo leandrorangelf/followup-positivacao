@@ -3840,6 +3840,7 @@ async function vdSalvarFaturamento(){
 async function vdReverterFaturamento(id){
   if(!vdPodeEditar()){toast('Acesso restrito','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  if(vdEhDistribuidora(p)){toast('Pedidos de distribuidora são entregues por definição e não podem ser revertidos','info');return}
   const x=vdResumoPedido(p);
   if(x.faturadoCx<=0){toast('Pedido não tem faturamento para reverter','info');return}
   if(!confirm('Reverter faturamento de "'+p.cliente_nome+'"?\n\nIsso vai zerar as '+x.faturadoCx+' cx faturadas e voltar o pedido para pendente.'))return;
