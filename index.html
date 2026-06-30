@@ -1618,6 +1618,26 @@ function renderAdminDash(anoData){
         <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctMetaG}%;background:${corBar(pctMetaG)};border-radius:99px"></div></div>
       </div>
     </div>
+    ${(()=>{
+      const fabPeds=vendasDashboard.filter(p=>!vdEhDistribuidora(p));
+      const distPeds=vendasDashboard.filter(p=>vdEhDistribuidora(p));
+      const fabCx=fabPeds.reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
+      const fabVal=fabPeds.reduce((s,p)=>s+vdResumoPedido(p).faturadoValor,0);
+      const distCx=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+      const distVal=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 16px 4px">
+  <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:12px;padding:14px">
+    <div style="font-size:10px;color:#166534;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🏭 Fábrica</div>
+    <div style="font-size:22px;font-weight:800;color:#166534;line-height:1">${fabCx} cx</div>
+    <div style="font-size:11px;color:#166534;margin-top:3px;opacity:.8">${vdFmt(fabVal)} faturado</div>
+  </div>
+  <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:14px">
+    <div style="font-size:10px;color:#1E40AF;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🚛 Distribuidoras</div>
+    <div style="font-size:22px;font-weight:800;color:#1E40AF;line-height:1">${distCx} cx</div>
+    <div style="font-size:11px;color:#1E40AF;margin-top:3px;opacity:.8">${vdFmt(distVal)} em pedidos</div>
+  </div>
+</div>`;
+    })()}
     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#7A7870;padding:10px 16px 6px">Coordenadores</div>
     ${cards}
     ${renderInOffSection(vendasDashboard,true)}`;
