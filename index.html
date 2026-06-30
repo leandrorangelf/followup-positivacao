@@ -3130,12 +3130,81 @@ function vdAbrirOrigem(){
   g('modal-origem').style.display='flex';
 }
 function vdAbrirOrigemPedido(){
-  if(!vdDetAtual){return;}
-  vdOrigemPatchId=vdDetAtual.id;
-  const t=g('orig-modal-title'),s=g('orig-modal-sub');
-  if(t)t.textContent='Definir origem do pedido';
-  if(s)s.textContent='Clique na origem para salvar. Nenhum dado de faturamento será alterado.';
-  g('modal-origem').style.display='flex';
+  if(!vdDetAtual){toast('Nenhum pedido selecionado','error');return;}
+  defOrigemAbrir(vdDetAtual.id, vdDetAtual.origem);
+}
+
+let defOrigemPedidoId=null;
+let defOrigemSelecionada=null;
+
+function defOrigemAbrir(pedidoId, origemAtual){
+  defOrigemPedidoId=pedidoId;
+  defOrigemSelecionada=null;
+  const origens=[
+    {label:'Fábrica',sub:'Faturado pelo Fabiano · produção direta'},
+    {label:'New Bluetex MG',sub:'Minas Gerais'},
+    {label:'New Bluetex AM',sub:'Amazonas'},
+    {label:'New Bluetex SC',sub:'Santa Catarina'},
+    {label:'GB SP',sub:'São Paulo'},
+    {label:'GB CE',sub:'Ceará · somente histórico'},
+    {label:'GB MA',sub:'Maranhão · somente histórico'},
+  ];
+  const opts=g('def-origem-opts');
+  opts.innerHTML=origens.map(o=>`
+    <button onclick="defOrigemSelecionar('${o.label}')" id="defopt-${o.label.replace(/\s/g,'-')}"
+      style="border:2px solid ${(origemAtual||'Fábrica')===o.label?'#2563EB':'#D8D6CE'};
+             background:${(origemAtual||'Fábrica')===o.label?'#EFF6FF':'#fff'};
+             border-radius:10px;padding:10px 12px;text-align:left;cursor:pointer;font:inherit;width:100%">
+      <strong style="font-size:13px">${o.label}</strong>
+      <span style="display:block;font-size:11px;color:var(--muted);margin-top:2px">${o.sub}</span>
+    </button>`).join('');
+  const btn=g('def-origem-salvar');
+  btn.disabled=true;btn.style.opacity='.4';
+  g('modal-def-origem').style.display='flex';
+}
+
+function defOrigemSelecionar(origem){
+  defOrigemSelecionada=origem;
+  document.querySelectorAll('#def-origem-opts button').forEach(b=>{
+    b.style.borderColor='#D8D6CE';b.style.background='#fff';
+  });
+  const btn=document.getElementById('defopt-'+origem.replace(/\s/g,'-'));
+  if(btn){btn.style.borderColor='#2563EB';btn.style.background='#EFF6FF';}
+  const salvar=g('def-origem-salvar');
+  salvar.disabled=false;salvar.style.opacity='1';
+}
+
+function defOrigemFechar(){
+  g('modal-def-origem').style.display='none';
+  defOrigemPedidoId=null;defOrigemSelecionada=null;
+}
+
+async function defOrigemSalvar(){
+  if(!defOrigemSelecionada||!defOrigemPedidoId)return;
+  const pid=defOrigemPedidoId;
+  const origem=defOrigemSelecionada;
+  const btn=g('def-origem-salvar');
+  btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    const res=await fetch(`${SB}/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(pid)}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY,'Prefer':'return=minimal'},
+      body:JSON.stringify({origem:origem==='Fábrica'?null:origem})
+    });
+    if(!res.ok)throw new Error('status '+res.status);
+    const p=vdPedidos.find(x=>x.id===pid);
+    if(p)p.origem=origem==='Fábrica'?null:origem;
+    defOrigemFechar();
+    if(vdDetAtual&&vdDetAtual.id===pid){
+      vdDetAtual.origem=origem==='Fábrica'?null:origem;
+      vdAbrirDet(pid);
+    }
+    toast('Origem salva: '+origem);
+  }catch(e){
+    toast('Erro ao salvar origem','error');
+    console.error(e);
+    btn.disabled=false;btn.textContent='Salvar';btn.style.opacity='1';
+  }
 }
 async function vdPatchOrigem(id,origem){
   const res=await fetch(`${SB}/rest/v1/pedidos_vendas?id=eq.${id}`,{
