@@ -5332,8 +5332,17 @@ function tvSelecionarUfMapa(uf){
 function tvRender(rows,vendas){
   const metaGeral=rows.reduce((s,r)=>s+r.meta,0);
   const realizadoGeral=rows.reduce((s,r)=>s+r.realizado,0);
-  const faturadoGeral=(vendas||[]).reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
-  const aFaturarGeral=Math.max(0,realizadoGeral-faturadoGeral);
+  const fabPedsTV=(vendas||[]).filter(p=>!vdEhDistribuidora(p));
+  const distPedsTV=(vendas||[]).filter(p=>vdEhDistribuidora(p));
+  const faturadoGeral=fabPedsTV.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
+  const fabPendente=fabPedsTV.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
+  const distCxTV=distPedsTV.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+  const distOrigensTV=[...new Set(distPedsTV.map(p=>p.origem||'Outra'))].sort();
+  const distBreakdownTV=distOrigensTV.map(orig=>{
+    const cx=distPedsTV.filter(p=>(p.origem||'Outra')===orig).reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+    return '<span style="font-size:clamp(11px,1.1vw,14px);color:rgba(147,197,253,.8)">'+vdEsc(orig)+': <strong style="color:#93C5FD">'+tvFmt(cx)+' cx</strong></span>';
+  }).join('<span style="opacity:.3"> · </span>');
+  const aFaturarGeral=Math.max(0,fabPendente);
   const pctGeral=tvPct(realizadoGeral,metaGeral);
   const pctFaturado=tvPct(faturadoGeral,metaGeral);
   const previsao=tvPrevisao(realizadoGeral);
