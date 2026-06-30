@@ -4883,13 +4883,34 @@ function relRenderFaturado(lista){
         <th style="padding:8px">UF</th>
         <th style="padding:8px">Coord</th>
         <th style="padding:8px">Tipo</th>
+        <th style="padding:8px">Origem</th>
         ${thSkus}
         <th style="padding:8px;text-align:center">Total cx</th>
         <th style="padding:8px">Status</th>
       </tr></thead>
       <tbody>${rows}
+        ${(()=>{
+          const fabFat=faturados.filter(p=>!vdEhDistribuidora(p));
+          const distFat=faturados.filter(p=>vdEhDistribuidora(p));
+          const fabCxTot=fabFat.reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
+          const distCxTot=distFat.reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
+          const fabSkuTots={};VD_SKUS.forEach(s=>fabSkuTots[s]=0);
+          fabFat.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(fabSkuTots[i.sku]!==undefined)fabSkuTots[i.sku]+=Math.min(Number(i.qty_caixas||0),Number(i.qty_faturada||0));}));
+          const distSkuTots={};VD_SKUS.forEach(s=>distSkuTots[s]=0);
+          distFat.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(distSkuTots[i.sku]!==undefined)distSkuTots[i.sku]+=Math.min(Number(i.qty_caixas||0),Number(i.qty_faturada||0));}));
+          return `<tr style="background:#F0FDF4;font-size:11px;font-weight:700;border-top:1px solid #86EFAC">
+  <td colspan="6" style="padding:6px 10px;color:#166534">🏭 Subtotal Fábrica — ${fabFat.length} pedidos</td>
+  ${VD_SKUS.map(s=>`<td style="text-align:center;padding:6px 5px;color:#166534">${fabSkuTots[s]||'—'}</td>`).join('')}
+  <td style="text-align:center;padding:6px;color:#166534">${fabCxTot}</td><td></td>
+</tr>
+<tr style="background:#EFF6FF;font-size:11px;font-weight:700;border-top:1px solid #BFDBFE">
+  <td colspan="6" style="padding:6px 10px;color:#1E40AF">🚛 Subtotal Distribuidoras — ${distFat.length} pedidos</td>
+  ${VD_SKUS.map(s=>`<td style="text-align:center;padding:6px 5px;color:#1E40AF">${distSkuTots[s]||'—'}</td>`).join('')}
+  <td style="text-align:center;padding:6px;color:#1E40AF">${distCxTot}</td><td></td>
+</tr>`;
+        })()}
         <tr style="background:#E2E0D8;font-weight:700;font-size:11px;border-top:2px solid #1A1A18">
-          <td colspan="5" style="padding:8px 10px">TOTAL — ${faturados.length} registros</td>
+          <td colspan="6" style="padding:8px 10px">TOTAL — ${faturados.length} registros</td>
           ${tdTotSkus}
           <td style="text-align:center;padding:8px">${relFmt(totalCx)}</td>
           <td></td>
