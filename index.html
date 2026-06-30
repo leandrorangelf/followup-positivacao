@@ -3045,20 +3045,20 @@ function vdOrigemFaturadoFabiano(origem){
 
 let vdOrigemPatchId=null; // null = modo novo pedido; id = modo patch de pedido existente
 
-function vdAbrirOrigem(){g('modal-origem').style.display='flex';}
 function vdFecharOrigem(){g('modal-origem').style.display='none';vdOrigemPatchId=null;}
+function vdAbrirOrigem(){
+  vdOrigemPatchId=null;
+  const t=g('orig-modal-title'),s=g('orig-modal-sub');
+  if(t)t.textContent='De onde sai esse pedido?';
+  if(s)s.textContent='Selecione a origem antes de preencher o pedido';
+  g('modal-origem').style.display='flex';
+}
 function vdAbrirOrigemPedido(){
   if(!vdDetAtual){return;}
   vdOrigemPatchId=vdDetAtual.id;
   const t=g('orig-modal-title'),s=g('orig-modal-sub');
   if(t)t.textContent='Definir origem do pedido';
   if(s)s.textContent='Clique na origem para salvar. Nenhum dado de faturamento será alterado.';
-  g('modal-origem').style.display='flex';
-}
-function vdAbrirOrigem(){
-  const t=g('orig-modal-title'),s=g('orig-modal-sub');
-  if(t)t.textContent='De onde sai esse pedido?';
-  if(s)s.textContent='Selecione a origem antes de preencher o pedido';
   g('modal-origem').style.display='flex';
 }
 async function vdPatchOrigem(id,origem){
