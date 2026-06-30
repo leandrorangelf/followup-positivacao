@@ -809,7 +809,14 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 
 <!-- VENDAS · NOVO/EDITAR PEDIDO -->
 <div id="s-vfn" class="screen" style="display:none">
-  <div class="vd-header"><h2 id="vfn-title">Novo Pedido</h2><div class="sub">Preencha os dados</div></div>
+  <div class="vd-header"><h2 id="vfn-title">Novo Pedido</h2><div class="sub" id="vfn-sub">Preencha os dados</div></div>
+  <div id="vfn-origem-bar" style="display:none;margin:0 16px 4px;padding:10px 14px;border-radius:10px;background:#F5F3FF;border:1px solid #C4B5FD;display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:11px;color:#7A7870;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Origem:</span>
+      <span id="vfn-origem-label" style="font-size:13px;font-weight:700"></span>
+    </div>
+    <button type="button" onclick="vdAbrirOrigem()" style="font-size:11px;color:#6457D9;background:none;border:none;cursor:pointer;font-weight:700;padding:0">Alterar</button>
+  </div>
   <div class="vd-section" style="padding-top:18px">
     <div class="vd-form-card">
       <div class="vd-field"><label>Cliente</label><select id="vf-cli" onchange="vdAplicarFicha()"></select></div>
