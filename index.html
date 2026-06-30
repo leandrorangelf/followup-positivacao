@@ -1167,6 +1167,17 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <select id="rel-coord" class="client-filter" onchange="relFiltrarCoord(this.value)" style="min-width:160px">
           <option value="todos">Todos os coordenadores</option>
         </select>
+        <select id="rel-origem" class="client-filter" onchange="relFiltrarOrigem(this.value)" style="min-width:150px">
+          <option value="todos">Todas as origens</option>
+          <option value="fabrica">🏭 Fábrica</option>
+          <option value="dist">🚛 Distribuidoras</option>
+          <option value="New Bluetex MG">New Bluetex MG</option>
+          <option value="New Bluetex AM">New Bluetex AM</option>
+          <option value="New Bluetex SC">New Bluetex SC</option>
+          <option value="GB SP">GB SP</option>
+          <option value="GB CE">GB CE</option>
+          <option value="GB MA">GB MA</option>
+        </select>
         <button class="secondary-btn" onclick="irRelatorios()">↺ Atualizar</button>
       </div>
     </div>
