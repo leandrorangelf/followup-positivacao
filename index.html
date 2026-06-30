@@ -3140,6 +3140,7 @@ function vdRenderKanban(){
       ${vdPodeEditar()?`<td style="white-space:nowrap" onclick="event.stopPropagation()">
         ${precisaGnre?`<button onclick="event.stopPropagation();vdMarcarGnreIsenta('${p.id}')" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer">Isentar GNRE</button>`:''}
         ${x.saldoCx>0&&vdGnreLiberada(p)?`<button onclick="event.stopPropagation();vdAbrirFaturamento('${p.id}')" style="background:#DCFCE7;color:#166534;border:1px solid #86EFAC;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer">${(p.tipo==='off'||vdEhDistribuidora(p))?'✓ Entregar':'✓ Faturar'}</button>`:''}
+        ${x.faturadoCx>0?`<button onclick="event.stopPropagation();vdReverterFaturamento('${p.id}')" style="background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px">↩ Reverter</button>`:''}
       </td>`:''}
     </tr>`;
   };
