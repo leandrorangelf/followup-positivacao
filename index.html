@@ -924,6 +924,19 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   </div>
 </div>
 
+<!-- MODAL DEFINIR ORIGEM DE PEDIDO EXISTENTE -->
+<div class="modal-bg" id="modal-def-origem" style="display:none;align-items:center;justify-content:center">
+  <div class="modal" style="max-width:400px;border-radius:16px">
+    <div class="modal-title">Definir origem do pedido</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Selecione a origem e clique em Salvar. Nenhum dado de faturamento será alterado.</div>
+    <div id="def-origem-opts" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"></div>
+    <div class="vd-btnrow" style="margin:0">
+      <button class="vd-btn vd-btn-out" onclick="defOrigemFechar()">Cancelar</button>
+      <button class="vd-btn vd-btn-pri" id="def-origem-salvar" onclick="defOrigemSalvar()" disabled style="opacity:.4">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DETALHE PEDIDO -->
 <div class="modal-bg" id="modal-vd-det">
   <div class="modal">
