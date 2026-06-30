@@ -2782,7 +2782,7 @@ function vdResumoPedido(p){
   const faturadoValor=itens.reduce((s,i)=>s+Math.min(Number(i.qty_caixas||0),Number(i.qty_faturada||0))*Number(i.packs_por_caixa||0)*Number(i.valor_pacote||0),0);
   const saldoCx=Math.max(0,pedidoCx-faturadoCx);
   const saldoValor=Math.max(0,pedidoValor-faturadoValor);
-  const status=faturadoCx>0&&saldoCx>0?'parcial':pedidoCx>0&&saldoCx===0?(p.tipo==='off'?'entregue':'faturado'):'pedido';
+  const status=faturadoCx>0&&saldoCx>0?'parcial':pedidoCx>0&&saldoCx===0?((p.tipo==='off'||vdEhDistribuidora(p))?'entregue':'faturado'):'pedido';
   return{itens,pedidoCx,faturadoCx,saldoCx,pedidoValor,faturadoValor,saldoValor,status,detalhado:itens.length>0};
 }
 
