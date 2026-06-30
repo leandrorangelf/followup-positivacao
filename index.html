@@ -2666,6 +2666,60 @@ function vdResumoLista(lista){
   },{pedidos:0,pedidoCx:0,faturadoCx:0,saldoCx:0,pedidoValor:0,faturadoValor:0,saldoValor:0,parciais:0});
 }
 
+function renderInOffSection(vendas,showCoord){
+  if(!vendas||!vendas.length)return'';
+  const temClick=vendas.some(p=>(p.pedidos_vendas_itens||[]).some(i=>i.sku==='CLICK'));
+  const RSKUS=temClick?[...VD_SKUS,'CLICK']:VD_SKUS;
+  const inList=vendas.filter(p=>vdTipoPedido(p)==='in');
+  const offList=vendas.filter(p=>vdTipoPedido(p)==='off');
+  const inCx=inList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+  const offCx=offList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+  function skuT(lista){const t={};RSKUS.forEach(s=>t[s]=0);lista.forEach(p=>{(p.pedidos_vendas_itens||[]).forEach(i=>{if(t[i.sku]!==undefined)t[i.sku]+=Number(i.qty_caixas||0);});});return t;}
+  const inSkus=skuT(inList),offSkus=skuT(offList);
+  const linhas=[...inList.map(p=>({p,tipo:'in'})),...offList.map(p=>({p,tipo:'off'}))].map(({p,tipo})=>{
+    const skus={};(p.pedidos_vendas_itens||[]).forEach(i=>{skus[i.sku]=Number(i.qty_caixas||0);});
+    return{nome:p.cliente_nome,coord:p.coordenador,tipo,cx:vdResumoPedido(p).pedidoCx,skus};
+  });
+  const thCoord=showCoord?'<th style="padding:7px 8px">Coord</th>':'';
+  const thSkus=RSKUS.map(s=>'<th style="text-align:center;padding:7px 6px">'+s+'</th>').join('');
+  const rows=linhas.map(r=>{
+    const badge=r.tipo==='in'
+      ?'<span style="background:#DBEAFE;color:#1D4ED8;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700">IN</span>'
+      :'<span style="background:#FEF3C7;color:#92400E;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700">OFF</span>';
+    const tdCoord=showCoord?'<td style="font-size:11px;color:#7A7870;padding:7px 8px">'+vdEsc(r.coord)+'</td>':'';
+    const tdSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(r.skus[s]||'—')+'</td>').join('');
+    return'<tr style="border-top:1px solid #E2E0D8"><td style="padding:7px 12px">'+vdEsc(r.nome)+'</td>'+tdCoord+'<td style="padding:7px 8px">'+badge+'</td>'+tdSkus+'<td style="text-align:center;padding:7px 8px;font-weight:700">'+r.cx+'</td></tr>';
+  }).join('');
+  const tdInSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(inSkus[s]||'—')+'</td>').join('');
+  const tdOffSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(offSkus[s]||'—')+'</td>').join('');
+  const emptyCoord=showCoord?'<td></td>':'';
+  return`<div style="margin:0 16px 16px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+  <div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E0D8;flex-wrap:wrap;gap:8px">
+    <div style="font-size:14px;font-weight:600">IN vs OFF — ${MESES[mesAtual]} ${anoAtual}</div>
+    <div style="display:flex;gap:12px">
+      <div style="text-align:center"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">IN</div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${inList.length} pedido(s)</div></div>
+      <div style="text-align:center"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">OFF</div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${offList.length} pedido(s)</div></div>
+      <div style="text-align:center"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">Total</div><div style="font-size:20px;font-weight:700">${inCx+offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${vendas.length} pedido(s)</div></div>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:#FAFAF8;color:#7A7870;font-size:10px;text-transform:uppercase;letter-spacing:.06em">
+        <th style="text-align:left;padding:7px 12px">Cliente</th>${thCoord}<th style="padding:7px 8px">Tipo</th>${thSkus}<th style="text-align:center;padding:7px 8px">Total cx</th>
+      </tr></thead>
+      <tbody>${rows}
+        <tr style="background:#EFF6FF;font-weight:700;font-size:11px;border-top:2px solid #BFDBFE">
+          <td style="padding:7px 12px">TOTAL IN (${inList.length} ped.)</td>${emptyCoord}<td></td>${tdInSkus}<td style="text-align:center;padding:7px 8px">${inCx}</td>
+        </tr>
+        <tr style="background:#FFFBEB;font-weight:700;font-size:11px;border-top:1px solid #FDE68A">
+          <td style="padding:7px 12px">TOTAL OFF (${offList.length} ped.)</td>${emptyCoord}<td></td>${tdOffSkus}<td style="text-align:center;padding:7px 8px">${offCx}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>`;
+}
+
 function vdDashboardResumoHTML(lista){
   const r=vdResumoLista(lista);
   return `<div class="dash-kpis">
