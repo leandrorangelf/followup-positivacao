@@ -1368,10 +1368,14 @@ async function login(){
   user=coord;isAdmin=(coord==='admin'||coord==='vagner');isDiretoria=coord==='diretoria';
   coordAtual=(isAdmin||isDiretoria||isFabiano())?COORD_KEYS[0]:coord;
   cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
-  const temMetasLocais=loadMetasLocal();
-  if(isAdmin&&temMetasLocais)await sincronizarMetasLocaisBanco();
-  else await carregarMetas();
   setupShell();
+  show('s-dash');
+  const temMetasLocais=loadMetasLocal();
+  if(isAdmin&&temMetasLocais){
+    await Promise.all([sincronizarMetasLocaisBanco(),carregarClientes()]);
+  } else {
+    await Promise.all([carregarMetas(),carregarClientes()]);
+  }
   if(isFabiano()){vdFiltro='pendente';irVendas();}
   else irDash();
 }
