@@ -2614,6 +2614,34 @@ renderAdminDash=function(anoData){
     </div>
     ${dashMapaEstadosPanelHTML(vendasMes,'Caixas vendidas por estado','Mapa do Brasil por UF em '+MESES[mesAtual]+' '+anoAtual)}
     ${premPanelHTML(rows,volume)}
+    ${(()=>{
+      const fabPeds=vendasMes.filter(p=>!vdEhDistribuidora(p));
+      const distPeds=vendasMes.filter(p=>vdEhDistribuidora(p));
+      const fabCx=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
+      const fabCxPendente=fabPeds.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
+      const fabVal=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoValor;},0);
+      const distCx=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+      const distVal=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
+      const distOrigens=[...new Set(distPeds.map(p=>p.origem||'Outra'))].sort();
+      const distBreakdown=distOrigens.map(orig=>{
+        const cx=distPeds.filter(p=>(p.origem||'Outra')===orig).reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+        return `<div style="display:flex;justify-content:space-between;font-size:11px;color:#1E40AF;padding:2px 0;border-bottom:1px solid rgba(30,64,175,.1)"><span>${vdEsc(orig)}</span><strong>${cx} cx</strong></div>`;
+      }).join('');
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 16px 12px">
+        <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:12px;padding:14px">
+          <div style="font-size:10px;color:#166534;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🏭 Fábrica — faturado</div>
+          <div style="font-size:22px;font-weight:800;color:#166534;line-height:1">${fabCx} cx</div>
+          <div style="font-size:11px;color:#166534;margin-top:3px;opacity:.8">${vdFmt(fabVal)}</div>
+          ${fabCxPendente>0?`<div style="font-size:11px;color:#166534;margin-top:2px;opacity:.6">+ ${fabCxPendente} cx pendentes</div>`:''}
+        </div>
+        <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:14px">
+          <div style="font-size:10px;color:#1E40AF;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🚛 Distribuidoras</div>
+          <div style="font-size:22px;font-weight:800;color:#1E40AF;line-height:1">${distCx} cx</div>
+          <div style="font-size:11px;color:#1E40AF;margin-top:3px;opacity:.8">${vdFmt(distVal)}</div>
+          ${distBreakdown?`<div style="margin-top:8px">${distBreakdown}</div>`:''}
+        </div>
+      </div>`;
+    })()}
     <div class="dash-lower">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Performance por coordenador</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual}</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Coordenador</th><th>Positivação</th><th>Volume vendido</th><th>Meta</th><th>Cumprimento</th><th>Sem venda</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="table-name">${r.coord}</td><td>${r.pctPos}%</td><td>${r.volume.toLocaleString('pt-BR')} cx</td><td>${r.meta.toLocaleString('pt-BR')} cx</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-progress"><span style="width:${Math.min(100,r.pctMeta)}%"></span></div><strong>${r.pctMeta}%</strong></div></td><td>${r.pendentes}</td></tr>`).join('')}</tbody></table></div></section>
       ${vdSkuQtdPanelHTML(sku,'Qtd por produto vendido',MESES[mesAtual]+' '+anoAtual)}
