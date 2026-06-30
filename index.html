@@ -4073,13 +4073,12 @@ carregarDashboard=async function(silencioso=false){
 };
 
 // ===================== RELATÓRIOS =====================
-let relDados=[],relCoordFiltro='todos',relCarregando=false;
+let relDados=[],relForecastDados=[],relCoordFiltro='todos',relCarregando=false,relAbaAtual='inteligencia';
 
 async function irRelatorios(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
   show('s-relatorios');
   updateSideNav('relatorios');
-  // popular select de coord
   const sel=g('rel-coord');
   if(sel){
     sel.innerHTML='<option value="todos">Todos os coordenadores</option>'+
@@ -4096,16 +4095,32 @@ async function relCarregar(){
   g('rel-content').innerHTML='<div class="loading">Carregando relatórios...</div>';
   try{
     const filtroCoord=(!isAdmin&&!isDiretoria&&user!=='vagner')?`coordenador=eq.${encodeURIComponent(coordAtual)}&`:'';
-    const data=await sb(`/rest/v1/pedidos_vendas?${filtroCoord}ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true});
-    relDados=Array.isArray(data)?data.filter(dashPedidoValido):[];
-    relRender();
+    const [vendas,forecast]=await Promise.all([
+      sb(`/rest/v1/pedidos_vendas?${filtroCoord}ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
+      sb(`/rest/v1/forecast_pedidos?${filtroCoord}forecast_ano=eq.${anoAtual}&select=*,forecast_pedidos_itens(*)&limit=3000`,{ret:true})
+    ]);
+    relDados=Array.isArray(vendas)?vendas.filter(dashPedidoValido):[];
+    relForecastDados=Array.isArray(forecast)?forecast:[];
+    relAba(relAbaAtual);
   }catch(e){g('rel-content').innerHTML='<div class="empty">Erro ao carregar dados.</div>';}
   finally{relCarregando=false;}
 }
 
 function relFiltrarCoord(v){
   relCoordFiltro=v;
-  relRender();
+  relAba(relAbaAtual);
+}
+
+function relAba(aba){
+  relAbaAtual=aba;
+  document.querySelectorAll('[id^="rel-tab-"]').forEach(b=>b.classList.toggle('active',b.id==='rel-tab-'+aba));
+  const lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
+  const forecast=relCoordFiltro==='todos'?relForecastDados:relForecastDados.filter(p=>p.coordenador===relCoordFiltro);
+  g('rel-sub').textContent=`${anoAtual} · ${relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro}`;
+  if(aba==='inteligencia')relRender(lista);
+  else if(aba==='faturado')relRenderFaturado(lista);
+  else if(aba==='forecast')relRenderForecast(forecast);
+  else if(aba==='pedidos')relRenderPedidos(lista);
 }
 
 function relFmt(n){return Number(n||0).toLocaleString('pt-BR');}
