@@ -4844,6 +4844,11 @@ function relRenderFaturado(lista){
     const badge=tipo==='in'
       ?'<span style="background:#DBEAFE;color:#1D4ED8;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">IN</span>'
       :'<span style="background:#FEF3C7;color:#92400E;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">OFF</span>';
+    const origemLabel=p.origem||'Fábrica';
+    const origemGrupo=vdEhDistribuidora(p)?'dist':'fabrica';
+    const origemBadge=origemGrupo==='fabrica'
+      ?'<span style="background:#DCFCE7;color:#166534;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">Fábrica</span>'
+      :`<span style="background:#DBEAFE;color:#1E40AF;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${vdEsc(origemLabel)}</span>`;
     const skuTds=RSKUS.map(s=>{
       const it=(p.pedidos_vendas_itens||[]).find(x=>x.sku===s);
       const fat=it?Math.min(Number(it.qty_caixas||0),Number(it.qty_faturada||0)):0;
@@ -4856,6 +4861,7 @@ function relRenderFaturado(lista){
       <td style="padding:7px 8px;color:#7A7870">${vdEsc(p.cliente_uf||'—')}</td>
       <td style="padding:7px 8px;font-size:11px;color:#7A7870">${vdEsc(p.coordenador)}</td>
       <td style="padding:7px 8px">${badge}</td>
+      <td style="padding:7px 8px">${origemBadge}</td>
       ${skuTds}
       <td style="padding:7px 8px;text-align:center;font-weight:700">${x.faturadoCx}</td>
       <td style="padding:7px 8px;font-size:11px;color:#7A7870">${stLabel}</td>
