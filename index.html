@@ -3017,7 +3017,6 @@ function vdRenderMetrics(){
   g('vd-total-pedidos-sub').textContent=aguardandoGnre.length+' aguardando GNRE · '+liberados.length+' liberados';
   g('vd-total-valor').textContent=vdFmt(resumo.pedidoValor);
   g('vd-total-valor-sub').textContent='Lançado · comissão só no faturado';
-  const pctReal=meta>0?Math.round(real/meta*100):0;
   const fabPeds=vdPedidos.filter(p=>!vdEhDistribuidora(p));
   const distPeds=vdPedidos.filter(p=>vdEhDistribuidora(p));
   const fabFatCx=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
