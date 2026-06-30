@@ -2723,6 +2723,7 @@ let vdCliForm={tipo:'in',prazo:'avista',skus:{GR:0,GM:0,CM:0,CC:0,GTWIN:0,CK:0}}
 const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const vdTipoPedido=p=>String(p?.tipo||'in').toLowerCase();
+const vdEhDistribuidora=p=>!vdOrigemFaturadoFabiano(p?.origem);
 const vdPodeEditar=()=>user==='admin';
 const vdPodeGerenciarGnre=()=>user==='admin'||isFabiano();
 const vdPodeFaturar=()=>user==='admin'||isFabiano();
