@@ -3531,6 +3531,23 @@ function vdAbrirDet(id){
   const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuFull(i.sku))+' ('+vdEsc(vdSkuLabel(i.sku))+')</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
   const parc=vdPrazoLabel(p);
   const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta / OFF':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
+  // botões de ação GNRE calculados antes do innerHTML
+  const _precisaGnre=x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)&&!vdGnreLiberada(p);
+  const _gnreSt=vdGnreStatus(p);
+  const _gnreBtns=[];
+  if(vdPodeAnexarGnre()&&_precisaGnre){
+    _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>');
+    if(!isFabiano())_gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>');
+  }
+  if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)){
+    if(!isFabiano()&&_gnreSt==='pendente')_gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
+    _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar valor</button>');
+    if(_precisaGnre){
+      if(_gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)_gnreBtns.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar GNRE paga</button>');
+      _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar GNRE</button>');
+    }
+  }
+  const gnreAcoesHTML=_gnreBtns.length?'<div class="vd-card-actions" style="margin-bottom:10px">'+_gnreBtns.join('')+'</div>':'';
   const itensGrid=x.itens.length?
     '<div class="vd-card-oper">'+
       '<div class="vd-prod-row vd-prod-head"><span>Produto</span><span class="vd-prod-val">Pedido</span><span class="vd-prod-val">Fat.</span><span class="vd-prod-val">Saldo</span></div>'+
