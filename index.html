@@ -4205,6 +4205,26 @@ function tvRender(rows,vendas){
           '<div class="tv-row-pct">'+r.pct+'%</div>'+
         '</div>';
       }).join('')+'</div></section>'+
+    (function(){
+      if(!vendas||!vendas.length)return'';
+      const inList=vendas.filter(p=>vdTipoPedido(p)==='in');
+      const offList=vendas.filter(p=>vdTipoPedido(p)==='off');
+      const inCx=inList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+      const offCx=offList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+      return'<section class="tv-coords"><div class="tv-section-title"><strong>IN vs OFF</strong><span>'+MESES[mesAtual]+' '+anoAtual+'</span></div>'+
+        '<div class="tv-coord-list">'+
+          '<div class="tv-coord-row" style="background:rgba(59,130,246,.08)">'+
+            '<div><div class="tv-coord-name" style="color:#93C5FD">IN — com NF</div><div class="tv-coord-values">'+inList.length+' pedido(s)</div></div>'+
+            '<div><div class="tv-row-bar"><span style="width:'+Math.min(100,inCx+offCx>0?Math.round(inCx/(inCx+offCx)*100):0)+'%;background:#3B82F6"></span></div><div class="tv-coord-values">'+tvFmt(inCx)+' cx no total</div></div>'+
+            '<div class="tv-row-pct" style="color:#93C5FD">'+tvFmt(inCx)+' cx</div>'+
+          '</div>'+
+          '<div class="tv-coord-row" style="background:rgba(217,119,6,.08)">'+
+            '<div><div class="tv-coord-name" style="color:#FCD34D">OFF — sem NF</div><div class="tv-coord-values">'+offList.length+' pedido(s)</div></div>'+
+            '<div><div class="tv-row-bar"><span style="width:'+Math.min(100,inCx+offCx>0?Math.round(offCx/(inCx+offCx)*100):0)+'%;background:#D97706"></span></div><div class="tv-coord-values">'+tvFmt(offCx)+' cx no total</div></div>'+
+            '<div class="tv-row-pct" style="color:#FCD34D">'+tvFmt(offCx)+' cx</div>'+
+          '</div>'+
+        '</div></section>';
+    })()+
     (vendas&&vendas.length?(function(){
       const ufRows=dashCaixasPorUf(vendas);
       const top=ufRows.filter(r=>r.cx>0).sort((a,b)=>b.cx-a.cx).slice(0,8);
