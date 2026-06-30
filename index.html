@@ -1377,7 +1377,7 @@ async function login(){
     await Promise.all([carregarMetas(),carregarClientes()]);
   }
   if(isFabiano()){vdFiltro='pendente';irVendas();}
-  else irDash();
+  else irDash(true);
 }
 
 // ── CLIENTES DB ──
