@@ -5358,20 +5358,16 @@ function tvRender(rows,vendas){
       '<div class="tv-big-card wide"><div class="tv-label">Total em carteira</div><div><span class="tv-number">'+tvFmt(realizadoGeral)+'</span><span class="tv-unit">cx</span></div><div class="tv-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div><div class="tv-note">'+pctGeral+'% da meta · pedidos colocados</div></div>'+
       '<div class="tv-big-card" style="border:1px solid rgba(74,222,128,.25);background:rgba(74,222,128,.07)"><div class="tv-label" style="color:#4ADE80">✅ Ja Faturado</div><div><span class="tv-number" style="color:#4ADE80">'+tvFmt(faturadoGeral)+'</span><span class="tv-unit" style="color:#4ADE80">cx</span></div><div class="tv-progress"><span style="width:'+Math.min(100,pctFaturado)+'%;background:#4ADE80"></span></div><div class="tv-note">'+pctFaturado+'% da meta · saiu da fabrica</div></div>'+
       '<div class="tv-big-card" style="border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.07)"><div class="tv-label" style="color:#FBB724">⏳ A Faturar</div><div><span class="tv-number" style="color:#FBB724">'+tvFmt(aFaturarGeral)+'</span><span class="tv-unit" style="color:#FBB724">cx</span></div><div class="tv-note">saldo pendente de faturamento</div></div>'+
-      '<div class="tv-big-card"><div class="tv-label">Previsao do mes</div><div><span class="tv-number">'+tvFmt(previsao)+'</span><span class="tv-unit">cx</span></div><div class="tv-note">'+pctPrevisao+'% da meta no ritmo atual</div></div>'+
-    '</section>'+
-    '<section class="tv-coords" style="padding:14px 24px">'+
-      '<div class="tv-section-title" style="margin-bottom:10px"><strong>Fábrica vs Distribuidoras</strong><span>'+MESES[mesAtual]+' '+anoAtual+'</span></div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'+
-        '<div style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:16px">'+
-          '<div style="font-size:clamp(10px,1vw,13px);color:#4ADE80;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:8px">🏭 Fábrica — já faturado</div>'+
-          '<div style="font-size:clamp(32px,3.5vw,56px);font-weight:900;color:#4ADE80;line-height:1">'+tvFmt(faturadoGeral)+' <span style="font-size:.45em;opacity:.7">cx</span></div>'+
-          (fabPendente>0?'<div style="font-size:clamp(11px,1.1vw,14px);color:rgba(74,222,128,.6);margin-top:6px">+ '+tvFmt(fabPendente)+' cx pendentes a faturar</div>':'')+
+      '<div class="tv-big-card wide" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px">'+
+        '<div style="border-right:1px solid rgba(255,255,255,.1);padding-right:14px">'+
+          '<div style="font-size:clamp(10px,.9vw,12px);color:#4ADE80;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🏭 Fábrica — já faturado</div>'+
+          '<div style="font-size:clamp(28px,3vw,48px);font-weight:900;color:#4ADE80;line-height:1">'+tvFmt(faturadoGeral)+' <span style="font-size:.4em;opacity:.7">cx</span></div>'+
+          (fabPendente>0?'<div style="font-size:clamp(11px,.9vw,13px);color:rgba(74,222,128,.55);margin-top:4px">+ '+tvFmt(fabPendente)+' cx pendentes</div>':'')+
         '</div>'+
-        '<div style="background:rgba(147,197,253,.07);border:1px solid rgba(147,197,253,.2);border-radius:12px;padding:16px">'+
-          '<div style="font-size:clamp(10px,1vw,13px);color:#93C5FD;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:8px">🚛 Distribuidoras — total pedidos</div>'+
-          '<div style="font-size:clamp(32px,3.5vw,56px);font-weight:900;color:#93C5FD;line-height:1">'+tvFmt(distCxTV)+' <span style="font-size:.45em;opacity:.7">cx</span></div>'+
-          (distBreakdownTV?'<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">'+distBreakdownTV+'</div>':'')+
+        '<div>'+
+          '<div style="font-size:clamp(10px,.9vw,12px);color:#93C5FD;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:6px">🚛 Distribuidoras</div>'+
+          '<div style="font-size:clamp(28px,3vw,48px);font-weight:900;color:#93C5FD;line-height:1">'+tvFmt(distCxTV)+' <span style="font-size:.4em;opacity:.7">cx</span></div>'+
+          (distBreakdownTV?'<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 10px">'+distBreakdownTV+'</div>':'')+
         '</div>'+
       '</div>'+
     '</section>'+
