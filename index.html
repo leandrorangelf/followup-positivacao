@@ -3123,9 +3123,9 @@ async function vdPatchOrigem(id,origem){
   if(!res.ok)throw new Error('PATCH origem falhou: '+res.status);
 }
 function vdSelecionarOrigem(origem){
+  const pid=vdOrigemPatchId; // salva antes de fechar (fechar reseta a variável)
   vdFecharOrigem();
-  if(vdOrigemPatchId){
-    const pid=vdOrigemPatchId;
+  if(pid){
     vdOrigemPatchId=null;
     vdPatchOrigem(pid,origem).then(()=>{
       // atualiza o pedido no array local
