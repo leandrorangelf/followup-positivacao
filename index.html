@@ -885,36 +885,39 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <div class="orig-modal-sub" id="orig-modal-sub">Selecione a origem antes de preencher o pedido</div>
     <div class="orig-grupo-label">Fábrica</div>
     <div class="orig-btns" style="grid-template-columns:1fr">
-      <button class="orig-btn grupo-fabrica" onclick="vdSelecionarOrigem('Fábrica')">
+      <button class="orig-btn grupo-fabrica" id="orig-opt-Fábrica" onclick="vdEscolherOrigem('Fábrica')">
         <span class="ob-label">Fábrica</span>
         <span class="ob-sub">Faturado pelo Fabiano · sai da produção direta</span>
       </button>
     </div>
     <div class="orig-grupo-label">New Bluetex</div>
     <div class="orig-btns">
-      <button class="orig-btn" onclick="vdSelecionarOrigem('New Bluetex MG')">
+      <button class="orig-btn" id="orig-opt-New Bluetex MG" onclick="vdEscolherOrigem('New Bluetex MG')">
         <span class="ob-label">New Bluetex MG</span><span class="ob-sub">Minas Gerais</span>
       </button>
-      <button class="orig-btn" onclick="vdSelecionarOrigem('New Bluetex AM')">
+      <button class="orig-btn" id="orig-opt-New Bluetex AM" onclick="vdEscolherOrigem('New Bluetex AM')">
         <span class="ob-label">New Bluetex AM</span><span class="ob-sub">Amazonas</span>
       </button>
-      <button class="orig-btn" onclick="vdSelecionarOrigem('New Bluetex SC')">
+      <button class="orig-btn" id="orig-opt-New Bluetex SC" onclick="vdEscolherOrigem('New Bluetex SC')">
         <span class="ob-label">New Bluetex SC</span><span class="ob-sub">Santa Catarina</span>
       </button>
     </div>
     <div class="orig-grupo-label">GB</div>
     <div class="orig-btns">
-      <button class="orig-btn" onclick="vdSelecionarOrigem('GB SP')">
+      <button class="orig-btn" id="orig-opt-GB SP" onclick="vdEscolherOrigem('GB SP')">
         <span class="ob-label">GB SP</span><span class="ob-sub">São Paulo</span>
       </button>
-      <button class="orig-btn inativa" onclick="vdSelecionarOrigem('GB CE')">
+      <button class="orig-btn inativa" id="orig-opt-GB CE" onclick="vdEscolherOrigem('GB CE')">
         <span class="ob-label">GB CE <span style="font-size:9px;color:#B45309">(inativa)</span></span><span class="ob-sub">Ceará · somente histórico</span>
       </button>
-      <button class="orig-btn inativa" onclick="vdSelecionarOrigem('GB MA')">
+      <button class="orig-btn inativa" id="orig-opt-GB MA" onclick="vdEscolherOrigem('GB MA')">
         <span class="ob-label">GB MA <span style="font-size:9px;color:#B45309">(inativa)</span></span><span class="ob-sub">Maranhão · somente histórico</span>
       </button>
     </div>
-    <div style="margin-top:18px">
+    <div id="orig-salvar-wrap" style="display:none;margin-top:14px">
+      <button class="vd-btn vd-btn-pri" style="width:100%;font-size:14px" id="orig-salvar-btn" onclick="vdConfirmarOrigem()">Salvar origem</button>
+    </div>
+    <div style="margin-top:10px">
       <button class="vd-btn vd-btn-out" style="width:100%" onclick="vdFecharOrigem()">Cancelar</button>
     </div>
   </div>
