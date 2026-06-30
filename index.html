@@ -3102,7 +3102,13 @@ function vdOrigemFaturadoFabiano(origem){
 
 let vdOrigemPatchId=null; // null = modo novo pedido; id = modo patch de pedido existente
 
-function vdFecharOrigem(){g('modal-origem').style.display='none';vdOrigemPatchId=null;}
+function vdFecharOrigem(){
+  g('modal-origem').style.display='none';
+  vdOrigemPatchId=null;
+  vdOrigemEscolhida=null;
+  document.querySelectorAll('.orig-btn').forEach(b=>b.classList.remove('selected'));
+  const wrap=g('orig-salvar-wrap');if(wrap)wrap.style.display='none';
+}
 function vdAbrirOrigem(){
   vdOrigemPatchId=null;
   const t=g('orig-modal-title'),s=g('orig-modal-sub');
