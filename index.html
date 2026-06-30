@@ -4731,6 +4731,7 @@ function relRenderPedidos(lista){
         <th style="padding:8px">UF</th>
         <th style="padding:8px">Coord</th>
         <th style="padding:8px">Mês</th>
+        <th style="padding:8px">Origem</th>
         <th style="padding:8px">Tipo</th>
         ${thSkus}
         <th style="padding:8px;text-align:center">Total cx</th>
@@ -4738,7 +4739,7 @@ function relRenderPedidos(lista){
       </tr></thead>
       <tbody>${rows}
         <tr style="background:#E2E0D8;font-weight:700;font-size:11px;border-top:2px solid #1A1A18">
-          <td colspan="6" style="padding:8px 10px">TOTAL — ${lista.length} pedidos</td>
+          <td colspan="7" style="padding:8px 10px">TOTAL — ${lista.length} pedidos</td>
           ${tdTotSkus}
           <td style="text-align:center;padding:8px">${relFmt(totalCx)}</td>
           <td></td>
