@@ -2979,6 +2979,10 @@ function vdPedidosFiltrados(){
   return baseFiltrada;
 }
 
+function vdSetOrigemFiltro(v){
+  vdOrigemFiltro=v;
+  vdRenderKanban();
+}
 function vdRenderKanban(){
   const lista=vdPedidosFiltrados();
   const grupos=[
