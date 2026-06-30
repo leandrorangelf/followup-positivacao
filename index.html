@@ -3573,24 +3573,7 @@ function vdAbrirDet(id){
       '<div class="vd-info-pill"><span>Coordenador</span>'+vdEsc(p.coordenador||'—')+'</div>'+
     '</div>'+
     vdAnexosHTML(p)+
-    (()=>{
-      const precisaGnre=x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)&&!vdGnreLiberada(p);
-      const gnreSt=vdGnreStatus(p);
-      const btns=[];
-      if(vdPodeAnexarGnre()&&precisaGnre){
-        btns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>');
-        if(!isFabiano())btns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>');
-      }
-      if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)){
-        if(!isFabiano()&&gnreSt==='pendente')btns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
-        btns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar valor</button>');
-        if(precisaGnre){
-          if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)btns.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar GNRE paga</button>');
-          btns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar GNRE</button>');
-        }
-      }
-      return btns.length?'<div class="vd-card-actions" style="margin-bottom:10px">'+btns.join('')+'</div>':'';
-    })()+
+    gnreAcoesHTML+
     itensGrid+
     '<div class="vd-fat-summary">'+
       '<div class="vd-fat-stat"><strong>'+x.pedidoCx+'</strong><span>Pedido</span></div>'+
