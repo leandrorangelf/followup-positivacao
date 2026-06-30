@@ -812,6 +812,17 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <button class="vd-chip no-diretoria no-vagner no-fabiano" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
     <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF GNRE</button>
   </div>
+  <select onchange="vdSetOrigemFiltro(this.value)" id="vd-origem-sel" style="margin:0 16px 8px;padding:6px 10px;border:1px solid #D8D6CE;border-radius:8px;font-size:12px;font-weight:600;background:#fff;color:var(--text);cursor:pointer">
+    <option value="todos">Todas as origens</option>
+    <option value="fabrica">Fábrica</option>
+    <option value="dist">Distribuidoras</option>
+    <option value="New Bluetex MG">New Bluetex MG</option>
+    <option value="New Bluetex AM">New Bluetex AM</option>
+    <option value="New Bluetex SC">New Bluetex SC</option>
+    <option value="GB SP">GB SP</option>
+    <option value="GB CE">GB CE</option>
+    <option value="GB MA">GB MA</option>
+  </select>
   <div class="vd-section" id="vd-lista-wrap">
     <div id="vd-lista-container"></div>
   </div>
