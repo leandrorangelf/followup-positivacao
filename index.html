@@ -4066,6 +4066,258 @@ carregarDashboard=async function(silencioso=false){
   }
 };
 
+// ===================== RELATÓRIOS =====================
+let relDados=[],relCoordFiltro='todos',relCarregando=false;
+
+async function irRelatorios(){
+  if(isFabiano()){toast('Acesso não disponível','error');return;}
+  show('s-relatorios');
+  updateSideNav('relatorios');
+  // popular select de coord
+  const sel=g('rel-coord');
+  if(sel){
+    sel.innerHTML='<option value="todos">Todos os coordenadores</option>'+
+      COORD_KEYS.map(c=>`<option value="${vdEsc(c)}">${vdEsc(c)}</option>`).join('');
+    if(!isAdmin&&!isDiretoria&&user!=='vagner'){sel.value=coordAtual;sel.disabled=true;}
+    else{sel.value=relCoordFiltro;sel.disabled=false;}
+  }
+  await relCarregar();
+}
+
+async function relCarregar(){
+  if(relCarregando)return;
+  relCarregando=true;
+  g('rel-content').innerHTML='<div class="loading">Carregando relatórios...</div>';
+  try{
+    const filtroCoord=(!isAdmin&&!isDiretoria&&user!=='vagner')?`coordenador=eq.${encodeURIComponent(coordAtual)}&`:'';
+    const data=await sb(`/rest/v1/pedidos_vendas?${filtroCoord}ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true});
+    relDados=Array.isArray(data)?data.filter(dashPedidoValido):[];
+    relRender();
+  }catch(e){g('rel-content').innerHTML='<div class="empty">Erro ao carregar dados.</div>';}
+  finally{relCarregando=false;}
+}
+
+function relFiltrarCoord(v){
+  relCoordFiltro=v;
+  relRender();
+}
+
+function relFmt(n){return Number(n||0).toLocaleString('pt-BR');}
+function relFmtVal(n){return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});}
+function relBar(pct,cor){
+  cor=cor||'#6366f1';
+  return`<div style="height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.min(100,pct)}%;background:${cor};border-radius:99px"></div></div>`;
+}
+
+function relRender(){
+  const lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
+  if(!lista.length){g('rel-content').innerHTML='<div class="empty">Nenhum pedido encontrado para os filtros selecionados.</div>';return;}
+
+  g('rel-sub').textContent=`Análise de ${anoAtual} · ${lista.length} pedidos · filtro: ${relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro}`;
+
+  // ── 1. IN vs OFF consolidado ──
+  const inList=lista.filter(p=>vdTipoPedido(p)==='in');
+  const offList=lista.filter(p=>vdTipoPedido(p)==='off');
+  const inCx=inList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+  const offCx=offList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+  const totalCx=inCx+offCx;
+  const inVal=inList.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
+  const offVal=offList.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
+  const pctIn=totalCx>0?Math.round(inCx/totalCx*100):0;
+  const pctOff=100-pctIn;
+
+  // ── 2. Por mês (evolução) ──
+  const porMes=MESES.map((_,i)=>{
+    const ml=lista.filter(p=>p.mes===i);
+    const mIn=ml.filter(p=>vdTipoPedido(p)==='in');
+    const mOff=ml.filter(p=>vdTipoPedido(p)==='off');
+    return{mes:i,total:ml.length,inCx:mIn.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0),offCx:mOff.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0),pedidos:ml.length};
+  });
+  const maxMesCx=Math.max(1,...porMes.map(m=>m.inCx+m.offCx));
+
+  // ── 3. Ranking de clientes ──
+  const porCliente={};
+  lista.forEach(p=>{
+    const k=p.cliente_nome;
+    if(!porCliente[k])porCliente[k]={nome:k,coord:p.coordenador,pedidos:0,meses:new Set(),cx:0,valor:0,in:0,off:0};
+    const x=vdResumoPedido(p);
+    porCliente[k].pedidos++;
+    porCliente[k].meses.add(p.mes);
+    porCliente[k].cx+=x.pedidoCx;
+    porCliente[k].valor+=x.pedidoValor;
+    if(vdTipoPedido(p)==='in')porCliente[k].in++;else porCliente[k].off++;
+  });
+  const rankClientes=Object.values(porCliente).sort((a,b)=>b.cx-a.cx);
+  const maxCli=rankClientes[0]?.cx||1;
+  const mediaPedidoCx=lista.length?Math.round(totalCx/lista.length):0;
+  const mediaCliCx=rankClientes.length?Math.round(totalCx/rankClientes.length):0;
+
+  // ── 4. Ranking de SKUs ──
+  const skuTot={};VD_SKUS.forEach(s=>skuTot[s]=0);
+  lista.forEach(p=>{(p.pedidos_vendas_itens||[]).forEach(i=>{if(skuTot[i.sku]!==undefined)skuTot[i.sku]+=Number(i.qty_caixas||0);});});
+  const rankSkus=Object.entries(skuTot).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const maxSku=rankSkus[0]?.[1]||1;
+
+  // ── 5. Recorrência (meses ativos) ──
+  const rankRecorrencia=[...rankClientes].sort((a,b)=>b.meses.size-a.meses.size||b.cx-a.cx).slice(0,10);
+  const rankTop=[...rankClientes].slice(0,10);
+
+  // ── 6. Ticket médio por coordenador ──
+  const porCoord={};
+  COORD_KEYS.forEach(c=>{porCoord[c]={cx:0,pedidos:0,clientes:new Set(),in:0,off:0};});
+  lista.forEach(p=>{
+    if(porCoord[p.coordenador]){
+      const x=vdResumoPedido(p);
+      porCoord[p.coordenador].cx+=x.pedidoCx;
+      porCoord[p.coordenador].pedidos++;
+      porCoord[p.coordenador].clientes.add(p.cliente_nome);
+      if(vdTipoPedido(p)==='in')porCoord[p.coordenador].in++;else porCoord[p.coordenador].off++;
+    }
+  });
+  const coordRows=COORD_KEYS.filter(c=>porCoord[c].pedidos>0).map(c=>{
+    const r=porCoord[c];
+    return`<tr style="border-top:1px solid #E2E0D8">
+      <td style="padding:8px 12px;font-weight:600">${vdEsc(c)}</td>
+      <td style="padding:8px 8px;text-align:center">${r.pedidos}</td>
+      <td style="padding:8px 8px;text-align:center">${r.clientes.size}</td>
+      <td style="padding:8px 8px;text-align:center;color:#1D4ED8;font-weight:700">${relFmt(r.cx)} cx</td>
+      <td style="padding:8px 8px;text-align:center">${r.pedidos>0?Math.round(r.cx/r.pedidos):0} cx/ped</td>
+      <td style="padding:8px 8px;text-align:center"><span style="background:#DBEAFE;color:#1D4ED8;padding:1px 7px;border-radius:4px;font-size:11px">${r.in} IN</span></td>
+      <td style="padding:8px 8px;text-align:center"><span style="background:#FEF3C7;color:#92400E;padding:1px 7px;border-radius:4px;font-size:11px">${r.off} OFF</span></td>
+    </tr>`;
+  }).join('');
+
+  g('rel-content').innerHTML=`
+  <!-- KPIs topo -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px">
+    <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Total caixas ${anoAtual}</div>
+      <div style="font-size:24px;font-weight:700">${relFmt(totalCx)}</div>
+      <div style="font-size:11px;color:#7A7870">${lista.length} pedidos no ano</div>
+    </div>
+    <div style="background:#EFF6FF;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="font-size:10px;color:#1D4ED8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">IN — com NF</div>
+      <div style="font-size:24px;font-weight:700;color:#1D4ED8">${relFmt(inCx)} cx</div>
+      <div style="font-size:11px;color:#3B82F6">${inList.length} pedidos · ${pctIn}% do total · ${relFmtVal(inVal)}</div>
+    </div>
+    <div style="background:#FFFBEB;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="font-size:10px;color:#92400E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">OFF — sem NF</div>
+      <div style="font-size:24px;font-weight:700;color:#B45309">${relFmt(offCx)} cx</div>
+      <div style="font-size:11px;color:#D97706">${offList.length} pedidos · ${pctOff}% do total · ${relFmtVal(offVal)}</div>
+    </div>
+    <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Ticket médio / pedido</div>
+      <div style="font-size:24px;font-weight:700">${relFmt(mediaPedidoCx)} cx</div>
+      <div style="font-size:11px;color:#7A7870">Média por cliente: ${relFmt(mediaCliCx)} cx</div>
+    </div>
+    <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Clientes únicos</div>
+      <div style="font-size:24px;font-weight:700">${rankClientes.length}</div>
+      <div style="font-size:11px;color:#7A7870">com pelo menos 1 pedido</div>
+    </div>
+  </div>
+
+  <!-- Evolução mensal -->
+  <div style="background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Evolução mensal — ${anoAtual} <span style="font-size:11px;color:#7A7870;font-weight:400">(IN azul · OFF âmbar)</span></div>
+    <div style="display:flex;align-items:flex-end;gap:4px;height:80px;overflow-x:auto">
+      ${porMes.map((m,i)=>{
+        const tot=m.inCx+m.offCx;
+        const hIn=tot>0?Math.round(m.inCx/maxMesCx*72):0;
+        const hOff=tot>0?Math.round(m.offCx/maxMesCx*72):0;
+        const atual=i===mesAtual;
+        return`<div style="flex:1;min-width:32px;display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div style="font-size:9px;color:#7A7870;margin-bottom:2px">${tot>0?relFmt(tot):''}</div>
+          <div style="width:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:1px">
+            <div style="width:100%;height:${hIn}px;background:${atual?'#3B82F6':'#BFDBFE'};border-radius:3px 3px 0 0"></div>
+            <div style="width:100%;height:${hOff}px;background:${atual?'#F59E0B':'#FDE68A'};border-radius:0 0 3px 3px"></div>
+          </div>
+          <div style="font-size:9px;color:${atual?'#6366f1':'#7A7870'};font-weight:${atual?'800':'400'};margin-top:2px">${MESES[i].slice(0,3)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <!-- Grid: Top clientes + SKU ranking -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+
+    <!-- Top 10 clientes por volume -->
+    <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Top clientes — volume no ano</div>
+      ${rankTop.map((r,i)=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="width:20px;font-size:11px;font-weight:700;color:#7A7870;text-align:right">${i+1}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${vdEsc(r.nome)}</div>
+            <div style="font-size:10px;color:#7A7870">${vdEsc(r.coord)} · ${r.meses.size} mes(es) · ${r.pedidos} ped.</div>
+            ${relBar(Math.round(r.cx/maxCli*100),'#6366f1')}
+          </div>
+          <div style="font-size:12px;font-weight:700;white-space:nowrap">${relFmt(r.cx)} cx</div>
+        </div>`).join('')}
+    </div>
+
+    <!-- Ranking de SKUs -->
+    <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Ranking de produtos</div>
+      ${rankSkus.length?rankSkus.map(([sku,cx],i)=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <div style="width:20px;font-size:11px;font-weight:700;color:#7A7870;text-align:right">${i+1}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700">${sku}</div>
+            ${relBar(Math.round(cx/maxSku*100),'#22c55e')}
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;font-weight:700">${relFmt(cx)} cx</div>
+            <div style="font-size:10px;color:#7A7870">${totalCx>0?Math.round(cx/totalCx*100):0}% do total</div>
+          </div>
+        </div>`).join(''):'<div class="empty">Sem dados de SKU</div>'}
+    </div>
+  </div>
+
+  <!-- Recorrência de clientes -->
+  <div style="background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px">Recorrência de compra <span style="font-size:11px;color:#7A7870;font-weight:400">— clientes mais consistentes no ano</span></div>
+    <div style="font-size:11px;color:#7A7870;margin-bottom:12px">Quantos meses distintos o cliente fez ao menos 1 pedido</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">
+      ${rankRecorrencia.map(r=>{
+        const mesesAtivos=r.meses.size;
+        const pct=Math.round(mesesAtivos/12*100);
+        const cor=pct>=75?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
+        return`<div style="border:1px solid #E2E0D8;border-radius:10px;padding:10px 12px">
+          <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${vdEsc(r.nome)}</div>
+          <div style="font-size:10px;color:#7A7870;margin-bottom:6px">${vdEsc(r.coord)} · ${r.pedidos} pedido(s)</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${cor};border-radius:99px"></div></div>
+            <span style="font-size:11px;font-weight:700;color:${cor}">${mesesAtivos}/12 meses</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <!-- Por coordenador -->
+  <div style="background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Resumo por coordenador — ${anoAtual}</div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#FAFAF8;color:#7A7870;font-size:10px;text-transform:uppercase;letter-spacing:.06em">
+          <th style="text-align:left;padding:8px 12px">Coordenador</th>
+          <th style="text-align:center;padding:8px">Pedidos</th>
+          <th style="text-align:center;padding:8px">Clientes</th>
+          <th style="text-align:center;padding:8px">Total cx</th>
+          <th style="text-align:center;padding:8px">Ticket médio</th>
+          <th style="text-align:center;padding:8px">IN</th>
+          <th style="text-align:center;padding:8px">OFF</th>
+        </tr></thead>
+        <tbody>${coordRows}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Lista completa IN vs OFF do mês atual -->
+  ${renderInOffSection(lista.filter(p=>p.mes===mesAtual),relCoordFiltro==='todos')}
+  `;
+}
 // ===================== PAINEL TV EXTERNA =====================
 let tvTimer=null,tvCarregando=false;
 function tvFmt(v){return Number(v||0).toLocaleString('pt-BR');}
