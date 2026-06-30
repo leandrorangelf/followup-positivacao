@@ -3126,21 +3126,40 @@ async function vdPatchOrigem(id,origem){
   });
   if(!res.ok)throw new Error('PATCH origem falhou: '+res.status);
 }
-function vdSelecionarOrigem(origem){
-  const pid=vdOrigemPatchId; // salva antes de fechar (fechar reseta a variável)
+let vdOrigemEscolhida=null;
+
+function vdEscolherOrigem(origem){
+  vdOrigemEscolhida=origem;
+  // destaca botão selecionado
+  document.querySelectorAll('.orig-btn').forEach(b=>b.classList.remove('selected'));
+  const btn=document.getElementById('orig-opt-'+origem);
+  if(btn)btn.classList.add('selected');
+  // se modo patch: mostra botão salvar
+  if(vdOrigemPatchId){
+    const wrap=g('orig-salvar-wrap');
+    const lbl=g('orig-salvar-btn');
+    if(wrap)wrap.style.display='block';
+    if(lbl)lbl.textContent='Salvar: '+origem;
+  } else {
+    // modo novo pedido: confirma direto
+    vdConfirmarOrigem();
+  }
+}
+
+function vdConfirmarOrigem(){
+  const origem=vdOrigemEscolhida;
+  if(!origem)return;
+  const pid=vdOrigemPatchId;
   vdFecharOrigem();
   if(pid){
-    vdOrigemPatchId=null;
     vdPatchOrigem(pid,origem).then(()=>{
-      // atualiza o pedido no array local
       const p=vdPedidos.find(x=>x.id===pid);
       if(p)p.origem=origem||null;
-      // se o modal de detalhe ainda estiver aberto para este pedido, re-renderiza
       if(vdDetAtual&&vdDetAtual.id===pid){
         vdDetAtual.origem=origem||null;
         vdAbrirDet(pid);
       }
-      toast('Origem definida: '+(origem||'Fábrica'));
+      toast('Origem salva: '+origem);
     }).catch(e=>{toast('Erro ao salvar origem','error');console.error(e);});
     return;
   }
