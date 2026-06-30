@@ -2690,7 +2690,7 @@ function renderInOffSection(vendas,showCoord){
       :'<span style="background:#FEF3C7;color:#92400E;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700">OFF</span>';
     const tdCoord=showCoord?'<td style="font-size:11px;color:#7A7870;padding:7px 8px">'+vdEsc(r.coord)+'</td>':'';
     const tdSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(r.skus[s]||'—')+'</td>').join('');
-    return'<tr style="border-top:1px solid #E2E0D8"><td style="padding:7px 12px">'+vdEsc(r.nome)+'</td>'+tdCoord+'<td style="padding:7px 8px">'+badge+'</td>'+tdSkus+'<td style="text-align:center;padding:7px 8px;font-weight:700">'+r.cx+'</td></tr>';
+    return'<tr data-tipo="'+r.tipo+'" style="border-top:1px solid #E2E0D8"><td style="padding:7px 12px">'+vdEsc(r.nome)+'</td>'+tdCoord+'<td style="padding:7px 8px">'+badge+'</td>'+tdSkus+'<td style="text-align:center;padding:7px 8px;font-weight:700">'+r.cx+'</td></tr>';
   }).join('');
   const tdInSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(inSkus[s]||'—')+'</td>').join('');
   const tdOffSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(offSkus[s]||'—')+'</td>').join('');
