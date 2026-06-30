@@ -2966,29 +2966,53 @@ function vdRenderKanban(){
   });
   const showCoord=vdCoordFiltro==='todos';
   const thead=`<thead><tr>
-    <th>Cliente</th>
+    <th>Cliente / Situação</th>
     ${showCoord?'<th class="td-hide">Coord.</th>':''}
-    <th class="td-hide">Tipo</th>
-    <th class="td-hide">Origem</th>
-    <th class="td-hide">Status</th>
-    <th>Caixas</th>
+    <th class="td-hide">Tipo · Origem</th>
+    <th>Cx ped · fat · saldo</th>
     <th>Valor</th>
   </tr></thead>`;
   const rowHTML=p=>{
     const x=vdResumoPedido(p);
-    const stLabel=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Parcial':'Pedido';
-    const stColor=x.status==='faturado'||x.status==='entregue'?'#166534':x.status==='parcial'?'#92400E':'#1E3A5F';
+    const gnreSt=vdGnreStatus(p);
+    const precisaGnre=vdPedidoPrecisaGnre(p);
     const origemLabel=p.origem||'Fábrica';
+    // status label + cor
+    let stLabel,stBg,stClr;
+    if(x.status==='faturado'){stLabel='Faturado';stBg='#DCFCE7';stClr='#166534';}
+    else if(x.status==='entregue'){stLabel='Entregue';stBg='#DCFCE7';stClr='#166534';}
+    else if(x.status==='parcial'){stLabel='Parcial';stBg='#FEF3C7';stClr='#92400E';}
+    else if(precisaGnre){
+      if(gnreSt==='enviada'){stLabel='GNRE enviada';stBg='#DBEAFE';stClr='#1E40AF';}
+      else if(gnreSt==='calculada'){stLabel='GNRE calculada';stBg='#EDE9FE';stClr='#5B21B6';}
+      else{stLabel='Ag. GNRE';stBg='#FEF3C7';stClr='#B45309';}
+    }else{stLabel='Liberado';stBg='#DBEAFE';stClr='#1E40AF';}
+    // alertas / indicadores
+    const alerts=[];
+    if(String(p.faturamento_observacao||'').trim())alerts.push(`<span style="background:#FEF3C7;color:#92400E;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">📋 ${vdEsc(String(p.faturamento_observacao).trim().substring(0,40))}</span>`);
+    if(String(p.comentario_fabiano||'').trim())alerts.push(`<span style="background:#EDE9FE;color:#5B21B6;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">💬 Fabiano: ${vdEsc(String(p.comentario_fabiano).trim().substring(0,35))}</span>`);
+    if(String(p.comentario_vagner||'').trim())alerts.push(`<span style="background:#F0FDF4;color:#166534;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">💬 Vagner: ${vdEsc(String(p.comentario_vagner).trim().substring(0,35))}</span>`);
+    if(p.parcial_de)alerts.push(`<span style="background:#F4F3F0;color:#6B6960;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">↩ Remanescente</span>`);
+    const alertsHTML=alerts.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">${alerts.join('')}</div>`:'';
     return `<tr onclick="vdAbrirDet('${p.id}')">
-      <td class="td-cli">${vdEsc(p.cliente_nome)}${p.cliente_uf?' <span style="color:var(--muted);font-weight:400">· '+vdEsc(p.cliente_uf)+'</span>':''}
-        ${(p.parcial_de?'<div class="td-meta"><span class="vd-badge vd-b-remanescente" style="font-size:9px">↩ Rem.</span></div>':'')}
+      <td>
+        <div style="font-weight:600;font-size:13px">${vdEsc(p.cliente_nome)}${p.cliente_uf?` <span style="color:var(--muted);font-weight:400;font-size:11px">· ${vdEsc(p.cliente_uf)}</span>`:''}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;align-items:center">
+          <span style="background:${stBg};color:${stClr};border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700">${stLabel}</span>
+          ${showCoord?`<span style="color:var(--muted);font-size:10px">${vdEsc(p.coordenador)}</span>`:''}
+        </div>
+        ${alertsHTML}
       </td>
-      ${showCoord?`<td class="td-hide" style="color:var(--muted)">${vdEsc(p.coordenador)}</td>`:''}
-      <td class="td-hide"><span class="vd-badge ${p.tipo==='in'?'vd-b-in':'vd-b-off'}">${p.tipo.toUpperCase()}</span></td>
-      <td class="td-hide">${vdOrigemBadgeHTML(origemLabel)}</td>
-      <td class="td-hide" style="color:${stColor};font-weight:600;font-size:11px">${stLabel}</td>
-      <td style="color:var(--muted)">${x.pedidoCx}<span style="font-size:10px"> cx</span></td>
-      <td>${vdFmt(p.total)}</td>
+      ${showCoord?''/* coord já inline acima */:''}
+      <td class="td-hide">
+        <span class="vd-badge ${p.tipo==='in'?'vd-b-in':'vd-b-off'}">${p.tipo.toUpperCase()}</span>
+        <div style="margin-top:4px">${vdOrigemBadgeHTML(origemLabel)}</div>
+      </td>
+      <td style="font-size:12px;white-space:nowrap">
+        <span style="font-weight:700">${x.pedidoCx}</span><span style="color:var(--muted)"> · ${x.faturadoCx} · </span><span style="font-weight:700;color:${x.saldoCx>0?'#1E40AF':'var(--muted)'}">${x.saldoCx}</span>
+        <span style="color:var(--muted);font-size:10px"> cx</span>
+      </td>
+      <td style="font-weight:700;white-space:nowrap">${vdFmt(p.total)}</td>
     </tr>`;
   };
   const html=grupos.map(gr=>{
