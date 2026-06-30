@@ -2973,8 +2973,9 @@ function vdRenderKanban(){
     <th>Cliente / Situação</th>
     ${showCoord?'<th class="td-hide">Coord.</th>':''}
     <th class="td-hide">Tipo · Origem</th>
-    <th>Cx ped · fat · saldo</th>
+    <th>Cx · saldo</th>
     <th>Valor</th>
+    ${vdPodeEditar()?'<th></th>':''}
   </tr></thead>`;
   const rowHTML=p=>{
     const x=vdResumoPedido(p);
