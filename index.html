@@ -5322,7 +5322,10 @@ function tvSelecionarUfMapa(uf){
 function tvRender(rows,vendas){
   const metaGeral=rows.reduce((s,r)=>s+r.meta,0);
   const realizadoGeral=rows.reduce((s,r)=>s+r.realizado,0);
+  const faturadoGeral=(vendas||[]).reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
+  const aFaturarGeral=Math.max(0,realizadoGeral-faturadoGeral);
   const pctGeral=tvPct(realizadoGeral,metaGeral);
+  const pctFaturado=tvPct(faturadoGeral,metaGeral);
   const previsao=tvPrevisao(realizadoGeral);
   const pctPrevisao=tvPct(previsao,metaGeral);
   const diasRest=tvDiasRestantes();
@@ -5333,8 +5336,9 @@ function tvRender(rows,vendas){
     '<section class="tv-general">'+
       '<div class="tv-big-card"><div class="tv-label">Meta geral</div><div><span class="tv-number">'+tvFmt(metaGeral)+'</span><span class="tv-unit">cx</span></div><div class="tv-note">Objetivo consolidado do mes</div></div>'+
       '<div class="tv-big-card"><div class="tv-label">Dias faltantes</div><div class="tv-days '+clsDias+'">'+diasRest+'</div><div class="tv-note">para fechar '+MESES[mesAtual]+'</div></div>'+
-      '<div class="tv-big-card wide"><div class="tv-label">Realizado geral</div><div><span class="tv-number">'+tvFmt(realizadoGeral)+'</span><span class="tv-unit">cx</span></div><div class="tv-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div><div class="tv-note">'+pctGeral+'% da meta geral</div></div>'+
-      '<div class="tv-big-card"><div class="tv-label">Cumprimento</div><div class="tv-percent">'+pctGeral+'%</div><div class="tv-note">'+tvFmt(Math.max(0,metaGeral-realizadoGeral))+' cx restantes</div></div>'+
+      '<div class="tv-big-card wide"><div class="tv-label">Total em carteira</div><div><span class="tv-number">'+tvFmt(realizadoGeral)+'</span><span class="tv-unit">cx</span></div><div class="tv-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div><div class="tv-note">'+pctGeral+'% da meta · pedidos colocados</div></div>'+
+      '<div class="tv-big-card" style="border:1px solid rgba(74,222,128,.25);background:rgba(74,222,128,.07)"><div class="tv-label" style="color:#4ADE80">✅ Ja Faturado</div><div><span class="tv-number" style="color:#4ADE80">'+tvFmt(faturadoGeral)+'</span><span class="tv-unit" style="color:#4ADE80">cx</span></div><div class="tv-progress"><span style="width:'+Math.min(100,pctFaturado)+'%;background:#4ADE80"></span></div><div class="tv-note">'+pctFaturado+'% da meta · saiu da fabrica</div></div>'+
+      '<div class="tv-big-card" style="border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.07)"><div class="tv-label" style="color:#FBB724">⏳ A Faturar</div><div><span class="tv-number" style="color:#FBB724">'+tvFmt(aFaturarGeral)+'</span><span class="tv-unit" style="color:#FBB724">cx</span></div><div class="tv-note">saldo pendente de faturamento</div></div>'+
       '<div class="tv-big-card"><div class="tv-label">Previsao do mes</div><div><span class="tv-number">'+tvFmt(previsao)+'</span><span class="tv-unit">cx</span></div><div class="tv-note">'+pctPrevisao+'% da meta no ritmo atual</div></div>'+
     '</section>'+
     '<section class="tv-coords"><div class="tv-section-title"><strong>Realizado por coordenador</strong><span>'+MESES[mesAtual]+' '+anoAtual+'</span></div>'+
