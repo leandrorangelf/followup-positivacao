@@ -3014,10 +3014,14 @@ function vdRenderKanban(){
         <div style="margin-top:4px">${vdOrigemBadgeHTML(origemLabel)}</div>
       </td>
       <td style="font-size:12px;white-space:nowrap">
-        <span style="font-weight:700">${x.pedidoCx}</span><span style="color:var(--muted)"> · ${x.faturadoCx} · </span><span style="font-weight:700;color:${x.saldoCx>0?'#1E40AF':'var(--muted)'}">${x.saldoCx}</span>
+        <span style="font-weight:700">${x.pedidoCx}</span><span style="color:var(--muted)"> · </span><span style="font-weight:700;color:${x.saldoCx>0?'#1E40AF':'var(--muted)'}">${x.saldoCx}</span>
         <span style="color:var(--muted);font-size:10px"> cx</span>
       </td>
       <td style="font-weight:700;white-space:nowrap">${vdFmt(p.total)}</td>
+      ${vdPodeEditar()?`<td style="white-space:nowrap" onclick="event.stopPropagation()">
+        ${precisaGnre?`<button onclick="event.stopPropagation();vdMarcarGnreIsenta('${p.id}')" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer">Isentar GNRE</button>`:''}
+        ${x.saldoCx>0&&vdGnreLiberada(p)?`<button onclick="event.stopPropagation();vdAbrirFaturamento('${p.id}')" style="background:#DCFCE7;color:#166534;border:1px solid #86EFAC;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer">${(p.tipo==='off'||vdEhDistribuidora(p))?'✓ Entregar':'✓ Faturar'}</button>`:''}
+      </td>`:''}
     </tr>`;
   };
   const html=grupos.map(gr=>{
