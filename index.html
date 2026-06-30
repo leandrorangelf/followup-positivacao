@@ -274,6 +274,21 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-kanban-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 4px}
 .vd-kanban-head h4{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.06em}
 .vd-kanban-count{background:var(--gray-bg);color:var(--text);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+/* tabela compacta de pedidos */
+.vd-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.vd-tbl thead th{background:var(--gray-bg);color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;text-align:left;position:sticky;top:0;z-index:1}
+.vd-tbl thead th:last-child{text-align:right}
+.vd-tbl tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.vd-tbl tbody tr:hover{background:var(--gray-bg)}
+.vd-tbl td{padding:9px 10px;vertical-align:middle}
+.vd-tbl td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+.vd-tbl .td-cli{font-weight:600;line-height:1.3}
+.vd-tbl .td-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.vd-tbl-group{margin-bottom:14px}
+.vd-tbl-group-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px 10px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.05em}
+.vd-tbl-group-head span{background:var(--gray-bg);padding:1px 8px;border-radius:8px;font-size:11px}
+.vd-tbl-wrap{border:1px solid var(--border);border-top:0;border-radius:0 0 10px 10px;overflow:hidden}
+@media(max-width:600px){.vd-tbl .td-hide{display:none}}
 .vd-card-ped{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px;cursor:pointer}
 .vd-card-ped:hover{border-color:var(--accent)}
 .vd-card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
