@@ -1474,15 +1474,15 @@ async function carregarDashboard(silencioso=false){
   try{
     if(isAdmin||isDiretoria){
       const [anoData,vendas]=await Promise.all([
-        sb(`/rest/v1/pedidos_vendas?ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
-        sb(`/rest/v1/pedidos_vendas?mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true})
+        sb(`/rest/v1/pedidos_vendas?ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
+        sb(`/rest/v1/pedidos_vendas?mes=eq.${mesAtual}&ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true})
       ]);
       vendasDashboard=(Array.isArray(vendas)?vendas:[]).filter(dashPedidoValido);
       renderAdminDash((Array.isArray(anoData)?anoData:[]).filter(dashPedidoValido));
     } else {
       const [anoData,vendas]=await Promise.all([
-        sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
-        sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true})
+        sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coordAtual)}&ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
+        sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coordAtual)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true})
       ]);
       vendasDashboard=(Array.isArray(vendas)?vendas:[]).filter(dashPedidoValido);
       dadosLocais=vdAgruparVendasPorCliente(vendasDashboard,coordAtual);
