@@ -1207,6 +1207,11 @@ const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6
 
 const SENHAS_HASH={'admin':'8d4192f769b4a1881a944d61538d8f3c55f7537e90725ffad52269addc7df318','vagner':'f4ec1b0e9ecf3baec9c32537f106e4004feb9a312773d6eeede18efdffbbe94c','fabiano':'67b8957da97dc943f201dcb516de1081ad24e97f92ab4527f68162adf78eae09','diretoria':'5fed8fa8c4a6813740e5cf8bc55c80e19028a44975f28acad227403d248e564c','Igor Cater':'b25e98ce13b7f156a575e694deda71bfafc239f9bf089c2fc5bd5b168faa0c8c','Marcio Vit':'dc032e109919fcb943652557512c3b7ae1ddf1a45ac2d9aa61ffab0df2c433e1','Vitor Valle':'6bca70f7710697ed1cd0d259d2d42a43ee4ddbe405f7e520a5194fb1f2e366a9','Rosana':'466f239431d1461a35bd44253b93b5c44801726fdd84c3c48ee9734c540b62be'};
 const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
+// Coordenadores com salário fixo — não têm premiação variável
+const COORD_SALARIO_FIXO=new Set(['Marcio Vit']);
+// Clientes que não geram comissão (COMISSIONAR S/ = NÃO)
+const _SEM_COM=new Set(['GB - CE','GB - MA','GB - SP','FREEDOM TECH LTDA','FREEDOM TECH']);
+const clienteNaoComissiona=nome=>{if(!nome)return false;const n=nome.trim().toUpperCase();return _SEM_COM.has(n)||n.startsWith('NEW BLUETEX');};
 const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const METAS_PADRAO=JSON.parse(JSON.stringify(METAS));
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
