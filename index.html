@@ -4105,7 +4105,7 @@ async function vdExportarPDF(){
   if(isDiretoria){toast('Perfil Diretoria é somente leitura','error');return}
   toast('Buscando pedidos aguardando GNRE...','info');
   const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
-  const todos=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
+  const todos=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
   const listaTodos=Array.isArray(todos)?todos:[];
   vdPdfListaCompleta=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p));
   if(!vdPdfListaCompleta.length){toast('Nenhum pedido aguardando GNRE','error');return}
