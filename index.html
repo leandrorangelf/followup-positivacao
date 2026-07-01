@@ -4678,7 +4678,7 @@ async function relCarregar(){
   try{
     const filtroCoord=(!isAdmin&&!isDiretoria&&user!=='vagner')?`coordenador=eq.${encodeURIComponent(coordAtual)}&`:'';
     const [vendas,forecast]=await Promise.all([
-      sb(`/rest/v1/pedidos_vendas?${filtroCoord}ano=eq.${anoAtual}&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
+      sb(`/rest/v1/pedidos_vendas?${filtroCoord}ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
       sb(`/rest/v1/forecast_pedidos?${filtroCoord}forecast_ano=eq.${anoAtual}&select=*,forecast_pedidos_itens(*)&limit=3000`,{ret:true})
     ]);
     relDados=Array.isArray(vendas)?vendas.filter(dashPedidoValido):[];
