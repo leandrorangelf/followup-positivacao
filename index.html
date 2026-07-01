@@ -4630,7 +4630,7 @@ carregarDashboard=async function(silencioso=false){
   try{
     const coordFiltro=(isAdmin||isDiretoria)?'todos':coordAtual;
     const coordQuery=(coordFiltro==='todos')?'':'coordenador=eq.'+encodeURIComponent(coordFiltro)+'&';
-    let hist=await sb('/rest/v1/pedidos_vendas?'+coordQuery+'select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
+    let hist=await sb('/rest/v1/pedidos_vendas?'+coordQuery+'deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
     if(!Array.isArray(hist))hist=[];
     hist=hist.filter(dashPedidoValido);
     dashHistoricoVendas=hist;
