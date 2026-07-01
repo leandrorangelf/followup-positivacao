@@ -2638,24 +2638,31 @@ renderAdminDash=function(anoData){
         const fat=_distP.filter(p=>(p.origem||'Outra')===o).reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
         return '<div style="display:flex;justify-content:space-between;font-size:11px;color:#1E40AF;padding:2px 0;border-bottom:1px solid rgba(30,64,175,.1)"><span>'+vdEsc(o)+'</span><span><strong>'+fat+' cx fat</strong> / '+cx+' cx ped</span></div>';
       }).join('');
+      const _fabTotal=_fabCx+_fabPend;
       return '<div style="padding:4px 16px 10px">'
-        +'<div style="background:linear-gradient(135deg,#166534,#15803d);border-radius:12px;padding:12px 16px;margin-bottom:8px;color:#fff">'
-        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.8;margin-bottom:4px">✅ Realizado real — faturado total</div>'
-        +'<div style="font-size:28px;font-weight:900;line-height:1">'+_realizadoReal+' <span style="font-size:14px;font-weight:400">cx</span></div>'
-        +'<div style="font-size:11px;opacity:.7;margin-top:2px">🏭 Fábrica '+_fabCx+' cx faturado&nbsp;&nbsp;|&nbsp;&nbsp;🚛 Distribuidoras '+_distFatCx+' cx faturado</div>'
-        +'<div style="font-size:11px;opacity:.5;margin-top:3px">📋 Total em carteira (se tudo faturado): '+_totalCarteira+' cx</div>'
+        +'<div style="background:#1E293B;border-radius:12px;padding:12px 16px;margin-bottom:8px;color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+        +'<div>'
+        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:4px">📦 Total pedido no mês (IN+OFF)</div>'
+        +'<div style="font-size:28px;font-weight:900;line-height:1">'+_totalCarteira+' <span style="font-size:14px;font-weight:400">cx</span></div>'
+        +'<div style="font-size:11px;opacity:.55;margin-top:3px">= total da tabela IN vs OFF do Relatório</div>'
+        +'</div>'
+        +'<div>'
+        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:4px">✅ Já faturado / saiu da fábrica</div>'
+        +'<div style="font-size:28px;font-weight:900;line-height:1;color:#86EFAC">'+_realizadoReal+' <span style="font-size:14px;font-weight:400">cx</span></div>'
+        +'<div style="font-size:11px;opacity:.55;margin-top:3px">🏭 Fábrica '+_fabCx+' cx · 🚛 Dist. '+_distFatCx+' cx</div>'
+        +'</div>'
         +'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
         +'<div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:12px;padding:12px">'
-        +'<div style="font-size:10px;color:#166534;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🏭 Fábrica — faturado (mês)</div>'
-        +'<div style="font-size:22px;font-weight:800;color:#166534;line-height:1">'+_fabCx+' cx</div>'
-        +'<div style="font-size:11px;color:#166534;margin-top:2px;opacity:.7">'+vdFmt(_fabVal)+'</div>'
-        +(_fabPend>0?'<div style="font-size:11px;color:#166534;margin-top:2px;opacity:.5">+ '+_fabPend+' cx pendentes</div>':'')
+        +'<div style="font-size:10px;color:#166534;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🏭 Fábrica (mês)</div>'
+        +'<div style="font-size:22px;font-weight:800;color:#166534;line-height:1">'+_fabTotal+' cx <span style="font-size:11px;font-weight:400">pedido</span></div>'
+        +'<div style="font-size:11px;color:#166534;margin-top:4px;padding:4px 8px;background:rgba(22,101,52,.1);border-radius:6px">✅ '+_fabCx+' cx faturado · '+vdFmt(_fabVal)+'</div>'
+        +(_fabPend>0?'<div style="font-size:11px;color:#166534;margin-top:4px;padding:4px 8px;background:rgba(22,101,52,.06);border-radius:6px">⏳ '+_fabPend+' cx pendentes</div>':'')
         +'</div>'
         +'<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:12px">'
-        +'<div style="font-size:10px;color:#1E40AF;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🚛 Distribuidoras</div>'
-        +'<div style="font-size:22px;font-weight:800;color:#1E40AF;line-height:1">'+_distFatCx+' cx <span style="font-size:11px;font-weight:400">faturado</span></div>'
-        +'<div style="font-size:11px;color:#1E40AF;margin-top:2px;opacity:.7">'+_distPedCx+' cx pedido · '+vdFmt(_distVal)+'</div>'
+        +'<div style="font-size:10px;color:#1E40AF;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🚛 Distribuidoras (mês)</div>'
+        +'<div style="font-size:22px;font-weight:800;color:#1E40AF;line-height:1">'+_distPedCx+' cx <span style="font-size:11px;font-weight:400">pedido</span></div>'
+        +'<div style="font-size:11px;color:#1E40AF;margin-top:4px;padding:4px 8px;background:rgba(30,64,175,.08);border-radius:6px">✅ '+_distFatCx+' cx faturado · '+vdFmt(_distVal)+'</div>'
         +(_distBreak?'<div style="margin-top:6px">'+_distBreak+'</div>':'')
         +'</div>'
         +'</div>'
