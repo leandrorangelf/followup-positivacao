@@ -2066,7 +2066,7 @@ async function sincronizarMetasLocaisBanco(){
 async function carregarRealizadoMetas(){
   metasRealizadoMes={};
   COORD_KEYS.forEach(c=>metasRealizadoMes[c]=0);
-  const vendas=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
+  const vendas=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
   if(Array.isArray(vendas))vendas.filter(dashPedidoValido).forEach(p=>{
     if(metasRealizadoMes[p.coordenador]!==undefined)metasRealizadoMes[p.coordenador]+=vdVolumePedidoDash(p);
   });
