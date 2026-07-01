@@ -4481,6 +4481,14 @@ async function carregarLog(){
     </div>`;
   }).join('');
 }
+async function logRestaurarPedido(id){
+  if(!confirm('Restaurar este pedido? Ele voltará a aparecer no sistema.'))return;
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({deleted_at:null})});
+  if(!r||!r.ok){toast('Erro ao restaurar pedido','error');return;}
+  auditLog('editar','Pedido restaurado','id:'+id);
+  toast('Pedido restaurado com sucesso!','success');
+  carregarLog();
+}
 // ===================== FIM LOG DE AUDITORIA =====================
 
 setInterval(()=>{
