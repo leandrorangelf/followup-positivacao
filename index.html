@@ -1210,7 +1210,7 @@ const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
 // Coordenadores com salário fixo — não têm premiação variável
 const COORD_SALARIO_FIXO=new Set(['Marcio Vit']);
 // Clientes que não geram comissão (COMISSIONAR S/ = NÃO)
-const _SEM_COM=new Set(['GB - CE','GB - MA','FREEDOM TECH LTDA','FREEDOM TECH']);
+const _SEM_COM=new Set(['FREEDOM TECH LTDA','FREEDOM TECH']);
 const clienteNaoComissiona=nome=>{if(!nome)return false;const n=nome.trim().toUpperCase();return _SEM_COM.has(n)||n.startsWith('NEW BLUETEX');};
 const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 const METAS_PADRAO=JSON.parse(JSON.stringify(METAS));
