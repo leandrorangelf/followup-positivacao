@@ -2554,7 +2554,7 @@ function premPanelHTML(rows,volumeTotal){
           <div style="font-size:11px;color:#9CA3AF;margin-top:6px">Sem premiação variável</div>
         </div>`;
       }
-      const pct=r.pctMetaComis||0;
+      const pct=r.pctMeta||0;
       const valor=premValorCoord(pct);
       const faixa=premFaixaAtiva(pct);
       const prox=premProxFaixa(pct,r.meta||0);
