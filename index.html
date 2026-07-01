@@ -4468,11 +4468,14 @@ async function carregarLog(){
     const dt=new Date(r.criado_em);
     const dataFmt=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     const icon=iconMap[r.acao]||'📝';
+    const idMatch=r.acao==='excluir'&&r.detalhes?r.detalhes.match(/id:([a-zA-Z0-9_-]+)/):null;
+    const restoreBtn=idMatch?`<button onclick="logRestaurarPedido('${idMatch[1]}')" style="margin-top:6px;padding:3px 10px;border-radius:6px;background:#065F46;color:#fff;border:none;cursor:pointer;font-size:12px">↩ Restaurar</button>`:'';
     return `<div class="log-item">
       <div class="log-icon ${r.acao}">${icon}</div>
       <div class="log-body">
         <div class="log-title">${vdEsc(r.descricao||'—')}</div>
         ${r.detalhes?`<div class="log-detail">${vdEsc(r.detalhes)}</div>`:''}
+        ${restoreBtn}
       </div>
       <div class="log-meta"><span class="log-user">${vdEsc(nomeUsuarioLog(r.usuario))}</span><br>${dataFmt}</div>
     </div>`;
