@@ -3025,7 +3025,7 @@ async function vdSetCoord(c){
 
 async function vdCarregar(){
   const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
-  const d=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=created_at.desc&limit=5000',{ret:true});
+  const d=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=created_at.desc&limit=5000',{ret:true});
   vdPedidos=(Array.isArray(d)?d:[]).filter(dashPedidoValido);
   vdRenderMetrics();
   vdRenderKanban();
