@@ -5482,13 +5482,16 @@ function tvRender(rows,vendas){
         '<div class="tv-note" style="color:rgba(74,222,128,.7)">'+tvPct(faturadoGeral+distCxTV,metaGeral)+'% da meta</div>'+
       '</div>'+
       '<div class="tv-big-card wide" style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;overflow:hidden">'+
-        '<div style="padding:14px 16px;border-right:1px solid rgba(255,255,255,.1);background:rgba(74,222,128,.04)">'+
-          '<div style="font-size:clamp(10px,.85vw,12px);color:#4ADE80;font-weight:700;margin-bottom:3px">🏭 Fábrica</div>'+
-          '<div style="font-size:clamp(22px,2.4vw,38px);font-weight:900;color:#4ADE80;line-height:1">'+tvFmt(faturadoGeral)+' <span style="font-size:.4em;opacity:.6">cx</span></div>'+
-          (fabPendente>0?'<div style="font-size:clamp(10px,.8vw,12px);color:rgba(74,222,128,.5);margin-top:2px">+ '+tvFmt(fabPendente)+' cx pendentes</div>':'')+
+        '<div style="padding:14px 16px;border-right:1px solid rgba(255,255,255,.1);background:rgba(74,222,128,.06)">'+
+          '<div style="font-size:clamp(10px,.85vw,12px);color:#4ADE80;font-weight:700;margin-bottom:3px">🏭 Fábrica — pedido no mês</div>'+
+          '<div style="font-size:clamp(22px,2.4vw,38px);font-weight:900;color:#4ADE80;line-height:1">'+(faturadoGeral+fabPendente)+' <span style="font-size:.4em;opacity:.6">cx</span></div>'+
+          '<div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">'+
+            '<div style="font-size:clamp(10px,.8vw,12px);background:rgba(74,222,128,.15);border-radius:5px;padding:3px 8px;color:#4ADE80">✅ '+tvFmt(faturadoGeral)+' cx faturado</div>'+
+            (fabPendente>0?'<div style="font-size:clamp(10px,.8vw,12px);background:rgba(74,222,128,.07);border-radius:5px;padding:3px 8px;color:rgba(74,222,128,.6)">⏳ '+tvFmt(fabPendente)+' cx pendentes</div>':'')+
+          '</div>'+
         '</div>'+
         '<div style="padding:14px 16px;background:rgba(147,197,253,.04)">'+
-          '<div style="font-size:clamp(10px,.85vw,12px);color:#93C5FD;font-weight:700;margin-bottom:3px">🚛 Distribuidoras</div>'+
+          '<div style="font-size:clamp(10px,.85vw,12px);color:#93C5FD;font-weight:700;margin-bottom:3px">🚛 Distribuidoras — pedido no mês</div>'+
           '<div style="font-size:clamp(22px,2.4vw,38px);font-weight:900;color:#93C5FD;line-height:1">'+tvFmt(distCxTV)+' <span style="font-size:.4em;opacity:.6">cx</span></div>'+
           (distBreakdownTV?'<div style="margin-top:4px;display:flex;flex-direction:column;gap:1px">'+distBreakdownTV+'</div>':'')+
         '</div>'+
