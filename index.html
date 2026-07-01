@@ -2607,10 +2607,14 @@ renderAdminDash=function(anoData){
     const lista=vendasPorCoord[coord]||[];
     const d=vdAgruparVendasPorCliente(lista,coord);
     const meta=METAS[coord][mesAtual]||0;
+    const listaFab=lista.filter(p=>!vdEhDistribuidora(p));
+    const listaDist=lista.filter(p=>vdEhDistribuidora(p));
     const volume=lista.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
-    const volumeComis=COORD_SALARIO_FIXO.has(coord)?0:lista.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+    const volumeComisF=COORD_SALARIO_FIXO.has(coord)?0:listaFab.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+    const volumeComisD=COORD_SALARIO_FIXO.has(coord)?0:listaDist.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+    const volumeComis=volumeComisF+volumeComisD;
     const comPedido=ativos.filter(c=>totCliD(d,c.nome)>0).length;
-    return{coord,ativos:ativos.length,volume,volumeComis,meta,comPedido,pendentes:ativos.length-comPedido,pctPos:ativos.length?Math.round(comPedido/ativos.length*100):0,pctMeta:meta?Math.round(volume/meta*100):0,pctMetaComis:meta?Math.round(volumeComis/meta*100):0};
+    return{coord,ativos:ativos.length,volume,volumeComis,volumeComisF,volumeComisD,meta,comPedido,pendentes:ativos.length-comPedido,pctPos:ativos.length?Math.round(comPedido/ativos.length*100):0,pctMeta:meta?Math.round(volume/meta*100):0,pctMetaComis:meta?Math.round(volumeComis/meta*100):0};
   });
 
   const volume=rows.reduce((s,r)=>s+r.volume,0);
