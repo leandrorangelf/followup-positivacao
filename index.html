@@ -2598,8 +2598,9 @@ renderAdminDash=function(anoData){
     const d=vdAgruparVendasPorCliente(lista,coord);
     const meta=METAS[coord][mesAtual]||0;
     const volume=lista.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+    const volumeComis=COORD_SALARIO_FIXO.has(coord)?0:lista.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
     const comPedido=ativos.filter(c=>totCliD(d,c.nome)>0).length;
-    return{coord,ativos:ativos.length,volume,meta,comPedido,pendentes:ativos.length-comPedido,pctPos:ativos.length?Math.round(comPedido/ativos.length*100):0,pctMeta:meta?Math.round(volume/meta*100):0};
+    return{coord,ativos:ativos.length,volume,volumeComis,meta,comPedido,pendentes:ativos.length-comPedido,pctPos:ativos.length?Math.round(comPedido/ativos.length*100):0,pctMeta:meta?Math.round(volume/meta*100):0,pctMetaComis:meta?Math.round(volumeComis/meta*100):0};
   });
 
   const volume=rows.reduce((s,r)=>s+r.volume,0);
