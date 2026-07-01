@@ -3042,8 +3042,9 @@ function vdRenderMetrics(){
   g('vd-real-sub').textContent=pctReal+'% da meta · '+meta+' cx';
   g('vd-real-bar').style.width=Math.min(100,pctReal)+'%';
   g('vd-real-bar').style.background=pctReal>=80?'var(--green)':pctReal>=50?'var(--amber)':'var(--red)';
-  g('vd-fat-cx').textContent=fabFatCx+' cx';
-  g('vd-fat-valor').textContent=vdFmt(fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoValor;},0))+(fabPendCx>0?' · +'+fabPendCx+' cx pend.':'');
+  const fabTotal=fabFatCx+fabPendCx;
+  g('vd-fat-cx').textContent=fabFatCx+' cx faturado'+(fabPendCx>0?' · '+fabPendCx+' cx pend.':'');
+  g('vd-fat-valor').textContent='Total pedido Fábrica: '+fabTotal+' cx';
   g('vd-dist-cx').textContent=distFatCx+' cx';
   const distOrigens=[...new Set(distPeds.map(p=>p.origem||'Outra'))].sort();
   g('vd-dist-sub').textContent=distOrigens.map(o=>{const cx=distPeds.filter(p=>(p.origem||'Outra')===o).reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);return o+' '+cx+'cx';}).join(' · ')||'—';
