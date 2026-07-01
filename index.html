@@ -3974,11 +3974,10 @@ async function vdExcluirPedido(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
   if(user==='vagner'){toast('Vagner não pode excluir pedidos','error');return}
   if(!vdDetAtual)return;
-  if(!confirm('Excluir este pedido? Esta ação não pode ser desfeita.'))return;
-  await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'DELETE'});
+  if(!confirm('Excluir este pedido?\n\nO pedido ficará oculto mas poderá ser restaurado pelo Log de auditoria.'))return;
+  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'PATCH',body:JSON.stringify({deleted_at:new Date().toISOString()})});
   if(!r||!r.ok){toast('Erro ao excluir','error');return}
-  auditLog('excluir','Pedido excluído · '+vdDetAtual.cliente_nome,'Coordenador: '+vdDetAtual.coordenador+' · '+MESES[vdDetAtual.mes]+'/'+vdDetAtual.ano+' · Total: '+vdFmt(vdDetAtual.total));
+  auditLog('excluir','Pedido excluído · '+vdDetAtual.cliente_nome,'id:'+vdDetAtual.id+' · Coordenador: '+vdDetAtual.coordenador+' · '+MESES[vdDetAtual.mes]+'/'+vdDetAtual.ano+' · Total: '+vdFmt(vdDetAtual.total));
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
 }
