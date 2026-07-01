@@ -4410,7 +4410,7 @@ async function irRegistro(){
     g('reg-coord').value=coordAtual;g('reg-coord').disabled=true;
   }
   const mes=parseInt(g('reg-mes').value);
-  const lista=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mes+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&order=faturado_at.desc.nullslast',{ret:true});
+  const lista=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mes+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=faturado_at.desc.nullslast',{ret:true});
   regPedidos=Array.isArray(lista)?lista.filter(p=>vdResumoPedido(p).faturadoCx>0||p.is_parcial):[];
   regRender();
 }
