@@ -5494,7 +5494,7 @@ function tvRender(rows,vendas){
       const pctTotal=tvPct(totalPedidoMes,metaGeral);
       return '<section class="tv-general">'+
         '<div class="tv-big-card"><div class="tv-label">Meta geral</div><div><span class="tv-number">'+tvFmt(metaGeral)+'</span><span class="tv-unit">cx</span></div><div class="tv-note">Objetivo do mês</div></div>'+
-        '<div class="tv-big-card"><div class="tv-label">📦 Total pedido no mês</div><div><span class="tv-number" style="color:#FDE68A">'+tvFmt(totalPedidoMes)+'</span><span class="tv-unit" style="color:#FDE68A">cx</span></div><div class="tv-note">'+pctTotal+'% da meta</div></div>'+
+        '<div class="tv-big-card"><div class="tv-label">🏭 Fábrica — pedido no mês</div><div><span class="tv-number" style="color:#FDE68A">'+(faturadoGeral+fabPendente)+'</span><span class="tv-unit" style="color:#FDE68A">cx</span></div><div class="tv-note">'+tvPct(faturadoGeral+fabPendente,metaGeral)+'% da meta</div></div>'+
         '<div class="tv-big-card wide" style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.25);display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;overflow:hidden">'+
           '<div style="padding:14px 18px;border-right:1px solid rgba(74,222,128,.2)">'+
             '<div style="font-size:clamp(10px,.9vw,12px);color:#4ADE80;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🏭 Fábrica</div>'+
