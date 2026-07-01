@@ -5570,7 +5570,7 @@ async function carregarTv(silencioso=false){
   if(!silencioso)g('tv-content').innerHTML='<div class="tv-loading">Carregando painel da TV...</div>';
   try{
     await carregarMetas();
-    let vendas=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
+    let vendas=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
     if(!Array.isArray(vendas))vendas=[];
     vendas=vendas.filter(dashPedidoValido);
     tvRender(tvResumoRows(vendas),vendas);
