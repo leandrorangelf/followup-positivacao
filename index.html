@@ -5473,34 +5473,28 @@ function tvRender(rows,vendas){
   g('tv-periodo').textContent=MESES[mesAtual]+' '+anoAtual;
   g('tv-content').innerHTML=
     '<section class="tv-general">'+
-      // 1. META
       '<div class="tv-big-card"><div class="tv-label">Meta geral</div><div><span class="tv-number">'+tvFmt(metaGeral)+'</span><span class="tv-unit">cx</span></div><div class="tv-note">Objetivo do mês</div></div>'+
-      // 2. TOTAL PEDIDO (faturado + pendente) — "o que saiu / vai sair da fábrica"
-      '<div class="tv-big-card wide" style="background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.25)">'+
-        '<div style="font-size:clamp(10px,.9vw,12px);color:#FDE68A;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">📦 Fábrica — total pedido no mês</div>'+
-        '<div><span class="tv-number" style="color:#FDE68A">'+(faturadoGeral+fabPendente)+'</span><span class="tv-unit" style="color:#FDE68A">cx</span></div>'+
-        '<div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">'+
-          '<span style="font-size:clamp(10px,.85vw,13px);background:rgba(74,222,128,.15);border-radius:5px;padding:3px 10px;color:#4ADE80">✅ '+tvFmt(faturadoGeral)+' cx faturado</span>'+
-          (fabPendente>0?'<span style="font-size:clamp(10px,.85vw,13px);background:rgba(250,204,21,.1);border-radius:5px;padding:3px 10px;color:#FDE68A">⏳ '+tvFmt(fabPendente)+' cx pendentes</span>':'')+
+      '<div class="tv-big-card"><div class="tv-label">Realizado (carteira)</div><div><span class="tv-number">'+tvFmt(realizadoGeral)+'</span><span class="tv-unit">cx</span></div><div class="tv-note">'+tvPct(realizadoGeral,metaGeral)+'% da meta</div></div>'+
+      '<div class="tv-big-card wide" style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.25);display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;overflow:hidden">'+
+        '<div style="padding:14px 18px;border-right:1px solid rgba(74,222,128,.2)">'+
+          '<div style="font-size:clamp(10px,.9vw,12px);color:#4ADE80;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🏭 Fábrica — faturado</div>'+
+          '<div><span class="tv-number" style="color:#4ADE80">'+tvFmt(faturadoGeral)+'</span><span class="tv-unit" style="color:#4ADE80">cx</span></div>'+
+          (fabPendente>0?'<div style="font-size:clamp(10px,.85vw,12px);color:rgba(74,222,128,.6);margin-top:4px">⏳ '+tvFmt(fabPendente)+' cx pendentes</div>':'')+
+          '<div style="font-size:clamp(10px,.85vw,12px);color:rgba(74,222,128,.5);margin-top:2px">Total pedido: '+tvFmt(faturadoGeral+fabPendente)+' cx</div>'+
         '</div>'+
-        '<div class="tv-progress" style="margin:8px 0 4px"><span style="width:'+Math.min(100,tvPct(faturadoGeral+fabPendente,metaGeral))+'%;background:#FDE68A"></span></div>'+
-        '<div class="tv-note" style="color:rgba(253,230,138,.6)">'+tvPct(faturadoGeral+fabPendente,metaGeral)+'% da meta</div>'+
+        '<div style="padding:14px 18px">'+
+          '<div style="font-size:clamp(10px,.9vw,12px);color:#93C5FD;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🚛 Distribuidoras</div>'+
+          '<div><span class="tv-number" style="color:#93C5FD">'+tvFmt(distCxTV)+'</span><span class="tv-unit" style="color:#93C5FD">cx</span></div>'+
+          (distBreakdownTV?'<div style="margin-top:4px;display:flex;flex-direction:column;gap:2px">'+distBreakdownTV+'</div>':'')+
+        '</div>'+
       '</div>'+
-      // 3. FATURADO DE FATO
-      '<div class="tv-big-card wide" style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.25)">'+
-        '<div style="font-size:clamp(10px,.9vw,12px);color:#4ADE80;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">✅ Faturado de fato — saiu da fábrica</div>'+
-        '<div><span class="tv-number" style="color:#4ADE80">'+tvFmt(faturadoGeral)+'</span><span class="tv-unit" style="color:#4ADE80">cx</span></div>'+
-        '<div class="tv-progress" style="margin:8px 0 4px"><span style="width:'+Math.min(100,tvPct(faturadoGeral,metaGeral))+'%;background:#4ADE80"></span></div>'+
-        '<div class="tv-note" style="color:rgba(74,222,128,.7)">'+tvPct(faturadoGeral,metaGeral)+'% da meta</div>'+
+      '<div class="tv-big-card wide" style="opacity:.65">'+
+        '<div class="tv-progress" style="margin:0 0 8px"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:center">'+
+          '<span style="font-size:clamp(11px,.95vw,14px);opacity:.8">'+pctGeral+'% da meta · '+tvFmt(realizadoGeral)+' / '+tvFmt(metaGeral)+' cx</span>'+
+          '<span class="tv-days '+clsDias+'" style="font-size:clamp(18px,2vw,28px)">'+diasRest+' dias</span>'+
+        '</div>'+
       '</div>'+
-      // 4. DISTRIBUIDORAS
-      '<div class="tv-big-card wide" style="background:rgba(147,197,253,.04);border:1px solid rgba(147,197,253,.2)">'+
-        '<div style="font-size:clamp(10px,.9vw,12px);color:#93C5FD;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px">🚛 Distribuidoras — pedido no mês</div>'+
-        '<div><span class="tv-number" style="color:#93C5FD">'+tvFmt(distCxTV)+'</span><span class="tv-unit" style="color:#93C5FD">cx</span></div>'+
-        (distBreakdownTV?'<div style="margin-top:6px;display:flex;flex-direction:column;gap:2px">'+distBreakdownTV+'</div>':'')+
-      '</div>'+
-      // 5. DIAS FALTANTES — secundário, no final
-      '<div class="tv-big-card" style="opacity:.7"><div class="tv-label">Dias faltantes</div><div class="tv-days '+clsDias+'">'+diasRest+'</div><div class="tv-note">para fechar '+MESES[mesAtual]+'</div></div>'+
     '</section>'+
     '<section class="tv-coords"><div class="tv-section-title"><strong>Realizado por coordenador</strong><span>'+MESES[mesAtual]+' '+anoAtual+'</span></div>'+
       '<div class="tv-coord-list">'+rows.map(r=>{
