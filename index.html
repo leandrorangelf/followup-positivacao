@@ -4897,7 +4897,7 @@ function relRender(lista){
 
   <!-- Evolução mensal -->
   <div style="background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Evolução mensal — ${anoAtual} <span style="font-size:11px;color:#7A7870;font-weight:400">(IN azul · OFF âmbar)</span></div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Evolução mensal — ${anoAtual} <span style="font-size:11px;color:#7A7870;font-weight:400"><span class="dot-status dot-in"></span> / <span class="dot-status dot-off"></span></span></div>
     <div style="display:flex;align-items:flex-end;gap:4px;height:80px;overflow-x:auto">
       ${porMes.map((m,i)=>{
         const tot=m.inCx+m.offCx;
