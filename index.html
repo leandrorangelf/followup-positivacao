@@ -5463,9 +5463,9 @@ function tvSelecionarInOff(tipo){
   document.querySelectorAll('.tv-inoff-row').forEach(r=>r.classList.toggle('on',r.dataset.tipo===tipo));
   const detail=g('tv-inoff-detail');
   if(!detail)return;
-  const tipoLabel=tipo==='in'?'TOTin':'MED';
-  if(!lista.length){detail.innerHTML='<div style="color:#9aa6b8">Nenhum pedido '+tipoLabel+'</div>';return;}
-  detail.innerHTML='<div class="tv-map-detail-title">'+tipoLabel+' — '+lista.length+' pedido(s)</div>'+
+  const tipoDot='<span class="dot-status '+(tipo==='in'?'dot-in':'dot-off')+'"></span>';
+  if(!lista.length){detail.innerHTML='<div style="color:#9aa6b8">Nenhum pedido '+tipoDot+'</div>';return;}
+  detail.innerHTML='<div class="tv-map-detail-title">'+tipoDot+' — '+lista.length+' pedido(s)</div>'+
     lista.map(p=>{
       const itens=p.pedidos_vendas_itens||[];
       const cx=vdResumoPedido(p).pedidoCx;
