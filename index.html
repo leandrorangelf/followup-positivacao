@@ -2983,10 +2983,10 @@ function renderInOffSection(vendas,showCoord){
       </tr></thead>
       <tbody>${rows}
         <tr class="inoff-total-in" style="background:#EFF6FF;font-weight:700;font-size:11px;border-top:2px solid #BFDBFE">
-          <td style="padding:7px 12px">TOTAL IN (${inList.length} ped.)</td>${emptyCoord}<td></td>${tdInSkus}<td style="text-align:center;padding:7px 8px">${inCx}</td>
+          <td style="padding:7px 12px"><span class="dot-status dot-in"></span> TOTAL (${inList.length} ped.)</td>${emptyCoord}<td></td>${tdInSkus}<td style="text-align:center;padding:7px 8px">${inCx}</td>
         </tr>
         <tr class="inoff-total-off" style="background:#FFFBEB;font-weight:700;font-size:11px;border-top:1px solid #FDE68A">
-          <td style="padding:7px 12px">TOTAL OFF (${offList.length} ped.)</td>${emptyCoord}<td></td>${tdOffSkus}<td style="text-align:center;padding:7px 8px">${offCx}</td>
+          <td style="padding:7px 12px"><span class="dot-status dot-off"></span> TOTAL (${offList.length} ped.)</td>${emptyCoord}<td></td>${tdOffSkus}<td style="text-align:center;padding:7px 8px">${offCx}</td>
         </tr>
       </tbody>
     </table>
