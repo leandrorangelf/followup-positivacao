@@ -851,8 +851,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <div class="vd-field"><label>Cliente</label><select id="vf-cli" onchange="vdAplicarFicha()"></select></div>
       <div class="vd-field" style="margin-bottom:0"><label>Tipo Fiscal</label>
         <div class="vd-toggle-grp io">
-          <button type="button" class="vd-toggle tg-in on" data-tv="in" onclick="vdSetTipo('in')">IN (com NF)</button>
-          <button type="button" class="vd-toggle tg-off" data-tv="off" onclick="vdSetTipo('off')">OFF (sem NF)</button>
+          <button type="button" class="vd-toggle tg-in on" data-tv="in" onclick="vdSetTipo('in')"><span class="dot-status dot-in"></span></button>
+          <button type="button" class="vd-toggle tg-off" data-tv="off" onclick="vdSetTipo('off')"><span class="dot-status dot-off"></span></button>
         </div>
       </div>
     </div>
