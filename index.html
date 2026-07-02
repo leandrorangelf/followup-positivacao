@@ -4286,7 +4286,7 @@ function forecastRenderMetrics(){
   g('forecast-total').textContent=r.qtd;
   g('forecast-total-sub').textContent=r.alta+' com chance alta';
   g('forecast-cx').textContent=r.cx.toLocaleString('pt-BR')+' cx';
-  g('forecast-inoff').textContent='IN '+r.inCx.toLocaleString('pt-BR')+' / OFF '+r.offCx.toLocaleString('pt-BR');
+  g('forecast-inoff').innerHTML='<span class="dot-status dot-in"></span> '+r.inCx.toLocaleString('pt-BR')+'  <span class="dot-status dot-off"></span> '+r.offCx.toLocaleString('pt-BR');
   const el=g('forecast-sku-resumo');
   if(el)el.innerHTML=vdSkuQtdPanelHTML(r.skus,'Qtd prevista por produto','Forecast aberto · '+MESES[mesAtual]+' '+anoAtual);
 }
