@@ -2969,7 +2969,7 @@ function renderInOffSection(vendas,showCoord){
   const uid='inoff'+(Date.now()%99999);
   return`<div style="margin:0 16px 16px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)">
   <div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E0D8;flex-wrap:wrap;gap:8px">
-    <div style="font-size:14px;font-weight:600">IN vs OFF — ${MESES[mesAtual]} ${anoAtual}</div>
+    <div style="font-size:14px;font-weight:600">Pedidos por tipo — ${MESES[mesAtual]} ${anoAtual}</div>
     <div style="display:flex;gap:8px">
       <button onclick="inoffFiltrar('${uid}','in')" style="text-align:center;background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-in" title="IN"></span></div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${inList.length} pedido(s)</div></button>
       <button onclick="inoffFiltrar('${uid}','off')" style="text-align:center;background:#FFFBEB;border:2px solid #FDE68A;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-off" title="OFF"></span></div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${offList.length} pedido(s)</div></button>
