@@ -4860,8 +4860,8 @@ function relRender(lista){
       <td style="padding:8px 8px;text-align:center">${r.clientes.size}</td>
       <td style="padding:8px 8px;text-align:center;color:#1D4ED8;font-weight:700">${relFmt(r.cx)} cx</td>
       <td style="padding:8px 8px;text-align:center">${r.pedidos>0?Math.round(r.cx/r.pedidos):0} cx/ped</td>
-      <td style="padding:8px 8px;text-align:center"><span style="background:#DBEAFE;color:#1D4ED8;padding:1px 7px;border-radius:4px;font-size:11px">${r.in} IN</span></td>
-      <td style="padding:8px 8px;text-align:center"><span style="background:#FEF3C7;color:#92400E;padding:1px 7px;border-radius:4px;font-size:11px">${r.off} OFF</span></td>
+      <td style="padding:8px 8px;text-align:center"><span class="dot-status dot-in"></span> ${r.in}</td>
+      <td style="padding:8px 8px;text-align:center"><span class="dot-status dot-off"></span> ${r.off}</td>
     </tr>`;
   }).join('');
 
