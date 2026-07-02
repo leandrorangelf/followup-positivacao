@@ -2957,8 +2957,8 @@ function renderInOffSection(vendas,showCoord){
   const thSkus=RSKUS.map(s=>'<th style="text-align:center;padding:7px 6px">'+s+'</th>').join('');
   const rows=linhas.map(r=>{
     const badge=r.tipo==='in'
-      ?'<span class="dot-status dot-in" title="IN"></span>'
-      :'<span class="dot-status dot-off" title="OFF"></span>';
+      ?'<span class="dot-status dot-in"></span>'
+      :'<span class="dot-status dot-off"></span>';
     const tdCoord=showCoord?'<td style="font-size:11px;color:#7A7870;padding:7px 8px">'+vdEsc(r.coord)+'</td>':'';
     const tdSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(r.skus[s]||'—')+'</td>').join('');
     return'<tr data-tipo="'+r.tipo+'" style="border-top:1px solid #E2E0D8"><td style="padding:7px 12px">'+vdEsc(r.nome)+'</td>'+tdCoord+'<td style="padding:7px 8px">'+badge+'</td>'+tdSkus+'<td style="text-align:center;padding:7px 8px;font-weight:700">'+r.cx+'</td></tr>';
@@ -2971,8 +2971,8 @@ function renderInOffSection(vendas,showCoord){
   <div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E0D8;flex-wrap:wrap;gap:8px">
     <div style="font-size:14px;font-weight:600">Pedidos por tipo — ${MESES[mesAtual]} ${anoAtual}</div>
     <div style="display:flex;gap:8px">
-      <button onclick="inoffFiltrar('${uid}','in')" style="text-align:center;background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-in" title="IN"></span></div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${inList.length} pedido(s)</div></button>
-      <button onclick="inoffFiltrar('${uid}','off')" style="text-align:center;background:#FFFBEB;border:2px solid #FDE68A;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-off" title="OFF"></span></div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${offList.length} pedido(s)</div></button>
+      <button onclick="inoffFiltrar('${uid}','in')" style="text-align:center;background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-in"></span></div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${inList.length} pedido(s)</div></button>
+      <button onclick="inoffFiltrar('${uid}','off')" style="text-align:center;background:#FFFBEB;border:2px solid #FDE68A;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-off"></span></div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${offList.length} pedido(s)</div></button>
       <button onclick="inoffFiltrar('${uid}','todos')" style="text-align:center;background:#F9F9F7;border:2px solid #E2E0D8;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">Total</div><div style="font-size:20px;font-weight:700">${inCx+offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${vendas.length} pedido(s)</div></button>
     </div>
   </div>
@@ -4874,7 +4874,7 @@ function relRender(lista){
       <div style="font-size:11px;color:#7A7870">${lista.length} pedidos no ano</div>
     </div>
     <div style="background:#EFF6FF;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-      <div style="font-size:10px;color:#1D4ED8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px"><span class="dot-status dot-in"></span> IN</div>
+      <div style="font-size:10px;color:#1D4ED8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px"><span class="dot-status dot-in"></span></div>
       <div style="font-size:24px;font-weight:700;color:#1D4ED8">${relFmt(inCx)} cx</div>
       <div style="font-size:11px;color:#3B82F6">${inList.length} pedidos · ${pctIn}% do total · ${relFmtVal(inVal)}</div>
     </div>
@@ -4984,8 +4984,8 @@ function relRender(lista){
           <th style="text-align:center;padding:8px">Clientes</th>
           <th style="text-align:center;padding:8px">Total cx</th>
           <th style="text-align:center;padding:8px">Ticket médio</th>
-          <th style="text-align:center;padding:8px"><span class="dot-status dot-in" title="IN"></span></th>
-          <th style="text-align:center;padding:8px"><span class="dot-status dot-off" title="OFF"></span></th>
+          <th style="text-align:center;padding:8px"><span class="dot-status dot-in"></span></th>
+          <th style="text-align:center;padding:8px"><span class="dot-status dot-off"></span></th>
         </tr></thead>
         <tbody>${coordRows}</tbody>
       </table>
@@ -5013,8 +5013,8 @@ function relRenderFaturado(lista){
     const x=vdResumoPedido(p);
     const tipo=vdTipoPedido(p);
     const badge=tipo==='in'
-      ?'<span class="dot-status dot-in" title="IN"></span>'
-      :'<span class="dot-status dot-off" title="OFF"></span>';
+      ?'<span class="dot-status dot-in"></span>'
+      :'<span class="dot-status dot-off"></span>';
     const origemLabel=p.origem||'Fábrica';
     const origemGrupo=vdEhDistribuidora(p)?'dist':'fabrica';
     const origemBadge=origemGrupo==='fabrica'
@@ -5103,7 +5103,7 @@ function relImprimirFaturado(){
   const rows=faturados.map((p,i)=>{
     const x=vdResumoPedido(p);
     const tipo=vdTipoPedido(p);
-    const badge=tipo==='in'?'<span class="dot-status dot-in" title="IN"></span>':'<span class="dot-status dot-off" title="OFF"></span>';
+    const badge=tipo==='in'?'<span class="dot-status dot-in"></span>':'<span class="dot-status dot-off"></span>';
     const stLabel=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':'Parcial';
     const skuTds=RSKUS.map(s=>{
       const it=(p.pedidos_vendas_itens||[]).find(x=>x.sku===s);
@@ -5133,8 +5133,8 @@ function relRenderForecast(forecast){
   const rows=forecast.map((p,i)=>{
     const tipo=String(p.tipo||'in').toLowerCase();
     const badge=tipo==='in'
-      ?'<span class="dot-status dot-in" title="IN"></span>'
-      :'<span class="dot-status dot-off" title="OFF"></span>';
+      ?'<span class="dot-status dot-in"></span>'
+      :'<span class="dot-status dot-off"></span>';
     const prob=p.probabilidade||'—';
     const probBadge=prob==='alta'
       ?'<span style="background:#DCFCE7;color:#166534;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">Alta</span>'
@@ -5198,7 +5198,7 @@ function relImprimirForecast(){
   const tdTotSkus=RSKUS.map(s=>`<td class="r">${skuTots[s]||'—'}</td>`).join('');
   const rows=forecast.map((p,i)=>{
     const tipo=String(p.tipo||'in').toLowerCase();
-    const badge=tipo==='in'?'<span class="dot-status dot-in" title="IN"></span>':'<span class="dot-status dot-off" title="OFF"></span>';
+    const badge=tipo==='in'?'<span class="dot-status dot-in"></span>':'<span class="dot-status dot-off"></span>';
     const prob=p.probabilidade||'—';
     const probBadge=prob==='alta'?'<span class="badge-alta">Alta</span>':prob==='media'?'<span class="badge-media">Média</span>':prob;
     const skuTds=RSKUS.map(s=>{const it=(p.forecast_pedidos_itens||[]).find(x=>x.sku===s);return`<td class="c">${Number(it?.qty_caixas||0)||'—'}</td>`;}).join('');
@@ -5226,8 +5226,8 @@ function relRenderPedidos(lista){
     const x=vdResumoPedido(p);
     const tipo=vdTipoPedido(p);
     const badge=tipo==='in'
-      ?'<span class="dot-status dot-in" title="IN"></span>'
-      :'<span class="dot-status dot-off" title="OFF"></span>';
+      ?'<span class="dot-status dot-in"></span>'
+      :'<span class="dot-status dot-off"></span>';
     const stLabel=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Parcial':'Pendente';
     const stCor=x.status==='faturado'||x.status==='entregue'?'#16a34a':x.status==='parcial'?'#d97706':'#7A7870';
     const skuTds=RSKUS.map(s=>{
@@ -5313,7 +5313,7 @@ function relImprimirPedidos(){
   const rows=lista.map((p,i)=>{
     const x=vdResumoPedido(p);
     const tipo=vdTipoPedido(p);
-    const badge=tipo==='in'?'<span class="dot-status dot-in" title="IN"></span>':'<span class="dot-status dot-off" title="OFF"></span>';
+    const badge=tipo==='in'?'<span class="dot-status dot-in"></span>':'<span class="dot-status dot-off"></span>';
     const stLabel=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Parcial':'Pendente';
     const mes=MESES[p.mes]?.slice(0,3)||'—';
     const skuTds=RSKUS.map(s=>{const it=(p.pedidos_vendas_itens||[]).find(x=>x.sku===s);return`<td class="c">${Number(it?.qty_caixas||0)||'—'}</td>`;}).join('');
