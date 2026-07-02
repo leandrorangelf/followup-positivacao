@@ -3698,7 +3698,7 @@ function vdAbrirDet(id){
   g('vd-det-title').textContent=p.cliente_nome+(p.cliente_uf?' · '+p.cliente_uf:'');
   const itensHTML=x.itens.map(i=>{const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0);return '<div style="display:grid;grid-template-columns:1fr auto;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)"><span><strong>'+vdEsc(vdSkuFull(i.sku))+' ('+vdEsc(vdSkuLabel(i.sku))+')</strong> · '+ped+' ped. · '+fat+' fat. · '+Math.max(0,ped-fat)+' saldo<br><small>'+Number(i.packs_por_caixa||0)+' pac/cx × '+vdFmt(i.valor_pacote)+'</small></span><strong>'+vdFmt(i.subtotal)+'</strong></div>'}).join('');
   const parc=vdPrazoLabel(p);
-  const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta / OFF':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
+  const gnreDetalhe=vdTipoPedido(p)==='off'?'GNRE isenta':vdGnreLabel(p)+(p.gnre_valor?(' · '+vdFmt(p.gnre_valor)):'');
   // botões de ação GNRE calculados antes do innerHTML
   const _precisaGnre=x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)&&!vdGnreLiberada(p);
   const _gnreSt=vdGnreStatus(p);
