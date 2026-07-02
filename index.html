@@ -3911,7 +3911,7 @@ async function vdUploadGnreStorage(file,path){
 function vdAbrirUploadGnre(id,tipo){
   if(!vdPodeAnexarGnre()){toast('Perfil somente leitura','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
-  if(vdTipoPedido(p)==='off'){toast('Pedido OFF não precisa GNRE','info');return}
+  if(vdTipoPedido(p)==='off'){toast('Este pedido não precisa de GNRE','info');return}
   const input=document.createElement('input');
   input.type='file';input.accept='.pdf,image/*';
   input.onchange=async()=>{const file=input.files&&input.files[0];if(file)await vdSalvarUploadGnre(id,tipo,file);};
@@ -3943,7 +3943,7 @@ async function vdSalvarUploadGnre(id,tipo,file){
 async function vdAtualizarGnre(id,payload,msg){
   if(!vdPodeGerenciarGnre()){toast('Acesso restrito a GNRE','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
-  if(vdTipoPedido(p)==='off'){toast('Pedido OFF não precisa GNRE','info');return}
+  if(vdTipoPedido(p)==='off'){toast('Este pedido não precisa de GNRE','info');return}
   const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(payload)});
   if(!r||!r.ok){toast('Erro ao atualizar GNRE. Rode o SQL de GNRE no Supabase.','error');return}
   auditLog('editar','GNRE atualizada · '+p.cliente_nome,'Status: '+(payload.gnre_status||vdGnreStatus(p))+(payload.gnre_valor!=null?' · Valor: '+vdFmt(payload.gnre_valor):''));
