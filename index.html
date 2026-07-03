@@ -3931,7 +3931,6 @@ async function vdSalvarUploadGnre(id,tipo,file){
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   if(file.size>10*1024*1024){toast('Arquivo acima de 10MB','error');return}
   toast('Enviando arquivo...','info',3500);
-  const safeName=String(file.name||'arquivo').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(0,90);
   const path=await vdUploadGnreStorage(file,id,tipo);
   if(!path){toast('Erro ao anexar. Confira bucket/políticas do Storage.','error');return}
   const gnrePendente=tipo==='gnre'&&vdGnreStatus(p)==='pendente';
