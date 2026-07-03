@@ -28,6 +28,11 @@ module.exports = async function handler(req, res) {
 
   const { id, tipo, fileName } = req.query;
   if (!id || !tipo || !fileName) return res.status(400).json({ error: 'missing_fields' });
+  // id/tipo viram parte do storage path e são gravados em pedidos_vendas.gnre_*_url, que
+  // depois é renderizado no HTML — validar formato aqui evita path traversal e fecha a
+  // porta pra conteúdo malicioso (aspas, tags) entrar nesses campos.
+  if (!UUID_RE.test(String(id))) return res.status(400).json({ error: 'invalid_id' });
+  if (!TIPO_RE.test(String(tipo))) return res.status(400).json({ error: 'invalid_tipo' });
   if (!(await pedidoPertenceASessao(session, id))) return res.status(403).json({ error: 'forbidden' });
 
   const contentType = req.headers['content-type'] || 'application/octet-stream';
