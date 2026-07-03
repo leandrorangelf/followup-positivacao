@@ -4,7 +4,7 @@ Aplicação web interna da Clean Tobacco para acompanhamento de vendas, positiva
 
 ## Estrutura do projeto
 
-```
+```text
 .
 ├── index.html                    # Frontend: HTML + CSS + JS (SPA vanilla, ~5.600 linhas)
 ├── vercel.json                   # Rewrite SPA (exclui /api/*) para a Vercel
