@@ -3436,11 +3436,11 @@ async function defOrigemSalvar(){
   }
 }
 async function vdPatchOrigem(id,origem){
-  const res=await fetch(`${SB}/rest/v1/pedidos_vendas?id=eq.${id}`,{
-    method:'PATCH',
-    headers:{'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY,'Prefer':'return=minimal'},
-    body:JSON.stringify({origem:origem||null})
-  });
+  const p=vdPedidos.find(x=>x.id===id);
+  const itensOrigem=(p&&p.pedidos_vendas_itens||[]).map(i=>({id:i.id,qty_caixas:i.qty_caixas}));
+  const res=await fetch('/api/pedidos-vendas/origem',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    id,origem:origem||null,itens:itensOrigem
+  })});
   if(!res.ok)throw new Error('PATCH origem falhou: '+res.status);
 }
 let vdOrigemEscolhida=null;
