@@ -4498,8 +4498,9 @@ async function carregarLog(){
 }
 async function logRestaurarPedido(id){
   if(!confirm('Restaurar este pedido? Ele voltará a aparecer no sistema.'))return;
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({deleted_at:null})});
-  if(!r||!r.ok){toast('Erro ao restaurar pedido','error');return;}
+  const respRest=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo:'restaurar'})});
+  const jRest=await respRest.json().catch(()=>({}));
+  if(!respRest.ok||!jRest.ok){toast('Erro ao restaurar pedido','error');return;}
   auditLog('editar','Pedido restaurado','id:'+id);
   toast('Pedido restaurado com sucesso!','success');
   carregarLog();
