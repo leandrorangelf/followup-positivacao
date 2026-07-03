@@ -5614,6 +5614,8 @@ async function carregarTv(silencioso=false){
 }
 if(location.hash==='#tv'||location.pathname.replace(/\/$/,'').endsWith('/tv')){
   window.addEventListener('load',irTv);
+}else{
+  window.addEventListener('load',tentarRestaurarSessao);
 }
 </script>
 </body>
