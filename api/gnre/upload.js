@@ -26,6 +26,7 @@ module.exports = async function handler(req, res) {
 
   const { id, tipo, fileName } = req.query;
   if (!id || !tipo || !fileName) return res.status(400).json({ error: 'missing_fields' });
+  if (!(await pedidoPertenceASessao(session, id))) return res.status(403).json({ error: 'forbidden' });
 
   const contentType = req.headers['content-type'] || 'application/octet-stream';
   const buf = await readRawBody(req);
