@@ -1362,12 +1362,13 @@ function toast(msg,type='info',dur=2000){
 async function sb(path,opts={}){
   try{
     const {ret=false,...fetchOpts}=opts;
-    const headers={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json',...(opts.headers||{})};
+    const headers={'Content-Type':'application/json',...(opts.headers||{})};
     if(!headers['Prefer'])headers['Prefer']='return=minimal';
-    const r=await fetch(SB+path,{...fetchOpts,headers});
+    const apiPath=path.replace('/rest/v1/','/api/db/');
+    const r=await fetch(apiPath,{...fetchOpts,headers,credentials:'same-origin'});
     if(ret){
       const t=await r.text();
-      if(!r.ok){console.error('Erro Supabase:',r.status,t);return[];}
+      if(!r.ok){console.error('Erro API:',r.status,t);return[];}
       try{return JSON.parse(t);}catch{return[];}
     }
     return {ok:r.ok,status:r.status};
