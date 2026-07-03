@@ -33,7 +33,7 @@ Não há `package.json`/build step para o frontend — `index.html` é servido c
 
 Até 2026-07-03 este app falava direto do navegador para a REST API do Supabase com uma chave `anon` hardcoded, sem RLS efetivo — qualquer pessoa lia/escrevia o banco inteiro sem login. Isso foi corrigido; a arquitetura atual é:
 
-```
+```text
 index.html (fetch('/api/...') com cookie de sessão, mesma origem)
       │
       ▼
