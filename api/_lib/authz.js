@@ -121,6 +121,7 @@ module.exports = {
   pedSomenteLeitura,
   podeCriarPedidoVenda,
   vePrivilegiado,
+  pedidoPertenceASessao,
   GENERIC_TABLES,
   SCOPED_TABLES,
   scopeQuery,
