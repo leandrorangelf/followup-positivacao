@@ -4244,8 +4244,9 @@ async function corrigirNomeClientePedidos(nomeAntigo,nomeNovo){
   const nomeAnt=nomeAntigo.trim().toUpperCase(),nomeNov=nomeNovo.trim().toUpperCase();
   if(!nomeAnt||!nomeNov){toast('Informe nomes válidos','error');return}
   if(!confirm(`Atualizar todos os pedidos com "${nomeAnt}" para "${nomeNov}"?`))return;
-  const res=await sb('/rest/v1/pedidos_vendas?cliente_nome=eq.'+encodeURIComponent(nomeAnt),{method:'PATCH',body:JSON.stringify({cliente_nome:nomeNov})});
-  if(!res||!res.ok){toast('Erro ao atualizar pedidos','error');return}
+  const resp=await fetch('/api/pedidos-vendas/rename-cliente',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({nomeAntigo:nomeAnt,nomeNovo:nomeNov})});
+  const jRename=await resp.json().catch(()=>({}));
+  if(!resp.ok||!jRename.ok){toast('Erro ao atualizar pedidos','error');return}
   pedidosCarregados=false;await vdCarregar();toast('Pedidos atualizados com sucesso','ok');
 }
 
