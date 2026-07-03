@@ -5617,9 +5617,13 @@ async function carregarTv(silencioso=false){
   tvCarregando=true;
   if(!silencioso)g('tv-content').innerHTML='<div class="tv-loading">Carregando painel da TV...</div>';
   try{
-    await carregarMetas();
-    let vendas=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
-    if(!Array.isArray(vendas))vendas=[];
+    const r=await fetch('/api/tv-data?mes='+mesAtual+'&ano='+anoAtual);
+    if(!r.ok)throw new Error('status '+r.status);
+    const data=await r.json();
+    clientesDB={};COORD_KEYS.forEach(c=>{clientesDB[c]=[];});
+    (data.clientes||[]).forEach(rr=>{if(clientesDB[rr.coordenador])clientesDB[rr.coordenador].push({nome:rr.nome,ativo:rr.ativo,id:rr.id,ativo_desde:rr.ativo_desde||0,inativo_desde:rr.inativo_desde||13,uf:rr.uf||null,origem_padrao:rr.origem_padrao||null,obs_venda:rr.obs_venda||null,def_skus:rr.def_skus||null,def_prazo:rr.def_prazo||null,def_p1:rr.def_p1||null,def_p2:rr.def_p2||null,def_p3:rr.def_p3||null,def_tipo:rr.def_tipo||null});});
+    (data.metas||[]).forEach(rr=>{const coord=rr.coordenador,mes=Number(rr.mes);if(METAS[coord]&&mes>=0&&mes<12)METAS[coord][mes]=Math.max(0,parseInt(rr.meta_cx,10)||0);});
+    let vendas=Array.isArray(data.vendas)?data.vendas:[];
     vendas=vendas.filter(dashPedidoValido);
     tvRender(tvResumoRows(vendas),vendas);
   }catch(e){
