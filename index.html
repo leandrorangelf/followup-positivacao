@@ -2035,7 +2035,8 @@ function setMesGlobal(value){
   else if(visible==='s-relatorios')irRelatorios();
 }
 
-function logout(){
+async function logout(){
+  try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});}catch(e){}
   user=null;isAdmin=false;isDiretoria=false;coordAtual=null;dadosLocais={};pedidosCarregados=false;
   g('login-senha').value='';g('login-coord').value='';g('login-err').style.display='none';
   show('s-login');
