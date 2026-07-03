@@ -3727,7 +3727,7 @@ function vdAbrirDet(id){
     :'<div class="vd-card-oper"><div class="vd-prod-row"><span class="vd-prod-name">Sem SKUs registrados</span><span></span><span></span><span></span></div></div>';
   g('vd-det-body').innerHTML=
     '<div class="vd-card-meta" style="margin-bottom:10px">'+
-      '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+
+      '<span class="dot-status '+(p.tipo==='in'?'dot-in':'dot-off')+'"></span>'+
       '<span class="vd-badge vd-b-prazo">'+parc+'</span>'+
       vdGnreBadgeHTML(p)+
       (p.origem?vdOrigemBadgeHTML(p.origem):'<span class="orig-badge fabrica">Fábrica</span>')+
