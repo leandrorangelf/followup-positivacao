@@ -159,6 +159,7 @@ async function gnreAttach(session, body, res) {
   if (!podeAnexarGnre(session)) return res.status(403).json({ error: 'forbidden' });
   const { id, tipo, path, fileName, gnrePendente } = body;
   if (!id || !path) return res.status(400).json({ error: 'missing_fields' });
+  if (!(await pedidoPertenceASessao(session, id))) return res.status(403).json({ error: 'forbidden' });
   const agora = new Date().toISOString();
   let payload;
   if (tipo === 'gnre') {
