@@ -5377,8 +5377,6 @@ async function irTv(){
   tvSetupLogo();
   tvSetupMes();
   loadMetasLocal();
-  await carregarMetas();
-  await carregarClientes();
   await carregarTv();
   clearInterval(tvTimer);
   tvTimer=setInterval(()=>carregarTv(true),60000);
