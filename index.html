@@ -3894,14 +3894,14 @@ async function vdReverterFaturamento(id){
       id:i.id,pedido_id:i.pedido_id,sku:i.sku,qty_caixas:i.qty_caixas,valor_pacote:i.valor_pacote,
       packs_por_caixa:i.packs_por_caixa,subtotal:i.subtotal,qty_faturada:0
     }));
-    const r=await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
-    if(!r||!r.ok){toast('Erro ao reverter itens','error');return}
     const fatSkus={};
     x.itens.forEach(i=>{fatSkus['fat_'+(i.sku||'').toLowerCase()]=0;});
-    const r2=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({
-      status:'pedido',faturado_at:null,is_parcial:false,...fatSkus
+    const respRev=await fetch('/api/pedidos-vendas/reverter-faturamento',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      id:p.id,itensRows:rows,pedidoPatch:{status:'pedido',faturado_at:null,is_parcial:false,...fatSkus}
     })});
-    if(!r2||!r2.ok){toast('Itens revertidos, mas status do pedido não atualizou','error')}
+    const jRev=await respRev.json().catch(()=>({}));
+    if(!respRev.ok||!jRev.ok){toast('Erro ao reverter itens','error');return}
+    if(!jRev.pedidoOk){toast('Itens revertidos, mas status do pedido não atualizou','error')}
     else toast('Faturamento revertido','ok');
     auditLog('reverter_faturamento','Reversão de faturamento · '+p.cliente_nome,'Coordenador: '+p.coordenador+' · '+x.faturadoCx+' cx revertidas para pendente');
     await vdCarregar();
