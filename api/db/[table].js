@@ -14,6 +14,7 @@ module.exports = async function handler(req, res) {
   if (!rule || !rule(session)) return res.status(403).json({ error: 'forbidden' });
 
   const reqUrl = new URL(req.url, 'http://internal');
+  reqUrl.searchParams.delete('table'); // Vercel injeta o segmento dinâmico [table] na querystring
   const params = scopeQuery(table, session, reqUrl.searchParams);
 
   let bodyToSend;
