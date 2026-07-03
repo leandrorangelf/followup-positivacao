@@ -3994,8 +3994,9 @@ async function vdExcluirPedido(){
   if(user==='vagner'){toast('Vagner não pode excluir pedidos','error');return}
   if(!vdDetAtual)return;
   if(!confirm('Excluir este pedido?\n\nO pedido ficará oculto mas poderá ser restaurado pelo Log de auditoria.'))return;
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'PATCH',body:JSON.stringify({deleted_at:new Date().toISOString()})});
-  if(!r||!r.ok){toast('Erro ao excluir','error');return}
+  const respExc=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:vdDetAtual.id,tipo:'excluir'})});
+  const jExc=await respExc.json().catch(()=>({}));
+  if(!respExc.ok||!jExc.ok){toast('Erro ao excluir','error');return}
   auditLog('excluir','Pedido excluído · '+vdDetAtual.cliente_nome,'id:'+vdDetAtual.id+' · Coordenador: '+vdDetAtual.coordenador+' · '+MESES[vdDetAtual.mes]+'/'+vdDetAtual.ano+' · Total: '+vdFmt(vdDetAtual.total));
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
