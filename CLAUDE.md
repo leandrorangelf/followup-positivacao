@@ -69,7 +69,7 @@ Senhas foram rotacionadas em 2026-07-03 (as anteriores ficaram expostas publicam
 ## Telas principais (`id="s-*"` em index.html)
 
 | id | Tela |
-|---|---|
+| --- | --- |
 | `s-login` | Login (seleção de perfil + senha) |
 | `s-dash` | Dashboard / visão geral |
 | `s-ped` | Pedidos (lançamento de vendas por SKU) |
