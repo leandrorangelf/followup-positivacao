@@ -4,6 +4,8 @@ const { podeAnexarGnre, pedidoPertenceASessao } = require('../_lib/authz');
 
 const MAX_SIZE = 10 * 1024 * 1024;
 const BUCKET = 'gnre-comprovantes';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const TIPO_RE = /^[a-zA-Z0-9_-]{1,40}$/;
 
 function readRawBody(req) {
   return new Promise((resolve, reject) => {
