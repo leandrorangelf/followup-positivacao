@@ -199,9 +199,19 @@ async function status(session, body, res) {
 }
 
 async function renameCliente(session, body, res) {
-  if (!isAdminLiteral(session)) return res.status(403).json({ error: 'forbidden' });
-  const { clienteId, novoNome } = body;
-  if (!clienteId || !novoNome) return res.status(400).json({ error: 'missing_fields' });
-  const r = await sbJson(`/rest/v1/pedidos_vendas?cliente_id=eq.${encodeURIComponent(clienteId)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify({ cliente_nome: novoNome }) });
-  return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
+  // Duas variantes que já existiam no client: renomear pedidos de UM cliente por id
+  // (editarCliente, admin só — vagner é bloqueado antes de chegar aqui) e o utilitário
+  // corrigirNomeClientePedidos que corrige em massa por nome antigo (isAdmin inclui vagner).
+  const { clienteId, novoNome, nomeAntigo, nomeNovo } = body;
+  if (clienteId && novoNome) {
+    if (!isAdminLiteral(session)) return res.status(403).json({ error: 'forbidden' });
+    const r = await sbJson(`/rest/v1/pedidos_vendas?cliente_id=eq.${encodeURIComponent(clienteId)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify({ cliente_nome: novoNome }) });
+    return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
+  }
+  if (nomeAntigo && nomeNovo) {
+    if (!session.isAdmin) return res.status(403).json({ error: 'forbidden' });
+    const r = await sbJson(`/rest/v1/pedidos_vendas?cliente_nome=eq.${encodeURIComponent(nomeAntigo)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify({ cliente_nome: nomeNovo }) });
+    return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
+  }
+  return res.status(400).json({ error: 'missing_fields' });
 }
