@@ -30,6 +30,20 @@ const podeCriarPedidoVenda = (s) => isAdminLiteral(s) || isCoordenador(s);
 // Papéis que enxergam todos os coordenadores (não ficam restritos ao próprio nome)
 const vePrivilegiado = (s) => isAdminLiteral(s) || isVagner(s) || isDiretoria(s) || isFabiano(s);
 
+// podeAnexarGnre() inclui os 4 coordenadores, que NÃO são privilegiados — sem essa
+// checagem, um coordenador poderia anexar/ler GNRE de um pedido de outro coordenador
+// só adivinhando/enumerando o id (IDOR). Toda ação de GNRE sobre um pedido específico
+// precisa confirmar que o pedido é do próprio coordenador (ou que a sessão é privilegiada).
+async function pedidoPertenceASessao(session, pedidoId) {
+  if (vePrivilegiado(session)) return true;
+  if (!pedidoId) return false;
+  const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(pedidoId)}&select=coordenador`, {
+    method: 'GET', headers: { 'Content-Type': 'application/json' },
+  });
+  if (!r.ok || !Array.isArray(r.json) || !r.json[0]) return false;
+  return r.json[0].coordenador === session.user;
+}
+
 // Tabelas de acesso simples (uma única regra por método), servidas pelo proxy genérico
 // api/db/[table].js. pedidos_vendas fica aqui só para leitura — toda escrita passa
 // pelos endpoints dedicados em api/pedidos-vendas/[acao].js por ter regras por-ação.
