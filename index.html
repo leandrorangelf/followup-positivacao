@@ -3932,9 +3932,9 @@ async function vdSalvarUploadGnre(id,tipo,file){
   if(file.size>10*1024*1024){toast('Arquivo acima de 10MB','error');return}
   toast('Enviando arquivo...','info',3500);
   const safeName=String(file.name||'arquivo').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(0,90);
-  const path='pedidos/'+id+'/'+tipo+'_'+Date.now()+'_'+safeName;
-  const url=await vdUploadGnreStorage(file,path);
-  if(!url){toast('Erro ao anexar. Confira bucket/políticas do Storage.','error');return}
+  const path=await vdUploadGnreStorage(file,id,tipo);
+  if(!path){toast('Erro ao anexar. Confira bucket/políticas do Storage.','error');return}
+  const gnrePendente=tipo==='gnre'&&vdGnreStatus(p)==='pendente';
   const agora=new Date().toISOString();
   let payload={};
   if(tipo==='gnre'){
