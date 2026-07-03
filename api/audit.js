@@ -8,7 +8,11 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET') {
     if (!isAdminLiteral(session) && !isDiretoria(session)) return res.status(403).json({ error: 'forbidden' });
-    const r = await sbJson('/rest/v1/audit_log?order=criado_em.desc&limit=200', { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+    const reqUrl = new URL(req.url, 'http://internal');
+    const params = reqUrl.searchParams;
+    if (!params.has('order')) params.set('order', 'criado_em.desc');
+    if (!params.has('limit')) params.set('limit', '200');
+    const r = await sbJson(`/rest/v1/audit_log?${params.toString()}`, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
     res.status(r.status);
     return res.send(r.text);
   }
