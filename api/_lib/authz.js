@@ -1,4 +1,5 @@
 const { COORD_KEYS } = require('./senhas');
+const { sbJson } = require('./supabase');
 
 // Espelha 1:1 as funções cosméticas que já existiam no client (index.html).
 const isFabiano = (s) => s.user === 'fabiano';
