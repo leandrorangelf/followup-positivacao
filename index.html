@@ -3409,21 +3409,16 @@ async function defOrigemSalvar(){
   const btn=g('def-origem-salvar');
   btn.disabled=true;btn.textContent='Salvando...';
   try{
-    const h={'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY,'Prefer':'return=minimal'};
-    // 1. PATCH origem no pedido
-    const res=await fetch(`${SB}/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(pid)}`,{
-      method:'PATCH',headers:h,body:JSON.stringify({origem:ehDist?origem:null})
-    });
+    const p0=vdPedidos.find(x=>x.id===pid);
+    const itensOrigem=(p0&&p0.pedidos_vendas_itens||[]).map(i=>({id:i.id,qty_caixas:i.qty_caixas}));
+    const res=await fetch('/api/pedidos-vendas/origem',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      id:pid,origem:ehDist?origem:null,itens:itensOrigem
+    })});
     if(!res.ok)throw new Error('status '+res.status);
-    // 2. Se distribuidora: confirma entrega em todos os itens (qty_faturada = qty_caixas)
+    // Se distribuidora: confirma entrega em todos os itens (qty_faturada = qty_caixas), já feito no servidor.
     if(ehDist){
       const p=vdPedidos.find(x=>x.id===pid);
       const itens=p?.pedidos_vendas_itens||[];
-      await Promise.all(itens.map(i=>fetch(
-        `${SB}/rest/v1/pedidos_vendas_itens?id=eq.${encodeURIComponent(i.id)}`,
-        {method:'PATCH',headers:h,body:JSON.stringify({qty_faturada:Number(i.qty_caixas||0)})}
-      )));
-      // atualiza localmente
       itens.forEach(i=>i.qty_faturada=Number(i.qty_caixas||0));
     }
     const p=vdPedidos.find(x=>x.id===pid);
