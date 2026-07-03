@@ -1217,12 +1217,6 @@ const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agos
 const SKUS=['GR','GM','CM','CC'];
 const SKUS_COM_CLICK=['GR','GM','CM','CC','CLICK']; // Jan-Abr
 
-async function sha256(txt){
-  const data=new TextEncoder().encode(txt);
-  const hash=await crypto.subtle.digest('SHA-256',data);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
 let user=null,isAdmin=false,isDiretoria=false,coordAtual=null,mesAtual=new Date().getMonth(),anoAtual=new Date().getFullYear();
 let dadosLocais={},clientesDB={},pedidosCarregados=false,coordPedCarregado=null,mesPedCarregado=null;
 let cliCoordAtual=COORD_KEYS[0];
