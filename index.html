@@ -3979,8 +3979,9 @@ async function vdMarcarGnreIsenta(id){
 
 async function vdMoverStatus(novo){
   if(!vdDetAtual)return;
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdDetAtual.id),{method:'PATCH',body:JSON.stringify({status:novo})});
-  if(!r||!r.ok){toast('Erro','error');return}
+  const respMov=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:vdDetAtual.id,tipo:'mover-status',novoStatus:novo})});
+  const jMov=await respMov.json().catch(()=>({}));
+  if(!respMov.ok||!jMov.ok){toast('Erro','error');return}
   toast('✓ Status atualizado','ok');
   vdFecharDet();await vdCarregar();
 }
