@@ -4307,7 +4307,7 @@ function forecastCardHTML(p){
   const click=forecastPodeEditar()?' onclick="forecastEditar(\''+p.id+'\')"':'';
   return '<div class="forecast-card"'+click+'>'+ 
     '<div class="forecast-card-top"><div class="forecast-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</div><div class="forecast-card-cx">'+x.cx+' cx previstas</div></div>'+ 
-    '<div class="forecast-meta"><span class="vd-badge forecast-b-'+tipo+'">'+tipo.toUpperCase()+'</span><span class="vd-badge forecast-b-'+vdEsc(p.probabilidade||'media')+'">Chance '+probLabel+'</span><span class="vd-badge forecast-b-status">'+stLabel+'</span>'+(forecastCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+ 
+    '<div class="forecast-meta"><span class="dot-status '+(tipo==='in'?'dot-in':'dot-off')+'"></span><span class="vd-badge forecast-b-'+vdEsc(p.probabilidade||'media')+'">Chance '+probLabel+'</span><span class="vd-badge forecast-b-status">'+stLabel+'</span>'+(forecastCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+'</div>'+ 
     '<div class="vd-card-info">'+
       '<div class="vd-info-pill"><span>Mês previsto</span>'+vdEsc(periodo)+'</div>'+ 
       '<div class="vd-info-pill"><span>Total forecast</span>'+x.cx+' cx · não faturável</div>'+ 
