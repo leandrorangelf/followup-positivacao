@@ -3168,7 +3168,7 @@ function vdRenderKanban(){
       </td>
       ${showCoord?`<td class="td-hide" style="font-size:12px;color:var(--muted)">${vdEsc(p.coordenador)}</td>`:''}
       <td class="td-hide">
-        <span class="vd-badge ${p.tipo==='in'?'vd-b-in':'vd-b-off'}">${p.tipo.toUpperCase()}</span>
+        <span class="dot-status ${p.tipo==='in'?'dot-in':'dot-off'}"></span>
         <div style="margin-top:4px">${vdOrigemBadgeHTML(origemLabel)}</div>
       </td>
       <td style="font-size:12px;white-space:nowrap">
