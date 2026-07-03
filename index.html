@@ -3786,10 +3786,10 @@ async function vdSalvarComentario(){
   const btn=g('vd-coment-save');
   btn.disabled=true;
   try{
-    const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({[campo]:txt||null})});
-    if(!r||!r.ok){
-      const msg=r&&r.text?await r.text().catch(()=>String(r.status)):String(r&&r.status||'');
-      console.error('Erro ao salvar comentario:',msg);
+    const resp=await fetch('/api/pedidos-vendas/comentar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:p.id,texto:txt||null})});
+    const j=await resp.json().catch(()=>({}));
+    if(!resp.ok||!j.ok){
+      console.error('Erro ao salvar comentario:',resp.status);
       toast('Nao consegui salvar. Rode o SQL de comentarios no Supabase.','error',9000);
       return;
     }
