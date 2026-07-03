@@ -3934,16 +3934,9 @@ async function vdSalvarUploadGnre(id,tipo,file){
   const path=await vdUploadGnreStorage(file,id,tipo);
   if(!path){toast('Erro ao anexar. Confira bucket/políticas do Storage.','error');return}
   const gnrePendente=tipo==='gnre'&&vdGnreStatus(p)==='pendente';
-  const agora=new Date().toISOString();
-  let payload={};
-  if(tipo==='gnre'){
-    payload={gnre_arquivo_url:url,gnre_arquivo_nome:file.name,gnre_arquivo_at:agora,gnre_arquivo_por:user};
-    if(vdGnreStatus(p)==='pendente')payload.gnre_status='enviada';
-  }else{
-    payload={gnre_comprovante_url:url,gnre_comprovante_nome:file.name,gnre_comprovante_at:agora,gnre_comprovante_por:user,gnre_pagamento_informado_at:agora,gnre_pagamento_informado_por:user};
-  }
-  const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(payload)});
-  if(!r||!r.ok){toast('Arquivo subiu, mas não consegui salvar no pedido. Rode o SQL de anexos.','error');return}
+  const r=await fetch('/api/pedidos-vendas/gnre-attach',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo,path,fileName:file.name,gnrePendente})});
+  const jAttach=await r.json().catch(()=>({}));
+  if(!r.ok||!jAttach.ok){toast('Arquivo subiu, mas não consegui salvar no pedido. Rode o SQL de anexos.','error');return}
   auditLog('editar',(tipo==='gnre'?'GNRE anexada':'Comprovante GNRE anexado')+' · '+p.cliente_nome,'Usuário: '+user+' · Arquivo: '+file.name);
   toast(tipo==='gnre'?'GNRE anexada':'Comprovante anexado. Gestão precisa confirmar o pagamento.','ok');
   await vdCarregar();
