@@ -3903,11 +3903,20 @@ async function vdReverterFaturamento(id){
   }catch(e){toast('Erro ao reverter faturamento','error');}
 }
 
-async function vdUploadGnreStorage(file,path){
-  const headers={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type||'application/octet-stream','x-upsert':'true'};
-  const r=await fetch(SB+'/storage/v1/object/gnre-comprovantes/'+path,{method:'POST',headers,body:file});
-  if(!r.ok){const t=await r.text().catch(()=>String(r.status));console.error('Erro upload GNRE:',r.status,t);return null;}
-  return SB+'/storage/v1/object/public/gnre-comprovantes/'+path.split('/').map(encodeURIComponent).join('/');
+async function vdUploadGnreStorage(file,id,tipo){
+  const qs='id='+encodeURIComponent(id)+'&tipo='+encodeURIComponent(tipo)+'&fileName='+encodeURIComponent(file.name||'arquivo');
+  const r=await fetch('/api/gnre/upload?'+qs,{method:'POST',credentials:'same-origin',headers:{'Content-Type':file.type||'application/octet-stream'},body:file});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.ok){console.error('Erro upload GNRE:',r.status,j);return null;}
+  return j.path;
+}
+async function vdAbrirGnreArquivo(path){
+  try{
+    const r=await fetch('/api/gnre/sign?path='+encodeURIComponent(path),{credentials:'same-origin'});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.url){toast('Não foi possível abrir o arquivo','error');return}
+    window.open(j.url,'_blank');
+  }catch(e){toast('Não foi possível abrir o arquivo','error');}
 }
 function vdAbrirUploadGnre(id,tipo){
   if(!vdPodeAnexarGnre()){toast('Perfil somente leitura','error');return}
