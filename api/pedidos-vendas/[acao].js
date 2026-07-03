@@ -15,6 +15,7 @@ const {
   podeAnexarGnre,
   podeComentarPedido,
   vePrivilegiado,
+  pedidoPertenceASessao,
 } = require('../_lib/authz');
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
