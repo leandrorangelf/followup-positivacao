@@ -3659,42 +3659,18 @@ async function vdSalvarPedido(){
     observacao:original.observacao,mes:original.mes,ano:original.ano,status:original.status
   }:null;
   try{
-    if(vdEditPedidoId){
-      const r=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'PATCH',body:JSON.stringify(ped)});
-      if(!r||!r.ok){toast('Erro ao salvar pedido','error');return}
-      const del=await sb('/rest/v1/pedidos_vendas_itens?pedido_id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'DELETE'});
-      if(!del||!del.ok){
-        await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'PATCH',body:JSON.stringify(pedOriginal)});
-        toast('Não foi possível atualizar os itens','error');return
-      }
-    }else{
-      const j=await sb('/rest/v1/pedidos_vendas',{
-        method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(ped),ret:true
-      });
-      if(!Array.isArray(j)||!j[0]||!j[0].id){toast('Erro ao criar pedido','error');return}
-      pedidoId=j[0].id;
-    }
-    const itensIns=itens.map(i=>Object.assign({},i,{pedido_id:pedidoId}));
-    const r2=await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',body:JSON.stringify(itensIns)});
-    if(!r2||!r2.ok){
-      if(vdEditPedidoId){
-        if(itensOriginais.length)await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',body:JSON.stringify(itensOriginais)});
-        await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(vdEditPedidoId),{method:'PATCH',body:JSON.stringify(pedOriginal)});
-      }else{
-        await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(pedidoId),{method:'DELETE'});
-      }
-      toast('Erro ao salvar itens. A alteração foi desfeita.','error');return
-    }
-    let forecastConvertidoOk=false;
+    const respSalvar=await fetch('/api/pedidos-vendas/salvar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      id:vdEditPedidoId||undefined,ped,itens,pedOriginal,itensOriginais,
+      forecastOrigemId:(!vdEditPedidoId&&vdForecastOrigemId)?vdForecastOrigemId:undefined
+    })});
+    const jSalvar=await respSalvar.json().catch(()=>({}));
+    if(!respSalvar.ok||!jSalvar.ok){toast('Erro ao salvar pedido','error');return}
+    pedidoId=vdEditPedidoId||jSalvar.id;
+    let forecastConvertidoOk=!!jSalvar.forecastConvertido;
     const forecastOrigemAtual=vdForecastOrigemId;
     const forecastOrigemLabelAtual=vdForecastOrigemLabel;
-    if(forecastOrigemAtual&&!vdEditPedidoId){
-      const rf=await sb('/rest/v1/forecast_pedidos?id=eq.'+encodeURIComponent(forecastOrigemAtual),{method:'PATCH',body:JSON.stringify({status:'convertido',updated_at:new Date().toISOString()})});
-      if(rf&&rf.ok){
-        forecastConvertidoOk=true;
-      }else{
-        toast('Pedido salvo, mas o Forecast não foi arquivado. Exclua ou marque convertido manualmente.','error',7000);
-      }
+    if(forecastOrigemAtual&&!vdEditPedidoId&&!forecastConvertidoOk){
+      toast('Pedido salvo, mas o Forecast não foi arquivado. Exclua ou marque convertido manualmente.','error',7000);
     }
     toast('✓ Pedido salvo!','ok');
     // LOG
