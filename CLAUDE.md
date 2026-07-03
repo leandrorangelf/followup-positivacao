@@ -57,6 +57,7 @@ Supabase — RLS ligado nas 8 tabelas, sem policy para anon/authenticated (deny 
 ## Perfis de usuário
 
 Definidos em `api/_lib/senhas.js` / `COORD_KEYS`:
+
 - `admin` (Leandro, Gestor) — acesso completo
 - `vagner` (Gerente) — `isAdmin=true` mas somente leitura na tela de Pedidos legada
 - `diretoria` — somente leitura
