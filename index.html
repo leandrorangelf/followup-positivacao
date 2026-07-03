@@ -4465,7 +4465,7 @@ async function carregarLog(){
   g('log-content').innerHTML='<div class="loading">Carregando...</div>';
   const filtroUser=g('log-filtro-usuario')?.value||'';
   const filtroAcao=g('log-filtro-acao')?.value||'';
-  let url='/rest/v1/audit_log?order=criado_em.desc&limit=200';
+  let url='/api/audit?order=criado_em.desc&limit=200';
   if(filtroUser)url+='&usuario=eq.'+encodeURIComponent(filtroUser);
   if(filtroAcao)url+='&acao=eq.'+encodeURIComponent(filtroAcao);
   const data=await sb(url,{ret:true});
