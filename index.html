@@ -1430,11 +1430,13 @@ async function login(){
   const coord=g('login-coord').value;
   const senha=g('login-senha').value;
   if(!coord){g('login-err').textContent='Selecione seu nome';g('login-err').style.display='block';return;}
-  const senhaHash=await sha256(senha);
-  if(SENHAS_HASH[coord]!==senhaHash){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
-  user=coord;isAdmin=(coord==='admin'||coord==='vagner');isDiretoria=coord==='diretoria';
-  coordAtual=(isAdmin||isDiretoria||isFabiano())?COORD_KEYS[0]:coord;
-  cliCoordAtual=isAdmin?COORD_KEYS[0]:coordAtual;
+  let sessao;
+  try{
+    const r=await fetch('/api/auth/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({coord,senha})});
+    if(!r.ok){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
+    sessao=await r.json();
+  }catch(e){g('login-err').textContent='Erro de conexão';g('login-err').style.display='block';return;}
+  aplicarSessao(sessao);
   setupShell();
   show('s-dash');
   const temMetasLocais=loadMetasLocal();
@@ -1445,6 +1447,31 @@ async function login(){
   }
   if(isFabiano()){vdFiltro='pendente';irVendas();}
   else irDash(true);
+}
+
+function aplicarSessao(sessao){
+  user=sessao.user;isAdmin=sessao.isAdmin;isDiretoria=sessao.isDiretoria;
+  coordAtual=sessao.coordAtual;cliCoordAtual=sessao.cliCoordAtual;
+}
+
+async function tentarRestaurarSessao(){
+  try{
+    const r=await fetch('/api/auth/me',{credentials:'same-origin'});
+    if(!r.ok)return false;
+    const sessao=await r.json();
+    aplicarSessao(sessao);
+    setupShell();
+    show('s-dash');
+    const temMetasLocais=loadMetasLocal();
+    if(isAdmin&&temMetasLocais){
+      await Promise.all([sincronizarMetasLocaisBanco(),carregarClientes()]);
+    } else {
+      await Promise.all([carregarMetas(),carregarClientes()]);
+    }
+    if(isFabiano()){vdFiltro='pendente';irVendas();}
+    else irDash(true);
+    return true;
+  }catch(e){return false;}
 }
 
 // ── CLIENTES DB ──
