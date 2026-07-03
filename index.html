@@ -3855,21 +3855,22 @@ async function vdSalvarFaturamento(){
       packs_por_caixa:i.packs_por_caixa,subtotal:i.subtotal,
       qty_faturada:Number(i.qty_faturada||0)+(agora.get(String(i.id))||0)
     }));
-    const r=await sb('/rest/v1/pedidos_vendas_itens',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
-    if(!r||!r.ok){toast('Atualize o banco antes de confirmar o faturamento','error');return}
     const fatDepois=x.faturadoCx+totalAgora,completo=fatDepois>=x.pedidoCx;
     const status=completo?(p.tipo==='off'?'entregue':'faturado'):'pedido';
     const origem=g('vd-fat-origem').value.trim()||null;
     const fatSkus={};
     x.itens.forEach(i=>{const q=agora.get(String(i.id))||0;if(q>0)fatSkus['fat_'+(i.sku||'').toLowerCase()]=Number(p['fat_'+(i.sku||'').toLowerCase()]||0)+q;});
-    const r2=await sb('/rest/v1/pedidos_vendas?id=eq.'+encodeURIComponent(p.id),{method:'PATCH',body:JSON.stringify({
-      status,faturamento_observacao:g('vd-fat-obs').value||null,
-      faturado_at:completo?new Date().toISOString():null,
-      origem,faturado_por:user,
-      is_parcial:!completo&&fatDepois>0,
-      ...fatSkus
+    const respFat=await fetch('/api/pedidos-vendas/faturar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      id:p.id,itensRows:rows,pedidoPatch:{
+        status,faturamento_observacao:g('vd-fat-obs').value||null,
+        faturado_at:completo?new Date().toISOString():null,
+        origem,is_parcial:!completo&&fatDepois>0,
+        ...fatSkus
+      }
     })});
-    if(!r2||!r2.ok){toast('Caixas registradas, mas a observação não foi salva','error')}
+    const jFat=await respFat.json().catch(()=>({}));
+    if(!respFat.ok||!jFat.ok){toast('Atualize o banco antes de confirmar o faturamento','error');return}
+    if(!jFat.pedidoOk){toast('Caixas registradas, mas a observação não foi salva','error')}
     else toast(completo?'Pedido faturado por completo':'Faturamento parcial registrado','ok');
     auditLog('faturar',
       (completo?'Faturamento completo':'Faturamento parcial')+' · '+p.cliente_nome,
