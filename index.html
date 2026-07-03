@@ -3241,7 +3241,7 @@ function vdCardHTML(p){
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+
       (p.origem?'<div class="vd-card-origem" style="margin-top:5px">'+vdOrigemBadgeHTML(p.origem)+'</div>':'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
     '<div class="vd-card-meta">'+
-      '<span class="vd-badge '+(p.tipo==='in'?'vd-b-in':'vd-b-off')+'">'+p.tipo.toUpperCase()+'</span>'+vdGnreBadgeHTML(p)+
+      '<span class="dot-status '+(p.tipo==='in'?'dot-in':'dot-off')+'"></span>'+vdGnreBadgeHTML(p)+
       (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+
       (isParcialOrigem?'<span class="vd-badge vd-b-remanescente">↩ Remanescente</span>':'')+
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
