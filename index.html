@@ -2924,8 +2924,8 @@ function vdPrazoLabel(p){
 }
 function vdAnexosHTML(p){
   const links=[];
-  if(p?.gnre_arquivo_url)links.push('<a class=\"vd-attach-link\" href=\"'+vdEsc(p.gnre_arquivo_url)+'\" target=\"_blank\" onclick=\"event.stopPropagation()\">📄 GNRE</a>');
-  if(p?.gnre_comprovante_url)links.push('<a class=\"vd-attach-link\" href=\"'+vdEsc(p.gnre_comprovante_url)+'\" target=\"_blank\" onclick=\"event.stopPropagation()\">✅ Comprovante</a>');
+  if(p?.gnre_arquivo_url)links.push('<a class=\"vd-attach-link\" href=\"#\" onclick=\"event.stopPropagation();event.preventDefault();vdAbrirGnreArquivo('+"'"+vdEsc(p.gnre_arquivo_url)+"'"+')\">📄 GNRE</a>');
+  if(p?.gnre_comprovante_url)links.push('<a class=\"vd-attach-link\" href=\"#\" onclick=\"event.stopPropagation();event.preventDefault();vdAbrirGnreArquivo('+"'"+vdEsc(p.gnre_comprovante_url)+"'"+')\">✅ Comprovante</a>');
   return links.length?'<div class=\"vd-attach-line\">'+links.join('')+'</div>':'';
 }
 function vdPodeAnexarGnre(){return !isDiretoria&&user!=='vagner';}
