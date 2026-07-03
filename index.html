@@ -4390,16 +4390,10 @@ async function auditLog(acao, descricao, detalhes){
   if(!user||isDiretoria)return;
   const acaoSegura=['criar','editar','excluir','faturar'].includes(acao)?acao:'criar';
   try{
-    await sb('/rest/v1/audit_log',{
-      method:'POST',
-      headers:{'Prefer':'return=minimal'},
-      body:JSON.stringify({
-        usuario:user,
-        acao:acaoSegura,
-        descricao,
-        detalhes: detalhes||null,
-        criado_em: new Date().toISOString()
-      })
+    await fetch('/api/audit',{
+      method:'POST',credentials:'same-origin',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({acao:acaoSegura,descricao,detalhes:detalhes||null})
     });
   }catch(e){console.warn('Log não registrado:',e);}
 }
