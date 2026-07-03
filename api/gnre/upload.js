@@ -1,6 +1,6 @@
 const { getSession } = require('../_lib/auth');
 const { sbFetch } = require('../_lib/supabase');
-const { podeAnexarGnre } = require('../_lib/authz');
+const { podeAnexarGnre, pedidoPertenceASessao } = require('../_lib/authz');
 
 const MAX_SIZE = 10 * 1024 * 1024;
 const BUCKET = 'gnre-comprovantes';
