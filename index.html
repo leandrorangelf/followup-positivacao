@@ -24,6 +24,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .login-title{font-size:18px;font-weight:600;text-align:center;margin-bottom:4px}
 .login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px}
 .login-box select,.login-box input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;background:var(--bg);color:var(--text);margin-bottom:10px}
+.login-remember{display:flex;align-items:center;gap:8px;margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.3}
+.login-remember input{width:16px;height:16px;margin:0;flex:0 0 auto;accent-color:var(--text)}
+.login-username-proxy{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
 .btn-login{width:100%;padding:13px;background:var(--text);color:#fff;border:none;border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
 .login-err{font-size:12px;color:#991B1B;text-align:center;margin-top:8px;display:none}
 
@@ -588,20 +591,27 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <div class="login-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAhFBMVEUAAAD///8BAQH19fXCwsJnZ2cFBQVGRkbw8PCkpKRiYmKampr8/Pzj4+O9vb1RUVEvLy/Ly8sTExNvb2/q6uqrq6vy8vJXV1c2NjbW1ta3t7d1dXWLi4vd3d3T09OEhIQ5OTknJycbGxtBQUF6enqSkpKlpaVLS0sqKioeHh5UVFQPDw9NWXDhAAAM+klEQVR4nO1dCYOqOg9tC+IGKuKKC66jjv///31NFyhYBN/ojN4v570ZsRTIadM0TcNcQhAIBAKBQCAQCAQCgUAgEAgEAoFAIBAIBAKBQCAQCAQCgUAgEAgEAoH4WDAO8Uv9Lv9Scf6viZSCPQ1/zQTxr6LrO8/C6K+52NE+Pu1WLe9pt3om2t2n3ep9GT7LCCLDPwIyfACfzrDaZ/l0hp5HKmp+OkOO4f2Kn82QV1msK+p9NEMuu0vHFZU+miG5BpQeKup8LkM4vaI+jf5dS+ORMfV9uvxnGTJy8VsTSmPZnaX4OIZpMSNLenQo1es/PjNar/g4hhzn0/R0JmBH9xMacFu6m80GpKwrP45hIx5RwKpB5hPS6ZPZeOXz76N4b+f4SQx5wdgBdr746YYtQjZrmmL88Qw5+oGg57ZdTjXokC6lgjMvXU+J9+kMGePCfmk6nfmY9DRBSiGw8y9YGl62FL1IXajFP51YUC6fM96Yoa2c8Xl+qbSSnPiH05CduCOshMmvMgShoWuYXLnemahVrO1GOKGoXWDo03Po08luJQjO+Rh8hz5k+S/GVy0eU40ADAd20bg5cYWiLoBgO9PZEvyyll4OYzcM3fFyKp6b+Sf5T9I9cq/6dNuHAF4456QmEXXOJzl10Dvh1d9iCI9pjuVkTR1HTNENfZKR2fIqjjrLRCB0Rz5tWvVYlEXtrnfkFWDy4ApL7zz5VxgK3YvEiBmNDzP4do44XT/+Fuc9sqBDceRSA837dz1NSUTlkFzYe1vgVxjyZ3QEP3dqFne4P7LqEOiWo2DIyClaxhPltdxhyKTJ4csnUXV5h+BvMOQ9eO2BJKtTJqH8iTibeZ8fuP5QlxMS+lV9yJReAEMaTEnpZEh+haFHphNQpTHJuVUi0jlc8RNfhFBnmJ3Z1tNSjv3cCRfk/mb2b2ip9EKWJN/SXCgIdkIgIhj5JsNOXYZKdub9MUOINTi0xEkhngO2kP4nhrXwYoacVUyBg1tiDDxuDz+ZoQfeMRCYeCV+I2+CkH4qQxhoJJGWf3Gn3sD5WIb8Zy88Drq6M2Ex4Ul/JENgNZJzd+POfMVn78nLGLLX9qEnZ2Sf3k34YGLifl0f+ten3MaO79Tzvxez9ciZ/rf5sBr8ufuf36UMHl/kSP/rfF8IRtYv7MOKkPiPsFeSriprLl/I8JW5e13Vhe3KmpdP7EN+256StFNdN/DrMWQ5x4GVBeRUqTdUd80FUou2lcmZ26jg3VuNpZcxcKoF/F1lZRLXZQiP3h46g33SLW84XmnWDWVAYeQWXX5Cmr24Fyv0EiL5nY7j2A3jdkRu6pcyVMHa6uRAxp3Tulo6aI/GFziYhXRd5ipBPCE8dk7fiQga9HKmjpGpr1aggBjKrm0nKwm/q/kJXHw5G4aVLcLIoAZDUL4r9+ObRLXxkrdegxTiiLyXd2tKx1rPziFYg8TQZ3mwXSpvBPIAEp+2xsl0uvhqCScsJvYdggI2qqG+KmvDCqRGH/KldIs6m6zBINzdkzk1BgaOL/xgHUhog9CGtdNch45m2KNOkt3T5//Nq+lxTJWgSbVWM2IaADtDXifhsh40IRiSIy5jsM3fyxuJ1bZsVRHOGYMmZQmrYvqAEwGVDEMa7DL75OperEYk7QykEtSobdSxMmSwTpGNy9IrFiDNKE+RW/CJUN3sjkIfmzcGUjL8atNW9hQmB5dP+zWkTpSg03qWKatkY8hPd0DORT7JS2y2BWb7bEC+Sz6k3pX7HEVIhmufphEycW8Z0XRrWI+u6sN9Xdt7j6EHbev7k1xVxjtR2rKsX4WbAeE3PXHy6lPhH59IAYGUjw/l7I689kHKXUPithJ0Vs0vDztDsVnhFud4RwjZSINSImLAK45MpZwJq3njWmmG/bz+KvtRJSUXZKwEHTxEj1gZcjOqAnY5u8z4qBOb+FmRcjOoYzgmG1Fy4x4rhjkl5+jXZhirZ91dWdhgZbhWzV3Yv5IqZTiGmqEZOGna9U4x7OX0gsGa70GGz+hD1Q2wEZqvq8q1cdc7b4Jh2oeKYWFaUZamwPARLX0qQ2m2Wjd7kERWDdKCvszU8E3Vad7eD/BjhnocbmrNhwZsDIMcEeMprZwG8icd5cUHo45i2C9c/WOG7VTQnzPcyZKiseBPkSsIJ/3Oe8wNRuHJfOjmRQy7StBaM74JC8OohCEpMmR6GvRShf4+ruXYfC5Don2a6gRQJWu5X5q11q1fQqT77Jh3Mj5ny7Uz6nVfxFD7pTU87zwsDJXVcsIiVNKXY7vPoBvQeTJIA0Y1GXZqM9Rri3YdhtfwLkMje80Ki48Vcd1sS4P6mKWpz3BA0ztUV74YbollHMp53PdHgR25bBMQOApgYarwKoY6irGqw3BvTAQWhiqJY1J6fc4rISfe58EGzI20rq9iGFSJZWBqmEkLQznrgf9pfZfZXHt5cu0PveqxFzNU0UTuLVV34tLQs3KGxRnfAo9sWjKTL8NjDBv1GeoJsTJeyuEaaxsLw6A2QzKFmQHsVib2yxielKRfVX3IFatlvBhyw5DpHZAyhnpBz383IcrSGuYe+TKGeiUzqo6wns11smW2CNM7VQGCU8X3aB5jGNVmyKA1fPh/Wll32TK+WBgqL75luzb3SBFXK1Z7HUM9UZclYmQMVuakaRmHS1U0tGkDI5Ge+rZCmYvOncHQ8Fx/zpBjr8Lng3v7+LCLSRtGiYWhLjrZGcZ6gEpfuBjsNPvQy2JUz2Aozal/NzQHZ1ynKiKsipb2G400JxkJLL6wZzD0iHfRxSUMFw8xhKQuiJLf2evwPN6FcVVEeK6lKewQCKXrp0GZuWKYr9Q3x2E/lf0ZDD2yhdWN7xfDD6aMIFcu4mhjqCJON2sIIVyYirNWMucfcDAZNp7JkHlMrjB8vzwR2yPHwsCxRvWVZ1rcTwPhOlmat9TS/EIZDGy6PmR8qFYwfGwciguEuRkTYlsIe5DYVrDuFoaww0hl7lF+q4mJZX4azlazysV4lgdLAINhl2p1SqOJ3k/GIWQ4++IB8c02mNwB6lC/sGli3beQsV/YQ8rVFa8Ch6mMqv2z91FYRlsxHAc3DPN4nCGZykhDKDb0iv14oH7H7tzn+tBLPaSGEYKBj5g62+wGMso/2RIv3T+UyZEpQzeUVzKtpStiuH3scYZw9Xkuth0nCykrkxMvfA5d2upnWiIF1Qz3cvmjTw7lW100kRVl8ZDblsh4WFf29GqndxC/A+ou9BgGJfK7usl8tUkNc7HaSIaPoywt7NDdZQivuQiLSldR7sz2i0+VQ2MYyANl+gr2x0sz+ecLnci17Tq5PHZP7bfxRal0Tfeu8HDk4suVTaBVQ8V+fN/pEGNXe9vSulIboiW28gUsOokXKhjdXEKq/vR2dHakUkM+3DFqbvREAtUOE9FQ1F/Fx+VxDLOfE5nOggcCysudea8XqHZSbXa87rqglNtGp7EMdPif3zBYqRXeV8/Vb/tRN9pcH8r6u3SVwaf+aLWCYycubOlx92uiWjBDPsyTrApnh6QALxe18g/ESCEETNP1kQml+mGheFmfn9DozdENJjK+GYTHfnYixXkzmw0Gg+1X+zJQuOTvQQaJuxo5vuNMgjC5Fj0JYSoCLaAzJmrML52UikeugyJmO3nttlB80351cL1sL3ocFUdyqhTm34lKR4hnZDtp1b55ZU241d/tdTCax5G8pQeT0u4YjoL5uFn6jrhd2sdCvey2uW01mHx3Lfc6W+ktq0uiYhOQfNZA7qr8if+Y9Kf/0p/tcgvDW2GMAustGFHvDMn+1Rm0sqhE9Kw5n8CwFn78V5Qy7yLLgn6rv6GIfyfqASDDPwIyfADI8I+ADB8AMvwjIMMH8M4Mzb15FZhRTnuxOsvcdJY50fLznRka3+G4NOO/wLpQ7Y0ZksHiEEWLnSjoJzKouj9EidqOFKyJIDhNZqpF+onaYdolDXn6fRkSsl5s1nHSg5Vd2B325I5SvB4Ejog5kFlPrffWx2u4Ece8ntuHc4vVJQpEDOKdGW4J6bXJmcBrPJCAdIZOaYfbtcqf2vRkhOwA+SxX6NMO7NyITm9FhMxF9sP7MhS2pfcltBA47KjonPa804uBNZkGwVqm9Yn9UVjRJ3IHhJ90uCq7Ys/ujRmC2vVkEopHZyQC6TlDl/TpGMzOuNn3+zJBlpCGyAAf0AHpizdYXK7TE9HFb8yQD7T1RGzJe6Q5TsYim3ofBnHgzkBdYzKbr2dwthEnsdBS0omX8UUctZNxJKLIb81QgWWf+Q2O3JHNQ2DvraVpcPTmH+Kwxd9UjO2W5xszzL7lBGeyaxShQgVLP74rwyf+6w9vFEI00A7cZ8F5zz7cNJ6G6Xsy/H/Ao//mUSn+mggCgUAgEAgEAoFAIBAIBAKBQCAQCAQCgUAgEAgEAoFAIBAIBAKBQPwd/gcidZenCShaNwAAAABJRU5ErkJggg==" alt="Clean Tobacco" style="width:150px;max-width:80%;display:block;margin:0 auto 12px;border-radius:8px"></div>
     <div class="login-title">Follow-up Positivação</div>
     <div class="login-sub">Selecione seu perfil para continuar</div>
-    <select id="login-coord">
-      <option value="">Selecione seu nome...</option>
-      <option value="admin">👁 Leandro (Gestor)</option>
-      <option value="vagner">👁 Vagner (Gerente)</option>
-      <option value="diretoria">📊 Diretoria (Somente leitura)</option>
-      <option value="fabiano">Fabiano (Faturamento)</option>
-      <option value="Igor Cater">Igor Cater</option>
-      <option value="Marcio Vit">Marcio Vit</option>
-      <option value="Vitor Valle">Vitor Valle</option>
-      <option value="Rosana">Rosana</option>
-    </select>
-    <input type="password" id="login-senha" placeholder="Senha" onkeydown="if(event.key==='Enter')login()"/>
-    <button class="btn-login" onclick="login()">Entrar</button>
-    <div class="login-err" id="login-err"></div>
+    <form id="login-form" autocomplete="on" onsubmit="event.preventDefault();login();">
+      <input class="login-username-proxy" type="text" id="login-usuario" name="username" autocomplete="username" tabindex="-1" aria-hidden="true">
+      <select id="login-coord" name="coord" autocomplete="username" onchange="syncLoginUsuario()">
+        <option value="">Selecione seu nome...</option>
+        <option value="admin">👁 Leandro (Gestor)</option>
+        <option value="vagner">👁 Vagner (Gerente)</option>
+        <option value="diretoria">📊 Diretoria (Somente leitura)</option>
+        <option value="fabiano">Fabiano (Faturamento)</option>
+        <option value="Igor Cater">Igor Cater</option>
+        <option value="Marcio Vit">Marcio Vit</option>
+        <option value="Vitor Valle">Vitor Valle</option>
+        <option value="Rosana">Rosana</option>
+      </select>
+      <input type="password" id="login-senha" name="password" placeholder="Senha" autocomplete="current-password"/>
+      <label class="login-remember" for="login-lembrar">
+        <input type="checkbox" id="login-lembrar">
+        <span>Lembrar meu perfil neste dispositivo</span>
+      </label>
+      <button class="btn-login" type="submit">Entrar</button>
+      <div class="login-err" id="login-err"></div>
+    </form>
   </div>
 </div>
 
@@ -1416,9 +1426,39 @@ function navTo(id){
 }
 
 // ── LOGIN ──
+const LOGIN_COORD_KEY='clean-followup-login-coord';
+
+function syncLoginUsuario(){
+  const coord=g('login-coord')?.value||'';
+  const usuario=g('login-usuario');
+  if(usuario)usuario.value=coord;
+}
+
+function initLoginRemember(){
+  try{
+    const coord=localStorage.getItem(LOGIN_COORD_KEY)||'';
+    if(coord&&g('login-coord')){
+      g('login-coord').value=coord;
+      g('login-lembrar').checked=true;
+    }else{
+      if(g('login-coord'))g('login-coord').value='';
+      if(g('login-lembrar'))g('login-lembrar').checked=false;
+    }
+  }catch(e){}
+  syncLoginUsuario();
+}
+
+function persistLoginRemember(){
+  try{
+    if(g('login-lembrar')?.checked)localStorage.setItem(LOGIN_COORD_KEY,g('login-coord').value);
+    else localStorage.removeItem(LOGIN_COORD_KEY);
+  }catch(e){}
+}
+
 async function login(){
   const coord=g('login-coord').value;
   const senha=g('login-senha').value;
+  syncLoginUsuario();
   if(!coord){g('login-err').textContent='Selecione seu nome';g('login-err').style.display='block';return;}
   let sessao;
   try{
@@ -1426,6 +1466,7 @@ async function login(){
     if(!r.ok){g('login-err').textContent='Senha incorreta';g('login-err').style.display='block';return;}
     sessao=await r.json();
   }catch(e){g('login-err').textContent='Erro de conexão';g('login-err').style.display='block';return;}
+  persistLoginRemember();
   aplicarSessao(sessao);
   setupShell();
   show('s-dash');
@@ -2028,7 +2069,8 @@ function setMesGlobal(value){
 async function logout(){
   try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});}catch(e){}
   user=null;isAdmin=false;isDiretoria=false;coordAtual=null;dadosLocais={};pedidosCarregados=false;
-  g('login-senha').value='';g('login-coord').value='';g('login-err').style.display='none';
+  g('login-senha').value='';g('login-err').style.display='none';
+  initLoginRemember();
   show('s-login');
 }
 
@@ -5605,7 +5647,10 @@ async function carregarTv(silencioso=false){
 if(location.hash==='#tv'||location.pathname.replace(/\/$/,'').endsWith('/tv')){
   window.addEventListener('load',irTv);
 }else{
-  window.addEventListener('load',tentarRestaurarSessao);
+  window.addEventListener('load',function(){
+    initLoginRemember();
+    tentarRestaurarSessao();
+  });
 }
 </script>
 </body>
