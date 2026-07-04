@@ -1238,8 +1238,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
           <option value="todos">Todos os coordenadores</option>
         </select>
         <select id="rel-mes" class="client-filter" onchange="relFiltrarMes(this.value)" style="min-width:130px">
-          <option value="atual">Mês atual</option>
           <option value="todos">Ano inteiro</option>
+          <option value="atual">Mês atual</option>
         </select>
         <select id="rel-origem" class="client-filter" onchange="relFiltrarOrigem(this.value)" style="min-width:150px">
           <option value="todos">Todas as origens</option>
@@ -4763,7 +4763,7 @@ carregarDashboard=async function(silencioso=false){
 };
 
 // ===================== RELATÓRIOS =====================
-let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='atual',relOrigemFiltro='todos',relStatusFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
+let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='todos',relOrigemFiltro='todos',relStatusFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
 
 async function irRelatorios(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
@@ -4777,7 +4777,7 @@ async function irRelatorios(){
     else{sel.value=relCoordFiltro;sel.disabled=false;}
   }
   if(g('rel-mes')){
-    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option>'+
+    g('rel-mes').innerHTML='<option value="todos">Ano inteiro</option><option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option>'+
       MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');
     g('rel-mes').value=relMesFiltro;
   }
