@@ -1237,17 +1237,16 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <select id="rel-coord" class="client-filter" onchange="relFiltrarCoord(this.value)" style="min-width:160px">
           <option value="todos">Todos os coordenadores</option>
         </select>
+        <select id="rel-mes" class="client-filter" onchange="relFiltrarMes(this.value)" style="min-width:130px">
+          <option value="atual">Mês atual</option>
+          <option value="todos">Ano inteiro</option>
+        </select>
         <select id="rel-origem" class="client-filter" onchange="relFiltrarOrigem(this.value)" style="min-width:150px">
           <option value="todos">Todas as origens</option>
           <option value="fabrica">🏭 Fábrica</option>
           <option value="dist">🚛 Distribuidoras</option>
-          <option value="New Bluetex MG">New Bluetex MG</option>
-          <option value="New Bluetex AM">New Bluetex AM</option>
-          <option value="New Bluetex SC">New Bluetex SC</option>
-          <option value="GB SP">GB SP</option>
-          <option value="GB CE">GB CE</option>
-          <option value="GB MA">GB MA</option>
         </select>
+        <input id="rel-busca" class="client-search" placeholder="Buscar cliente, UF, origem..." oninput="relFiltrarBusca(this.value)" style="min-width:220px">
         <button class="secondary-btn" onclick="irRelatorios()">↺ Atualizar</button>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
@@ -1257,10 +1256,10 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       </div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="rel-tabs">
-      <button class="admin-tab active" onclick="relAba('inteligencia')" id="rel-tab-inteligencia">Inteligência</button>
+      <button class="admin-tab active" onclick="relAba('pedidos')" id="rel-tab-pedidos">Pedidos</button>
+      <button class="admin-tab" onclick="relAba('inteligencia')" id="rel-tab-inteligencia">Inteligência</button>
       <button class="admin-tab" onclick="relAba('faturado')" id="rel-tab-faturado">Faturado</button>
       <button class="admin-tab" onclick="relAba('forecast')" id="rel-tab-forecast">Forecast</button>
-      <button class="admin-tab" onclick="relAba('pedidos')" id="rel-tab-pedidos">Pedidos</button>
     </div>
     <div id="rel-content"><div class="loading">Carregando...</div></div>
   </div>
@@ -4764,7 +4763,7 @@ carregarDashboard=async function(silencioso=false){
 };
 
 // ===================== RELATÓRIOS =====================
-let relDados=[],relForecastDados=[],relCoordFiltro='todos',relOrigemFiltro='todos',relStatusFiltro='todos',relCarregando=false,relAbaAtual='inteligencia';
+let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='atual',relOrigemFiltro='todos',relStatusFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
 
 async function irRelatorios(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
@@ -4777,6 +4776,12 @@ async function irRelatorios(){
     if(!isAdmin&&!isDiretoria&&user!=='vagner'){sel.value=coordAtual;sel.disabled=true;}
     else{sel.value=relCoordFiltro;sel.disabled=false;}
   }
+  if(g('rel-mes')){
+    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option>'+
+      MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');
+    g('rel-mes').value=relMesFiltro;
+  }
+  if(g('rel-busca'))g('rel-busca').value=relBuscaFiltro;
   await relCarregar();
 }
 
@@ -4792,9 +4797,67 @@ async function relCarregar(){
     ]);
     relDados=Array.isArray(vendas)?vendas.filter(dashPedidoValido):[];
     relForecastDados=Array.isArray(forecast)?forecast:[];
+    relPopularOrigens();
     relAba(relAbaAtual);
   }catch(e){g('rel-content').innerHTML='<div class="empty">Erro ao carregar dados.</div>';}
   finally{relCarregando=false;}
+}
+
+function relNorm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+function relMesPedido(p){return Number(p?.mes);}
+function relMesForecast(p){return Number(p?.forecast_mes ?? p?.mes ?? p?.mes_previsto ?? mesAtual);}
+function relPassaMes(p,forecast=false){
+  if(relMesFiltro==='todos')return true;
+  const mes=relMesFiltro==='atual'?mesAtual:Number(relMesFiltro);
+  return Number(forecast?relMesForecast(p):relMesPedido(p))===mes;
+}
+function relTextoPedido(p){
+  return relNorm([p?.cliente_nome,p?.cliente,p?.cliente_uf,p?.coordenador,p?.origem,p?.status].filter(Boolean).join(' '));
+}
+function relTextoForecast(p){
+  return relNorm([p?.cliente_nome,p?.cliente,p?.cliente_uf,p?.coordenador,p?.origem,p?.status,p?.probabilidade].filter(Boolean).join(' '));
+}
+function relPopularOrigens(){
+  const sel=g('rel-origem');if(!sel)return;
+  const atual=relOrigemFiltro;
+  const origens=[...new Set(relDados.map(p=>p.origem).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR'));
+  sel.innerHTML='<option value="todos">Todas as origens</option><option value="fabrica">🏭 Fábrica</option><option value="dist">🚛 Distribuidoras</option>'+
+    origens.map(o=>'<option value="'+vdEsc(o)+'">'+vdEsc(o)+'</option>').join('');
+  sel.value=[...sel.options].some(o=>o.value===atual)?atual:'todos';
+  relOrigemFiltro=sel.value;
+}
+function relListaFiltrada(aplicarStatus=true){
+  let lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
+  lista=lista.filter(p=>relPassaMes(p,false));
+  if(relOrigemFiltro==='fabrica')lista=lista.filter(p=>!vdEhDistribuidora(p));
+  else if(relOrigemFiltro==='dist')lista=lista.filter(p=>vdEhDistribuidora(p));
+  else if(relOrigemFiltro!=='todos')lista=lista.filter(p=>(p.origem||'')===relOrigemFiltro);
+  if(relBuscaFiltro.trim()){
+    const q=relNorm(relBuscaFiltro);
+    lista=lista.filter(p=>relTextoPedido(p).includes(q));
+  }
+  if(aplicarStatus&&relStatusFiltro==='pendente')lista=lista.filter(p=>vdResumoPedido(p).saldoCx>0);
+  else if(aplicarStatus&&relStatusFiltro==='faturado')lista=lista.filter(p=>{const s=vdResumoPedido(p).status;return s==='faturado'||s==='entregue';});
+  return lista;
+}
+function relForecastFiltrado(){
+  let forecast=relCoordFiltro==='todos'?relForecastDados:relForecastDados.filter(p=>p.coordenador===relCoordFiltro);
+  forecast=forecast.filter(p=>relPassaMes(p,true));
+  if(relOrigemFiltro==='fabrica')forecast=forecast.filter(p=>!vdEhDistribuidora(p));
+  else if(relOrigemFiltro==='dist')forecast=forecast.filter(p=>vdEhDistribuidora(p));
+  else if(relOrigemFiltro!=='todos')forecast=forecast.filter(p=>(p.origem||'')===relOrigemFiltro);
+  if(relBuscaFiltro.trim()){
+    const q=relNorm(relBuscaFiltro);
+    forecast=forecast.filter(p=>relTextoForecast(p).includes(q));
+  }
+  return forecast;
+}
+function relFiltroResumo(lista){
+  const partes=[relMesFiltro==='todos'?'ano inteiro':(relMesFiltro==='atual'?MESES[mesAtual]:MESES[Number(relMesFiltro)]),relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro];
+  if(relOrigemFiltro!=='todos')partes.push(relOrigemFiltro==='fabrica'?'fábrica':relOrigemFiltro==='dist'?'distribuidoras':relOrigemFiltro);
+  if(relStatusFiltro!=='todos')partes.push(relStatusFiltro);
+  if(relBuscaFiltro.trim())partes.push('busca: '+relBuscaFiltro.trim());
+  return `${anoAtual} · ${partes.join(' · ')} · ${lista.length} registro(s)`;
 }
 
 function relFiltrarCoord(v){
@@ -4802,8 +4865,18 @@ function relFiltrarCoord(v){
   relAba(relAbaAtual);
 }
 
+function relFiltrarMes(v){
+  relMesFiltro=v;
+  relAba(relAbaAtual);
+}
+
 function relFiltrarOrigem(v){
   relOrigemFiltro=v;
+  relAba(relAbaAtual);
+}
+
+function relFiltrarBusca(v){
+  relBuscaFiltro=v;
   relAba(relAbaAtual);
 }
 
@@ -4816,14 +4889,9 @@ function relFiltrarStatus(v){
 function relAba(aba){
   relAbaAtual=aba;
   document.querySelectorAll('[id^="rel-tab-"]').forEach(b=>b.classList.toggle('active',b.id==='rel-tab-'+aba));
-  let lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
-  if(relOrigemFiltro==='fabrica')lista=lista.filter(p=>!vdEhDistribuidora(p));
-  else if(relOrigemFiltro==='dist')lista=lista.filter(p=>vdEhDistribuidora(p));
-  else if(relOrigemFiltro!=='todos')lista=lista.filter(p=>(p.origem||'')===relOrigemFiltro);
-  if(relStatusFiltro==='pendente')lista=lista.filter(p=>vdResumoPedido(p).saldoCx>0);
-  else if(relStatusFiltro==='faturado')lista=lista.filter(p=>{const s=vdResumoPedido(p).status;return s==='faturado'||s==='entregue';});
-  let forecast=relCoordFiltro==='todos'?relForecastDados:relForecastDados.filter(p=>p.coordenador===relCoordFiltro);
-  g('rel-sub').textContent=`${anoAtual} · ${relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro}`;
+  const lista=relListaFiltrada(true);
+  const forecast=relForecastFiltrado();
+  g('rel-sub').textContent=relFiltroResumo(aba==='forecast'?forecast:lista);
   if(aba==='inteligencia')relRender(lista);
   else if(aba==='faturado')relRenderFaturado(lista);
   else if(aba==='forecast')relRenderForecast(forecast);
@@ -5175,7 +5243,7 @@ function relRenderFaturado(lista){
 }
 
 function relImprimirFaturado(){
-  const lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
+  const lista=relListaFiltrada(true);
   const RSKUS=VD_SKUS;
   const faturados=lista.filter(p=>{const x=vdResumoPedido(p);return x.faturadoCx>0||x.status==='faturado'||x.status==='entregue';});
   const skuTots={};RSKUS.forEach(s=>skuTots[s]=0);
@@ -5272,7 +5340,7 @@ function relRenderForecast(forecast){
 }
 
 function relImprimirForecast(){
-  const forecast=relCoordFiltro==='todos'?relForecastDados:relForecastDados.filter(p=>p.coordenador===relCoordFiltro);
+  const forecast=relForecastFiltrado();
   const RSKUS=VD_SKUS;
   const skuTots={};RSKUS.forEach(s=>skuTots[s]=0);
   forecast.forEach(p=>(p.forecast_pedidos_itens||[]).forEach(i=>{if(skuTots[i.sku]!==undefined)skuTots[i.sku]+=Number(i.qty_caixas||0);}));
@@ -5300,6 +5368,10 @@ function relRenderPedidos(lista){
   const RSKUS=VD_SKUS;
   if(!lista.length){g('rel-content').innerHTML='<div class="empty">Nenhum pedido no período.</div>';return;}
   const totalCx=lista.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
+  const totalValor=lista.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
+  const faturadoCx=lista.reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
+  const saldoCx=lista.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
+  const clientesUnicos=new Set(lista.map(p=>p.cliente_nome||p.cliente).filter(Boolean)).size;
   const skuTots={};RSKUS.forEach(s=>skuTots[s]=0);
   lista.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(skuTots[i.sku]!==undefined)skuTots[i.sku]+=Number(i.qty_caixas||0);}));
 
@@ -5333,9 +5405,15 @@ function relRenderPedidos(lista){
   }).join('');
 
   g('rel-content').innerHTML=`
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
+    <div class="dash-kpi info"><div class="dash-kpi-label">Pedidos filtrados</div><div class="dash-kpi-value">${lista.length}</div><div class="dash-kpi-sub">${clientesUnicos} cliente(s)</div></div>
+    <div class="dash-kpi good"><div class="dash-kpi-label">Total pedido</div><div class="dash-kpi-value">${relFmt(totalCx)} <small>cx</small></div><div class="dash-kpi-sub">${relFmtVal(totalValor)}</div></div>
+    <div class="dash-kpi good"><div class="dash-kpi-label">Já faturado</div><div class="dash-kpi-value">${relFmt(faturadoCx)} <small>cx</small></div><div class="dash-kpi-sub">confirmado/entregue</div></div>
+    <div class="dash-kpi ${saldoCx?'warn':'good'}"><div class="dash-kpi-label">Saldo pendente</div><div class="dash-kpi-value">${relFmt(saldoCx)} <small>cx</small></div><div class="dash-kpi-sub">${saldoCx?'ainda aberto':'sem pendência'}</div></div>
+  </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-    <div style="font-size:13px;font-weight:700">Relatório de Pedidos — ${anoAtual}
-      <span style="font-size:12px;font-weight:400;color:#7A7870;margin-left:8px">${lista.length} pedidos · ${relFmt(totalCx)} cx</span>
+    <div style="font-size:13px;font-weight:700">Relatório de Pedidos
+      <span style="font-size:12px;font-weight:400;color:#7A7870;margin-left:8px">${relFiltroResumo(lista)}</span>
     </div>
     <button class="primary-btn" onclick="relImprimirPedidos()">Imprimir / PDF</button>
   </div>
@@ -5386,7 +5464,7 @@ function relRenderPedidos(lista){
 }
 
 function relImprimirPedidos(){
-  const lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
+  const lista=relListaFiltrada(true);
   const RSKUS=VD_SKUS;
   const skuTots={};RSKUS.forEach(s=>skuTots[s]=0);
   lista.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(skuTots[i.sku]!==undefined)skuTots[i.sku]+=Number(i.qty_caixas||0);}));
