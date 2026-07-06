@@ -4777,7 +4777,7 @@ async function irRelatorios(){
     else{sel.value=relCoordFiltro;sel.disabled=false;}
   }
   if(g('rel-mes')){
-    g('rel-mes').innerHTML='<option value="todos">Ano inteiro</option><option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option>'+
+    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option>'+
       MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');
     g('rel-mes').value=relMesFiltro;
   }
