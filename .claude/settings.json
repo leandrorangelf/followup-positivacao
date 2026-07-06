@@ -6,13 +6,16 @@
         "hooks": [
           {
             "type": "command",
-            "shell": "powershell",
             "command": "git add -A; if ($?) { git commit -m 'Auto-save: update files' 2>&1 | Out-Null }; if ($?) { git push 2>&1 | Out-Null }",
+            "shell": "powershell",
             "statusMessage": "Salvando e enviando para o GitHub...",
             "async": true
           }
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "ponytail@ponytail": true
   }
 }
