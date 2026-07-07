@@ -3011,11 +3011,11 @@ function vdAnexosHTML(p){
 function vdPodeAnexarGnre(){return !isDiretoria&&user!=='vagner';}
 function vdComentarioVagnerHTML(p){
   const txt=String(p?.comentario_vagner||'').trim();
-  return txt?'<div class="vd-vagner-note"><strong>Comentario Vagner</strong>'+vdEsc(txt)+'</div>':'';
+  return txt?'<div class="vd-vagner-note"><strong><span>Comentario do Vagner</span></strong>'+vdEsc(txt)+'</div>':'';
 }
 function vdComentarioFabianoHTML(p){
   const txt=String(p?.comentario_fabiano||'').trim();
-  return txt?'<div class="vd-fabiano-note"><strong><span>Fabiano comentou</span></strong>'+vdEsc(txt)+'</div>':'';
+  return txt?'<div class="vd-fabiano-note"><strong><span>Comentario do Fabiano</span></strong>'+vdEsc(txt)+'</div>':'';
 }
 function vdComentariosPedidoHTML(p){
   const html=vdComentarioVagnerHTML(p)+vdComentarioFabianoHTML(p);
@@ -3325,7 +3325,7 @@ function vdCardHTML(p){
   if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'){
     const gnreSt=vdGnreStatus(p);
     if(!isFabiano()&&gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
-    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar valor</button>');
+    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar GNRE</button>');
     if(precisaGnre){
       if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar paga</button>');
       botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar</button>');
@@ -3789,7 +3789,7 @@ function vdAbrirDet(id){
   }
   if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)){
     if(!isFabiano()&&_gnreSt==='pendente')_gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
-    _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar valor</button>');
+    _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar GNRE</button>');
     if(_precisaGnre){
       if(_gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)_gnreBtns.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar GNRE paga</button>');
       _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar GNRE</button>');
@@ -4589,7 +4589,7 @@ async function logRestaurarPedido(id){
 // ===================== FIM LOG DE AUDITORIA =====================
 
 setInterval(()=>{
-  if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true);
+  if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true,true);
 },30000);
 // ===================== FIM MÓDULO VENDAS =====================
 
@@ -4601,6 +4601,8 @@ setInterval(()=>{
 ========================================================= */
 let dashHistoricoVendas=[];
 let dashUltimaCargaHistorico='';
+let dashCacheKey='';
+let dashReloadPendente=false;
 const dashBaseRenderAdminDash=renderAdminDash;
 const dashBaseRenderCoordDash=renderCoordDash;
 
@@ -4731,34 +4733,45 @@ function dashAppendInteligencia(coordFiltro){
   el.insertAdjacentHTML('beforeend',dashInteligenciaHTML(coordFiltro));
 }
 
-carregarDashboard=async function(silencioso=false){
-  if(dashCarregando)return;
+function dashRenderHistorico(hist,coordFiltro){
+  hist=Array.isArray(hist)?hist:[];
+  const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
+  const vendasMes=anoData.filter(p=>Number(p.mes)===Number(mesAtual));
+  vendasDashboard=vendasMes;
+  if(isAdmin||isDiretoria){
+    dashBaseRenderAdminDash(anoData);
+    dashAppendInteligencia('todos');
+  }else{
+    dadosLocais=vdAgruparVendasPorCliente(vendasMes,coordAtual);
+    dashBaseRenderCoordDash(anoData);
+    dashAppendInteligencia(coordAtual);
+  }
+}
+
+carregarDashboard=async function(silencioso=false,forcarBusca=false){
+  if(dashCarregando){dashReloadPendente=true;return;}
   dashCarregando=true;
   if(!silencioso)g('dash-content').innerHTML='<div class="loading">Carregando histórico de vendas...</div>';
   try{
     const coordFiltro=(isAdmin||isDiretoria)?'todos':coordAtual;
+    const cacheKey=coordFiltro+'|'+anoAtual;
+    if(!forcarBusca&&dashHistoricoVendas.length&&dashCacheKey===cacheKey){
+      dashRenderHistorico(dashHistoricoVendas,coordFiltro);return;
+    }
     const coordQuery=(coordFiltro==='todos')?'':'coordenador=eq.'+encodeURIComponent(coordFiltro)+'&';
     let hist=await sb('/rest/v1/pedidos_vendas?'+coordQuery+'deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
     if(!Array.isArray(hist))hist=[];
     hist=hist.filter(dashPedidoValido);
     dashHistoricoVendas=hist;
+    dashCacheKey=cacheKey;
     dashUltimaCargaHistorico=new Date().toISOString();
-    const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
-    const vendasMes=anoData.filter(p=>Number(p.mes)===Number(mesAtual));
-    vendasDashboard=vendasMes;
-    if(isAdmin||isDiretoria){
-      dashBaseRenderAdminDash(anoData);
-      dashAppendInteligencia('todos');
-    }else{
-      dadosLocais=vdAgruparVendasPorCliente(vendasMes,coordAtual);
-      dashBaseRenderCoordDash(anoData);
-      dashAppendInteligencia(coordAtual);
-    }
+    dashRenderHistorico(hist,coordFiltro);
   }catch(e){
     console.error(e);
     g('dash-content').innerHTML='<div class="empty">Não foi possível carregar o histórico de vendas. Verifique a tabela pedidos_vendas.</div>';
   }finally{
     dashCarregando=false;
+    if(dashReloadPendente){dashReloadPendente=false;carregarDashboard(silencioso,forcarBusca);}
   }
 };
 
