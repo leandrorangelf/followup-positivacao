@@ -3187,14 +3187,6 @@ function vdRenderMetrics(){
   g('vd-dist-sub').textContent=distOrigens.map(o=>{const cx=distPeds.filter(p=>(p.origem||'Outra')===o).reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);return o+' '+cx+'cx';}).join(' · ')||'—';
   g('vd-saldo-cx').textContent=totalCarteira+' cx';
   g('vd-saldo-valor').textContent=cxLiberadas+' cx lib · '+cxAguardandoGnre+' cx GNRE';
-  const ativos=coords.flatMap(c=>clientesAtivos(c).map(cli=>({coord:c,...cli})));
-  const ids=new Set(vdPedidos.map(p=>p.coordenador+'|'+p.cliente_id));
-  const pos=ids.size;
-  const pctCob=ativos.length>0?Math.round(pos/ativos.length*100):0;
-  g('vd-cob').textContent=pctCob+'%';
-  g('vd-cob-sub').textContent=pos+' de '+ativos.length+' clientes';
-  g('vd-cob-bar').style.width=Math.min(100,pctCob)+'%';
-  g('vd-cob-bar').style.background=pctCob>=80?'var(--green)':pctCob>=50?'var(--amber)':'var(--accent)';
 }
 
 function vdSetFiltro(f){
