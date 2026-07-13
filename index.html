@@ -2747,7 +2747,6 @@ function dashOverviewHTML(cfg){
       '<div class="dash-hero-foot"><span>Meta: '+dashCx(meta)+' cx</span><span>Saldo meta: '+dashCx(Math.max(0,meta-volume))+' cx</span></div>'+
     '</section>'+
     '<section class="dash-snapshot">'+
-      '<div class="dash-snap-card"><div class="dash-snap-label">Pedido no mês</div><div class="dash-snap-value">'+dashCx(pedidoCx)+' <small>cx</small></div><div class="dash-snap-note">'+dashMoney(resumo.pedidoValor)+' em pedidos confirmados</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Já faturado</div><div class="dash-snap-value">'+dashCx(faturadoCx)+' <small>cx</small></div><div class="dash-snap-note ok">'+dashMoney(resumo.faturadoValor)+' faturados</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Saldo pendente</div><div class="dash-snap-value">'+dashCx(saldoCx)+' <small>cx</small></div><div class="dash-snap-note '+(saldoCx?'warn':'ok')+'">'+(saldoCx?dashMoney(resumo.saldoValor)+' ainda aberto':'Sem saldo pendente')+'</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Fábrica</div><div class="dash-snap-value">'+dashCx(fabPedido)+' <small>cx</small></div><div class="dash-snap-note">Pedidos diretos da fábrica</div></div>'+
