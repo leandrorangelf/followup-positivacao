@@ -874,6 +874,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="vd-filter">
     <button class="vd-chip on" data-f="todos" onclick="vdSetFiltro('todos')">Todos</button>
     <button class="vd-chip" data-f="faturar" onclick="vdSetFiltro('faturar')">⚠ Pra faturar</button>
+    <button class="vd-chip" data-f="parcial" onclick="vdSetFiltro('parcial')">✅ Faturados parciais</button>
     <button class="vd-chip" data-f="pendente" onclick="vdSetFiltro('pendente')">Pendentes</button>
     <button class="vd-chip vd-chip-new no-diretoria no-fabiano" onclick="vdGoNovo()">+ Pedido real</button>
     <button class="vd-chip vd-chip-forecast no-diretoria no-vagner no-fabiano" onclick="vdGoForecast()">+ Forecast</button>
@@ -3215,7 +3216,8 @@ function vdPedidosFiltrados(){
     vdOrigemFiltro==='fabrica'?base.filter(p=>!vdEhDistribuidora(p)):
     base.filter(p=>vdEhDistribuidora(p)&&(vdOrigemFiltro==='dist'||(p.origem||'')===vdOrigemFiltro));
   if(vdFiltro==='faturar')return baseFiltrada.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
-  if(vdFiltro==='pendente')return baseFiltrada.filter(p=>vdResumoPedido(p).saldoCx>0);
+  if(vdFiltro==='parcial')return baseFiltrada.filter(vdPedidoFaturadoParcial);
+  if(vdFiltro==='pendente')return baseFiltrada.filter(vdPedidoPendente);
   return baseFiltrada;
 }
 
@@ -3232,7 +3234,7 @@ function vdRenderKanban(){
   ];
   lista.forEach(p=>{
     const st=vdResumoPedido(p).status;
-    if(st==='faturado'||st==='entregue')grupos[2].items.push(p);
+    if(st==='faturado'||st==='entregue'||st==='parcial')grupos[2].items.push(p);
     else if(vdPedidoPrecisaGnre(p))grupos[0].items.push(p);
     else grupos[1].items.push(p);
   });
@@ -4733,6 +4735,15 @@ function dashAppendInteligencia(coordFiltro){
   el.insertAdjacentHTML('beforeend',dashInteligenciaHTML(coordFiltro));
 }
 
+function vdPedidoFaturadoParcial(p){
+  const x=vdResumoPedido(p);
+  return x.faturadoCx>0&&x.saldoCx>0;
+}
+function vdPedidoPendente(p){
+  const x=vdResumoPedido(p);
+  return x.faturadoCx===0&&x.saldoCx>0;
+}
+
 function dashRenderHistorico(hist,coordFiltro){
   hist=Array.isArray(hist)?hist:[];
   const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
@@ -4849,8 +4860,8 @@ function relListaFiltrada(aplicarStatus=true){
     const q=relNorm(relBuscaFiltro);
     lista=lista.filter(p=>relTextoPedido(p).includes(q));
   }
-  if(aplicarStatus&&relStatusFiltro==='pendente')lista=lista.filter(p=>vdResumoPedido(p).saldoCx>0);
-  else if(aplicarStatus&&relStatusFiltro==='faturado')lista=lista.filter(p=>{const s=vdResumoPedido(p).status;return s==='faturado'||s==='entregue';});
+  if(aplicarStatus&&relStatusFiltro==='pendente')lista=lista.filter(vdPedidoPendente);
+  else if(aplicarStatus&&relStatusFiltro==='faturado')lista=lista.filter(p=>{const s=vdResumoPedido(p).status;return s==='faturado'||s==='entregue'||s==='parcial';});
   return lista;
 }
 function relForecastFiltrado(){
