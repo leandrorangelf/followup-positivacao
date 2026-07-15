@@ -3086,9 +3086,9 @@ function renderInOffSection(vendas,showCoord){
 function vdDashboardResumoHTML(lista){
   const r=vdResumoLista(lista);
   return `<div class="dash-kpis">
-    <div class="dash-kpi"><div class="dash-kpi-label">Pedido lançado</div><div class="dash-kpi-value">${r.pedidoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.pedidoValor)}</div></div>
-    <div class="dash-kpi"><div class="dash-kpi-label">Faturado / comissão</div><div class="dash-kpi-value" style="color:var(--success)">${r.faturadoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub good">${vdFmt(r.faturadoValor)}</div></div>
-    <div class="dash-kpi"><div class="dash-kpi-label">Saldo não faturado</div><div class="dash-kpi-value" style="color:var(--warning)">${r.saldoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div><div class="dash-kpi-sub">${vdFmt(r.saldoValor)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Pedido lançado</div><div class="dash-kpi-value">${r.pedidoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Faturado / comissão</div><div class="dash-kpi-value" style="color:var(--success)">${r.faturadoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Saldo não faturado</div><div class="dash-kpi-value" style="color:var(--warning)">${r.saldoCx.toLocaleString('pt-BR')} <small style="font-size:14px">cx</small></div></div>
     <div class="dash-kpi"><div class="dash-kpi-label">Faturamentos parciais</div><div class="dash-kpi-value">${r.parciais}</div><div class="dash-kpi-sub ${r.parciais?'bad':'good'}">${r.pedidos} pedidos confirmados</div></div>
   </div>`;
 }
