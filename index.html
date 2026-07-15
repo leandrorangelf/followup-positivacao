@@ -4011,7 +4011,7 @@ async function vdExcluirPedidoPorId(id){
   const respExc2=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo:'excluir'})});
   const jExc2=await respExc2.json().catch(()=>({}));
   if(!respExc2.ok||!jExc2.ok){toast('Erro ao excluir pedido','error');return}
-  auditLog('excluir','Pedido excluído · '+p.cliente_nome,'id:'+id+' · Coordenador: '+p.coordenador+' · '+MESES[p.mes]+'/'+p.ano+' · Total: '+vdFmt(p.total));
+  auditLog('excluir','Pedido excluído · '+p.cliente_nome,'id:'+id+' · Coordenador: '+p.coordenador+' · '+MESES[p.mes]+'/'+p.ano+' · '+(p.total_caixas||0)+' cx');
   toast('Pedido excluído','ok');
   await vdCarregar();
 }
