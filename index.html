@@ -2702,7 +2702,6 @@ function premPanelHTML(rows,volumeTotal){
 
 function dashPct(num,den){return den?Math.round(Number(num||0)/Number(den||0)*100):0;}
 function dashCx(v){return Number(v||0).toLocaleString('pt-BR');}
-function dashMoney(v){return vdFmt(Number(v||0));}
 function dashKpiHTML(titulo,valor,unidade,nota,tom,notaClasse){
   return '<div class="dash-kpi '+(tom||'')+'"><div class="dash-kpi-label">'+vdEsc(titulo)+'</div><div class="dash-kpi-value">'+valor+(unidade?' <small>'+vdEsc(unidade)+'</small>':'')+'</div><div class="dash-kpi-sub '+(notaClasse||'')+'">'+nota+'</div></div>';
 }
