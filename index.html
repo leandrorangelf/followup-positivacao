@@ -3660,8 +3660,7 @@ function vdRenderSkus(){
     '<div class="vd-sku-line"><div class="vd-sku-lbl">'+vdSkuLabel(s)+'</div>'+
     '<input type="number" min="0" placeholder="cx" value="'+(vdForm.skus[s].q||'')+'" oninput="vdUpdSku(\''+s+'\',\'q\',this.value)">'+
     '<input type="number" min="0" step="0.01" placeholder="R$/pac" value="'+(vdForm.skus[s].v||'')+'" oninput="vdUpdSku(\''+s+'\',\'v\',this.value)"></div>'+
-    '<div class="vd-sku-info">'+VD_PACKS[s]+' pac/cx</div>'+
-    '<div class="vd-sku-sub" id="vf-sub-'+s+'">Subtotal: '+vdFmt(0)+'</div>'
+    '<div class="vd-sku-info">'+VD_PACKS[s]+' pac/cx</div>'
   ).join('');
 }
 
