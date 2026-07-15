@@ -3217,7 +3217,7 @@ function vdCardHTML(p,grupo){
   const pedidoCompetencia=MESES[p.mes]+'/'+p.ano;
   const isParcialOrigem=!!p.parcial_de;
   const obsFat=String(p.faturamento_observacao||'').trim();
-  return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
+  return '<div class="vd-card-ped vd-card-'+(grupo||'liberado')+'" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+
       (p.origem?'<div class="vd-card-origem" style="margin-top:5px">'+vdOrigemBadgeHTML(p.origem)+'</div>':'')+'</div></div>'+
     '<div class="vd-card-meta">'+
