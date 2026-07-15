@@ -3341,14 +3341,16 @@ function vdCardHTML(p){
   const gnreValor=vdTipoPedido(p)==='off'?'Isento':(Number(p.gnre_valor||0)>0?vdFmt(p.gnre_valor):'Não informado');
   const pedidoCompetencia=MESES[p.mes]+'/'+p.ano;
   const isParcialOrigem=!!p.parcial_de;
+  const obsFat=String(p.faturamento_observacao||'').trim();
   return '<div class="vd-card-ped" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+
-      (p.origem?'<div class="vd-card-origem" style="margin-top:5px">'+vdOrigemBadgeHTML(p.origem)+'</div>':'')+'</div><div class="vd-card-tot">'+vdFmt(p.total)+'</div></div>'+
+      (p.origem?'<div class="vd-card-origem" style="margin-top:5px">'+vdOrigemBadgeHTML(p.origem)+'</div>':'')+'</div></div>'+
     '<div class="vd-card-meta">'+
       '<span class="dot-status '+(p.tipo==='in'?'dot-in':'dot-off')+'"></span>'+vdGnreBadgeHTML(p)+
       (vdCoordFiltro==='todos'?'<span class="vd-badge vd-b-skus">'+vdEsc(p.coordenador)+'</span>':'')+
       (isParcialOrigem?'<span class="vd-badge vd-b-remanescente">↩ Remanescente</span>':'')+
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
+      (obsFat?'<span class="vd-badge" style="background:#FEF3C7;color:#92400E">📋 '+vdEsc(obsFat.substring(0,40))+'</span>':'')+
     '</div>'+
     '<div class="vd-card-info">'+
       '<div class="vd-info-pill"><span>Competência</span>'+vdEsc(pedidoCompetencia)+'</div>'+
