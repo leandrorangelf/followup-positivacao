@@ -5324,7 +5324,7 @@ function relRenderPedidos(lista){
   g('rel-content').innerHTML=`
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
     <div class="dash-kpi info"><div class="dash-kpi-label">Pedidos filtrados</div><div class="dash-kpi-value">${lista.length}</div><div class="dash-kpi-sub">${clientesUnicos} cliente(s)</div></div>
-    <div class="dash-kpi good"><div class="dash-kpi-label">Total pedido</div><div class="dash-kpi-value">${relFmt(totalCx)} <small>cx</small></div><div class="dash-kpi-sub">${relFmtVal(totalValor)}</div></div>
+    <div class="dash-kpi good"><div class="dash-kpi-label">Total pedido</div><div class="dash-kpi-value">${relFmt(totalCx)} <small>cx</small></div></div>
     <div class="dash-kpi good"><div class="dash-kpi-label">Já faturado</div><div class="dash-kpi-value">${relFmt(faturadoCx)} <small>cx</small></div><div class="dash-kpi-sub">confirmado/entregue</div></div>
     <div class="dash-kpi ${saldoCx?'warn':'good'}"><div class="dash-kpi-label">Saldo pendente</div><div class="dash-kpi-value">${relFmt(saldoCx)} <small>cx</small></div><div class="dash-kpi-sub">${saldoCx?'ainda aberto':'sem pendência'}</div></div>
   </div>
