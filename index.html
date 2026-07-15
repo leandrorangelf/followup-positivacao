@@ -2727,14 +2727,8 @@ function dashOverviewHTML(cfg){
       '<div class="dash-hero-foot"><span>Meta: '+dashCx(meta)+' cx</span><span>Saldo meta: '+dashCx(Math.max(0,meta-volume))+' cx</span></div>'+
     '</section>'+
     '<section class="dash-snapshot">'+
-<<<<<<< HEAD
-      '<div class="dash-snap-card"><div class="dash-snap-label">Pedido no mês</div><div class="dash-snap-value">'+dashCx(pedidoCx)+' <small>cx</small></div><div class="dash-snap-note">Pedidos confirmados</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Já faturado</div><div class="dash-snap-value">'+dashCx(faturadoCx)+' <small>cx</small></div><div class="dash-snap-note ok">Faturado no período</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Saldo pendente</div><div class="dash-snap-value">'+dashCx(saldoCx)+' <small>cx</small></div><div class="dash-snap-note '+(saldoCx?'warn':'ok')+'">'+(saldoCx?'Ainda em aberto':'Sem saldo pendente')+'</div></div>'+
-=======
-      '<div class="dash-snap-card"><div class="dash-snap-label">Já faturado</div><div class="dash-snap-value">'+dashCx(faturadoCx)+' <small>cx</small></div><div class="dash-snap-note ok">'+dashMoney(resumo.faturadoValor)+' faturados</div></div>'+
-      '<div class="dash-snap-card"><div class="dash-snap-label">Saldo pendente</div><div class="dash-snap-value">'+dashCx(saldoCx)+' <small>cx</small></div><div class="dash-snap-note '+(saldoCx?'warn':'ok')+'">'+(saldoCx?dashMoney(resumo.saldoValor)+' ainda aberto':'Sem saldo pendente')+'</div></div>'+
->>>>>>> origin/main
       '<div class="dash-snap-card"><div class="dash-snap-label">Fábrica</div><div class="dash-snap-value">'+dashCx(fabPedido)+' <small>cx</small></div><div class="dash-snap-note">Pedidos diretos da fábrica</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Distribuidoras</div><div class="dash-snap-value">'+dashCx(distPedido)+' <small>cx</small></div><div class="dash-snap-note">GB, GP e demais origens</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Faturamentos parciais</div><div class="dash-snap-value">'+dashCx(resumo.parciais)+'</div><div class="dash-snap-note '+(resumo.parciais?'danger':'ok')+'">'+dashCx(resumo.pedidos)+' pedidos no período</div></div>'+
