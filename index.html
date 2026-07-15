@@ -5282,7 +5282,6 @@ function relRenderPedidos(lista){
   const RSKUS=VD_SKUS;
   if(!lista.length){g('rel-content').innerHTML='<div class="empty">Nenhum pedido no período.</div>';return;}
   const totalCx=lista.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
-  const totalValor=lista.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
   const faturadoCx=lista.reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
   const saldoCx=lista.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
   const clientesUnicos=new Set(lista.map(p=>p.cliente_nome||p.cliente).filter(Boolean)).size;
