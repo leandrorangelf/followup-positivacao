@@ -847,35 +847,29 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <!-- VENDAS · KANBAN -->
 <div id="s-vendas" class="screen" style="display:none">
   <div class="vd-header"><h2>Vendas</h2><div class="sub" id="vd-sub">— · —</div></div>
-  <div class="vd-metrics">
-    <div class="vd-metric" style="border:1.5px solid #86EFAC"><div class="lbl" style="color:#166534">✅ Realizado real (mês)</div><div class="val" style="color:#166534" id="vd-real">—</div><div class="vsub" id="vd-real-sub">faturado total</div><div class="bar"><span id="vd-real-bar" style="width:0;background:#16a34a"></span></div></div>
-    <div class="vd-metric"><div class="lbl">🏭 Fábrica faturado (mês)</div><div class="val" id="vd-fat-cx">—</div><div class="vsub" id="vd-fat-valor">—</div></div>
-    <div class="vd-metric"><div class="lbl">🚛 Distribuidoras fat. (mês)</div><div class="val" id="vd-dist-cx">—</div><div class="vsub" id="vd-dist-sub">—</div></div>
-    <div class="vd-metric" style="border:1.5px solid #1E293B"><div class="lbl" style="color:#1E293B">📦 Total pedido (mês)</div><div class="val" id="vd-saldo-cx" style="color:#1E293B">—</div><div class="vsub" id="vd-saldo-valor">= total geral do relatório</div></div>
-  </div>
   <div class="vd-coord-tabs" id="vd-coord-tabs" style="display:none"></div>
   <div class="vd-filter">
     <button class="vd-chip on" data-f="todos" onclick="vdSetFiltro('todos')">Todos</button>
     <button class="vd-chip" data-f="faturar" onclick="vdSetFiltro('faturar')">⚠ Pra faturar</button>
     <button class="vd-chip" data-f="parcial" onclick="vdSetFiltro('parcial')">✅ Faturados parciais</button>
     <button class="vd-chip" data-f="pendente" onclick="vdSetFiltro('pendente')">Pendentes</button>
+    <select onchange="vdSetOrigemFiltro(this.value)" id="vd-origem-sel" style="margin-left:6px;padding:5px 10px;border:1px solid #D8D6CE;border-radius:8px;font-size:12px;font-weight:600;background:#fff;color:var(--text);cursor:pointer;height:32px">
+      <option value="todos">Todas as origens</option>
+      <option value="fabrica">🏭 Fábrica</option>
+      <option value="dist">🚛 Distribuidoras</option>
+      <option value="New Bluetex MG">New Bluetex MG</option>
+      <option value="New Bluetex AM">New Bluetex AM</option>
+      <option value="New Bluetex SC">New Bluetex SC</option>
+      <option value="GB SP">GB SP</option>
+      <option value="GB CE">GB CE</option>
+      <option value="GB MA">GB MA</option>
+    </select>
+  </div>
+  <div class="vd-filter" style="padding-top:0">
     <button class="vd-chip vd-chip-new no-diretoria no-fabiano" onclick="vdGoNovo()">+ Pedido real</button>
     <button class="vd-chip vd-chip-forecast no-diretoria no-vagner no-fabiano" onclick="vdGoForecast()">+ Forecast</button>
     <button class="vd-chip no-diretoria no-vagner no-fabiano" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
     <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF GNRE</button>
-    <span style="margin-left:6px;border-left:1px solid #D8D6CE;padding-left:10px">
-      <select onchange="vdSetOrigemFiltro(this.value)" id="vd-origem-sel" style="padding:5px 10px;border:1px solid #D8D6CE;border-radius:8px;font-size:12px;font-weight:600;background:#fff;color:var(--text);cursor:pointer;height:32px">
-        <option value="todos">Todas as origens</option>
-        <option value="fabrica">🏭 Fábrica</option>
-        <option value="dist">🚛 Distribuidoras</option>
-        <option value="New Bluetex MG">New Bluetex MG</option>
-        <option value="New Bluetex AM">New Bluetex AM</option>
-        <option value="New Bluetex SC">New Bluetex SC</option>
-        <option value="GB SP">GB SP</option>
-        <option value="GB CE">GB CE</option>
-        <option value="GB MA">GB MA</option>
-      </select>
-    </span>
   </div>
   <div class="vd-section" id="vd-lista-wrap">
     <div id="vd-lista-container"></div>
