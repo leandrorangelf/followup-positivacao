@@ -4610,8 +4610,8 @@ function dashDiaSemanaHTML(hist){
 }
 function dashTopClientesHTML(analise){
   const top=analise.filter(c=>c.pedidos>0).sort((a,b)=>b.totalCx-a.totalCx||b.totalValor-a.totalValor).slice(0,10);
-  return '<section class="panel"><div class="panel-title-row"><div><div class="panel-title">Clientes que mais compram</div><div class="panel-note">Ranking pelo histórico de vendas</div></div><div class="panel-note">Top '+top.length+'</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Coord.</th><th>Pedidos</th><th>Volume</th><th>Valor</th><th>Produto principal</th><th>Última compra</th></tr></thead><tbody>'+ 
-    (top.length?top.map(c=>'<tr><td class="table-name">'+vdEsc(c.nome)+'</td><td>'+vdEsc(c.coord||'—')+'</td><td>'+c.pedidos+'</td><td>'+vdFmtQtd(c.totalCx)+' cx</td><td>'+vdFmt(c.totalValor)+'</td><td>'+vdEsc(c.skuFavorito)+'</td><td>'+dashFmtDataLong(c.ultima)+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">Nenhum histórico de venda encontrado.</td></tr>')+ 
+  return '<section class="panel"><div class="panel-title-row"><div><div class="panel-title">Clientes que mais compram</div><div class="panel-note">Ranking pelo histórico de vendas</div></div><div class="panel-note">Top '+top.length+'</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Coord.</th><th>Pedidos</th><th>Volume</th><th>Produto principal</th><th>Última compra</th></tr></thead><tbody>'+
+    (top.length?top.map(c=>'<tr><td class="table-name">'+vdEsc(c.nome)+'</td><td>'+vdEsc(c.coord||'—')+'</td><td>'+c.pedidos+'</td><td>'+vdFmtQtd(c.totalCx)+' cx</td><td>'+vdEsc(c.skuFavorito)+'</td><td>'+dashFmtDataLong(c.ultima)+'</td></tr>').join(''):'<tr><td colspan="6" class="empty">Nenhum histórico de venda encontrado.</td></tr>')+
     '</tbody></table></div></section>';
 }
 function dashClientesParadosHTML(analise){
