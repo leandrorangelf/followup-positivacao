@@ -4866,8 +4866,6 @@ function relRender(lista){
   const inCx=inList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
   const offCx=offList.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
   const totalCx=inCx+offCx;
-  const inVal=inList.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
-  const offVal=offList.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
   const pctIn=totalCx>0?Math.round(inCx/totalCx*100):0;
   const pctOff=100-pctIn;
 
