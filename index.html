@@ -338,21 +338,22 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-tbl-head-aguardando{border-left-color:var(--amber);color:var(--amber)}
 .vd-tbl-head-liberado{border-left-color:var(--accent);color:var(--accent)}
 .vd-tbl-head-fim{border-left-color:var(--green);color:var(--green)}
-.vd-card-ped{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px;cursor:pointer;box-shadow:0 1px 3px rgba(26,26,24,.06)}
-.vd-card-ped:hover{box-shadow:0 3px 10px rgba(26,26,24,.12)}
+.vd-card-ped{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:10px;padding:9px;margin-bottom:6px;cursor:pointer;box-shadow:0 1px 3px rgba(26,26,24,.06);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease}
+.vd-card-ped:hover{box-shadow:0 4px 14px rgba(26,26,24,.14);transform:scale(1.02)}
+.vd-card-ped:active{transform:scale(.985);transition:transform .12s ease}
 .vd-card-aguardando{border-left-color:var(--amber)}
 .vd-card-liberado{border-left-color:var(--accent)}
 .vd-card-fim{border-left-color:var(--green)}
 .vd-card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.vd-card-cli{font-size:13px;font-weight:600;flex:1;line-height:1.3}
-.vd-card-meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-.vd-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
-.vd-card-action{flex:1;border:1px solid #C8C6BE;border-radius:7px;padding:8px 10px;background:#F4F3F0;color:var(--text);font:600 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}
+.vd-card-cli{font-size:12.5px;font-weight:600;flex:1;line-height:1.3}
+.vd-card-meta{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
+.vd-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:7px;border-top:1px solid var(--border)}
+.vd-card-action{flex:1;border:1px solid #C8C6BE;border-radius:7px;padding:7px 9px;background:#F4F3F0;color:var(--text);font:600 12px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}
 .vd-card-action.invoice{flex-basis:100%;background:var(--green);border-color:var(--green);color:#fff}
 .vd-card-action:hover{border-color:var(--accent);color:var(--accent)}
 .vd-card-action.delete:hover{border-color:var(--red);color:var(--red)}
-.vd-card-oper{margin-top:10px;border:1px solid #C8C6BE;border-radius:10px;background:#fff;overflow:hidden}
-.vd-prod-row{display:grid;grid-template-columns:minmax(70px,1fr) repeat(3,minmax(48px,.7fr));gap:6px;align-items:center;padding:9px 10px;border-bottom:1px solid #ECEAE3;font-size:11px}
+.vd-card-oper{margin-top:8px;border:1px solid #C8C6BE;border-radius:10px;background:#fff;overflow:hidden}
+.vd-prod-row{display:grid;grid-template-columns:minmax(70px,1fr) repeat(3,minmax(48px,.7fr));gap:6px;align-items:center;padding:7px 8px;border-bottom:1px solid #ECEAE3;font-size:11px}
 .vd-prod-row:last-child{border-bottom:0}
 .vd-prod-head{background:#E8E6DE;color:#6B6960;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
 .vd-prod-name{font-weight:800;color:var(--ink);min-width:0}
