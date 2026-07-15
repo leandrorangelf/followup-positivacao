@@ -1759,9 +1759,7 @@ function renderAdminDash(anoData){
       // Fábrica: only count pedidos with status faturado/entregue (parcial also counts its faturadoCx)
       const fabCx=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
       const fabCxPendente=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return s+r.saldoCx;},0);
-      const fabVal=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoValor;},0);
       const distCx=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
-      const distVal=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoValor,0);
       // breakdown por distribuidora
       const distOrigens=[...new Set(distPeds.map(p=>p.origem||'Outra').filter(Boolean))].sort();
       const distBreakdown=distOrigens.map(orig=>{
