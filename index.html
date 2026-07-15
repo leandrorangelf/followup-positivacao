@@ -3673,13 +3673,8 @@ function vdSetPrazo(p){
 }
 
 function vdRecalc(){
-  let tot=0,totCx=0;
-  VD_SKUS.forEach(s=>{
-    const sub=(vdForm.skus[s].q||0)*VD_PACKS[s]*(vdForm.skus[s].v||0);
-    const el=g('vf-sub-'+s);if(el)el.textContent='Subtotal: '+vdFmt(sub);
-    tot+=sub;totCx+=vdForm.skus[s].q||0;
-  });
-  g('vf-total').textContent=vdFmt(tot);
+  let totCx=0;
+  VD_SKUS.forEach(s=>{totCx+=vdForm.skus[s].q||0;});
   g('vf-totcx').textContent=totCx;
 }
 
