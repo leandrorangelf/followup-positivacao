@@ -3670,10 +3670,9 @@ async function vdSalvarPedido(){
     const acao=vdEditPedidoId?'editar':'criar';
     const cliNome=cli.nome+(cli.uf?' ('+cli.uf+')':'');
     const totalCxLog=itens.reduce((s,i)=>s+i.qty_caixas,0);
-    const totalValLog=itens.reduce((s,i)=>s+i.subtotal,0);
     auditLog(acao,
       (acao==='criar'?'Novo pedido criado':'Pedido editado')+' · '+cliNome,
-      'Coordenador: '+coordAtual+' · SKUs: '+itens.map(i=>vdSkuLabel(i.sku)+' '+i.qty_caixas+'cx').join(', ')+' · Total: '+vdFmt(totalValLog)+' ('+totalCxLog+' cx)'
+      'Coordenador: '+coordAtual+' · SKUs: '+itens.map(i=>vdSkuLabel(i.sku)+' '+i.qty_caixas+'cx').join(', ')+' · '+totalCxLog+' cx'
     );
     if(forecastOrigemAtual&&forecastConvertidoOk){
       auditLog('editar','Forecast convertido em pedido · '+(forecastOrigemLabelAtual||cliNome),'Coordenador: '+coordAtual+' · Pedido real criado · '+totalCxLog+' cx');
