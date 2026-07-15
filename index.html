@@ -4816,7 +4816,6 @@ function relAba(aba){
 }
 
 function relFmt(n){return Number(n||0).toLocaleString('pt-BR');}
-function relFmtVal(n){return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});}
 function relBar(pct,cor){
   cor=cor||'#6366f1';
   return`<div style="height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.min(100,pct)}%;background:${cor};border-radius:99px"></div></div>`;
