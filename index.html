@@ -3230,67 +3230,11 @@ function vdRenderKanban(){
     else if(vdPedidoPrecisaGnre(p))grupos[0].items.push(p);
     else grupos[1].items.push(p);
   });
-  const showCoord=vdCoordFiltro==='todos';
-  const thead=`<thead><tr>
-    <th>Cliente / Situação</th>
-    ${showCoord?'<th class="td-hide">Coord.</th>':''}
-    <th class="td-hide">Tipo · Origem</th>
-    <th>Cx · saldo</th>
-    <th>Valor</th>
-    ${vdPodeEditar()?'<th></th>':''}
-  </tr></thead>`;
-  const rowHTML=p=>{
-    const x=vdResumoPedido(p);
-    const gnreSt=vdGnreStatus(p);
-    const precisaGnre=vdPedidoPrecisaGnre(p);
-    const origemLabel=p.origem||'Fábrica';
-    // status label + cor
-    let stLabel,stBg,stClr;
-    if(x.status==='faturado'){stLabel='Faturado';stBg='#DCFCE7';stClr='#166534';}
-    else if(x.status==='entregue'){stLabel='Entregue';stBg='#DCFCE7';stClr='#166534';}
-    else if(x.status==='parcial'){stLabel='Parcial';stBg='#FEF3C7';stClr='#92400E';}
-    else if(precisaGnre){
-      if(gnreSt==='enviada'){stLabel='GNRE enviada';stBg='#DBEAFE';stClr='#1E40AF';}
-      else if(gnreSt==='calculada'){stLabel='GNRE calculada';stBg='#EDE9FE';stClr='#5B21B6';}
-      else{stLabel='Ag. GNRE';stBg='#FEF3C7';stClr='#B45309';}
-    }else{stLabel='Liberado';stBg='#DBEAFE';stClr='#1E40AF';}
-    // alertas / indicadores
-    const alerts=[];
-    if(String(p.faturamento_observacao||'').trim())alerts.push(`<span style="background:#FEF3C7;color:#92400E;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">📋 ${vdEsc(String(p.faturamento_observacao).trim().substring(0,40))}</span>`);
-    if(String(p.comentario_fabiano||'').trim())alerts.push(`<span style="background:#EDE9FE;color:#5B21B6;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">💬 Fabiano: ${vdEsc(String(p.comentario_fabiano).trim().substring(0,35))}</span>`);
-    if(String(p.comentario_vagner||'').trim())alerts.push(`<span style="background:#F0FDF4;color:#166534;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">💬 Vagner: ${vdEsc(String(p.comentario_vagner).trim().substring(0,35))}</span>`);
-    if(p.parcial_de)alerts.push(`<span style="background:#F4F3F0;color:#6B6960;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:600">↩ Remanescente</span>`);
-    const alertsHTML=alerts.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">${alerts.join('')}</div>`:'';
-    return `<tr onclick="vdAbrirDet('${p.id}')">
-      <td>
-        <div style="font-weight:600;font-size:13px">${vdEsc(p.cliente_nome)}${p.cliente_uf?` <span style="color:var(--muted);font-weight:400;font-size:11px">· ${vdEsc(p.cliente_uf)}</span>`:''}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;align-items:center">
-          <span style="background:${stBg};color:${stClr};border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700">${stLabel}</span>
-        </div>
-        ${alertsHTML}
-      </td>
-      ${showCoord?`<td class="td-hide" style="font-size:12px;color:var(--muted)">${vdEsc(p.coordenador)}</td>`:''}
-      <td class="td-hide">
-        <span class="dot-status ${p.tipo==='in'?'dot-in':'dot-off'}"></span>
-        <div style="margin-top:4px">${vdOrigemBadgeHTML(origemLabel)}</div>
-      </td>
-      <td style="font-size:12px;white-space:nowrap">
-        <span style="font-weight:700">${x.pedidoCx}</span><span style="color:var(--muted)"> · </span><span style="font-weight:700;color:${x.saldoCx>0?'#1E40AF':'var(--muted)'}">${x.saldoCx}</span>
-        <span style="color:var(--muted);font-size:10px"> cx</span>
-      </td>
-      <td style="font-weight:700;white-space:nowrap">${vdFmt(p.total)}</td>
-      ${vdPodeEditar()?`<td style="white-space:nowrap" onclick="event.stopPropagation()">
-        ${precisaGnre?`<button onclick="event.stopPropagation();vdMarcarGnreIsenta('${p.id}')" style="background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer">Isentar GNRE</button>`:''}
-        ${x.saldoCx>0&&vdGnreLiberada(p)?`<button onclick="event.stopPropagation();vdAbrirFaturamento('${p.id}')" style="background:#DCFCE7;color:#166534;border:1px solid #86EFAC;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer">${(p.tipo==='off'||vdEhDistribuidora(p))?'✓ Entregar':'✓ Faturar'}</button>`:''}
-        ${x.faturadoCx>0&&!vdEhDistribuidora(p)?`<button onclick="event.stopPropagation();vdReverterFaturamento('${p.id}')" style="background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;margin-top:4px">↩ Reverter</button>`:''}
-      </td>`:''}
-    </tr>`;
-  };
   const html=grupos.map(gr=>{
     if(!gr.items.length)return'';
     return`<div class="vd-tbl-group">
       <div class="vd-tbl-group-head">${gr.label} <span>${gr.items.length}</span></div>
-      <div class="vd-tbl-wrap"><table class="vd-tbl">${thead}<tbody>${gr.items.map(rowHTML).join('')}</tbody></table></div>
+      ${gr.items.map(vdCardHTML).join('')}
     </div>`;
   }).join('');
   g('vd-lista-container').innerHTML=html||'<div class="vd-empty" style="padding:24px;text-align:center">Nenhum pedido encontrado</div>';
