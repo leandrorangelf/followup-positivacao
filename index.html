@@ -665,7 +665,6 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <button class="side-link" id="side-dash" onclick="navTo('dash')"><span>Dashboard</span><span>Visão geral</span></button>
     <button class="side-link" id="side-vendas" onclick="navTo('vendas')"><span>Vendas</span><span>Pedidos & faturamento</span></button>
     <button class="side-link" id="side-forecast" onclick="navTo('forecast')"><span>Forecast</span><span>Previsão comercial</span></button>
-    <button class="side-link" id="side-gestao" type="button"><span>Gestão</span><span>Aberto</span></button>
     <button class="side-link" id="side-relatorios" onclick="navTo('relatorios')"><span>Relatórios</span><span>Análise inteligente</span></button>
     <button class="side-link" id="side-tv" onclick="navTo('tv')"><span>TV externa</span><span>Painel geral</span></button>
     <div class="side-sub admin-only">
@@ -849,19 +848,18 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <div id="s-vendas" class="screen" style="display:none">
   <div class="vd-header"><h2>Vendas</h2><div class="sub" id="vd-sub">— · —</div></div>
   <div class="vd-metrics">
-    <div class="vd-metric"><div class="lbl">Total de pedidos</div><div class="val" id="vd-total-pedidos">—</div><div class="vsub" id="vd-total-pedidos-sub">—</div></div>
     <div class="vd-metric" style="border:1.5px solid #86EFAC"><div class="lbl" style="color:#166534">✅ Realizado real (mês)</div><div class="val" style="color:#166534" id="vd-real">—</div><div class="vsub" id="vd-real-sub">faturado total</div><div class="bar"><span id="vd-real-bar" style="width:0;background:#16a34a"></span></div></div>
     <div class="vd-metric"><div class="lbl">🏭 Fábrica faturado (mês)</div><div class="val" id="vd-fat-cx">—</div><div class="vsub" id="vd-fat-valor">—</div></div>
     <div class="vd-metric"><div class="lbl">🚛 Distribuidoras fat. (mês)</div><div class="val" id="vd-dist-cx">—</div><div class="vsub" id="vd-dist-sub">—</div></div>
     <div class="vd-metric" style="border:1.5px solid #1E293B"><div class="lbl" style="color:#1E293B">📦 Total pedido (mês)</div><div class="val" id="vd-saldo-cx" style="color:#1E293B">—</div><div class="vsub" id="vd-saldo-valor">= total geral do relatório</div></div>
-    <div class="vd-metric"><div class="lbl">Cobertura</div><div class="val" id="vd-cob">—</div><div class="vsub" id="vd-cob-sub">— de — clientes</div><div class="bar"><span id="vd-cob-bar" style="width:0;background:var(--accent)"></span></div></div>
   </div>
   <div class="vd-coord-tabs" id="vd-coord-tabs" style="display:none"></div>
   <div class="vd-filter">
     <button class="vd-chip on" data-f="todos" onclick="vdSetFiltro('todos')">Todos</button>
     <button class="vd-chip" data-f="faturar" onclick="vdSetFiltro('faturar')">⚠ Pra faturar</button>
+    <button class="vd-chip" data-f="parcial" onclick="vdSetFiltro('parcial')">✅ Faturados parciais</button>
     <button class="vd-chip" data-f="pendente" onclick="vdSetFiltro('pendente')">Pendentes</button>
-    <button class="vd-chip vd-chip-new no-diretoria no-vagner no-fabiano" onclick="vdGoNovo()">+ Pedido real</button>
+    <button class="vd-chip vd-chip-new no-diretoria no-fabiano" onclick="vdGoNovo()">+ Pedido real</button>
     <button class="vd-chip vd-chip-forecast no-diretoria no-vagner no-fabiano" onclick="vdGoForecast()">+ Forecast</button>
     <button class="vd-chip no-diretoria no-vagner no-fabiano" onclick="vdIrFicha()">⚙ Fichas de cliente</button>
     <button class="vd-chip vd-chip-pdf no-diretoria" onclick="vdExportarPDF()">📄 PDF GNRE</button>
@@ -882,7 +880,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="vd-section" id="vd-lista-wrap">
     <div id="vd-lista-container"></div>
   </div>
-  <button class="vd-fab no-diretoria no-vagner no-fabiano" onclick="vdGoNovo()" title="Novo pedido real">+</button>
+  <button class="vd-fab no-diretoria no-fabiano" onclick="vdGoNovo()" title="Novo pedido real">+</button>
   <div class="bottom-nav" id="nav-vendas"></div>
 </div>
 
@@ -1223,8 +1221,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
           <option value="todos">Todos os coordenadores</option>
         </select>
         <select id="rel-mes" class="client-filter" onchange="relFiltrarMes(this.value)" style="min-width:130px">
-          <option value="todos">Ano inteiro</option>
           <option value="atual">Mês atual</option>
+          <option value="todos">Ano inteiro</option>
         </select>
         <select id="rel-origem" class="client-filter" onchange="relFiltrarOrigem(this.value)" style="min-width:150px">
           <option value="todos">Todas as origens</option>
@@ -2070,7 +2068,7 @@ function setupShell(){
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
   document.querySelectorAll('.no-vagner').forEach(el=>el.style.display=(user==='vagner')?'none':'');
   document.querySelectorAll('.no-fabiano').forEach(el=>el.style.display=isFabiano()?'none':'');
-  ['side-dash','side-forecast','side-gestao','side-tv','side-relatorios'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
+  ['side-dash','side-forecast','side-tv','side-relatorios'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
 }
 
 function updateSideNav(active){
@@ -2729,9 +2727,14 @@ function dashOverviewHTML(cfg){
       '<div class="dash-hero-foot"><span>Meta: '+dashCx(meta)+' cx</span><span>Saldo meta: '+dashCx(Math.max(0,meta-volume))+' cx</span></div>'+
     '</section>'+
     '<section class="dash-snapshot">'+
+<<<<<<< HEAD
       '<div class="dash-snap-card"><div class="dash-snap-label">Pedido no mês</div><div class="dash-snap-value">'+dashCx(pedidoCx)+' <small>cx</small></div><div class="dash-snap-note">Pedidos confirmados</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Já faturado</div><div class="dash-snap-value">'+dashCx(faturadoCx)+' <small>cx</small></div><div class="dash-snap-note ok">Faturado no período</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Saldo pendente</div><div class="dash-snap-value">'+dashCx(saldoCx)+' <small>cx</small></div><div class="dash-snap-note '+(saldoCx?'warn':'ok')+'">'+(saldoCx?'Ainda em aberto':'Sem saldo pendente')+'</div></div>'+
+=======
+      '<div class="dash-snap-card"><div class="dash-snap-label">Já faturado</div><div class="dash-snap-value">'+dashCx(faturadoCx)+' <small>cx</small></div><div class="dash-snap-note ok">'+dashMoney(resumo.faturadoValor)+' faturados</div></div>'+
+      '<div class="dash-snap-card"><div class="dash-snap-label">Saldo pendente</div><div class="dash-snap-value">'+dashCx(saldoCx)+' <small>cx</small></div><div class="dash-snap-note '+(saldoCx?'warn':'ok')+'">'+(saldoCx?dashMoney(resumo.saldoValor)+' ainda aberto':'Sem saldo pendente')+'</div></div>'+
+>>>>>>> origin/main
       '<div class="dash-snap-card"><div class="dash-snap-label">Fábrica</div><div class="dash-snap-value">'+dashCx(fabPedido)+' <small>cx</small></div><div class="dash-snap-note">Pedidos diretos da fábrica</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Distribuidoras</div><div class="dash-snap-value">'+dashCx(distPedido)+' <small>cx</small></div><div class="dash-snap-note">GB, GP e demais origens</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Faturamentos parciais</div><div class="dash-snap-value">'+dashCx(resumo.parciais)+'</div><div class="dash-snap-note '+(resumo.parciais?'danger':'ok')+'">'+dashCx(resumo.pedidos)+' pedidos no período</div></div>'+
@@ -2991,11 +2994,11 @@ function vdAnexosHTML(p){
 function vdPodeAnexarGnre(){return !isDiretoria&&user!=='vagner';}
 function vdComentarioVagnerHTML(p){
   const txt=String(p?.comentario_vagner||'').trim();
-  return txt?'<div class="vd-vagner-note"><strong>Comentario Vagner</strong>'+vdEsc(txt)+'</div>':'';
+  return txt?'<div class="vd-vagner-note"><strong><span>Comentario do Vagner</span></strong>'+vdEsc(txt)+'</div>':'';
 }
 function vdComentarioFabianoHTML(p){
   const txt=String(p?.comentario_fabiano||'').trim();
-  return txt?'<div class="vd-fabiano-note"><strong><span>Fabiano comentou</span></strong>'+vdEsc(txt)+'</div>':'';
+  return txt?'<div class="vd-fabiano-note"><strong><span>Comentario do Fabiano</span></strong>'+vdEsc(txt)+'</div>':'';
 }
 function vdComentariosPedidoHTML(p){
   const html=vdComentarioVagnerHTML(p)+vdComentarioFabianoHTML(p);
@@ -3145,8 +3148,11 @@ function vdRenderMetrics(){
   const liberados=vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
   const cxAguardandoGnre=aguardandoGnre.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
   const cxLiberadas=liberados.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
+<<<<<<< HEAD
   g('vd-total-pedidos').textContent=resumo.pedidos;
   g('vd-total-pedidos-sub').textContent=aguardandoGnre.length+' aguardando GNRE · '+liberados.length+' liberados';
+=======
+>>>>>>> origin/main
   const fabPeds=vdPedidos.filter(p=>!vdEhDistribuidora(p));
   const distPeds=vdPedidos.filter(p=>vdEhDistribuidora(p));
   const fabFatCx=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
@@ -3168,14 +3174,6 @@ function vdRenderMetrics(){
   g('vd-dist-sub').textContent=distOrigens.map(o=>{const cx=distPeds.filter(p=>(p.origem||'Outra')===o).reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);return o+' '+cx+'cx';}).join(' · ')||'—';
   g('vd-saldo-cx').textContent=totalCarteira+' cx';
   g('vd-saldo-valor').textContent=cxLiberadas+' cx lib · '+cxAguardandoGnre+' cx GNRE';
-  const ativos=coords.flatMap(c=>clientesAtivos(c).map(cli=>({coord:c,...cli})));
-  const ids=new Set(vdPedidos.map(p=>p.coordenador+'|'+p.cliente_id));
-  const pos=ids.size;
-  const pctCob=ativos.length>0?Math.round(pos/ativos.length*100):0;
-  g('vd-cob').textContent=pctCob+'%';
-  g('vd-cob-sub').textContent=pos+' de '+ativos.length+' clientes';
-  g('vd-cob-bar').style.width=Math.min(100,pctCob)+'%';
-  g('vd-cob-bar').style.background=pctCob>=80?'var(--green)':pctCob>=50?'var(--amber)':'var(--accent)';
 }
 
 function vdSetFiltro(f){
@@ -3193,7 +3191,8 @@ function vdPedidosFiltrados(){
     vdOrigemFiltro==='fabrica'?base.filter(p=>!vdEhDistribuidora(p)):
     base.filter(p=>vdEhDistribuidora(p)&&(vdOrigemFiltro==='dist'||(p.origem||'')===vdOrigemFiltro));
   if(vdFiltro==='faturar')return baseFiltrada.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
-  if(vdFiltro==='pendente')return baseFiltrada.filter(p=>vdResumoPedido(p).saldoCx>0);
+  if(vdFiltro==='parcial')return baseFiltrada.filter(vdPedidoFaturadoParcial);
+  if(vdFiltro==='pendente')return baseFiltrada.filter(vdPedidoPendente);
   return baseFiltrada;
 }
 
@@ -3210,7 +3209,7 @@ function vdRenderKanban(){
   ];
   lista.forEach(p=>{
     const st=vdResumoPedido(p).status;
-    if(st==='faturado'||st==='entregue')grupos[2].items.push(p);
+    if(st==='faturado'||st==='entregue'||st==='parcial')grupos[2].items.push(p);
     else if(vdPedidoPrecisaGnre(p))grupos[0].items.push(p);
     else grupos[1].items.push(p);
   });
@@ -3247,7 +3246,7 @@ function vdCardHTML(p){
   if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'){
     const gnreSt=vdGnreStatus(p);
     if(!isFabiano()&&gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
-    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar valor</button>');
+    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar GNRE</button>');
     if(precisaGnre){
       if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar paga</button>');
       botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar</button>');
@@ -3499,7 +3498,7 @@ function vdConfirmarOrigem(){
 
 function vdGoNovo(){
   vdForecastOrigemId=null;vdForecastOrigemLabel='';
-  if(isDiretoria||user==='vagner'){toast('Perfil somente leitura','error');return}
+  if(isDiretoria){toast('Perfil somente leitura','error');return}
   if(isAdmin&&vdCoordFiltro==='todos'){toast('Escolha um coordenador antes de criar o pedido','error');return}
   vdEditPedidoId=null;
   vdForm={tipo:'in',prazo:'avista',origem:'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
@@ -3632,7 +3631,7 @@ async function vdSalvarPedido(){
   };
   const _cliUf=String(cli.uf||'').toUpperCase();
   if(!vdEditPedidoId){ped.status='pedido';ped.criado_por=user;ped.gnre_status=(vdForm.tipo==='off'||VD_UFS_ISENTO_GNRE.includes(_cliUf))?'isenta':'pendente';}
-  if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
+  if(user==='vagner'&&vdEditPedidoId){toast('Vagner é somente leitura','error');return;}
   vdSalvandoPedido=true;
   const btnSalvar=g('vf-btn-save');
   btnSalvar.disabled=true;
@@ -3706,7 +3705,7 @@ function vdAbrirDet(id){
   }
   if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)){
     if(!isFabiano()&&_gnreSt==='pendente')_gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
-    _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar valor</button>');
+    _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar GNRE</button>');
     if(_precisaGnre){
       if(_gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)_gnreBtns.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar GNRE paga</button>');
       _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar GNRE</button>');
@@ -4505,7 +4504,7 @@ async function logRestaurarPedido(id){
 // ===================== FIM LOG DE AUDITORIA =====================
 
 setInterval(()=>{
-  if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true);
+  if(user&&g('s-dash')&&g('s-dash').style.display!=='none')carregarDashboard(true,true);
 },30000);
 // ===================== FIM MÓDULO VENDAS =====================
 
@@ -4517,6 +4516,8 @@ setInterval(()=>{
 ========================================================= */
 let dashHistoricoVendas=[];
 let dashUltimaCargaHistorico='';
+let dashCacheKey='';
+let dashReloadPendente=false;
 const dashBaseRenderAdminDash=renderAdminDash;
 const dashBaseRenderCoordDash=renderCoordDash;
 
@@ -4647,39 +4648,59 @@ function dashAppendInteligencia(coordFiltro){
   el.insertAdjacentHTML('beforeend',dashInteligenciaHTML(coordFiltro));
 }
 
-carregarDashboard=async function(silencioso=false){
-  if(dashCarregando)return;
+function vdPedidoFaturadoParcial(p){
+  const x=vdResumoPedido(p);
+  return x.faturadoCx>0&&x.saldoCx>0;
+}
+function vdPedidoPendente(p){
+  const x=vdResumoPedido(p);
+  return x.faturadoCx===0&&x.saldoCx>0;
+}
+
+function dashRenderHistorico(hist,coordFiltro){
+  hist=Array.isArray(hist)?hist:[];
+  const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
+  const vendasMes=anoData.filter(p=>Number(p.mes)===Number(mesAtual));
+  vendasDashboard=vendasMes;
+  if(isAdmin||isDiretoria){
+    dashBaseRenderAdminDash(anoData);
+    dashAppendInteligencia('todos');
+  }else{
+    dadosLocais=vdAgruparVendasPorCliente(vendasMes,coordAtual);
+    dashBaseRenderCoordDash(anoData);
+    dashAppendInteligencia(coordAtual);
+  }
+}
+
+carregarDashboard=async function(silencioso=false,forcarBusca=false){
+  if(dashCarregando){dashReloadPendente=true;return;}
   dashCarregando=true;
   if(!silencioso)g('dash-content').innerHTML='<div class="loading">Carregando histórico de vendas...</div>';
   try{
     const coordFiltro=(isAdmin||isDiretoria)?'todos':coordAtual;
+    const cacheKey=coordFiltro+'|'+anoAtual;
+    if(!forcarBusca&&dashHistoricoVendas.length&&dashCacheKey===cacheKey){
+      dashRenderHistorico(dashHistoricoVendas,coordFiltro);return;
+    }
     const coordQuery=(coordFiltro==='todos')?'':'coordenador=eq.'+encodeURIComponent(coordFiltro)+'&';
     let hist=await sb('/rest/v1/pedidos_vendas?'+coordQuery+'deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
     if(!Array.isArray(hist))hist=[];
     hist=hist.filter(dashPedidoValido);
     dashHistoricoVendas=hist;
+    dashCacheKey=cacheKey;
     dashUltimaCargaHistorico=new Date().toISOString();
-    const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
-    const vendasMes=anoData.filter(p=>Number(p.mes)===Number(mesAtual));
-    vendasDashboard=vendasMes;
-    if(isAdmin||isDiretoria){
-      dashBaseRenderAdminDash(anoData);
-      dashAppendInteligencia('todos');
-    }else{
-      dadosLocais=vdAgruparVendasPorCliente(vendasMes,coordAtual);
-      dashBaseRenderCoordDash(anoData);
-      dashAppendInteligencia(coordAtual);
-    }
+    dashRenderHistorico(hist,coordFiltro);
   }catch(e){
     console.error(e);
     g('dash-content').innerHTML='<div class="empty">Não foi possível carregar o histórico de vendas. Verifique a tabela pedidos_vendas.</div>';
   }finally{
     dashCarregando=false;
+    if(dashReloadPendente){dashReloadPendente=false;carregarDashboard(silencioso,forcarBusca);}
   }
 };
 
 // ===================== RELATÓRIOS =====================
-let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='todos',relOrigemFiltro='todos',relStatusFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
+let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='atual',relOrigemFiltro='todos',relStatusFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
 
 async function irRelatorios(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
@@ -4693,7 +4714,7 @@ async function irRelatorios(){
     else{sel.value=relCoordFiltro;sel.disabled=false;}
   }
   if(g('rel-mes')){
-    g('rel-mes').innerHTML='<option value="todos">Ano inteiro</option><option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option>'+
+    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option>'+
       MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');
     g('rel-mes').value=relMesFiltro;
   }
@@ -4752,8 +4773,8 @@ function relListaFiltrada(aplicarStatus=true){
     const q=relNorm(relBuscaFiltro);
     lista=lista.filter(p=>relTextoPedido(p).includes(q));
   }
-  if(aplicarStatus&&relStatusFiltro==='pendente')lista=lista.filter(p=>vdResumoPedido(p).saldoCx>0);
-  else if(aplicarStatus&&relStatusFiltro==='faturado')lista=lista.filter(p=>{const s=vdResumoPedido(p).status;return s==='faturado'||s==='entregue';});
+  if(aplicarStatus&&relStatusFiltro==='pendente')lista=lista.filter(vdPedidoPendente);
+  else if(aplicarStatus&&relStatusFiltro==='faturado')lista=lista.filter(p=>{const s=vdResumoPedido(p).status;return s==='faturado'||s==='entregue'||s==='parcial';});
   return lista;
 }
 function relForecastFiltrado(){

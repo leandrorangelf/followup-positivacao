@@ -22,10 +22,8 @@ const podeComentarPedido = (s) => isVagner(s) || isFabiano(s);
 const forecastPodeEditar = (s) => !isDiretoria(s) && !isFabiano(s) && !isVagner(s);
 // pedSomenteLeitura() = vagner, fabiano ou diretoria
 const pedSomenteLeitura = (s) => isVagner(s) || isFabiano(s) || isDiretoria(s);
-// Quem cria um pedido novo em Vendas: admin + os 4 coordenadores (botão "+" tem
-// classes no-diretoria/no-vagner/no-fabiano); vagner também é bloqueado explicitamente
-// dentro de vdSalvarPedido.
-const podeCriarPedidoVenda = (s) => isAdminLiteral(s) || isCoordenador(s);
+// Quem cria um pedido novo em Vendas: admin, Vagner e os 4 coordenadores.
+const podeCriarPedidoVenda = (s) => isAdminLiteral(s) || isVagner(s) || isCoordenador(s);
 
 // Papéis que enxergam todos os coordenadores (não ficam restritos ao próprio nome)
 const vePrivilegiado = (s) => isAdminLiteral(s) || isVagner(s) || isDiretoria(s) || isFabiano(s);
