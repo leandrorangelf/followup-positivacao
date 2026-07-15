@@ -3172,7 +3172,7 @@ function vdRenderKanban(){
   g('vd-lista-container').innerHTML=html||'<div class="vd-empty" style="padding:24px;text-align:center">Nenhum pedido encontrado</div>';
 }
 
-function vdCardHTML(p){
+function vdCardHTML(p,grupo){
   const x=vdResumoPedido(p),itens=x.itens,cx=x.pedidoCx;
   const prazo=vdPrazoLabel(p);
   const itensHTML=itens.length?(
