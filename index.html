@@ -3152,8 +3152,8 @@ function vdSetOrigemFiltro(v){
 function vdRenderKanban(){
   const lista=vdPedidosFiltrados();
   const grupos=[
-    {label:'Aguardando GNRE',key:'prev',items:[]},
-    {label:'Liberado / Parcial',key:'ped',items:[]},
+    {label:'Aguardando GNRE',key:'aguardando',items:[]},
+    {label:'Liberado / Parcial',key:'liberado',items:[]},
     {label:'Faturado / Entregue',key:'fim',items:[]},
   ];
   lista.forEach(p=>{
@@ -3165,8 +3165,8 @@ function vdRenderKanban(){
   const html=grupos.map(gr=>{
     if(!gr.items.length)return'';
     return`<div class="vd-tbl-group">
-      <div class="vd-tbl-group-head">${gr.label} <span>${gr.items.length}</span></div>
-      ${gr.items.map(vdCardHTML).join('')}
+      <div class="vd-tbl-group-head vd-tbl-head-${gr.key}">${gr.label} <span>${gr.items.length}</span></div>
+      ${gr.items.map(p=>vdCardHTML(p,gr.key)).join('')}
     </div>`;
   }).join('');
   g('vd-lista-container').innerHTML=html||'<div class="vd-empty" style="padding:24px;text-align:center">Nenhum pedido encontrado</div>';
