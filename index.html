@@ -3993,7 +3993,7 @@ async function vdExcluirPedido(){
   const respExc=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:vdDetAtual.id,tipo:'excluir'})});
   const jExc=await respExc.json().catch(()=>({}));
   if(!respExc.ok||!jExc.ok){toast('Erro ao excluir','error');return}
-  auditLog('excluir','Pedido excluído · '+vdDetAtual.cliente_nome,'id:'+vdDetAtual.id+' · Coordenador: '+vdDetAtual.coordenador+' · '+MESES[vdDetAtual.mes]+'/'+vdDetAtual.ano+' · Total: '+vdFmt(vdDetAtual.total));
+  auditLog('excluir','Pedido excluído · '+vdDetAtual.cliente_nome,'id:'+vdDetAtual.id+' · Coordenador: '+vdDetAtual.coordenador+' · '+MESES[vdDetAtual.mes]+'/'+vdDetAtual.ano+' · '+(vdDetAtual.total_caixas||0)+' cx');
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
 }
