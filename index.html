@@ -3122,41 +3122,7 @@ async function vdCarregar(){
   const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
   const d=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=created_at.desc&limit=5000',{ret:true});
   vdPedidos=(Array.isArray(d)?d:[]).filter(dashPedidoValido);
-  vdRenderMetrics();
   vdRenderKanban();
-}
-
-function vdRenderMetrics(){
-  const geral=vdCoordFiltro==='todos';
-  const coords=geral?COORD_KEYS:[vdCoordFiltro];
-  const meta=coords.reduce((s,c)=>s+(METAS[c]?METAS[c][mesAtual]:0),0);
-  const resumo=vdResumoLista(vdPedidos);
-  const real=resumo.pedidoCx;
-  const aguardandoGnre=vdPedidos.filter(p=>vdPedidoPrecisaGnre(p));
-  const liberados=vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
-  const cxAguardandoGnre=aguardandoGnre.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
-  const cxLiberadas=liberados.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
-  const fabPeds=vdPedidos.filter(p=>!vdEhDistribuidora(p));
-  const distPeds=vdPedidos.filter(p=>vdEhDistribuidora(p));
-  const fabFatCx=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
-  const distFatCx=distPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
-  const realizadoReal=fabFatCx+distFatCx;
-  const fabPendCx=fabPeds.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
-  const distPedCx=distPeds.reduce((s,p)=>s+vdResumoPedido(p).pedidoCx,0);
-  const totalCarteira=fabFatCx+fabPendCx+distPedCx;
-  const pctReal=meta>0?Math.round(realizadoReal/meta*100):0;
-  g('vd-real').textContent=realizadoReal+' cx';
-  g('vd-real-sub').textContent=pctReal+'% da meta · '+meta+' cx';
-  g('vd-real-bar').style.width=Math.min(100,pctReal)+'%';
-  g('vd-real-bar').style.background=pctReal>=80?'var(--green)':pctReal>=50?'var(--amber)':'var(--red)';
-  const fabTotal=fabFatCx+fabPendCx;
-  g('vd-fat-cx').textContent=fabFatCx+' cx faturado'+(fabPendCx>0?' · '+fabPendCx+' cx pend.':'');
-  g('vd-fat-valor').textContent='Total pedido Fábrica: '+fabTotal+' cx';
-  g('vd-dist-cx').textContent=distFatCx+' cx';
-  const distOrigens=[...new Set(distPeds.map(p=>p.origem||'Outra'))].sort();
-  g('vd-dist-sub').textContent=distOrigens.map(o=>{const cx=distPeds.filter(p=>(p.origem||'Outra')===o).reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);return o+' '+cx+'cx';}).join(' · ')||'—';
-  g('vd-saldo-cx').textContent=totalCarteira+' cx';
-  g('vd-saldo-valor').textContent=cxLiberadas+' cx lib · '+cxAguardandoGnre+' cx GNRE';
 }
 
 function vdSetFiltro(f){
