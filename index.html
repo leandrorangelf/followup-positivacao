@@ -3142,11 +3142,6 @@ function vdRenderMetrics(){
   const liberados=vdPedidos.filter(p=>vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
   const cxAguardandoGnre=aguardandoGnre.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
   const cxLiberadas=liberados.reduce((s,p)=>s+vdResumoPedido(p).saldoCx,0);
-<<<<<<< HEAD
-  g('vd-total-pedidos').textContent=resumo.pedidos;
-  g('vd-total-pedidos-sub').textContent=aguardandoGnre.length+' aguardando GNRE · '+liberados.length+' liberados';
-=======
->>>>>>> origin/main
   const fabPeds=vdPedidos.filter(p=>!vdEhDistribuidora(p));
   const distPeds=vdPedidos.filter(p=>vdEhDistribuidora(p));
   const fabFatCx=fabPeds.reduce((s,p)=>{const r=vdResumoPedido(p);return r.status==='pedido'?s:s+r.faturadoCx;},0);
