@@ -1546,6 +1546,7 @@ async function login(){
     await Promise.all([carregarMetas(),carregarClientes()]);
   }
   if(isFabiano()){vdFiltro='pendente';irVendas();}
+  else if(isDiretoria){irGestao();}
   else irDash(true);
 }
 
