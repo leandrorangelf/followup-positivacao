@@ -3176,7 +3176,7 @@ function vdRenderKanban(){
     if(!gr.items.length)return'';
     return`<div class="vd-tbl-group">
       <div class="vd-tbl-group-head vd-tbl-head-${gr.key}">${gr.label} <span>${gr.items.length}</span></div>
-      ${gr.items.map(p=>vdCardHTML(p,gr.key)).join('')}
+      <div class="vd-cards-grid">${gr.items.map(p=>vdCardHTML(p,gr.key)).join('')}</div>
     </div>`;
   }).join('');
   g('vd-lista-container').innerHTML=html||'<div class="vd-empty" style="padding:24px;text-align:center">Nenhum pedido encontrado</div>';
