@@ -2,7 +2,7 @@
 // Senhas rotacionadas em 2026-07-03 (as anteriores tinham ficado expostas no
 // index.html publico antes da migracao de seguranca). Hash = sha256 hex da senha.
 const SENHAS_HASH = {
-  'admin': 'a36aef5a11c4073fbe60314fc9df530a9d5f986533594d1f5190742ff9e0e408',
+  'admin': '2f70f0d11cafaeb16f1956ae498ee934aa5753cd5287c1b7dbcbac18b7fcb64e',
   'vagner': 'a244932f1cf5f4bbe247d7c2a166dc7bc4b3ffeb6f9f68fe5e9b496fab94a67a',
   'fabiano': '5a82d4e9ee886147c30d935f17fd9bae0944a9d220e68d08d4860596d29936e1',
   'diretoria': 'f9a9f148c048f2e78683ad1ec394fabefe0881adc0d36ca78716217a57911ba1',
