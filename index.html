@@ -1487,14 +1487,16 @@ function renderPremiacao(pctMeta, pctPos, pctTop4, meta, tot, ativos){
     <div style="font-size:13px;font-weight:700;color:${topAtingido?'var(--green)':'var(--muted)'}">${topAtingido?fmt(500):'—'}</div>
   </div>`;
 
-  return `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;margin:0 16px 14px;overflow:hidden">
-    <div style="background:#1A1A18;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
-      <div style="font-size:13px;font-weight:600;color:#fff">🏆 Premiação do mês</div>
+  const pPct=Math.min(100,Math.round(p.total/6000*100));
+  return `<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;margin:0 16px 14px;overflow:hidden;box-shadow:0 8px 20px rgba(101,71,217,.12)">
+    <div style="background:linear-gradient(120deg,var(--purple),var(--purple-2));padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:13px;font-weight:700;color:#fff">🏆 Premiação do mês</div>
       <div style="text-align:right">
-        <div style="font-size:20px;font-weight:700;color:${p.total>0?'#60A5FA':'rgba(255,255,255,.4)'}">${fmt(p.total)}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.4)">de ${fmt(6000)} possível</div>
+        <div style="font-size:22px;font-weight:800;color:#fff">${fmt(p.total)}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.75)">de ${fmt(6000)} possível</div>
       </div>
     </div>
+    <div style="height:6px;background:rgba(101,71,217,.15)"><div style="height:100%;width:${pPct}%;background:linear-gradient(90deg,var(--purple),var(--purple-2));transition:width .4s"></div></div>
     <div style="padding:4px 16px 0">
       <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:8px 0 4px">Volume Total</div>
       ${volRows}
