@@ -1477,7 +1477,7 @@ function renderNav(navId,active){
 }
 
 function navTo(id){
-  if(isDiretoria && !['dash','vendas','forecast','relatorios'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
+  if(isDiretoria && !['dash','vendas','forecast','relatorios','gestao'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
   if(isFabiano()&&!['vendas','registro'].includes(id)){toast('Fabiano acessa apenas Vendas e Registro','error');return;}
   if(user==='vagner'&&['log'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
   if(id==='dash'){irDash();}
