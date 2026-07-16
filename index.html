@@ -1549,7 +1549,7 @@ async function sb(path,opts={}){
 
 // ── SCREENS ──
 function show(id){
-  ['s-login','s-tv','s-gestao','s-dash','s-ped','s-cli','s-metas','s-vendas','s-forecast','s-vfn','s-vficha','s-log','s-registro','s-relatorios'].forEach(s=>g(s).style.display='none');
+  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-forecast','s-vfn','s-vficha','s-log','s-registro','s-relatorios'].forEach(s=>g(s).style.display='none');
   g(id).style.display=(id==='s-login')?'flex':'block';
   g('app-shell').classList.toggle('visible',id!=='s-login');
   toggleMenu(false);
