@@ -4721,17 +4721,16 @@ async function gestaoCarregar(){
   vdPedidos=(Array.isArray(d)?d:[]).filter(dashPedidoValido);
   gestaoRender();
 }
-function gestaoPendRowHTML(p,badge){
+function gestaoPendRowHTML(p){
   const x=vdResumoPedido(p),dias=diasParado(p);
   return '<div class="gestao-pend-row" onclick="vdAbrirDet(\''+p.id+'\')">'+
-    '<div><div class="gestao-pend-cli">'+vdEsc(p.cliente_nome)+'</div>'+
-    '<div class="gestao-pend-dias">'+(dias!==null?'há '+dias+' dia'+(dias===1?'':'s'):'—')+' · '+x.saldoCx+' cx saldo</div></div>'+
-    '<span class="gestao-pend-badge">'+badge+'</span>'+
+    '<div class="gestao-pend-cli">'+vdEsc(p.cliente_nome)+'</div>'+
+    '<div class="gestao-pend-dias">'+(dias!==null?'há '+dias+' dia'+(dias===1?'':'s'):'—')+' · '+x.saldoCx+' cx saldo</div>'+
   '</div>';
 }
-function gestaoPendListaHTML(titulo,lista,badge){
-  const rows=lista.length?lista.map(p=>gestaoPendRowHTML(p,badge)).join(''):'<div class="gestao-empty">Nenhuma pendência</div>';
-  return '<div class="gestao-section"><h3>'+titulo+' ('+lista.length+')</h3><div class="gestao-pend-list">'+rows+'</div></div>';
+function gestaoKanbanColHTML(titulo,lista,cobrar){
+  const rows=lista.length?lista.map(p=>gestaoPendRowHTML(p)).join(''):'<div class="gestao-empty">Nenhuma pendência</div>';
+  return '<div class="gestao-kanban-col"><div class="gestao-kanban-head"><span>'+titulo+' · '+cobrar+'</span><span>'+lista.length+'</span></div><div class="gestao-kanban-body">'+rows+'</div></div>';
 }
 function gestaoRender(){
   const vendasMes=vdPedidos.filter(p=>p.mes===mesAtual&&p.ano===anoAtual);
@@ -4745,13 +4744,15 @@ function gestaoRender(){
       '<div><div class="gestao-hero-label">Realizado</div><div class="gestao-hero-value">'+realizadoGeral+'<small>cx</small></div><div class="gestao-hero-sub">Meta: '+metaGeral+' cx</div></div>'+
       '<div class="gestao-hero-pct '+pctTier(pctGeral)+'">'+pctGeral+'%</div>'+
     '</div><div class="gestao-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div></div>'+
-    '<div class="gestao-coord-list">'+rows.map(r=>{
+    '<table class="gestao-table"><thead><tr><th>Coordenador</th><th>Meta</th><th>Realizado</th><th>%</th><th>Progresso</th></tr></thead><tbody>'+
+    rows.map(r=>{
       const scale=Math.max(r.meta,r.realizado,1);
       const metaPos=Math.min(100,Math.round(r.meta/scale*100));
       const realPos=Math.min(100,Math.round(r.realizado/scale*100));
-      return '<div class="gestao-coord-row"><div class="gestao-coord-top"><div><div class="gestao-coord-name">'+vdEsc(r.coord)+'</div><div class="gestao-coord-values">'+r.realizado+' / '+r.meta+' cx</div></div><div class="gestao-coord-pct '+pctTier(r.pct)+'">'+r.pct+'%</div></div>'+
-      '<div class="gestao-bar-track"><span class="gestao-bar-fill" style="width:'+realPos+'%"></span><span class="gestao-bar-meta-mark" style="left:'+metaPos+'%"></span></div></div>';
-    }).join('')+'</div></div>';
+      return '<tr><td>'+vdEsc(r.coord)+'</td><td class="num">'+r.meta+' cx</td><td class="num">'+r.realizado+' cx</td>'+
+        '<td class="num gestao-coord-pct '+pctTier(r.pct)+'">'+r.pct+'%</td>'+
+        '<td><div class="gestao-bar-track"><span class="gestao-bar-fill" style="width:'+realPos+'%"></span><span class="gestao-bar-meta-mark" style="left:'+metaPos+'%"></span></div></td></tr>';
+    }).join('')+'</tbody></table></div>';
   const vendasHTML='<div class="gestao-section"><h3>Vendas do mês ('+vendasMes.length+')</h3><div class="vd-cards-grid">'+
     (vendasMes.length?vendasMes.map(p=>vdCardHTML(p)).join(''):'<div class="gestao-empty">Nenhuma venda no mês</div>')+'</div></div>';
   const aguardandoGnre=vdPedidos.filter(vdPedidoPrecisaGnre);
@@ -4761,11 +4762,12 @@ function gestaoRender(){
     const x=vdResumoPedido(p),dias=diasParado(p);
     return x.saldoCx>0&&dias!==null&&dias>=GESTAO_DIAS_ESQUECIDO;
   });
-  const pendHTML=
-    gestaoPendListaHTML('Aguardando GNRE',aguardandoGnre,'Cobrar coordenador')+
-    gestaoPendListaHTML('Aguardando faturamento',aguardandoFat,'Cobrar Fabiano')+
-    gestaoPendListaHTML('Parciais parados',parciaisParados,'Cobrar coordenador')+
-    gestaoPendListaHTML('Esquecidos há '+GESTAO_DIAS_ESQUECIDO+'+ dias',esquecidos,'Cobrar coordenador');
+  const pendHTML='<div class="gestao-section"><h3>Pendências</h3><div class="gestao-kanban">'+
+    gestaoKanbanColHTML('Aguardando GNRE',aguardandoGnre,'coordenador')+
+    gestaoKanbanColHTML('Aguardando faturamento',aguardandoFat,'Fabiano')+
+    gestaoKanbanColHTML('Parciais parados',parciaisParados,'coordenador')+
+    gestaoKanbanColHTML('Esquecidos '+GESTAO_DIAS_ESQUECIDO+'+ dias',esquecidos,'coordenador')+
+  '</div></div>';
   g('gestao-content').innerHTML=metaHTML+pendHTML+vendasHTML;
 }
 
