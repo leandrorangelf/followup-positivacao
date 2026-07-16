@@ -4788,6 +4788,37 @@ function gestaoRender(){
   g('gestao-content').innerHTML=metaHTML+pendHTML+vendasHTML;
 }
 
+async function irPlanilha(){
+  show('s-planilha');renderNav('nav-planilha','planilha');
+  await planilhaCarregar();
+}
+async function planilhaCarregar(){
+  const d=await sb('/rest/v1/pedidos_vendas?ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=created_at.desc&limit=5000',{ret:true});
+  vdPedidos=(Array.isArray(d)?d:[]).filter(dashPedidoValido);
+  planilhaRender();
+}
+function planilhaRender(){
+  const rows=vdPedidos.map((p,i)=>{
+    const x=vdResumoPedido(p);
+    const dataLancado=p.created_at?new Date(p.created_at).toLocaleDateString('pt-BR'):'—';
+    const itens=(p.pedidos_vendas_itens||[]).map(it=>vdSkuLabel(it.sku)).join(', ')||'—';
+    const liberado=vdTipoPedido(p)==='off'?'Isento':(vdGnreLiberada(p)?'Sim':'Não');
+    const stLabel=x.faturadoCx<=0?'Pendente':x.saldoCx>0?'Parcial':'Completo';
+    return '<tr onclick="vdAbrirDet(\''+p.id+'\')" style="cursor:pointer">'+
+      '<td>'+dataLancado+'</td>'+
+      '<td>#'+(i+1)+'</td>'+
+      '<td>'+vdEsc(itens)+'</td>'+
+      '<td>'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</td>'+
+      '<td>'+vdEsc(p.coordenador||'—')+'</td>'+
+      '<td class="'+(liberado==='Sim'?'gestao-coord-pct good':liberado==='Isento'?'':'gestao-coord-pct bad')+'">'+liberado+'</td>'+
+      '<td class="num">'+x.faturadoCx+' / '+x.pedidoCx+' cx · '+stLabel+'</td>'+
+    '</tr>';
+  }).join('');
+  g('planilha-content').innerHTML='<table class="gestao-table"><thead><tr>'+
+    '<th>Data lançado</th><th>Pedido</th><th>Item</th><th>Cliente</th><th>Coord</th><th>Liberado</th><th>Faturado</th>'+
+    '</tr></thead><tbody>'+(rows||'<tr><td colspan="7" class="gestao-empty">Nenhum pedido no ano</td></tr>')+'</tbody></table>';
+}
+
 function dashRenderHistorico(hist,coordFiltro){
   hist=Array.isArray(hist)?hist:[];
   const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
