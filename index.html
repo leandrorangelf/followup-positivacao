@@ -183,13 +183,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* GESTOR DESKTOP REDESIGN */
 :root{--navy:#111b31;--navy-2:#17233d;--purple:#6547d9;--purple-2:#7c5ce6;--purple-soft:#eeebff;--canvas:#f3f5fa;--surface:#ffffff;--ink:#172136;--line:#dce2ee;--soft:#f7f8fb;--success:#199a63;--warning:#e29a28;--danger:#e15454}
 html[data-theme="dark"]{
-  --bg:#0f172a;--card:#1e293b;--border:#334155;--text:#f1f5f9;--muted:#94a3b8;
+  --bg:#0f172a;--card:#1e293b;--border:#3d4a61;--text:#f1f5f9;--muted:#a1acc2;
   --accent:#a78bfa;--accent-light:#241f3d;--green:#4ade80;--green-bg:#0f2e1f;
-  --amber:#fbbf24;--amber-bg:#3a2a0d;--gray:#94a3b8;--gray-bg:#1e293b;
+  --amber:#fbbf24;--amber-bg:#3a2a0d;--gray:#a1acc2;--gray-bg:#263449;
   --red:#f87171;--red-bg:#3a1518;
   --navy-2:#0f172a;--purple:#a78bfa;--purple-2:#c4b5fd;--purple-soft:#241f3d;
-  --canvas:#0b1220;--surface:#1e293b;--ink:#f1f5f9;--line:#334155;--soft:#182235;
+  --canvas:#0b1220;--surface:#1e293b;--ink:#f1f5f9;--line:#3d4a61;--soft:#263449;
   --success:#4ade80;--warning:#fbbf24;--danger:#f87171;
+}
+html[data-theme="dark"] .panel,html[data-theme="dark"] .dash-kpi,html[data-theme="dark"] .dash-snap-card,html[data-theme="dark"] .dash-kpis,html[data-theme="dark"] .dash-chip,html[data-theme="dark"] .vd-card-ped,html[data-theme="dark"] .gestao-kpi,html[data-theme="dark"] .gestao-coord-row,html[data-theme="dark"] .gestao-pend-row,html[data-theme="dark"] .modal,html[data-theme="dark"] .orig-modal{
+  box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 10px 26px rgba(0,0,0,.35);
 }
 body{background:var(--canvas);color:var(--ink)}
 .app-shell{display:none}
