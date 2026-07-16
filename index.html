@@ -3314,24 +3314,25 @@ function vdSetOrigemFiltro(v){
 function vdRenderKanban(){
   const lista=vdPedidosFiltrados();
   const grupos=[
-    {label:'Aguardando GNRE',key:'aguardando',items:[]},
-    {label:'Liberado / Parcial',key:'liberado',items:[]},
-    {label:'Faturado / Entregue',key:'fim',items:[]},
+    {label:'Pendente',key:'pendente',items:[]},
+    {label:'GNRE',key:'gnre',items:[]},
+    {label:'Parcial',key:'parcial',items:[]},
+    {label:'Faturado',key:'faturado',items:[]},
   ];
   lista.forEach(p=>{
     const st=vdResumoPedido(p).status;
-    if(st==='faturado'||st==='entregue'||st==='parcial')grupos[2].items.push(p);
-    else if(vdPedidoPrecisaGnre(p))grupos[0].items.push(p);
-    else grupos[1].items.push(p);
+    if(st==='faturado'||st==='entregue')grupos[3].items.push(p);
+    else if(st==='parcial')grupos[2].items.push(p);
+    else if(vdPedidoPrecisaGnre(p))grupos[1].items.push(p);
+    else grupos[0].items.push(p);
   });
-  const html=grupos.map(gr=>{
-    if(!gr.items.length)return'';
-    return`<div class="vd-tbl-group">
-      <div class="vd-tbl-group-head vd-tbl-head-${gr.key}">${gr.label} <span>${gr.items.length}</span></div>
-      <div class="vd-cards-grid">${gr.items.map(p=>vdCardHTML(p,gr.key)).join('')}</div>
-    </div>`;
-  }).join('');
-  g('vd-lista-container').innerHTML=html||'<div class="vd-empty" style="padding:24px;text-align:center">Nenhum pedido encontrado</div>';
+  if(!lista.length){g('vd-lista-container').innerHTML='<div class="vd-empty" style="padding:24px;text-align:center">Nenhum pedido encontrado</div>';return;}
+  g('vd-lista-container').innerHTML='<div class="vd-kanban">'+grupos.map(gr=>
+    `<div class="vd-kanban-col">
+      <div class="vd-kanban-col-head vd-kanban-col-${gr.key}"><h4>${gr.label}</h4><span class="vd-kanban-count">${gr.items.length}</span></div>
+      <div class="vd-kanban-body">${gr.items.length?gr.items.map(p=>vdCardHTML(p,gr.key)).join(''):'<div class="gestao-empty">Nenhum pedido</div>'}</div>
+    </div>`
+  ).join('')+'</div>';
 }
 
 function vdCardHTML(p,grupo){
