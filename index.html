@@ -732,16 +732,17 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir menu">Menu</button>
     <div class="topbar-title" id="topbar-title">Visão geral</div>
     <div class="topbar-period"><span>Período</span><select id="shell-mes" onchange="setMesGlobal(this.value)"></select></div>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema" title="Alternar tema claro/escuro">🌙</button>
   </header>
 </div>
 
 <!-- GESTÃO (diretoria) -->
 <div id="s-gestao" class="screen" style="display:none">
-  <div style="background:#08111f;color:#f8fafc;padding:20px 16px">
-    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px">Painel de gestão</div>
-    <div style="font-size:22px;font-weight:600">Meta, vendas e pendências</div>
+  <div style="padding:20px 16px">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:2px">Painel de gestão</div>
+    <div style="font-size:22px;font-weight:600;color:var(--text)">Meta, vendas e pendências</div>
   </div>
-  <div id="gestao-content" style="padding:16px;background:#08111f;min-height:60vh"><div class="loading">Carregando...</div></div>
+  <div id="gestao-content" style="padding:16px;min-height:60vh"><div class="loading">Carregando...</div></div>
   <div class="bottom-nav" id="nav-gestao"></div>
 </div>
 
