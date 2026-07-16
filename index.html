@@ -350,12 +350,17 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-chip-forecast{background:var(--purple);color:#fff;border-color:var(--purple)}
 .vd-chip-forecast:hover{filter:brightness(.96)}
 .vd-section{padding:0 22px;max-width:1540px;margin:0 auto}
-.vd-kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-top:8px}
-@media(max-width:980px){.vd-kanban{display:flex;overflow-x:auto;gap:10px}.vd-kanban-col{min-width:280px;flex:0 0 280px}}
-.vd-kanban-col{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px}
-.vd-kanban-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 4px}
-.vd-kanban-head h4{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.06em}
-.vd-kanban-count{background:var(--gray-bg);color:var(--text);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.vd-kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-top:8px}
+@media(max-width:1200px){.vd-kanban{display:flex;overflow-x:auto;gap:10px}.vd-kanban-col{min-width:280px;flex:0 0 280px}}
+.vd-kanban-col{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;min-width:0}
+.vd-kanban-col-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 4px;border-left:4px solid var(--border)}
+.vd-kanban-col-head h4{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;padding-left:8px}
+.vd-kanban-count{background:var(--gray-bg);color:var(--text);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;margin-right:8px}
+.vd-kanban-body{display:flex;flex-direction:column;gap:8px;max-height:74vh;overflow-y:auto}
+.vd-kanban-col-pendente{border-left-color:var(--gray)}
+.vd-kanban-col-gnre{border-left-color:var(--amber)}
+.vd-kanban-col-parcial{border-left-color:var(--accent)}
+.vd-kanban-col-faturado{border-left-color:var(--green)}
 /* grupos de cards de pedidos */
 .vd-tbl-group{margin-bottom:14px}
 .vd-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,360px));gap:10px;margin-top:2px}
