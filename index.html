@@ -211,11 +211,12 @@ body{background:var(--canvas);color:var(--ink)}
 .side-user{margin-top:auto;padding:18px 20px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
 .side-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7f5be5,#16a3b6);display:grid;place-items:center;font-weight:800}
 .side-user-name{font-size:13px;font-weight:700}.side-user-role{font-size:11px;color:#8590a8;margin-top:2px}
-.topbar{position:fixed;top:0;left:264px;right:0;height:74px;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line);z-index:60;display:flex;align-items:center;padding:0 30px;gap:16px}
+.topbar{position:fixed;top:0;left:264px;right:0;height:74px;background:var(--surface);border-bottom:1px solid var(--line);z-index:60;display:flex;align-items:center;padding:0 30px;gap:16px}
 .topbar-title{font-size:21px;font-weight:800;letter-spacing:-.025em;margin-right:auto}
-.topbar-period{display:flex;align-items:center;gap:8px;color:#667085;font-size:12px}
-.topbar select{min-width:156px;padding:10px 34px 10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:600 13px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.menu-toggle{display:none;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 11px;font-size:18px;color:var(--ink)}
+.topbar-period{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.topbar select{min-width:156px;padding:10px 34px 10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:600 13px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.menu-toggle{display:none;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 11px;font-size:18px;color:var(--ink)}
+.theme-toggle{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 11px;font-size:15px;color:var(--ink);cursor:pointer;line-height:1}
 .screen:not(#s-login){margin-left:264px;padding-top:74px;min-height:100vh;background:var(--canvas)}
 .screen:not(#s-login)>.app-header,.screen:not(#s-login)>div[style*="background:#1A1A18"]{display:none!important}
 .screen:not(#s-login)>.bottom-nav{display:none!important}
