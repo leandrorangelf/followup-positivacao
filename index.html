@@ -104,7 +104,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .badge-parc{background:var(--amber-bg);color:var(--amber)}
 .badge-sem{background:var(--gray-bg);color:var(--gray)}
 .badge-danger{background:var(--red-bg);color:var(--red)}
-.badge-inativo{background:#F3F4F6;color:#9CA3AF;font-style:italic}
+.badge-inativo{background:#F3F4F6;color:#5b6472;font-style:italic}
 
 /* PEDIDOS */
 #s-ped{padding-bottom:70px}
@@ -330,7 +330,7 @@ body{background:var(--canvas);color:var(--ink)}
 @media(max-width:680px){.dash-page-shell{gap:12px}.dash-command{align-items:flex-start;flex-direction:column}.dash-command-meta{justify-content:flex-start}.dash-command h1{font-size:24px}.dash-overview{gap:10px}.dash-hero{padding:18px}.dash-hero-main{font-size:34px}.dash-snapshot{grid-template-columns:1fr}.dash-snap-card{min-height:0;padding:14px}.dash-snap-value{font-size:26px}.dash-kpis{grid-template-columns:1fr!important}.dash-kpi{min-height:0}.trend-bars{height:210px}.state-map-panel{margin-bottom:14px}}
 /* ======= MÓDULO VENDAS ======= */
 #s-vendas,#s-vfn,#s-vficha{padding-bottom:90px}
-.vd-header{background:var(--text);color:#fff;padding:18px 22px}
+.vd-header{background:var(--navy);color:#fff;padding:18px 22px}
 .vd-header h2{font-size:22px;font-weight:600}
 .vd-header .sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
 .vd-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 22px 6px;max-width:1540px;margin:0 auto}
@@ -410,8 +410,8 @@ body{background:var(--canvas);color:var(--ink)}
 .orig-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
 .orig-modal{background:var(--card);color:var(--text);border-radius:20px;padding:28px 24px 24px;max-width:480px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.3)}
 .orig-modal-title{font-size:18px;font-weight:800;margin-bottom:4px}
-.orig-modal-sub{font-size:13px;color:#7A7870;margin-bottom:20px}
-.orig-grupo-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#7A7870;margin:14px 0 8px}
+.orig-modal-sub{font-size:13px;color:#5b6472;margin-bottom:20px}
+.orig-grupo-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#5b6472;margin:14px 0 8px}
 .orig-grupo-label:first-of-type{margin-top:0}
 .orig-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .orig-btn{border:2px solid #E2E0D8;border-radius:12px;padding:12px 14px;cursor:pointer;background:#fff;text-align:left;font:inherit;transition:border-color .15s,background .15s}
@@ -419,7 +419,7 @@ body{background:var(--canvas);color:var(--ink)}
 .orig-btn:hover{border-color:#6457D9;background:#F5F3FF}
 .orig-btn.inativa{opacity:.55}
 .orig-btn .ob-label{font-size:13px;font-weight:700;display:block}
-.orig-btn .ob-sub{font-size:10px;color:#7A7870;margin-top:2px;display:block}
+.orig-btn .ob-sub{font-size:10px;color:#5b6472;margin-top:2px;display:block}
 .orig-btn.grupo-fabrica{border-color:#16a34a;background:#F0FDF4}
 .orig-btn.grupo-fabrica:hover{background:#DCFCE7}
 .orig-badge{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700}
@@ -434,7 +434,7 @@ body{background:var(--canvas);color:var(--ink)}
 .reg-fat-head{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:transparent;border:none;padding:4px 14px}
 .reg-fat-parcial{color:#C2410C;font-weight:700}
 .reg-fat-completo{color:var(--green);font-weight:700}
-.reg-fat-rem{color:#7c879c;font-style:italic}
+.reg-fat-rem{color:#5b6472;font-style:italic}
 .prem-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
 .prem-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
 .prem-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(101,71,217,.06),transparent);pointer-events:none}
@@ -442,12 +442,12 @@ body{background:var(--canvas);color:var(--ink)}
 .prem-valor{font-size:28px;font-weight:950;letter-spacing:-.03em;color:var(--ink)}
 .prem-valor.hit{color:#16a34a}
 .prem-valor.close{color:#d97706}
-.prem-valor.miss{color:#9CA3AF}
+.prem-valor.miss{color:#5b6472}
 .prem-pct{font-size:12px;font-weight:700;margin-top:4px}
 .prem-bar-wrap{height:7px;background:#eceff5;border-radius:99px;overflow:hidden;margin:10px 0 8px}
 .prem-bar{height:100%;border-radius:99px;transition:width .4s}
 .prem-faixas{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
-.prem-faixa{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;background:#eceff5;color:#7c879c}
+.prem-faixa{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;background:#eceff5;color:#5b6472}
 .prem-faixa.ativa{background:var(--purple-soft);color:var(--purple)}
 .prem-prox{font-size:11px;color:var(--muted);margin-top:6px}
 .prem-equipe-card{background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:14px;padding:16px;color:#fff;grid-column:1/-1}
@@ -544,10 +544,10 @@ body{background:var(--canvas);color:var(--ink)}
 .log-icon.faturar{background:#FEF3C7;color:#92400E}
 .log-body{min-width:0}
 .log-title{font-size:13px;font-weight:700;margin-bottom:2px}
-.log-detail{font-size:11px;color:#667085;line-height:1.5}
-.log-meta{font-size:10px;color:#9CA3AF;white-space:nowrap;text-align:right}
+.log-detail{font-size:11px;color:#5b6472;line-height:1.5}
+.log-meta{font-size:10px;color:#5b6472;white-space:nowrap;text-align:right}
 .log-user{font-weight:700;color:var(--purple)}
-.log-empty{text-align:center;padding:48px;color:#9CA3AF;font-size:13px}
+.log-empty{text-align:center;padding:48px;color:#5b6472;font-size:13px}
 
 /* TV EXTERNA */
 #s-tv{display:none;min-height:100vh;background:#08111f;color:#f8fafc;overflow:hidden;margin-left:0!important;padding-top:0!important}
@@ -986,7 +986,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="vd-header"><h2 id="vfn-title">Novo Pedido</h2><div class="sub" id="vfn-sub">Preencha os dados</div></div>
   <div id="vfn-origem-bar" style="display:none;margin:0 16px 4px;padding:10px 14px;border-radius:10px;background:#F5F3FF;border:1px solid #C4B5FD;display:flex;align-items:center;justify-content:space-between;gap:10px">
     <div style="display:flex;align-items:center;gap:8px">
-      <span style="font-size:11px;color:#7A7870;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Origem:</span>
+      <span style="font-size:11px;color:#5b6472;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Origem:</span>
       <span id="vfn-origem-label" style="font-size:13px;font-weight:700"></span>
     </div>
     <button type="button" onclick="vdAbrirOrigem()" style="font-size:11px;color:#6457D9;background:none;border:none;cursor:pointer;font-weight:700;padding:0">Alterar</button>
@@ -1394,14 +1394,14 @@ function renderAdminPrem(coord, pctMeta, pctPos, pctTop4, meta, tot){
   const prem=calcPremiacao(pctMeta,pctPos,pctTop4);
   const fmt=v=>'R$ '+v.toLocaleString('pt-BR');
   const mc=(ok,lbl,val,sub)=>'<div style="background:'+(ok?'#166534':'#F5F4F0')+';border-radius:8px;padding:6px;text-align:center;border:1px solid '+(ok?'#14532D':'#E2E0D8')+'">'
-    +'<div style="font-size:8px;font-weight:600;color:'+(ok?'rgba(255,255,255,.7)':'#7A7870')+';margin-bottom:2px">'+lbl+'</div>'
+    +'<div style="font-size:8px;font-weight:600;color:'+(ok?'rgba(255,255,255,.7)':'#5b6472')+';margin-bottom:2px">'+lbl+'</div>'
     +'<div style="font-size:11px;font-weight:700;color:'+(ok?'#86EFAC':'#C4C0B8')+'">'+(ok?fmt(val):'—')+'</div>'
     +'<div style="font-size:8px;color:'+(ok?'rgba(255,255,255,.5)':'#C4C0B8')+';margin-top:1px">'+sub+'</div></div>';
   el.innerHTML=
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
-    +'<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#7A7870">🏆 Premiação</span>'
-    +'<span style="font-size:13px;font-weight:700;color:'+(prem.total>0?'#166534':'#7A7870')+'">'+fmt(prem.total)+'</span></div>'
-    +'<div style="font-size:9px;color:#7A7870;margin-bottom:5px;font-weight:600;text-transform:uppercase">Volume</div>'
+    +'<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#5b6472">🏆 Premiação</span>'
+    +'<span style="font-size:13px;font-weight:700;color:'+(prem.total>0?'#166534':'#5b6472')+'">'+fmt(prem.total)+'</span></div>'
+    +'<div style="font-size:9px;color:#5b6472;margin-bottom:5px;font-weight:600;text-transform:uppercase">Volume</div>'
     +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px">'
     +mc(pctMeta>=100,'100%',4000,pctMeta>=100?'✓':Math.max(0,meta-tot)+' cx')
     +mc(pctMeta>=110,'110%',4500,pctMeta>=110?'✓':Math.max(0,Math.ceil(meta*1.1)-tot)+' cx')
@@ -1806,38 +1806,38 @@ function renderAdminDash(anoData){
       <div style="padding:14px 16px 12px;display:flex;align-items:flex-start;justify-content:space-between">
         <div>
           <div style="font-size:16px;font-weight:600">${coord}</div>
-          <div style="font-size:11px;color:#7A7870;margin-top:1px">${ativos.length} clientes ativos</div>
+          <div style="font-size:11px;color:#5b6472;margin-top:1px">${ativos.length} clientes ativos</div>
         </div>
         <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:99px;${badgeColor}">${badgeText}</span>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #E2E0D8;border-bottom:1px solid #E2E0D8">
         <div style="padding:12px 16px;text-align:center;border-right:1px solid #E2E0D8">
-          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Positivação</div>
+          <div style="font-size:10px;color:#5b6472;margin-bottom:4px">Positivação</div>
           <div style="font-size:20px;font-weight:700;color:${corPct(pctPos)}">${pctPos}%</div>
         </div>
         <div style="padding:12px 16px;text-align:center;border-right:1px solid #E2E0D8">
-          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Volume</div>
+          <div style="font-size:10px;color:#5b6472;margin-bottom:4px">Volume</div>
           <div style="font-size:20px;font-weight:700;color:${corPct(pctMeta)}">${pctMeta}%</div>
         </div>
         <div style="padding:12px 16px;text-align:center">
-          <div style="font-size:10px;color:#7A7870;margin-bottom:4px">Cx total</div>
+          <div style="font-size:10px;color:#5b6472;margin-bottom:4px">Cx total</div>
           <div style="font-size:20px;font-weight:700">${tot}</div>
         </div>
       </div>
       <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:#7A7870;width:70px">Positivação</span>
+          <span style="font-size:11px;color:#5b6472;width:70px">Positivação</span>
           <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pctPos}%;background:${corBar(pctPos)};border-radius:99px"></div></div>
-          <span style="font-size:11px;color:#7A7870;width:55px;text-align:right">${comPed}/${ativos.length}</span>
+          <span style="font-size:11px;color:#5b6472;width:55px;text-align:right">${comPed}/${ativos.length}</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:#7A7870;width:70px">Volume</span>
+          <span style="font-size:11px;color:#5b6472;width:70px">Volume</span>
           <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pctMeta}%;background:${corBar(pctMeta)};border-radius:99px"></div></div>
-          <span style="font-size:11px;color:#7A7870;width:55px;text-align:right">${tot}/${meta}</span>
+          <span style="font-size:11px;color:#5b6472;width:55px;text-align:right">${tot}/${meta}</span>
         </div>
       </div>
       <div style="padding:0 16px 14px">
-        <div style="font-size:11px;color:#7A7870;margin-bottom:8px">Volume ${anoAtual}</div>
+        <div style="font-size:11px;color:#5b6472;margin-bottom:8px">Volume ${anoAtual}</div>
         <div style="display:flex;align-items:flex-end;gap:3px;height:48px">
           ${mesesChart.map((m,i)=>{
             const p=m.meta>0?Math.min(100,Math.round(m.tot/m.meta*100)):0;
@@ -1845,7 +1845,7 @@ function renderAdminDash(anoData){
             const bg=i===mesAtual?corBar(p):(m.tot>0?'#CBD5E1':'#E2E0D8');
             return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
               <div style="width:100%;height:${h}px;background:${bg};border-radius:3px 3px 0 0"></div>
-              <div style="font-size:8px;color:#7A7870">${m.m}</div>
+              <div style="font-size:8px;color:#5b6472">${m.m}</div>
             </div>`;}).join('')}
         </div>
       </div>
@@ -1857,15 +1857,15 @@ function renderAdminDash(anoData){
   g('dash-content').innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 4px">
       <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
-        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Positivação geral</div>
+        <div style="font-size:10px;color:#5b6472;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Positivação geral</div>
         <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctPosG)}">${pctPosG}%</div>
-        <div style="font-size:11px;color:#7A7870;margin-top:4px">${comPedidoGeral} de ${totalAtivos}</div>
+        <div style="font-size:11px;color:#5b6472;margin-top:4px">${comPedidoGeral} de ${totalAtivos}</div>
         <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctPosG}%;background:${corBar(pctPosG)};border-radius:99px"></div></div>
       </div>
       <div style="background:#fff;border:1px solid #E2E0D8;border-radius:12px;padding:14px">
-        <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Volume geral</div>
+        <div style="font-size:10px;color:#5b6472;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Volume geral</div>
         <div style="font-size:28px;font-weight:700;line-height:1;color:${corPct(pctMetaG)}">${pctMetaG}%</div>
-        <div style="font-size:11px;color:#7A7870;margin-top:4px">${totGeral} / ${metaGeral} cx</div>
+        <div style="font-size:11px;color:#5b6472;margin-top:4px">${totGeral} / ${metaGeral} cx</div>
         <div style="height:5px;background:#E2E0D8;border-radius:99px;overflow:hidden;margin-top:10px"><div style="height:100%;width:${pctMetaG}%;background:${corBar(pctMetaG)};border-radius:99px"></div></div>
       </div>
     </div>
@@ -1895,7 +1895,7 @@ function renderAdminDash(anoData){
   </div>
 </div>`;
     })()}
-    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#7A7870;padding:10px 16px 6px">Coordenadores</div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#5b6472;padding:10px 16px 6px">Coordenadores</div>
     ${cards}
     ${renderInOffSection(vendasDashboard,true)}`;
   // Render premiacao for each coord after DOM is set
@@ -2725,11 +2725,11 @@ function dashSelecionarUfMapa(uf){
   }
   const detail=g('dash-map-detail');
   if(!detail)return;
-  if(!r||r.cx<=0){detail.innerHTML='<div class="state-map-detail-title">Selecione um estado com venda</div><div style="color:#7c879c">Estados claros nao tiveram caixas mapeadas no periodo.</div>';return;}
+  if(!r||r.cx<=0){detail.innerHTML='<div class="state-map-detail-title">Selecione um estado com venda</div><div style="color:#5b6472">Estados claros nao tiveram caixas mapeadas no periodo.</div>';return;}
   const clientes=(r.clientesLista||[]).slice(0,6);
   detail.innerHTML='<div class="state-map-detail-title">'+vdEsc(r.uf+' - '+r.nome)+' · '+vdFmtQtd(r.cx)+' cx</div>'+
-    '<div style="color:#7c879c;margin-bottom:6px">'+r.pedidos+' pedido(s) · '+r.clientes+' cliente(s)</div>'+
-    clientes.map(c=>'<div class="state-map-detail-row"><span><strong>'+vdEsc(c.nome)+'</strong><br><small style="color:#7c879c">'+vdEsc(c.coord||'')+' · '+c.pedidos+' pedido(s)</small></span><strong>'+vdFmtQtd(c.cx)+' cx</strong></div>').join('');
+    '<div style="color:#5b6472;margin-bottom:6px">'+r.pedidos+' pedido(s) · '+r.clientes+' cliente(s)</div>'+
+    clientes.map(c=>'<div class="state-map-detail-row"><span><strong>'+vdEsc(c.nome)+'</strong><br><small style="color:#5b6472">'+vdEsc(c.coord||'')+' · '+c.pedidos+' pedido(s)</small></span><strong>'+vdFmtQtd(c.cx)+' cx</strong></div>').join('');
 }
 function dashAgendaMapaEstados(lista){
   setTimeout(function(){dashRenderMapaBrasil('dash-br-map',dashCaixasPorUf(lista));},0);
@@ -2764,9 +2764,9 @@ function premPanelHTML(rows,volumeTotal){
       if(COORD_SALARIO_FIXO.has(r.coord)){
         return`<div class="prem-card">
           <div class="prem-name">${vdEsc(r.coord)}</div>
-          <div class="prem-valor" style="color:#7A7870;font-size:16px">Salário Fixo</div>
-          <div class="prem-pct" style="color:#9CA3AF">${(r.volume||0).toLocaleString('pt-BR')} cx vendidas no mês</div>
-          <div style="font-size:11px;color:#9CA3AF;margin-top:6px">Sem premiação variável</div>
+          <div class="prem-valor" style="color:#5b6472;font-size:16px">Salário Fixo</div>
+          <div class="prem-pct" style="color:#5b6472">${(r.volume||0).toLocaleString('pt-BR')} cx vendidas no mês</div>
+          <div style="font-size:11px;color:#5b6472;margin-top:6px">Sem premiação variável</div>
         </div>`;
       }
       const pct=r.pctMeta||0;
@@ -2786,7 +2786,7 @@ function premPanelHTML(rows,volumeTotal){
             <div style="display:flex;justify-content:space-between;margin-top:2px"><span>🚛 Distribuidoras (GB/GP)</span><strong>${vD.toLocaleString('pt-BR')} cx</strong></div>
             <div style="display:flex;justify-content:space-between;border-top:1px solid rgba(147,197,253,.2);margin-top:3px;padding-top:3px;color:#fff"><span>Total comissionável</span><strong>${(r.volumeComis||0).toLocaleString('pt-BR')} cx</strong></div>
           </div>`
-        :(r.volumeComis!==r.volume?`<div style="font-size:10px;color:#9CA3AF;margin-top:2px">${(r.volume||0)} cx total · ${(r.volumeComis||0)} cx comis.</div>`:'');
+        :(r.volumeComis!==r.volume?`<div style="font-size:10px;color:#5b6472;margin-top:2px">${(r.volume||0)} cx total · ${(r.volumeComis||0)} cx comis.</div>`:'');
       return`<div class="prem-card">
         <div class="prem-name">${vdEsc(r.coord)}</div>
         <div class="prem-valor ${cls}">${valor>0?fmtR(valor):'—'}</div>
@@ -2916,7 +2916,7 @@ renderAdminDash=function(anoData){
     ${dashMainKpisHTML({volume,meta,comPedido,totalAtivos,pendentes})}
     <div class="dash-grid">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de vendas realizadas</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
-      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes}</div></div><div class="attention-list">${pendingNames.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.name}</strong><br><small style="color:#7c879c">${p.coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
+      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes}</div></div><div class="attention-list">${pendingNames.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.name}</strong><br><small style="color:#5b6472">${p.coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
     </div>
     ${dashMapaEstadosPanelHTML(vendasMes,'Caixas vendidas por estado','Mapa do Brasil por UF em '+MESES[mesAtual]+' '+anoAtual)}
     ${premPanelHTML(rows,rows.reduce((s,r)=>s+r.volume,0))}
@@ -2964,7 +2964,7 @@ renderCoordDash=function(anoData){
     </div>
     <div class="dash-grid">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de vendas realizadas</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
-      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length}</div></div><div class="attention-list">${pendentes.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.nome}</strong><br><small style="color:#7c879c">${coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
+      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length}</div></div><div class="attention-list">${pendentes.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.nome}</strong><br><small style="color:#5b6472">${coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
     </div>
     ${dashMapaEstadosPanelHTML(vendasMes,'Caixas vendidas por estado','Mapa do Brasil da carteira em '+MESES[mesAtual]+' '+anoAtual)}
     <div class="dash-lower">
@@ -3009,7 +3009,7 @@ renderCoordDash=function(anoData){
     ${dashMainKpisHTML({volume,meta,comPedido,totalAtivos:ativos.length,pendentes:pendentes.length})}
     <div class="dash-grid">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de performance</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars">${trend.map((t,i)=>`<div class="trend-col"><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
-      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length+parciais.length}</div></div><div class="attention-list">${pendentes.slice(0,5).map(c=>`<div class="attention-row"><span><strong>${c.nome}</strong><br><small style="color:#7c879c">Sem pedido no período</small></span><span class="attention-count">Pendente</span></div>`).join('')}${parciais.slice(0,3).map(c=>`<div class="attention-row"><span><strong>${c.nome}</strong><br><small style="color:#7c879c">Mix de SKUs incompleto</small></span><span style="font-weight:800;color:var(--warning)">Parcial</span></div>`).join('')||(!pendentes.length?'<div class="empty">Nenhuma pendência no período.</div>':'')}</div></aside>
+      <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes.length+parciais.length}</div></div><div class="attention-list">${pendentes.slice(0,5).map(c=>`<div class="attention-row"><span><strong>${c.nome}</strong><br><small style="color:#5b6472">Sem pedido no período</small></span><span class="attention-count">Pendente</span></div>`).join('')}${parciais.slice(0,3).map(c=>`<div class="attention-row"><span><strong>${c.nome}</strong><br><small style="color:#5b6472">Mix de SKUs incompleto</small></span><span style="font-weight:800;color:var(--warning)">Parcial</span></div>`).join('')||(!pendentes.length?'<div class="empty">Nenhuma pendência no período.</div>':'')}</div></aside>
     </div>
     ${dashMapaEstadosPanelHTML(vendasDashboard,'Caixas vendidas por estado','Mapa do Brasil da carteira em '+MESES[mesAtual]+' '+anoAtual)}
     <div class="dash-lower">
@@ -3164,7 +3164,7 @@ function renderInOffSection(vendas,showCoord){
     const badge=r.tipo==='in'
       ?'<span class="dot-status dot-in"></span>'
       :'<span class="dot-status dot-off"></span>';
-    const tdCoord=showCoord?'<td style="font-size:11px;color:#7A7870;padding:7px 8px">'+vdEsc(r.coord)+'</td>':'';
+    const tdCoord=showCoord?'<td style="font-size:11px;color:#5b6472;padding:7px 8px">'+vdEsc(r.coord)+'</td>':'';
     const tdSkus=RSKUS.map(s=>'<td style="text-align:center;padding:7px 6px">'+(r.skus[s]||'—')+'</td>').join('');
     return'<tr data-tipo="'+r.tipo+'" style="border-top:1px solid #E2E0D8"><td style="padding:7px 12px">'+vdEsc(r.nome)+'</td>'+tdCoord+'<td style="padding:7px 8px">'+badge+'</td>'+tdSkus+'<td style="text-align:center;padding:7px 8px;font-weight:700">'+r.cx+'</td></tr>';
   }).join('');
@@ -3176,14 +3176,14 @@ function renderInOffSection(vendas,showCoord){
   <div style="padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E0D8;flex-wrap:wrap;gap:8px">
     <div style="font-size:14px;font-weight:600">Pedidos por tipo — ${MESES[mesAtual]} ${anoAtual}</div>
     <div style="display:flex;gap:8px">
-      <button onclick="inoffFiltrar('${uid}','in')" style="text-align:center;background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-in"></span></div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${inList.length} pedido(s)</div></button>
-      <button onclick="inoffFiltrar('${uid}','off')" style="text-align:center;background:#FFFBEB;border:2px solid #FDE68A;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-off"></span></div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${offList.length} pedido(s)</div></button>
-      <button onclick="inoffFiltrar('${uid}','todos')" style="text-align:center;background:#F9F9F7;border:2px solid #E2E0D8;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="font-size:10px;color:#7A7870;margin-bottom:2px">Total</div><div style="font-size:20px;font-weight:700">${inCx+offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#7A7870">${vendas.length} pedido(s)</div></button>
+      <button onclick="inoffFiltrar('${uid}','in')" style="text-align:center;background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-in"></span></div><div style="font-size:20px;font-weight:700;color:#1D4ED8">${inCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#5b6472">${inList.length} pedido(s)</div></button>
+      <button onclick="inoffFiltrar('${uid}','off')" style="text-align:center;background:#FFFBEB;border:2px solid #FDE68A;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="margin-bottom:2px"><span class="dot-status dot-off"></span></div><div style="font-size:20px;font-weight:700;color:#B45309">${offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#5b6472">${offList.length} pedido(s)</div></button>
+      <button onclick="inoffFiltrar('${uid}','todos')" style="text-align:center;background:#F9F9F7;border:2px solid #E2E0D8;border-radius:10px;padding:6px 14px;cursor:pointer;font:inherit"><div style="font-size:10px;color:#5b6472;margin-bottom:2px">Total</div><div style="font-size:20px;font-weight:700">${inCx+offCx}<span style="font-size:12px;font-weight:400"> cx</span></div><div style="font-size:10px;color:#5b6472">${vendas.length} pedido(s)</div></button>
     </div>
   </div>
   <div style="overflow-x:auto">
     <table id="${uid}" style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr style="background:#FAFAF8;color:#7A7870;font-size:10px;text-transform:uppercase;letter-spacing:.06em">
+      <thead><tr style="background:#FAFAF8;color:#5b6472;font-size:10px;text-transform:uppercase;letter-spacing:.06em">
         <th style="text-align:left;padding:7px 12px">Cliente</th>${thCoord}<th style="padding:7px 8px">Tipo</th>${thSkus}<th style="text-align:center;padding:7px 8px">Total cx</th>
       </tr></thead>
       <tbody>${rows}
@@ -4638,7 +4638,7 @@ function dashDiaSemanaHTML(hist){
   const forte=rows.slice().sort((a,b)=>b.pedidos-a.pedidos||b.cx-a.cx)[0];
   const semData=(hist||[]).filter(p=>!dashTemDataReal(p)).length;
   return '<section class="panel"><div class="panel-title-row"><div><div class="panel-title">Dia que mais entra pedido</div><div class="panel-note">Histórico por data de lançamento</div></div><div class="panel-note"><strong>'+vdEsc(forte?.label||'—')+'</strong> é o mais forte</div></div>'+ 
-    '<div class="attention-list">'+rows.map(r=>'<div class="attention-row"><span><strong>'+r.label+'</strong><br><small style="color:#7c879c">'+vdFmtQtd(r.cx)+' cx no histórico</small></span><span style="display:flex;align-items:center;gap:8px;min-width:135px;justify-content:flex-end"><span class="mini-progress"><span style="width:'+Math.round(r.pedidos/max*100)+'%"></span></span><strong>'+r.pedidos+'</strong></span></div>').join('')+'</div>'+ 
+    '<div class="attention-list">'+rows.map(r=>'<div class="attention-row"><span><strong>'+r.label+'</strong><br><small style="color:#5b6472">'+vdFmtQtd(r.cx)+' cx no histórico</small></span><span style="display:flex;align-items:center;gap:8px;min-width:135px;justify-content:flex-end"><span class="mini-progress"><span style="width:'+Math.round(r.pedidos/max*100)+'%"></span></span><strong>'+r.pedidos+'</strong></span></div>').join('')+'</div>'+ 
     (semData?'<div class="panel-note" style="margin-top:10px;color:var(--warning)">Obs.: '+semData+' pedido(s) sem data diária; usei o mês como aproximação.</div>':'')+'</section>';
 }
 function dashTopClientesHTML(analise){
@@ -4654,7 +4654,7 @@ function dashClientesParadosHTML(analise){
     return rb-ra;
   }).slice(0,12);
   return '<section class="panel"><div class="panel-title-row"><div><div class="panel-title">Clientes parados e previsão de recompra</div><div class="panel-note">Média calculada pelo intervalo entre pedidos</div></div><div class="panel-note">'+lista.length+' em atenção</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th>Última compra</th><th>Dias sem comprar</th><th>Média entre compras</th><th>Próxima prevista</th><th>Status</th></tr></thead><tbody>'+ 
-    (lista.length?lista.map(c=>{const st=dashStatusRecompra(c);return '<tr><td class="table-name">'+vdEsc(c.nome)+'<br><small style="color:#7c879c">'+vdEsc(c.coord||'—')+' · '+vdEsc(c.skuFavorito)+'</small></td><td>'+dashFmtDataLong(c.ultima)+'</td><td>'+(c.diasSemCompra===null?'—':c.diasSemCompra+' dias')+'</td><td>'+(c.mediaDias===null?'Histórico insuficiente':c.mediaDias+' dias')+'</td><td>'+(c.proximaCompra?dashFmtDataLong(c.proximaCompra):'—')+'</td><td>'+dashBadgeStatus(st)+'<br><small style="color:#7c879c">'+vdEsc(st.sub)+'</small></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">Nenhum cliente ativo encontrado.</td></tr>')+ 
+    (lista.length?lista.map(c=>{const st=dashStatusRecompra(c);return '<tr><td class="table-name">'+vdEsc(c.nome)+'<br><small style="color:#5b6472">'+vdEsc(c.coord||'—')+' · '+vdEsc(c.skuFavorito)+'</small></td><td>'+dashFmtDataLong(c.ultima)+'</td><td>'+(c.diasSemCompra===null?'—':c.diasSemCompra+' dias')+'</td><td>'+(c.mediaDias===null?'Histórico insuficiente':c.mediaDias+' dias')+'</td><td>'+(c.proximaCompra?dashFmtDataLong(c.proximaCompra):'—')+'</td><td>'+dashBadgeStatus(st)+'<br><small style="color:#5b6472">'+vdEsc(st.sub)+'</small></td></tr>';}).join(''):'<tr><td colspan="6" class="empty">Nenhum cliente ativo encontrado.</td></tr>')+ 
     '</tbody></table></div></section>';
 }
 function dashIntelKpisHTML(hist,analise){
@@ -5046,9 +5046,9 @@ function relRender(lista){
   <!-- KPIs topo -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px">
     <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-      <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Total caixas ${anoAtual}</div>
+      <div style="font-size:10px;color:#5b6472;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Total caixas ${anoAtual}</div>
       <div style="font-size:24px;font-weight:700">${relFmt(totalCx)}</div>
-      <div style="font-size:11px;color:#7A7870">${lista.length} pedidos no ano</div>
+      <div style="font-size:11px;color:#5b6472">${lista.length} pedidos no ano</div>
     </div>
     <div style="background:#EFF6FF;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
       <div style="font-size:10px;color:#1D4ED8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px"><span class="dot-status dot-in"></span></div>
@@ -5061,20 +5061,20 @@ function relRender(lista){
       <div style="font-size:11px;color:#D97706">${offList.length} pedidos · ${pctOff}% do total</div>
     </div>
     <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-      <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Ticket médio / pedido</div>
+      <div style="font-size:10px;color:#5b6472;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Ticket médio / pedido</div>
       <div style="font-size:24px;font-weight:700">${relFmt(mediaPedidoCx)} cx</div>
-      <div style="font-size:11px;color:#7A7870">Média por cliente: ${relFmt(mediaCliCx)} cx</div>
+      <div style="font-size:11px;color:#5b6472">Média por cliente: ${relFmt(mediaCliCx)} cx</div>
     </div>
     <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-      <div style="font-size:10px;color:#7A7870;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Clientes únicos</div>
+      <div style="font-size:10px;color:#5b6472;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Clientes únicos</div>
       <div style="font-size:24px;font-weight:700">${rankClientes.length}</div>
-      <div style="font-size:11px;color:#7A7870">com pelo menos 1 pedido</div>
+      <div style="font-size:11px;color:#5b6472">com pelo menos 1 pedido</div>
     </div>
   </div>
 
   <!-- Evolução mensal -->
   <div style="background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Evolução mensal — ${anoAtual} <span style="font-size:11px;color:#7A7870;font-weight:400"><span class="dot-status dot-in"></span> / <span class="dot-status dot-off"></span></span></div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Evolução mensal — ${anoAtual} <span style="font-size:11px;color:#5b6472;font-weight:400"><span class="dot-status dot-in"></span> / <span class="dot-status dot-off"></span></span></div>
     <div style="display:flex;align-items:flex-end;gap:4px;height:80px;overflow-x:auto">
       ${porMes.map((m,i)=>{
         const tot=m.inCx+m.offCx;
@@ -5082,12 +5082,12 @@ function relRender(lista){
         const hOff=tot>0?Math.round(m.offCx/maxMesCx*72):0;
         const atual=i===mesAtual;
         return`<div style="flex:1;min-width:32px;display:flex;flex-direction:column;align-items:center;gap:1px">
-          <div style="font-size:9px;color:#7A7870;margin-bottom:2px">${tot>0?relFmt(tot):''}</div>
+          <div style="font-size:9px;color:#5b6472;margin-bottom:2px">${tot>0?relFmt(tot):''}</div>
           <div style="width:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:1px">
             <div style="width:100%;height:${hIn}px;background:${atual?'#3B82F6':'#BFDBFE'};border-radius:3px 3px 0 0"></div>
             <div style="width:100%;height:${hOff}px;background:${atual?'#F59E0B':'#FDE68A'};border-radius:0 0 3px 3px"></div>
           </div>
-          <div style="font-size:9px;color:${atual?'#6366f1':'#7A7870'};font-weight:${atual?'800':'400'};margin-top:2px">${MESES[i].slice(0,3)}</div>
+          <div style="font-size:9px;color:${atual?'#6366f1':'#5b6472'};font-weight:${atual?'800':'400'};margin-top:2px">${MESES[i].slice(0,3)}</div>
         </div>`;
       }).join('')}
     </div>
@@ -5101,10 +5101,10 @@ function relRender(lista){
       <div style="font-size:13px;font-weight:700;margin-bottom:12px">Top clientes — volume no ano</div>
       ${rankTop.map((r,i)=>`
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <div style="width:20px;font-size:11px;font-weight:700;color:#7A7870;text-align:right">${i+1}</div>
+          <div style="width:20px;font-size:11px;font-weight:700;color:#5b6472;text-align:right">${i+1}</div>
           <div style="flex:1;min-width:0">
             <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${vdEsc(r.nome)}</div>
-            <div style="font-size:10px;color:#7A7870">${vdEsc(r.coord)} · ${r.meses.size} mes(es) · ${r.pedidos} ped.</div>
+            <div style="font-size:10px;color:#5b6472">${vdEsc(r.coord)} · ${r.meses.size} mes(es) · ${r.pedidos} ped.</div>
             ${relBar(Math.round(r.cx/maxCli*100),'#6366f1')}
           </div>
           <div style="font-size:12px;font-weight:700;white-space:nowrap">${relFmt(r.cx)} cx</div>
@@ -5116,14 +5116,14 @@ function relRender(lista){
       <div style="font-size:13px;font-weight:700;margin-bottom:12px">Ranking de produtos</div>
       ${rankSkus.length?rankSkus.map(([sku,cx],i)=>`
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-          <div style="width:20px;font-size:11px;font-weight:700;color:#7A7870;text-align:right">${i+1}</div>
+          <div style="width:20px;font-size:11px;font-weight:700;color:#5b6472;text-align:right">${i+1}</div>
           <div style="flex:1">
             <div style="font-size:13px;font-weight:700">${sku}</div>
             ${relBar(Math.round(cx/maxSku*100),'#22c55e')}
           </div>
           <div style="text-align:right">
             <div style="font-size:13px;font-weight:700">${relFmt(cx)} cx</div>
-            <div style="font-size:10px;color:#7A7870">${totalCx>0?Math.round(cx/totalCx*100):0}% do total</div>
+            <div style="font-size:10px;color:#5b6472">${totalCx>0?Math.round(cx/totalCx*100):0}% do total</div>
           </div>
         </div>`).join(''):'<div class="empty">Sem dados de SKU</div>'}
     </div>
@@ -5131,8 +5131,8 @@ function relRender(lista){
 
   <!-- Recorrência de clientes -->
   <div style="background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:4px">Recorrência de compra <span style="font-size:11px;color:#7A7870;font-weight:400">— clientes mais consistentes no ano</span></div>
-    <div style="font-size:11px;color:#7A7870;margin-bottom:12px">Quantos meses distintos o cliente fez ao menos 1 pedido</div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px">Recorrência de compra <span style="font-size:11px;color:#5b6472;font-weight:400">— clientes mais consistentes no ano</span></div>
+    <div style="font-size:11px;color:#5b6472;margin-bottom:12px">Quantos meses distintos o cliente fez ao menos 1 pedido</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">
       ${rankRecorrencia.map(r=>{
         const mesesAtivos=r.meses.size;
@@ -5140,7 +5140,7 @@ function relRender(lista){
         const cor=pct>=75?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
         return`<div style="border:1px solid #E2E0D8;border-radius:10px;padding:10px 12px">
           <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${vdEsc(r.nome)}</div>
-          <div style="font-size:10px;color:#7A7870;margin-bottom:6px">${vdEsc(r.coord)} · ${r.pedidos} pedido(s)</div>
+          <div style="font-size:10px;color:#5b6472;margin-bottom:6px">${vdEsc(r.coord)} · ${r.pedidos} pedido(s)</div>
           <div style="display:flex;align-items:center;gap:6px">
             <div style="flex:1;height:6px;background:#E2E0D8;border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${cor};border-radius:99px"></div></div>
             <span style="font-size:11px;font-weight:700;color:${cor}">${mesesAtivos}/12 meses</span>
@@ -5155,7 +5155,7 @@ function relRender(lista){
     <div style="font-size:13px;font-weight:700;margin-bottom:12px">Resumo por coordenador — ${anoAtual}</div>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px">
-        <thead><tr style="background:#FAFAF8;color:#7A7870;font-size:10px;text-transform:uppercase;letter-spacing:.06em">
+        <thead><tr style="background:#FAFAF8;color:#5b6472;font-size:10px;text-transform:uppercase;letter-spacing:.06em">
           <th style="text-align:left;padding:8px 12px">Coordenador</th>
           <th style="text-align:center;padding:8px">Pedidos</th>
           <th style="text-align:center;padding:8px">Clientes</th>
@@ -5204,22 +5204,22 @@ function relRenderFaturado(lista){
     }).join('');
     const stLabel=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':'Parcial';
     return`<tr style="border-top:1px solid #E2E0D8;${i%2===1?'background:#FAFAF8':''}">
-      <td style="padding:7px 8px;color:#7A7870;font-size:11px">${i+1}</td>
+      <td style="padding:7px 8px;color:#5b6472;font-size:11px">${i+1}</td>
       <td style="padding:7px 10px;font-weight:600">${vdEsc(p.cliente_nome)}</td>
-      <td style="padding:7px 8px;color:#7A7870">${vdEsc(p.cliente_uf||'—')}</td>
-      <td style="padding:7px 8px;font-size:11px;color:#7A7870">${vdEsc(p.coordenador)}</td>
+      <td style="padding:7px 8px;color:#5b6472">${vdEsc(p.cliente_uf||'—')}</td>
+      <td style="padding:7px 8px;font-size:11px;color:#5b6472">${vdEsc(p.coordenador)}</td>
       <td style="padding:7px 8px">${badge}</td>
       <td style="padding:7px 8px">${origemBadge}</td>
       ${skuTds}
       <td style="padding:7px 8px;text-align:center;font-weight:700">${x.faturadoCx}</td>
-      <td style="padding:7px 8px;font-size:11px;color:#7A7870">${stLabel}</td>
+      <td style="padding:7px 8px;font-size:11px;color:#5b6472">${stLabel}</td>
     </tr>`;
   }).join('');
 
   g('rel-content').innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
     <div style="font-size:13px;font-weight:700">Relatório de Faturado — ${MESES[mesAtual]}/${anoAtual}
-      <span style="font-size:12px;font-weight:400;color:#7A7870;margin-left:8px">${faturados.length} registros · ${relFmt(totalCx)} cx faturadas</span>
+      <span style="font-size:12px;font-weight:400;color:#5b6472;margin-left:8px">${faturados.length} registros · ${relFmt(totalCx)} cx faturadas</span>
     </div>
     <button class="primary-btn" onclick="relImprimirFaturado()">Imprimir / PDF</button>
   </div>
@@ -5317,27 +5317,27 @@ function relRenderForecast(forecast){
       ?'<span style="background:#DCFCE7;color:#166534;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">Alta</span>'
       :prob==='media'
       ?'<span style="background:#FEF9C3;color:#854D0E;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">Média</span>'
-      :`<span style="font-size:11px;color:#7A7870">${prob}</span>`;
+      :`<span style="font-size:11px;color:#5b6472">${prob}</span>`;
     const skuTds=RSKUS.map(s=>{
       const it=(p.forecast_pedidos_itens||[]).find(x=>x.sku===s);
       return`<td style="text-align:center;padding:7px 5px">${Number(it?.qty_caixas||0)||'—'}</td>`;
     }).join('');
     return`<tr style="border-top:1px solid #E2E0D8;${i%2===1?'background:#FAFAF8':''}">
-      <td style="padding:7px 8px;color:#7A7870;font-size:11px">${i+1}</td>
+      <td style="padding:7px 8px;color:#5b6472;font-size:11px">${i+1}</td>
       <td style="padding:7px 10px;font-weight:600">${vdEsc(p.cliente_nome)}</td>
-      <td style="padding:7px 8px;font-size:11px;color:#7A7870">${vdEsc(p.coordenador)}</td>
+      <td style="padding:7px 8px;font-size:11px;color:#5b6472">${vdEsc(p.coordenador)}</td>
       <td style="padding:7px 8px">${badge}</td>
       ${skuTds}
       <td style="padding:7px 8px;text-align:center;font-weight:700">${Number(p.total_caixas||0)}</td>
       <td style="padding:7px 8px">${probBadge}</td>
-      <td style="padding:7px 8px;font-size:11px;color:#7A7870">${vdEsc(p.status||'—')}</td>
+      <td style="padding:7px 8px;font-size:11px;color:#5b6472">${vdEsc(p.status||'—')}</td>
     </tr>`;
   }).join('');
 
   g('rel-content').innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
     <div style="font-size:13px;font-weight:700">Relatório de Forecast — ${MESES[mesAtual]}/${anoAtual}
-      <span style="font-size:12px;font-weight:400;color:#7A7870;margin-left:8px">${forecast.length} registros · ${relFmt(totalCx)} cx previstas</span>
+      <span style="font-size:12px;font-weight:400;color:#5b6472;margin-left:8px">${forecast.length} registros · ${relFmt(totalCx)} cx previstas</span>
     </div>
     <button class="primary-btn" onclick="relImprimirForecast()">Imprimir / PDF</button>
   </div>
@@ -5409,19 +5409,19 @@ function relRenderPedidos(lista){
       ?'<span class="dot-status dot-in"></span>'
       :'<span class="dot-status dot-off"></span>';
     const stLabel=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Parcial':'Pendente';
-    const stCor=x.status==='faturado'||x.status==='entregue'?'#16a34a':x.status==='parcial'?'#d97706':'#7A7870';
+    const stCor=x.status==='faturado'||x.status==='entregue'?'#16a34a':x.status==='parcial'?'#d97706':'#5b6472';
     const skuTds=RSKUS.map(s=>{
       const it=(p.pedidos_vendas_itens||[]).find(x=>x.sku===s);
       return`<td style="text-align:center;padding:7px 5px">${Number(it?.qty_caixas||0)||'—'}</td>`;
     }).join('');
     const mes=MESES[p.mes]?.slice(0,3)||'—';
     return`<tr style="border-top:1px solid #E2E0D8;${i%2===1?'background:#FAFAF8':''}">
-      <td style="padding:7px 8px;color:#7A7870;font-size:11px">${i+1}</td>
+      <td style="padding:7px 8px;color:#5b6472;font-size:11px">${i+1}</td>
       <td style="padding:7px 10px;font-weight:600">${vdEsc(p.cliente_nome)}</td>
-      <td style="padding:7px 8px;color:#7A7870">${vdEsc(p.cliente_uf||'—')}</td>
-      <td style="padding:7px 8px;font-size:11px;color:#7A7870">${vdEsc(p.coordenador)}</td>
-      <td style="padding:7px 8px;font-size:11px;color:#7A7870">${mes}</td>
-      <td style="padding:7px 8px">${p.origem?vdOrigemBadgeHTML(p.origem):'<span style="color:#7A7870;font-size:11px">—</span>'}</td>
+      <td style="padding:7px 8px;color:#5b6472">${vdEsc(p.cliente_uf||'—')}</td>
+      <td style="padding:7px 8px;font-size:11px;color:#5b6472">${vdEsc(p.coordenador)}</td>
+      <td style="padding:7px 8px;font-size:11px;color:#5b6472">${mes}</td>
+      <td style="padding:7px 8px">${p.origem?vdOrigemBadgeHTML(p.origem):'<span style="color:#5b6472;font-size:11px">—</span>'}</td>
       <td style="padding:7px 8px">${badge}</td>
       ${skuTds}
       <td style="padding:7px 8px;text-align:center;font-weight:700">${x.pedidoCx}</td>
@@ -5438,7 +5438,7 @@ function relRenderPedidos(lista){
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
     <div style="font-size:13px;font-weight:700">Relatório de Pedidos
-      <span style="font-size:12px;font-weight:400;color:#7A7870;margin-left:8px">${relFiltroResumo(lista)}</span>
+      <span style="font-size:12px;font-weight:400;color:#5b6472;margin-left:8px">${relFiltroResumo(lista)}</span>
     </div>
     <button class="primary-btn" onclick="relImprimirPedidos()">Imprimir / PDF</button>
   </div>
