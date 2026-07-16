@@ -4668,15 +4668,15 @@ function gestaoRender(){
   const realizadoGeral=rows.reduce((s,r)=>s+r.realizado,0);
   const pctGeral=tvPct(realizadoGeral,metaGeral);
   const metaHTML='<div class="gestao-section"><h3>Meta geral · '+MESES[mesAtual]+'</h3><div class="gestao-kpis">'+
-    '<div class="gestao-kpi"><div class="gestao-kpi-label">Realizado</div><div class="gestao-kpi-value">'+realizadoGeral+'<small>cx</small></div><div class="tv-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div></div>'+
+    '<div class="gestao-kpi"><div class="gestao-kpi-label">Realizado</div><div class="gestao-kpi-value">'+realizadoGeral+'<small>cx</small></div><div class="gestao-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div></div>'+
     '<div class="gestao-kpi"><div class="gestao-kpi-label">Meta</div><div class="gestao-kpi-value">'+metaGeral+'<small>cx</small></div></div>'+
     '<div class="gestao-kpi"><div class="gestao-kpi-label">% da meta</div><div class="gestao-kpi-value">'+pctGeral+'%</div></div>'+
     '</div>'+rows.map(r=>
       '<div class="gestao-coord-row"><div><div class="gestao-coord-name">'+vdEsc(r.coord)+'</div><div class="gestao-coord-values">'+r.realizado+' / '+r.meta+' cx</div></div>'+
-      '<div class="tv-row-bar"><span style="width:'+Math.min(100,r.pct)+'%"></span></div><div class="gestao-coord-pct">'+r.pct+'%</div></div>'
+      '<div class="gestao-row-bar"><span style="width:'+Math.min(100,r.pct)+'%"></span></div><div class="gestao-coord-pct">'+r.pct+'%</div></div>'
     ).join('')+'</div>';
-  const vendasHTML='<div class="gestao-section"><h3>Vendas do mês ('+vendasMes.length+')</h3><div class="gestao-vendas-panel"><div class="vd-cards-grid">'+
-    (vendasMes.length?vendasMes.map(p=>vdCardHTML(p)).join(''):'<div class="gestao-empty">Nenhuma venda no mês</div>')+'</div></div></div>';
+  const vendasHTML='<div class="gestao-section"><h3>Vendas do mês ('+vendasMes.length+')</h3><div class="vd-cards-grid">'+
+    (vendasMes.length?vendasMes.map(p=>vdCardHTML(p)).join(''):'<div class="gestao-empty">Nenhuma venda no mês</div>')+'</div></div>';
   const aguardandoGnre=vdPedidos.filter(vdPedidoPrecisaGnre);
   const aguardandoFat=vdPedidosParaFaturamento();
   const parciaisParados=vdPedidos.filter(p=>vdPedidoFaturadoParcial(p));
