@@ -198,16 +198,23 @@ body{background:var(--canvas);color:var(--ink)}
 .side-brand{height:74px;display:flex;align-items:center;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.08);font-size:17px;font-weight:750;letter-spacing:-.02em}
 .side-brand-logo{width:38px;height:38px;object-fit:cover;border:1px solid rgba(167,139,250,.7);border-radius:8px;margin-right:11px;background:#050505}
 .side-nav-label{padding:28px 24px 10px;font-size:10px;font-weight:800;letter-spacing:.14em;color:#7f8aa3}
-.side-link,.side-sub-link{width:100%;border:0;background:transparent;color:#aeb7ca;text-align:left;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:.18s}
-.side-link{padding:10px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;border-left:4px solid transparent}
-.side-link span:first-child{font-size:13px;font-weight:700}
-.side-link span:last-child{font-size:10.5px;font-weight:500;color:#7f8aa3}
-.side-link.active span:last-child{color:rgba(255,255,255,.75)}
-.side-link:hover,.side-sub-link:hover{color:#fff;background:rgba(255,255,255,.05)}
+.side-link,.side-sub-link{width:100%;border:0;background:transparent;color:#aeb7ca;text-align:left;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background-color .18s ease,color .18s ease,transform .18s ease}
+.side-link{padding:11px 20px;display:flex;align-items:center;gap:12px;border-left:4px solid transparent}
+.side-link span{font-size:13px;font-weight:650}
+.side-icon{width:18px;height:18px;flex-shrink:0;color:#8b95ab;transition:color .18s ease}
+.side-link:hover{color:#fff;background:rgba(255,255,255,.06);transform:translateX(2px)}
+.side-link:hover .side-icon{color:#fff}
+.side-sub-link:hover{color:#fff;background:rgba(255,255,255,.05)}
 .side-link.active{color:#fff;background:linear-gradient(90deg,rgba(101,71,217,.95),rgba(101,71,217,.62));border-left-color:#a995ff}
-.side-sub{margin:2px 16px 10px 34px;padding-left:14px;border-left:1px solid rgba(255,255,255,.14)}
-.side-sub-link{padding:10px 12px;border-radius:8px;margin:2px 0;font-size:13px}
+.side-link.active .side-icon{color:#fff}
+.side-sub{margin:2px 16px 10px 34px;padding-left:14px;border-left:1px solid rgba(255,255,255,.14);display:flex;flex-direction:column;gap:1px}
+.side-sub-link{padding:9px 12px;border-radius:8px;margin:2px 0;font-size:12.5px;display:flex;align-items:center;gap:9px}
+.side-icon-sm{width:15px;height:15px;flex-shrink:0;color:#7f8aa3}
+.side-sub-link:hover .side-icon-sm,.side-sub-link.active .side-icon-sm{color:#fff}
 .side-sub-link.active{color:#fff;background:rgba(101,71,217,.33)}
+.side-link-exit{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);border-left-color:transparent!important}
+.side-link-exit:hover{background:rgba(225,84,84,.14);color:#f3a5a5}
+.side-link-exit:hover .side-icon{color:#f3a5a5}
 .side-user{margin-top:auto;padding:18px 20px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
 .side-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7f5be5,#16a3b6);display:grid;place-items:center;font-weight:800}
 .side-user-name{font-size:13px;font-weight:700}.side-user-role{font-size:11px;color:#8590a8;margin-top:2px}
