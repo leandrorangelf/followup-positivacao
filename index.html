@@ -1306,6 +1306,19 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <div class="toast" id="toast"></div>
 
 <script>
+// ── TEMA CLARO/ESCURO ──
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const btn=document.getElementById('theme-toggle');if(btn)btn.textContent=t==='dark'?'☀️':'🌙';
+}
+function toggleTheme(){
+  const atual=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
+  const novo=atual==='dark'?'light':'dark';
+  localStorage.setItem('theme',novo);
+  applyTheme(novo);
+}
+applyTheme(localStorage.getItem('theme')||'light');
+
 const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
 // Coordenadores com salário fixo — não têm premiação variável
 const COORD_SALARIO_FIXO=new Set(['Marcio Vit']);
