@@ -2675,14 +2675,14 @@ function dashRenderMapaBrasil(containerId,rows){
         const path=d3.geo.path().projection(projection);
         return{path,projection};
       },
-      fills:{defaultFill:'#eef2ff'},
+      fills:{defaultFill:'#dbe1f5'},
       geographyConfig:{
-        borderColor:'#ffffff',
+        borderColor:'#94a3b8',
         borderWidth:1,
         popupOnHover:false,
         highlightOnHover:false,
         highlightFillColor:'#6547d9',
-        highlightBorderColor:'#ffffff',
+        highlightBorderColor:'#334155',
         highlightBorderWidth:1.4
       },
       done:function(map){
@@ -2697,7 +2697,7 @@ function dashRenderMapaBrasil(containerId,rows){
             .attr('data-uf',uf)
             .attr('data-fill',fillColor)
             .style('fill',fillColor)
-            .style('stroke','#fff')
+            .style('stroke','#94a3b8')
             .style('stroke-width',r.cx>0?1.15:.85)
             .style('opacity',r.cx>0?1:.92)
             .on('mouseover',function(){d3.select(this).style('fill',d3.rgb(this.getAttribute('data-fill')||fillColor).brighter(.25));})
