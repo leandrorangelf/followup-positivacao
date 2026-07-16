@@ -333,6 +333,8 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-kanban-count{background:var(--gray-bg);color:var(--text);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
 /* grupos de cards de pedidos */
 .vd-tbl-group{margin-bottom:14px}
+.vd-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-top:2px}
+@media(max-width:640px){.vd-cards-grid{grid-template-columns:1fr}}
 .vd-tbl-group-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:10px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.05em;margin-bottom:8px}
 .vd-tbl-group-head span{background:var(--gray-bg);padding:1px 8px;border-radius:8px;font-size:11px}
 .vd-tbl-head-aguardando{border-left-color:var(--amber);color:var(--amber)}
