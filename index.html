@@ -2721,7 +2721,7 @@ function dashSelecionarUfMapa(uf){
   const r=rows.find(x=>x.uf===uf);
   document.querySelectorAll('.state-rank-row').forEach(btn=>btn.classList.toggle('on',btn.dataset.uf===uf));
   if(typeof d3!=='undefined'){
-    d3.selectAll('#dash-br-map .datamaps-subunit').style('stroke',function(){return this.getAttribute('data-uf')===uf?'#111b31':'#fff';}).style('stroke-width',function(){return this.getAttribute('data-uf')===uf?2.4:((rows.find(x=>x.uf===this.getAttribute('data-uf'))?.cx||0)>0?1.15:.85);});
+    d3.selectAll('#dash-br-map .datamaps-subunit').style('stroke',function(){return this.getAttribute('data-uf')===uf?'#111b31':'#94a3b8';}).style('stroke-width',function(){return this.getAttribute('data-uf')===uf?2.4:((rows.find(x=>x.uf===this.getAttribute('data-uf'))?.cx||0)>0?1.15:.85);});
   }
   const detail=g('dash-map-detail');
   if(!detail)return;
