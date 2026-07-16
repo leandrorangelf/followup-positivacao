@@ -3183,48 +3183,9 @@ function vdRenderKanban(){
 }
 
 function vdCardHTML(p,grupo){
-  const x=vdResumoPedido(p),itens=x.itens,cx=x.pedidoCx;
+  const x=vdResumoPedido(p),cx=x.pedidoCx;
   const prazo=vdPrazoLabel(p);
-  const itensHTML=itens.length?(
-    '<div class="vd-card-oper">'+
-      '<div class="vd-prod-row vd-prod-head"><span>Produto</span><span class="vd-prod-val">Pedido</span><span class="vd-prod-val">Fat.</span><span class="vd-prod-val">Saldo</span></div>'+
-      itens.map(i=>{
-        const ped=Number(i.qty_caixas||0),fat=Number(i.qty_faturada||0),saldo=Math.max(0,ped-fat);
-        return '<div class="vd-prod-row"><span class="vd-prod-name">'+vdSkuCardName(i.sku)+'</span><span class="vd-prod-val">'+ped+' cx</span><span class="vd-prod-val">'+fat+' cx</span><span class="vd-prod-val">'+saldo+' cx</span></div>';
-      }).join('')+
-    '</div>'
-  ):'<div class="vd-card-oper"><div class="vd-prod-row"><span class="vd-prod-name">Sem SKUs registrados</span><span></span><span></span><span></span></div></div>';
   const stEnd=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Faturado parcial':'';
-  let acoes='';
-  const botoes=[];
-  const precisaGnre=x.saldoCx>0&&vdTipoPedido(p)!=='off'&&!vdGnreLiberada(p);
-  if(precisaGnre&&vdPodeAnexarGnre()){
-    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'gnre\')">Anexar guia GNRE</button>');
-    if(!isFabiano())botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirUploadGnre(\''+p.id+'\',\'comprovante\')">Anexar comprovante</button>');
-  }
-  if(vdPodeGerenciarGnre()&&x.saldoCx>0&&vdTipoPedido(p)!=='off'){
-    const gnreSt=vdGnreStatus(p);
-    if(!isFabiano()&&gnreSt==='pendente')botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreEnviada(\''+p.id+'\')">GNRE enviada</button>');
-    botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirGnreValor(\''+p.id+'\')">Informar/editar GNRE</button>');
-    if(precisaGnre){
-      if(gnreSt==='calculada'||Number(p.gnre_valor||0)>0||p.gnre_comprovante_url)botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdMarcarGnrePaga(\''+p.id+'\')">Confirmar paga</button>');
-      botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar</button>');
-    }
-  }
-  if(vdPodeFaturar()&&x.saldoCx>0&&vdGnreLiberada(p)){
-    botoes.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAbrirFaturamento(\''+p.id+'\')">'+(p.tipo==='off'?'Confirmar entrega':'Confirmar faturamento')+'</button>');
-  }
-  if(x.status==='parcial'&&vdPodeEditar()){
-    botoes.push('<button class="vd-card-action vd-complementar-btn" onclick="event.stopPropagation();vdComplementarPedido(\''+p.id+'\')">↩ Complementar</button>');
-  }
-  if(vdPodeEditar()){
-    if(x.faturadoCx===0)botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdEditarPedidoPorId(\''+p.id+'\')">Editar</button>');
-    botoes.push('<button class="vd-card-action delete" onclick="event.stopPropagation();vdExcluirPedidoPorId(\''+p.id+'\')">Excluir</button>');
-  }
-  if(user==='vagner'||isFabiano())botoes.push('<button class="vd-card-action" onclick="event.stopPropagation();vdAbrirComentario(\''+p.id+'\')">Comentar</button>');
-  if(botoes.length)acoes='<div class="vd-card-actions">'+botoes.join('')+'</div>';
-  const gnreValor=vdTipoPedido(p)==='off'?'Isento':(Number(p.gnre_valor||0)>0?vdFmt(p.gnre_valor):'Não informado');
-  const pedidoCompetencia=MESES[p.mes]+'/'+p.ano;
   const isParcialOrigem=!!p.parcial_de;
   const obsFat=String(p.faturamento_observacao||'').trim();
   return '<div class="vd-card-ped vd-card-'+(grupo||'liberado')+'" onclick="vdAbrirDet(\''+p.id+'\')">'+
@@ -3237,12 +3198,7 @@ function vdCardHTML(p,grupo){
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
       (obsFat?'<span class="vd-badge" style="background:#FEF3C7;color:#92400E">📋 '+vdEsc(obsFat.substring(0,40))+'</span>':'')+
     '</div>'+
-    '<div class="vd-card-info">'+
-      '<div class="vd-info-pill"><span>Competência</span>'+vdEsc(pedidoCompetencia)+'</div>'+
-      '<div class="vd-info-pill"><span>Prazo</span>'+vdEsc(prazo)+'</div>'+ 
-      '<div class="vd-info-pill vd-gnre-valor"><span>Valor GNRE</span><strong>'+vdEsc(gnreValor)+'</strong></div>'+
-      '<div class="vd-info-pill"><span>Resumo</span>'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo</div>'+ 
-    '</div>'+itensHTML+vdAnexosHTML(p)+vdComentariosPedidoHTML(p)+acoes+
+    '<div class="vd-card-resumo">'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo · '+vdEsc(prazo)+'</div>'+
   '</div>';
 }
 
