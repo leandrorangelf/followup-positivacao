@@ -3670,9 +3670,12 @@ function vdAbrirDet(id){
   g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
   const origemBtn=g('vd-det-origem');
   if(origemBtn)origemBtn.style.display=(vdPodeEditar()&&!isFabiano()&&user!=='vagner'&&!isDiretoria)?'block':'none';
+  const compBtn=g('vd-det-complementar');
+  if(compBtn)compBtn.style.display=(x.status==='parcial'&&vdPodeEditar())?'block':'none';
   g('modal-vd-det').classList.add('open');
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
+function vdComplementarPedidoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdComplementarPedido(id)}}
 function vdAbrirFaturamentoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdAbrirFaturamento(id)}}
 function vdAbrirComentarioAtual(){if(vdDetAtual)vdAbrirComentario(vdDetAtual.id)}
 function vdPodeComentarPedido(){return user==='vagner'||isFabiano();}
