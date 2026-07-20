@@ -323,6 +323,23 @@ body{background:var(--canvas);color:var(--ink)}
 .state-rank-bar span,.sku-fill{background:linear-gradient(90deg,#38bdf8,#14b8a6)}
 .sku-qty-code{background:#0f172a;border-radius:6px}
 
+/* Dashboard sempre escuro, paleta alinhada ao painel de TV externa */
+#s-dash{
+  background:radial-gradient(circle at 16% 0%,rgba(59,130,246,.12),transparent 32%),linear-gradient(160deg,#08111f 0%,#101827 55%,#151923 100%);
+  --card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--border:rgba(255,255,255,.12);
+  --text:#f8fafc;--ink:#f8fafc;--muted:#9aa6b8;--gray-bg:rgba(255,255,255,.04);
+  --green:#4ade80;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa;--purple-2:#c4b5fd;
+}
+#s-dash .dash-kpi.good:before{background:linear-gradient(90deg,#22c55e,#4ade80)}
+#s-dash .dash-kpi.info:before{background:linear-gradient(90deg,#38bdf8,#a78bfa)}
+#s-dash .dash-kpi.warn:before{background:#fbbf24}
+#s-dash .dash-kpi.danger:before{background:#f87171}
+#s-dash .mini-progress span{background:linear-gradient(90deg,#38bdf8,#a78bfa)}
+#s-dash .trend-bar{background:linear-gradient(180deg,#38bdf8,#a78bfa)!important;box-shadow:none}
+#s-dash .dash-hero{background:#08111f;border:1px solid rgba(255,255,255,.1)}
+#s-dash .dash-hero-progress span{background:linear-gradient(90deg,#22c55e,#38bdf8)}
+#s-dash .data-table tbody tr:hover{background:rgba(255,255,255,.05)}
+
 @media(max-width:1000px){
  .side-nav{transform:translateX(-100%);transition:.25s}.side-nav.open{transform:translateX(0)}.topbar{left:0;padding:0 16px}.menu-toggle{display:block}.screen:not(#s-login){margin-left:0}.mobile-overlay.open{display:block;position:fixed;inset:0;background:rgba(8,15,29,.5);z-index:65}.dash-kpis{grid-template-columns:repeat(2,1fr)}.dash-kpi:nth-child(2){border-right:0}.dash-kpi:nth-child(-n+2){border-bottom:1px solid var(--line)}.dash-grid,.dash-lower,.state-map-layout{grid-template-columns:1fr}#s-ped .fab-wrap,#s-cli .cli-add-wrap{left:0}
 }
