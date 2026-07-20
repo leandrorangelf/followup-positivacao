@@ -1459,18 +1459,6 @@ function icon(name,size){
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;flex-shrink:0" aria-hidden="true"><rect x="1.2" y="1.2" width="21.6" height="21.6" rx="6" fill="currentColor" fill-opacity=".12" stroke="none"/>'+(ICONS[name]||'')+'</svg>';
 }
 
-// ── TEMA CLARO/ESCURO ──
-function applyTheme(t){
-  document.documentElement.setAttribute('data-theme',t);
-  const btn=document.getElementById('theme-toggle');if(btn)btn.innerHTML=icon(t==='dark'?'sun':'moon',18);
-}
-function toggleTheme(){
-  const atual=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
-  const novo=atual==='dark'?'light':'dark';
-  localStorage.setItem('theme',novo);
-  applyTheme(novo);
-}
-applyTheme(localStorage.getItem('theme')||'light');
 
 const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
 // Coordenadores com salário fixo — não têm premiação variável
