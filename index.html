@@ -2130,7 +2130,7 @@ async function salvarTudo(){
     const res=await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(rows)});
     if(!res||!res.ok){
       if(backup.length)await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(backup)});
-      toast('⚠ Erro ao salvar. Os dados anteriores foram restaurados.','error',5000);return;
+      toast('Erro ao salvar. Os dados anteriores foram restaurados.','error',5000);return;
     }
     toast('✓ Salvo com sucesso!','ok',2000);
   }finally{
