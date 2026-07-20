@@ -2376,12 +2376,13 @@ function setMesGlobal(value){
   mesAtual=parseInt(value,10);
   pedidosCarregados=false;
   if(g('dash-mes'))g('dash-mes').value=mesAtual;
-  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-forecast','s-log','s-relatorios'].find(id=>g(id).style.display!=='none');
+  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-log','s-relatorios'].find(id=>g(id).style.display!=='none');
   if(visible==='s-dash')carregarDashboard();
   else if(visible==='s-ped')carregarPedidos();
   else if(visible==='s-cli')renderCliList();
   else if(visible==='s-metas')irMetas();
   else if(visible==='s-vendas')vdCarregar();
+  else if(visible==='s-premiacao')carregarPremiacao();
   else if(visible==='s-forecast')forecastCarregar();
   else if(visible==='s-relatorios')irRelatorios();
 }
