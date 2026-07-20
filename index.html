@@ -2251,7 +2251,7 @@ async function confirmarReativar(){
   const ate=parseInt(g('reativar-ate').value);
   const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(_toggleId),{method:'PATCH',body:JSON.stringify({ativo_desde:desde,inativo_desde:ate})});
   if(!res||!res.ok){toast('Erro ao atualizar','error');return;}
-  toast('✓ Cliente reativado!','ok');
+  toast('Cliente reativado!','ok');
   fecharModalReativar();
   await carregarClientes();
   renderCliList();
