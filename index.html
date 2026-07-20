@@ -4634,6 +4634,65 @@ function planilhaRender(){
     '</tr></thead><tbody>'+(rows||'<tr><td colspan="7" class="gestao-empty">Nenhum pedido no ano</td></tr>')+'</tbody></table>';
 }
 
+async function irGnre(){
+  show('s-gnre');renderNav('nav-gnre','gnre');
+  await gnreCarregar();
+}
+async function gnreCarregar(){
+  const d=await sb('/rest/v1/pedidos_vendas?ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=created_at.desc&limit=5000',{ret:true});
+  gnrePedidos=(Array.isArray(d)?d:[]).filter(p=>dashPedidoValido(p)&&vdTipoPedido(p)!=='off');
+  gnreRender();
+}
+function gnreDataFmt(iso){return iso?new Date(iso).toLocaleDateString('pt-BR'):null;}
+function gnreDatasHTML(p){
+  const partes=[];
+  if(p.gnre_enviado_at)partes.push('Enviada '+gnreDataFmt(p.gnre_enviado_at));
+  if(p.gnre_retornado_at)partes.push('Calculada '+gnreDataFmt(p.gnre_retornado_at));
+  if(p.gnre_pago_at)partes.push('Paga '+gnreDataFmt(p.gnre_pago_at));
+  if(p.gnre_arquivo_at)partes.push('Anexo '+gnreDataFmt(p.gnre_arquivo_at));
+  if(p.gnre_comprovante_at)partes.push('Comprovante '+gnreDataFmt(p.gnre_comprovante_at));
+  return partes.length?partes.join('<br>'):'—';
+}
+function gnreAnexosHTML(p){
+  const links=[];
+  if(p.gnre_arquivo_url)links.push('<a class="vd-attach-link" href="#" data-gnre-path="'+vdEsc(p.gnre_arquivo_url)+'" onclick="event.preventDefault();vdAbrirGnreArquivo(this.dataset.gnrePath)">📄 GNRE</a>');
+  if(p.gnre_comprovante_url)links.push('<a class="vd-attach-link" href="#" data-gnre-path="'+vdEsc(p.gnre_comprovante_url)+'" onclick="event.preventDefault();vdAbrirGnreArquivo(this.dataset.gnrePath)">✅ Comprovante</a>');
+  return links.length?links.join(' '):'—';
+}
+function gnreRender(){
+  const statusOpts=[['todos','Todos'],['pendente','Pendente'],['enviada','Enviada'],['calculada','Calculada'],['paga','Paga'],['isenta','Isenta']];
+  const busca=gnreBusca.trim().toLowerCase();
+  const lista=gnrePedidos.filter(p=>{
+    if(gnreFiltroStatus!=='todos'&&vdGnreStatus(p)!==gnreFiltroStatus)return false;
+    if(busca&&!String(p.cliente_nome||'').toLowerCase().includes(busca))return false;
+    return true;
+  });
+  const toolbar='<div class="client-management-toolbar">'+
+    '<input class="client-search" type="search" placeholder="Buscar cliente..." value="'+vdEsc(gnreBusca)+'" oninput="gnreBusca=this.value;gnreRender()">'+
+    '<select class="client-filter" onchange="gnreFiltroStatus=this.value;gnreRender()">'+
+      statusOpts.map(([v,l])=>'<option value="'+v+'" '+(gnreFiltroStatus===v?'selected':'')+'>'+l+'</option>').join('')+
+    '</select>'+
+    '<span class="client-count">'+lista.length+' pedido'+(lista.length===1?'':'s')+'</span>'+
+  '</div>';
+  const rows=lista.map(p=>{
+    const x=vdResumoPedido(p);
+    return '<tr>'+
+      '<td>'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+'</td>'+
+      '<td>'+vdEsc(p.coordenador||'—')+'</td>'+
+      '<td>'+MESES[p.mes]+'/'+p.ano+'</td>'+
+      '<td>'+vdGnreBadgeHTML(p)+'</td>'+
+      '<td class="num">'+(p.gnre_valor?vdFmt(p.gnre_valor):'—')+'</td>'+
+      '<td class="num">'+x.pedidoCx+' cx · '+vdFmt(x.pedidoValor)+'</td>'+
+      '<td>'+gnreDatasHTML(p)+'</td>'+
+      '<td>'+gnreAnexosHTML(p)+'</td>'+
+    '</tr>';
+  }).join('');
+  const tabela=lista.length?
+    '<table class="gestao-table"><thead><tr><th>Cliente</th><th>Coordenador</th><th>Competência</th><th>Status GNRE</th><th>Valor GNRE</th><th>Venda</th><th>Datas</th><th>Anexos</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    :'<div class="gestao-empty">Nenhum pedido encontrado</div>';
+  g('gnre-content').innerHTML=toolbar+'<div style="margin-top:12px;overflow-x:auto">'+tabela+'</div>';
+}
+
 function dashRenderHistorico(hist,coordFiltro){
   hist=Array.isArray(hist)?hist:[];
   const anoData=hist.filter(p=>Number(p.ano)===Number(anoAtual));
