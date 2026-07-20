@@ -2879,6 +2879,9 @@ function vdSkuResumoLinhaHTML(i,qtyField){
   return '<div class="vd-prod-row"><span class="vd-prod-name">'+vdSkuCardName(sku)+'</span><span class="vd-prod-val">'+vdFmtQtd(qtd)+' cx</span><span class="vd-prod-val">'+vdFmtQtd(vdSkuCarteiras(sku,qtd))+' ct</span></div>';
 }
 let vdPedidos=[];
+let gnrePedidos=[];
+let gnreFiltroStatus='todos';
+let gnreBusca='';
 let vdForecastOrigemId=null,vdForecastOrigemLabel='';
 let vdFiltro='todos';
 let vdOrigemFiltro='todos';
