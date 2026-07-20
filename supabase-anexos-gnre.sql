@@ -1,0 +1,16 @@
+alter table public.pedidos_vendas
+  add column if not exists gnre_status text default 'pendente',
+  add column if not exists gnre_valor numeric,
+  add column if not exists gnre_enviado_at timestamptz,
+  add column if not exists gnre_retornado_at timestamptz,
+  add column if not exists gnre_pago_at timestamptz,
+  add column if not exists gnre_arquivo_url text,
+  add column if not exists gnre_arquivo_nome text,
+  add column if not exists gnre_arquivo_at timestamptz,
+  add column if not exists gnre_arquivo_por text,
+  add column if not exists gnre_comprovante_url text,
+  add column if not exists gnre_comprovante_nome text,
+  add column if not exists gnre_comprovante_at timestamptz,
+  add column if not exists gnre_comprovante_por text,
+  add column if not exists gnre_pagamento_informado_at timestamptz,
+  add column if not exists gnre_pagamento_informado_por text;
