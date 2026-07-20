@@ -52,6 +52,11 @@ test('keeps every inline script syntactically valid', () => {
   for (const [, source] of scripts) assert.doesNotThrow(() => new Function(source));
 });
 
+test('keeps the shared screen navigation helper used by login and every module', () => {
+  assert.match(html, /function show\(id\)\{/);
+  assert.match(html, /classList\.toggle\('visible',id!==\'s-login\'\)/);
+});
+
 test('contains mobile overflow guards for wide operational screens', () => {
   assert.match(mainStyle, /#s-registro\{overflow-x:hidden\}/);
   assert.match(mainStyle, /#s-log \.section-head,#s-relatorios \.section-head\{[^}]*flex-direction:column/);

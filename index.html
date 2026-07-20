@@ -1468,6 +1468,18 @@ const isFabiano=()=>user==='fabiano';
 const pedSomenteLeitura=()=>user==='vagner'||isFabiano()||isDiretoria;
 function corPct(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
 
+function show(id){
+  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-vfn','s-vficha','s-log','s-registro','s-relatorios'].forEach(screenId=>{
+    const screen=g(screenId);
+    if(screen)screen.style.display='none';
+  });
+  const target=g(id);
+  if(target)target.style.display=(id==='s-login')?'flex':'block';
+  const shell=g('app-shell');
+  if(shell)shell.classList.toggle('visible',id!=='s-login');
+  toggleMenu(false);
+}
+
 function renderNav(navId,active){
   const tabs=isFabiano()?[
     {id:'vendas',icon:'money',label:'Vendas'},
