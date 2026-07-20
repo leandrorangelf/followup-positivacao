@@ -3511,8 +3511,8 @@ async function vdSalvarPedido(){
   if(user==='vagner'&&vdEditPedidoId){toast('Vagner é somente leitura','error');return;}
   vdSalvandoPedido=true;
   const btnSalvar=g('vf-btn-save');
-  btnSalvar.disabled=true;
-  const liberarSalvamento=()=>{vdSalvandoPedido=false;btnSalvar.disabled=false};
+  try{
+  if(btnSalvar)btnSalvar.disabled=true;
   toast('Salvando...','',8000);
   let pedidoId=vdEditPedidoId;
   const original=vdEditPedidoId?vdPedidos.find(p=>p.id===vdEditPedidoId):null;
@@ -3527,7 +3527,6 @@ async function vdSalvarPedido(){
     parcela_3_dias:original.parcela_3_dias,total:original.total,total_caixas:original.total_caixas,
     observacao:original.observacao,mes:original.mes,ano:original.ano,status:original.status
   }:null;
-  try{
     const respSalvar=await fetch('/api/pedidos-vendas/salvar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       id:vdEditPedidoId||undefined,ped,itens,pedOriginal,itensOriginais,
       forecastOrigemId:(!vdEditPedidoId&&vdForecastOrigemId)?vdForecastOrigemId:undefined
