@@ -1752,7 +1752,7 @@ function renderPremiacaoContent(rows,isGestor){
   const totalPendentes=rows.reduce((s,r)=>s+r.pendentes.length,0);
   const pctMetaGeral=totalMeta?Math.round(totalVolume/totalMeta*100):0;
 
-  const totalizadorHTML=`<div class="dash-kpis" style="margin-bottom:14px">
+  const totalizadorHTML=`<div class="dash-kpis" style="margin-bottom:14px;grid-template-columns:repeat(3,minmax(0,1fr))">
     <div class="dash-kpi"><div class="dash-kpi-label">${icon('trophy',13)} Premiação ${isGestor?'total':'do mês'}</div><div class="dash-kpi-value" style="color:var(--purple)">${fmtR(totalValor)}</div><div class="dash-kpi-sub">${MESES[mesAtual]} ${anoAtual}</div></div>
     <div class="dash-kpi"><div class="dash-kpi-label">Volume realizado</div><div class="dash-kpi-value">${totalVolume.toLocaleString('pt-BR')} <small style="font-size:12px">cx</small></div><div class="dash-kpi-sub ${pctMetaGeral>=100?'good':''}">${pctMetaGeral}% da meta (${totalMeta.toLocaleString('pt-BR')} cx)</div></div>
     <div class="dash-kpi"><div class="dash-kpi-label">Clientes sem venda</div><div class="dash-kpi-value" style="color:${totalPendentes?'var(--danger)':'var(--green)'}">${totalPendentes}</div><div class="dash-kpi-sub ${totalPendentes?'bad':'good'}">${totalAtivos?Math.round(totalPendentes/totalAtivos*100):0}% da carteira${isGestor?' geral':''}</div></div>
