@@ -1510,6 +1510,7 @@ function renderNav(navId,active){
   const tabs=isFabiano()?[
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'registro',icon:'document',label:'Registro'},
+    {id:'gnre',icon:'document',label:'GNRE'},
   ]:(isAdmin||user==='vagner')?[
     {id:'dash',icon:'dashboard',label:'Dashboard'},
     {id:'vendas',icon:'money',label:'Vendas'},
@@ -1519,17 +1520,20 @@ function renderNav(navId,active){
     {id:'metas',icon:'target',label:'Metas'},
     {id:'ped',icon:'clipboard',label:'Pedidos'},
     {id:'registro',icon:'document',label:'Registro'},
+    {id:'gnre',icon:'document',label:'GNRE'},
   ]:isDiretoria?[
     {id:'gestao',icon:'tv',label:'Gestão'},
     {id:'planilha',icon:'clipboard',label:'Planilha'},
     {id:'dash',icon:'dashboard',label:'Dashboard'},
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'forecast',icon:'forecast',label:'Forecast'},
+    {id:'gnre',icon:'document',label:'GNRE'},
   ]:[
     {id:'dash',icon:'dashboard',label:'Dashboard'},
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'premiacao',icon:'trophy',label:'Premiação'},
     {id:'forecast',icon:'forecast',label:'Forecast'},
+    {id:'gnre',icon:'document',label:'GNRE'},
   ];
   g(navId).innerHTML=tabs.map(t=>`
     <button class="nav-btn ${t.id===active?'active':''}" onclick="navTo('${t.id}')">
