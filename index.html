@@ -1663,6 +1663,89 @@ function navTo(id){
   else if(id==='vficha'){irVendas();vdIrFicha();}
 }
 
+// ── PREMIAÇÃO ──
+let premCoordFoco=null;
+
+async function irPremiacao(){
+  show('s-premiacao');
+  renderNav('nav-premiacao','premiacao');
+  g('prem-month').textContent=MESES[mesAtual]+' '+anoAtual;
+  if(isAdmin||user==='vagner'){
+    if(!premCoordFoco||!COORD_KEYS.includes(premCoordFoco))premCoordFoco=COORD_KEYS[0];
+    g('prem-coord-tabs').style.display='flex';
+    renderPremCoordTabs();
+  } else {
+    g('prem-coord-tabs').style.display='none';
+  }
+  await carregarPremiacao();
+}
+
+function renderPremCoordTabs(){
+  g('prem-coord-tabs').innerHTML=COORD_KEYS.map(c=>
+    `<button class="admin-tab ${c===premCoordFoco?'active':''}" onclick="setPremCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
+}
+function setPremCoord(c){premCoordFoco=c;renderPremCoordTabs();carregarPremiacao();}
+
+async function carregarPremiacao(){
+  const coord=(isAdmin||user==='vagner')?premCoordFoco:coordAtual;
+  g('prem-content').innerHTML='<div class="loading">Carregando...</div>';
+  const vendas=await sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coord)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true});
+  const lista=(Array.isArray(vendas)?vendas:[]).filter(dashPedidoValido);
+  const d=vdAgruparVendasPorCliente(lista,coord);
+  const ativos=clientesAtivos(coord);
+  const meta=METAS[coord][mesAtual]||0;
+  const volume=lista.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+  const pendentes=ativos.filter(c=>totCliD(d,c.nome)===0);
+  const pctMeta=meta?Math.round(volume/meta*100):0;
+  renderPremiacaoContent(coord,{meta,volume,pctMeta,ativos,pendentes});
+}
+
+function renderPremiacaoContent(coord,ctx){
+  const {meta,volume,pctMeta,ativos,pendentes}=ctx;
+  const fixo=COORD_SALARIO_FIXO.has(coord);
+  const valor=fixo?0:premValorCoord(pctMeta);
+  const fmtR=v=>'R$ '+v.toLocaleString('pt-BR');
+
+  const gatilhosHTML=PREM_FAIXAS.slice().reverse().map(f=>{
+    const atingido=pctMeta>=f.pct;
+    const faltaCx=Math.max(0,Math.ceil(f.pct/100*meta)-volume);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="color:${atingido?'var(--green)':'var(--muted)'}">${icon(atingido?'check':'check-empty',20)}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:${atingido?'var(--green)':'var(--text)'}">${f.pct}% da meta</div>
+        <div style="font-size:11px;color:var(--muted)">${atingido?'Atingido!':'Faltam '+faltaCx.toLocaleString('pt-BR')+' cx (você está em '+pctMeta+'%)'}</div>
+      </div>
+      ${fixo?'':`<div style="font-size:13px;font-weight:700;color:${atingido?'var(--green)':'var(--muted)'}">${atingido?fmtR(f.valor):'—'}</div>`}
+    </div>`;
+  }).join('');
+
+  const pendentesHTML=pendentes.length?pendentes.map(c=>`<div class="pending-item"><span class="pending-name">${c.nome}</span><span class="badge badge-sem">Pendente</span></div>`).join('')
+    :`<div class="empty" style="display:flex;align-items:center;gap:6px;justify-content:center">${icon('check',16)} Todos os clientes ativos com pedido!</div>`;
+
+  g('prem-content').innerHTML=`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;box-shadow:0 8px 20px rgba(101,71,217,.12)">
+      <div style="background:linear-gradient(120deg,var(--purple),var(--purple-2));padding:14px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700">${icon('trophy',18)} Premiação do mês${(isAdmin||user==='vagner')?' — '+coord:''}</div>
+        ${fixo?'<div style="font-size:13px;font-weight:700">Salário fixo</div>':`<div style="font-size:22px;font-weight:800">${fmtR(valor)}</div>`}
+      </div>
+      <div style="padding:4px 16px 0">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:8px 0 4px">Metas x realizado</div>
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:6px">
+          <div style="flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.min(100,pctMeta)}%;background:${corBar(pctMeta)}"></div></div>
+          <div style="font-size:12px;font-weight:700;color:${corPct(pctMeta)}">${pctMeta}%</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);padding-bottom:10px">${volume.toLocaleString('pt-BR')} cx realizadas / meta de ${meta.toLocaleString('pt-BR')} cx</div>
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:4px 0 4px">Gatilhos de volume</div>
+        ${gatilhosHTML}
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-hdr" style="display:flex;align-items:center;gap:6px">${icon('users',16)} Clientes que faltam positivar (${pendentes.length})</div>
+      ${pendentesHTML}
+    </div>
+  `;
+}
+
 // ── LOGIN ──
 const LOGIN_COORD_KEY='clean-followup-login-coord';
 
