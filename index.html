@@ -1392,7 +1392,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 // ── TEMA CLARO/ESCURO ──
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
-  const btn=document.getElementById('theme-toggle');if(btn)btn.textContent=t==='dark'?'☀️':'🌙';
+  const btn=document.getElementById('theme-toggle');if(btn)btn.innerHTML=icon(t==='dark'?'sun':'moon',18);
 }
 function toggleTheme(){
   const atual=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
