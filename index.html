@@ -1598,30 +1598,32 @@ function show(id){
 
 function renderNav(navId,active){
   const tabs=isFabiano()?[
-    {id:'vendas',icon:'💰',label:'Vendas'},
-    {id:'registro',icon:'📄',label:'Registro'},
+    {id:'vendas',icon:'money',label:'Vendas'},
+    {id:'registro',icon:'document',label:'Registro'},
   ]:(isAdmin||user==='vagner')?[
-    {id:'dash',icon:'📊',label:'Dashboard'},
-    {id:'vendas',icon:'💰',label:'Vendas'},
-    {id:'forecast',icon:'🔮',label:'Forecast'},
-    {id:'cli',icon:'👥',label:'Clientes'},
-    {id:'metas',icon:'🎯',label:'Metas'},
-    {id:'ped',icon:'📋',label:'Pedidos'},
-    {id:'registro',icon:'📄',label:'Registro'},
+    {id:'dash',icon:'dashboard',label:'Dashboard'},
+    {id:'vendas',icon:'money',label:'Vendas'},
+    {id:'premiacao',icon:'trophy',label:'Premiação'},
+    {id:'forecast',icon:'forecast',label:'Forecast'},
+    {id:'cli',icon:'users',label:'Clientes'},
+    {id:'metas',icon:'target',label:'Metas'},
+    {id:'ped',icon:'clipboard',label:'Pedidos'},
+    {id:'registro',icon:'document',label:'Registro'},
   ]:isDiretoria?[
-    {id:'gestao',icon:'📺',label:'Gestão'},
-    {id:'planilha',icon:'📋',label:'Planilha'},
-    {id:'dash',icon:'📊',label:'Dashboard'},
-    {id:'vendas',icon:'💰',label:'Vendas'},
-    {id:'forecast',icon:'🔮',label:'Forecast'},
+    {id:'gestao',icon:'tv',label:'Gestão'},
+    {id:'planilha',icon:'clipboard',label:'Planilha'},
+    {id:'dash',icon:'dashboard',label:'Dashboard'},
+    {id:'vendas',icon:'money',label:'Vendas'},
+    {id:'forecast',icon:'forecast',label:'Forecast'},
   ]:[
-    {id:'dash',icon:'📊',label:'Dashboard'},
-    {id:'vendas',icon:'💰',label:'Vendas'},
-    {id:'forecast',icon:'🔮',label:'Forecast'},
+    {id:'dash',icon:'dashboard',label:'Dashboard'},
+    {id:'vendas',icon:'money',label:'Vendas'},
+    {id:'premiacao',icon:'trophy',label:'Premiação'},
+    {id:'forecast',icon:'forecast',label:'Forecast'},
   ];
   g(navId).innerHTML=tabs.map(t=>`
     <button class="nav-btn ${t.id===active?'active':''}" onclick="navTo('${t.id}')">
-      <span class="nav-icon">${t.icon}</span>
+      <span class="nav-icon">${icon(t.icon,18)}</span>
       <span class="nav-label">${t.label}</span>
     </button>`).join('');
   updateSideNav(active);
