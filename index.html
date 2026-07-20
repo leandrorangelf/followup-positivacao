@@ -1667,86 +1667,119 @@ function navTo(id){
 }
 
 // ── PREMIAÇÃO ──
-let premCoordFoco=null;
-
 async function irPremiacao(){
   show('s-premiacao');
   renderNav('nav-premiacao','premiacao');
   g('prem-month').textContent=MESES[mesAtual]+' '+anoAtual;
-  if(isAdmin||user==='vagner'){
-    if(!premCoordFoco||!COORD_KEYS.includes(premCoordFoco))premCoordFoco=COORD_KEYS[0];
-    g('prem-coord-tabs').style.display='flex';
-    renderPremCoordTabs();
-  } else {
-    g('prem-coord-tabs').style.display='none';
-  }
   await carregarPremiacao();
 }
 
-function renderPremCoordTabs(){
-  g('prem-coord-tabs').innerHTML=COORD_KEYS.map(c=>
-    `<button class="admin-tab ${c===premCoordFoco?'active':''}" onclick="setPremCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
-}
-function setPremCoord(c){premCoordFoco=c;renderPremCoordTabs();carregarPremiacao();}
-
-async function carregarPremiacao(){
-  const coord=(isAdmin||user==='vagner')?premCoordFoco:coordAtual;
-  g('prem-content').innerHTML='<div class="loading">Carregando...</div>';
-  const vendas=await sb(`/rest/v1/pedidos_vendas?coordenador=eq.${encodeURIComponent(coord)}&mes=eq.${mesAtual}&ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true});
-  const lista=(Array.isArray(vendas)?vendas:[]).filter(dashPedidoValido);
+function premCoordRow(coord,lista){
   const d=vdAgruparVendasPorCliente(lista,coord);
   const ativos=clientesAtivos(coord);
   const meta=METAS[coord][mesAtual]||0;
   const volume=lista.reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+  const fixo=COORD_SALARIO_FIXO.has(coord);
+  const listaFab=lista.filter(p=>!vdEhDistribuidora(p));
+  const listaDist=lista.filter(p=>vdEhDistribuidora(p));
+  const volumeComisF=fixo?0:listaFab.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+  const volumeComisD=fixo?0:listaDist.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
   const pendentes=ativos.filter(c=>totCliD(d,c.nome)===0);
   const pctMeta=meta?Math.round(volume/meta*100):0;
-  renderPremiacaoContent(coord,{meta,volume,pctMeta,ativos,pendentes});
+  return {coord,fixo,meta,volume,volumeComis:volumeComisF+volumeComisD,volumeComisF,volumeComisD,ativos,pendentes,pctMeta,valor:fixo?0:premValorCoord(pctMeta)};
 }
 
-function renderPremiacaoContent(coord,ctx){
-  const {meta,volume,pctMeta,ativos,pendentes}=ctx;
-  const fixo=COORD_SALARIO_FIXO.has(coord);
-  const valor=fixo?0:premValorCoord(pctMeta);
+async function carregarPremiacao(){
+  g('prem-content').innerHTML='<div class="loading">Carregando...</div>';
+  const isGestor=isAdmin||user==='vagner';
+  const filtroCoord=isGestor?'':('coordenador=eq.'+encodeURIComponent(coordAtual)+'&');
+  const vendas=await sb(`/rest/v1/pedidos_vendas?${filtroCoord}mes=eq.${mesAtual}&ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true});
+  const todasVendas=(Array.isArray(vendas)?vendas:[]).filter(dashPedidoValido);
+  const coordsAlvo=isGestor?COORD_KEYS:[coordAtual];
+  const rows=coordsAlvo.map(c=>premCoordRow(c,todasVendas.filter(p=>p.coordenador===c)));
+  renderPremiacaoContent(rows,isGestor);
+}
+
+function premCardHTML(r){
   const fmtR=v=>'R$ '+v.toLocaleString('pt-BR');
-
-  const gatilhosHTML=PREM_FAIXAS.slice().reverse().map(f=>{
-    const atingido=pctMeta>=f.pct;
-    const faltaCx=Math.max(0,Math.ceil(f.pct/100*meta)-volume);
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
-      <div style="color:${atingido?'var(--green)':'var(--muted)'}">${icon(atingido?'check':'check-empty',20)}</div>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600;color:${atingido?'var(--green)':'var(--text)'}">${f.pct}% da meta</div>
-        <div style="font-size:11px;color:var(--muted)">${atingido?'Atingido!':'Faltam '+faltaCx.toLocaleString('pt-BR')+' cx (você está em '+pctMeta+'%)'}</div>
-      </div>
-      ${fixo?'':`<div style="font-size:13px;font-weight:700;color:${atingido?'var(--green)':'var(--muted)'}">${atingido?fmtR(f.valor):'—'}</div>`}
+  if(r.fixo){
+    return `<div class="prem-card">
+      <div class="prem-name">${r.coord}</div>
+      <div class="prem-valor" style="color:var(--muted);font-size:16px">Salário fixo</div>
+      <div class="prem-pct" style="color:var(--muted)">${r.volume.toLocaleString('pt-BR')} cx vendidas no mês</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Sem premiação variável</div>
     </div>`;
-  }).join('');
+  }
+  const cls=r.pctMeta>=100?'hit':r.pctMeta>=80?'close':'miss';
+  const barW=Math.min(100,Math.round(r.pctMeta/130*100));
+  const barColor=r.pctMeta>=130?'#16a34a':r.pctMeta>=120?'#2563eb':r.pctMeta>=110?'#7c3aed':r.pctMeta>=100?'#6547d9':'#d97706';
+  const faixaAtiva=premFaixaAtiva(r.pctMeta);
+  const prox=premProxFaixa(r.pctMeta,r.meta);
+  const faixasHTML=PREM_FAIXAS.slice().reverse().map(f=>`<span class="prem-faixa${faixaAtiva===f.pct?' ativa':''}">${f.pct}%</span>`).join('');
+  const proxHTML=prox?`<div class="prem-prox">Faltam <strong>${prox.faltaCx.toLocaleString('pt-BR')} cx</strong> para ${prox.pct}% → ${fmtR(prox.valor)}</div>`
+    :`<div class="prem-prox" style="color:#16a34a;display:flex;align-items:center;gap:5px">${icon('check',13)} Faixa máxima atingida</div>`;
+  const breakdownHTML=r.volumeComisD>0?`<div style="font-size:11px;color:var(--muted);margin-top:6px;background:rgba(101,71,217,.06);border-radius:6px;padding:5px 8px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="display:flex;align-items:center;gap:4px">${icon('factory',13)} Fábrica</span><strong>${r.volumeComisF.toLocaleString('pt-BR')} cx</strong></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px"><span style="display:flex;align-items:center;gap:4px">${icon('truck',13)} Distribuidoras</span><strong>${r.volumeComisD.toLocaleString('pt-BR')} cx</strong></div>
+    </div>`:'';
+  return `<div class="prem-card">
+    <div class="prem-name">${r.coord}</div>
+    <div class="prem-valor ${cls}">${r.valor>0?fmtR(r.valor):'—'}</div>
+    <div class="prem-pct" style="color:${barColor}">${r.pctMeta}% da meta · ${r.volume.toLocaleString('pt-BR')} cx</div>
+    ${breakdownHTML}
+    <div class="prem-bar-wrap"><div class="prem-bar" style="width:${barW}%;background:${barColor}"></div></div>
+    <div class="prem-faixas">${faixasHTML}</div>
+    ${proxHTML}
+  </div>`;
+}
 
-  const pendentesHTML=pendentes.length?pendentes.map(c=>`<div class="pending-item"><span class="pending-name">${c.nome}</span><span class="badge badge-sem">Pendente</span></div>`).join('')
+function premPendentesHTML(r){
+  const corpo=r.pendentes.length
+    ?r.pendentes.map(c=>`<div class="pending-item"><span class="pending-name">${c.nome}</span><span class="badge badge-sem">Pendente</span></div>`).join('')
     :`<div class="empty" style="display:flex;align-items:center;gap:6px;justify-content:center">${icon('check',16)} Todos os clientes ativos com pedido!</div>`;
+  return `<div class="section" style="margin-bottom:14px">
+    <div class="section-hdr" style="display:flex;align-items:center;gap:6px">${icon('users',16)} ${r.coord} — clientes que faltam positivar (${r.pendentes.length})</div>
+    ${corpo}
+  </div>`;
+}
 
-  g('prem-content').innerHTML=`
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;box-shadow:0 8px 20px rgba(101,71,217,.12)">
-      <div style="background:linear-gradient(120deg,var(--purple),var(--purple-2));padding:14px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff">
-        <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700">${icon('trophy',18)} Premiação do mês${(isAdmin||user==='vagner')?' — '+coord:''}</div>
-        ${fixo?'<div style="font-size:13px;font-weight:700">Salário fixo</div>':`<div style="font-size:22px;font-weight:800">${fmtR(valor)}</div>`}
+function renderPremiacaoContent(rows,isGestor){
+  const fmtR=v=>'R$ '+v.toLocaleString('pt-BR');
+  const totalValor=rows.reduce((s,r)=>s+r.valor,0);
+  const totalVolume=rows.reduce((s,r)=>s+r.volume,0);
+  const totalMeta=rows.reduce((s,r)=>s+r.meta,0);
+  const totalAtivos=rows.reduce((s,r)=>s+r.ativos.length,0);
+  const totalPendentes=rows.reduce((s,r)=>s+r.pendentes.length,0);
+  const pctMetaGeral=totalMeta?Math.round(totalVolume/totalMeta*100):0;
+
+  const totalizadorHTML=`<div class="dash-kpis" style="margin-bottom:14px">
+    <div class="dash-kpi"><div class="dash-kpi-label">${icon('trophy',13)} Premiação ${isGestor?'total':'do mês'}</div><div class="dash-kpi-value" style="color:var(--purple)">${fmtR(totalValor)}</div><div class="dash-kpi-sub">${MESES[mesAtual]} ${anoAtual}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Volume realizado</div><div class="dash-kpi-value">${totalVolume.toLocaleString('pt-BR')} <small style="font-size:12px">cx</small></div><div class="dash-kpi-sub ${pctMetaGeral>=100?'good':''}">${pctMetaGeral}% da meta (${totalMeta.toLocaleString('pt-BR')} cx)</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Clientes sem venda</div><div class="dash-kpi-value" style="color:${totalPendentes?'var(--danger)':'var(--green)'}">${totalPendentes}</div><div class="dash-kpi-sub ${totalPendentes?'bad':'good'}">${totalAtivos?Math.round(totalPendentes/totalAtivos*100):0}% da carteira${isGestor?' geral':''}</div></div>
+  </div>`;
+
+  let equipeHTML='';
+  if(isGestor){
+    const pctEquipe=PREM_META_EQUIPE>0?Math.round(totalVolume/PREM_META_EQUIPE*100):0;
+    const valorGestor=premValorGestor(pctEquipe);
+    const barEquipeW=Math.min(100,Math.round(pctEquipe/130*100));
+    const proxEquipe=premProxFaixa(pctEquipe,PREM_META_EQUIPE);
+    const proxEquipeHTML=proxEquipe?`Faltam <strong>${proxEquipe.faltaCx.toLocaleString('pt-BR')} cx</strong> para ${proxEquipe.pct}% → ${fmtR(proxEquipe.valor)} cada`
+      :`<strong style="color:#86efac;display:inline-flex;align-items:center;gap:5px">${icon('check',13)} Faixa máxima atingida</strong>`;
+    equipeHTML=`<div class="prem-equipe-card" style="margin-bottom:14px">
+      <div class="prem-equipe-title" style="display:flex;align-items:center;gap:6px">${icon('trophy',16)} Leandro &amp; Vagner — equipe total · meta ${PREM_META_EQUIPE.toLocaleString('pt-BR')} cx</div>
+      <div class="prem-equipe-row">
+        <div><div class="prem-equipe-valor">${fmtR(valorGestor)} <span style="font-size:14px;color:#a5b4fc">cada</span></div><div class="prem-equipe-sub">${pctEquipe}% · ${totalVolume.toLocaleString('pt-BR')} cx realizadas</div></div>
+        <div class="prem-equipe-bar-wrap"><div class="prem-equipe-bar" style="width:${barEquipeW}%"></div></div>
+        <div style="font-size:12px;color:#c7d2fe;text-align:right">${proxEquipeHTML}</div>
       </div>
-      <div style="padding:4px 16px 0">
-        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:8px 0 4px">Metas x realizado</div>
-        <div style="display:flex;align-items:center;gap:8px;padding-bottom:6px">
-          <div style="flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.min(100,pctMeta)}%;background:${corBar(pctMeta)}"></div></div>
-          <div style="font-size:12px;font-weight:700;color:${corPct(pctMeta)}">${pctMeta}%</div>
-        </div>
-        <div style="font-size:11px;color:var(--muted);padding-bottom:10px">${volume.toLocaleString('pt-BR')} cx realizadas / meta de ${meta.toLocaleString('pt-BR')} cx</div>
-        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:4px 0 4px">Gatilhos de volume</div>
-        ${gatilhosHTML}
-      </div>
-    </div>
-    <div class="section">
-      <div class="section-hdr" style="display:flex;align-items:center;gap:6px">${icon('users',16)} Clientes que faltam positivar (${pendentes.length})</div>
-      ${pendentesHTML}
-    </div>
-  `;
+    </div>`;
+  }
+
+  const cardsHTML=`<div class="prem-panel" style="margin-bottom:18px">${rows.map(premCardHTML).join('')}</div>`;
+  const pendentesHTML=rows.map(premPendentesHTML).join('');
+
+  g('prem-content').innerHTML=totalizadorHTML+equipeHTML+cardsHTML+pendentesHTML;
 }
 
 // ── LOGIN ──
