@@ -2947,13 +2947,13 @@ function premPanelHTML(rows,volumeTotal){
       const barW=Math.min(100,Math.round(pct/130*100));
       const barColor=pct>=130?'#16a34a':pct>=120?'#2563eb':pct>=110?'#7c3aed':pct>=100?'#6547d9':'#d97706';
       const faixasHTML=PREM_FAIXAS.slice().reverse().map(f=>`<span class="prem-faixa${faixa===f.pct?' ativa':''}">${f.pct}%</span>`).join('');
-      const proxHTML=prox?`<div class="prem-prox">Faltam <strong>${prox.faltaCx} cx</strong> para ${prox.pct}% → ${fmtR(prox.valor)}</div>`:'<div class="prem-prox" style="color:#16a34a">✓ Faixa máxima atingida</div>';
+      const proxHTML=prox?`<div class="prem-prox">Faltam <strong>${prox.faltaCx} cx</strong> para ${prox.pct}% → ${fmtR(prox.valor)}</div>`:`<div class="prem-prox" style="color:#16a34a;display:flex;align-items:center;gap:5px">${icon('check',13)} Faixa máxima atingida</div>`;
       const vF=r.volumeComisF||0;
       const vD=r.volumeComisD||0;
       const breakdownHTML=vD>0
         ?`<div style="font-size:11px;color:#93C5FD;margin-top:4px;background:rgba(147,197,253,.08);border-radius:6px;padding:4px 8px">
-            <div style="display:flex;justify-content:space-between"><span>🏭 Fábrica</span><strong>${vF.toLocaleString('pt-BR')} cx</strong></div>
-            <div style="display:flex;justify-content:space-between;margin-top:2px"><span>🚛 Distribuidoras (GB/GP)</span><strong>${vD.toLocaleString('pt-BR')} cx</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="display:flex;align-items:center;gap:4px">${icon('factory',13)} Fábrica</span><strong>${vF.toLocaleString('pt-BR')} cx</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px"><span style="display:flex;align-items:center;gap:4px">${icon('truck',13)} Distribuidoras (GB/GP)</span><strong>${vD.toLocaleString('pt-BR')} cx</strong></div>
             <div style="display:flex;justify-content:space-between;border-top:1px solid rgba(147,197,253,.2);margin-top:3px;padding-top:3px;color:#fff"><span>Total comissionável</span><strong>${(r.volumeComis||0).toLocaleString('pt-BR')} cx</strong></div>
           </div>`
         :(r.volumeComis!==r.volume?`<div style="font-size:10px;color:#5b6472;margin-top:2px">${(r.volume||0)} cx total · ${(r.volumeComis||0)} cx comis.</div>`:'');
