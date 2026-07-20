@@ -19,5 +19,5 @@ test('partial faturamento is operationally faturado and has its own continuation
   assert.match(html, /if\(vdFiltro==='parcial'\)/);
   assert.match(html, /if\(vdFiltro==='pendente'\).*vdPedidoPendente\(p\)/s);
   assert.match(html, /relStatusFiltro==='pendente'\)lista=lista\.filter\(vdPedidoPendente\)/);
-  assert.match(html, /label:'Faturado \/ Entregue',key:'fim'/);
+  assert.match(html, /label:'Faturado',key:'faturado'/);
 });
