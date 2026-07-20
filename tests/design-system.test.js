@@ -57,6 +57,12 @@ test('keeps the shared screen navigation helper used by login and every module',
   assert.match(html, /classList\.toggle\('visible',id!==\'s-login\'\)/);
 });
 
+test('keeps the shared database helper used by all data-backed screens', () => {
+  assert.match(html, /async function sb\(path,opts=\{\}\)\{/);
+  assert.match(html, /path\.replace\('\/rest\/v1\/','\/api\/db\/'\)/);
+  assert.match(html, /credentials:'same-origin'/);
+});
+
 test('contains mobile overflow guards for wide operational screens', () => {
   assert.match(mainStyle, /#s-registro\{overflow-x:hidden\}/);
   assert.match(mainStyle, /#s-log \.section-head,#s-relatorios \.section-head\{[^}]*flex-direction:column/);

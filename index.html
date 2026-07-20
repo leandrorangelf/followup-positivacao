@@ -1468,6 +1468,22 @@ const isFabiano=()=>user==='fabiano';
 const pedSomenteLeitura=()=>user==='vagner'||isFabiano()||isDiretoria;
 function corPct(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
 
+async function sb(path,opts={}){
+  try{
+    const {ret=false,...fetchOpts}=opts;
+    const headers={'Content-Type':'application/json',...(opts.headers||{})};
+    if(!headers['Prefer'])headers['Prefer']='return=minimal';
+    const apiPath=path.replace('/rest/v1/','/api/db/');
+    const r=await fetch(apiPath,{...fetchOpts,headers,credentials:'same-origin'});
+    if(ret){
+      const t=await r.text();
+      if(!r.ok){console.error('Erro API:',r.status,t);return[];}
+      try{return JSON.parse(t);}catch{return[];}
+    }
+    return {ok:r.ok,status:r.status};
+  }catch(e){console.error('Erro rede:',e);if(opts.ret)return[];return{ok:false,status:0};}
+}
+
 function show(id){
   ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-vfn','s-vficha','s-log','s-registro','s-relatorios'].forEach(screenId=>{
     const screen=g(screenId);
