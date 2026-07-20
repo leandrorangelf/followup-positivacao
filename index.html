@@ -3560,7 +3560,8 @@ async function vdSalvarPedido(){
     console.error('Erro ao salvar pedido:',e);
     toast('Erro inesperado ao salvar pedido','error');
   }finally{
-    liberarSalvamento();
+    vdSalvandoPedido=false;
+    if(btnSalvar)btnSalvar.disabled=false;
   }
 }
 
