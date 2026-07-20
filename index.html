@@ -4314,7 +4314,7 @@ async function vdSalvarFicha(){
   };
   const r=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(vdEditCliId),{method:'PATCH',body:JSON.stringify(payload)});
   if(!r||!r.ok){toast('Erro ao salvar ficha','error');return}
-  toast('✓ Ficha salva','ok');
+  toast('Ficha salva','ok');
   vdFecharFichaCli();
   await carregarClientes();
   vdRenderFichaList();
