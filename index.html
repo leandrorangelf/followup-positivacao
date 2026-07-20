@@ -2125,7 +2125,7 @@ async function salvarTudo(){
       gr:r.gr||0,gm:r.gm||0,cm:r.cm||0,cc:r.cc||0,gtwin:r.gtwin||0,ck:r.ck||0,click:r.click||0,updated_at:r.updated_at
     })):[];
     const del=await sb('/rest/v1/pedidos?'+filtro,{method:'DELETE'});
-    if(!del||!del.ok){toast('⚠ Erro ao salvar ('+((del&&del.status)||'sem conexão')+')','error',4000);return;}
+    if(!del||!del.ok){toast('Erro ao salvar ('+((del&&del.status)||'sem conexão')+')','error',4000);return;}
     const rows=ativos.map(c=>({coordenador:coordAtual,mes:mesAtual,ano:anoAtual,cliente:c.nome,gr:(dadosLocais[c.nome]||{}).gr||0,gm:(dadosLocais[c.nome]||{}).gm||0,cm:(dadosLocais[c.nome]||{}).cm||0,cc:(dadosLocais[c.nome]||{}).cc||0,gtwin:(dadosLocais[c.nome]||{}).gtwin||0,ck:(dadosLocais[c.nome]||{}).ck||0,click:(dadosLocais[c.nome]||{}).click||0,updated_at:new Date().toISOString()}));
     const res=await sb('/rest/v1/pedidos',{method:'POST',body:JSON.stringify(rows)});
     if(!res||!res.ok){
