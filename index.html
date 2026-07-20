@@ -2334,7 +2334,7 @@ async function adicionarCliente(){
   if(jaExiste){toast('Cliente já cadastrado','error');return;}
   const res=await sb('/rest/v1/clientes',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome,coordenador:cliCoordAtual,ativo:true,ativo_desde:mesAtual,inativo_desde:13})});
   if(res&&res.ok===false){toast('Erro ao adicionar','error');return;}
-  toast('✓ Cliente adicionado!','ok');
+  toast('Cliente adicionado!','ok');
   await carregarClientes();
   renderCliList();
   pedidosCarregados=false;
