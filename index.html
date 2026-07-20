@@ -1478,6 +1478,11 @@ const isFabiano=()=>user==='fabiano';
 const pedSomenteLeitura=()=>user==='vagner'||isFabiano()||isDiretoria;
 function corPct(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
 
+function toast(msg,type='info',dur=2000){
+  const t=g('toast');t.textContent=msg;t.className='toast show '+type;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur);
+}
+
 async function sb(path,opts={}){
   try{
     const {ret=false,...fetchOpts}=opts;
