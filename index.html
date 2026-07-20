@@ -4558,7 +4558,7 @@ async function forecastSalvar(){
     const r2=await sb('/rest/v1/forecast_pedidos_itens',{method:'POST',body:JSON.stringify(itens.map(i=>Object.assign({},i,{forecast_id:id})))});
     if(!r2||!r2.ok){toast('Erro ao salvar itens do forecast','error');return}
     auditLog(forecastEditId?'editar':'criar',(forecastEditId?'Forecast editado':'Forecast lançado')+' · '+cli.nome,'Coordenador: '+forecastCoordFiltro+' · '+forecastForm.tipo.toUpperCase()+' · '+totalCx+' cx');
-    toast('✓ Forecast salvo','ok');forecastFecharForm();await forecastCarregar();
+    toast('Forecast salvo','ok');forecastFecharForm();await forecastCarregar();
   }catch(e){console.error('Erro forecast:',e);toast('Erro inesperado no forecast','error')}
   finally{forecastSalvando=false;g('forecast-save').disabled=false;}
 }
