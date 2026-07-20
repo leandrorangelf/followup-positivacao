@@ -3865,7 +3865,7 @@ async function vdSalvarPedido(){
     if(forecastOrigemAtual&&!vdEditPedidoId&&!forecastConvertidoOk){
       toast('Pedido salvo, mas o Forecast não foi arquivado. Exclua ou marque convertido manualmente.','error',7000);
     }
-    toast('✓ Pedido salvo!','ok');
+    toast('Pedido salvo!','ok');
     // LOG
     const acao=vdEditPedidoId?'editar':'criar';
     const cliNome=cli.nome+(cli.uf?' ('+cli.uf+')':'');
