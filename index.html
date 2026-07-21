@@ -2192,7 +2192,7 @@ async function carregarRealizadoMetas(){
   COORD_KEYS.forEach(c=>{metasRealizadoMes[c]=coordRow(c,listaTodoMes).volume;});
   // Leandro/Vagner não têm carteira própria em pedidos_vendas — "realizado" deles é o total da equipe.
   const totalEquipe=COORD_KEYS.reduce((s,c)=>s+metasRealizadoMes[c],0);
-  GESTOR_KEYS.forEach(g=>{metasRealizadoMes[g]=totalEquipe;});
+  GESTOR_KEYS.forEach(gestor=>{metasRealizadoMes[gestor]=totalEquipe;});
 }
 
 async function irMetas(){
