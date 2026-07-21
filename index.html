@@ -1689,7 +1689,7 @@ function renderPremiacaoContent(rows,isGestor){
   const cardsHTML=`<div class="prem-panel" style="margin-bottom:18px">${rows.map(premCardHTML).join('')}</div>`;
   const pendentesHTML=rows.map(premPendentesHTML).join('');
 
-  g('prem-content').innerHTML=totalizadorHTML+equipeHTML+cardsHTML+pendentesHTML;
+  g('prem-content').innerHTML=equipeHTML+cardsHTML+pendentesHTML;
 }
 
 // ── LOGIN ──
