@@ -2652,15 +2652,10 @@ function dashAgendaMapaEstados(lista){
 
 const PREM_FAIXAS=[{pct:130,valor:5000},{pct:120,valor:4750},{pct:110,valor:4500},{pct:100,valor:4000}];
 function premValorCoord(pct){for(const f of PREM_FAIXAS)if(pct>=f.pct)return f.valor;return 0;}
-function premValorGestor(pct){
-  if(pct<=0)return 0;
-  for(let i=0;i<PREM_FAIXAS.length-1;i++){
-    const a=PREM_FAIXAS[i+1],b=PREM_FAIXAS[i];
-    if(pct>=a.pct&&pct<b.pct){const t=(pct-a.pct)/(b.pct-a.pct);return Math.round(a.valor+t*(b.valor-a.valor));}
-  }
-  if(pct>=PREM_FAIXAS[0].pct)return PREM_FAIXAS[0].valor;
-  return Math.round(pct/100*PREM_FAIXAS[PREM_FAIXAS.length-1].valor);
-}
+// Leandro/Vagner: proporcional puro ao volume da equipe vs a meta que eles definirem em
+// Metas, sem faixas/gatilhos — 90% da meta = 90% de PREM_VALOR_GESTOR_100, sem teto.
+const PREM_VALOR_GESTOR_100=PREM_FAIXAS.find(f=>f.pct===100).valor;
+function premValorGestor(pct){return Math.max(0,Math.round(pct/100*PREM_VALOR_GESTOR_100));}
 function premFaixaAtiva(pct){for(const f of PREM_FAIXAS)if(pct>=f.pct)return f.pct;return null;}
 function premProxFaixa(pct,meta){
   for(let i=PREM_FAIXAS.length-1;i>=0;i--){
