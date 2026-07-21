@@ -3898,9 +3898,9 @@ async function vdExcluirPedidoPorId(id){
   await vdCarregar();
 }
 function vdEditarPedido(){
-  if(!isAdmin||user==='vagner'){toast('Perfil somente leitura','error');return}
   if(!vdDetAtual)return;
   const p=vdDetAtual;
+  if(!vdPodeEditarProprio(p)){toast('Acesso restrito','error');return}
   if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
   vdEditPedidoId=p.id;
   vdForm={tipo:p.tipo,prazo:p.prazo_tipo,origem:p.origem||'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
