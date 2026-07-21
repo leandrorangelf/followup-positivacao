@@ -2802,19 +2802,16 @@ function dashOverviewHTML(cfg){
     '<section class="dash-snapshot">'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Já faturado</div><div class="dash-snap-value">'+dashCx(faturadoCx)+' <small>cx</small></div><div class="dash-snap-note ok">Faturado no período</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Saldo pendente</div><div class="dash-snap-value">'+dashCx(saldoCx)+' <small>cx</small></div><div class="dash-snap-note '+(saldoCx?'warn':'ok')+'">'+(saldoCx?'Ainda em aberto':'Sem saldo pendente')+'</div></div>'+
-      '<div class="dash-snap-card"><div class="dash-snap-label">Fábrica</div><div class="dash-snap-value">'+dashCx(fabPedido)+' <small>cx</small></div><div class="dash-snap-note">Pedidos diretos da fábrica</div></div>'+
-      '<div class="dash-snap-card"><div class="dash-snap-label">Distribuidoras</div><div class="dash-snap-value">'+dashCx(distPedido)+' <small>cx</small></div><div class="dash-snap-note">GB, GP e demais origens</div></div>'+
+      '<div class="dash-snap-card"><div class="dash-snap-label">Fábrica · Distribuidoras</div><div class="dash-snap-value" style="font-size:20px">'+dashCx(fabPedido)+' <small>cx</small> · '+dashCx(distPedido)+' <small>cx</small></div><div class="dash-snap-note">Origem dos pedidos do período</div></div>'+
       '<div class="dash-snap-card"><div class="dash-snap-label">Faturamentos parciais</div><div class="dash-snap-value">'+dashCx(resumo.parciais)+'</div><div class="dash-snap-note '+(resumo.parciais?'danger':'ok')+'">'+dashCx(resumo.pedidos)+' pedidos no período</div></div>'+
     '</section>'+
   '</div>';
 }
 function dashMainKpisHTML(cfg){
-  const pctMeta=dashPct(cfg.volume,cfg.meta);
   const pctPend=dashPct(cfg.pendentes,cfg.totalAtivos);
-  return '<div class="dash-kpis">'+
+  // ponytail: só as 2 métricas que não repetem o hero (volume/meta/saldo já aparecem lá em cima)
+  return '<div class="dash-kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))">'+
     dashKpiHTML('Positivação',dashPct(cfg.comPedido,cfg.totalAtivos)+'%','',dashCx(cfg.comPedido)+' de '+dashCx(cfg.totalAtivos)+' clientes ativos','good','good')+
-    dashKpiHTML('Volume vendido',dashCx(cfg.volume),'cx','Realizado em '+MESES[mesAtual],'info','')+
-    dashKpiHTML('Meta do mês',dashCx(cfg.meta),'cx',pctMeta+'% cumprida',pctMeta>=100?'good':'warn',pctMeta>=100?'good':'')+
     dashKpiHTML('Clientes sem venda',dashCx(cfg.pendentes),'',pctPend+'% da carteira ativa','danger','bad')+
   '</div>';
 }
