@@ -53,10 +53,12 @@ async function salvar(session, body, res) {
   if (!ped || !Array.isArray(itens)) return res.status(400).json({ error: 'missing_fields' });
 
   if (id) {
-    // Editar pedido existente — só admin (vdPodeEditar).
-    if (!podeEditarPedidoVenda(session)) return res.status(403).json({ error: 'forbidden' });
+    // Editar pedido existente — admin sempre; coordenador só o próprio pedido
+    // e só enquanto nada foi faturado (checagem contra o banco, não confia no client).
+    if (!(await podeEditarPedidoVendaProprio(session, id))) return res.status(403).json({ error: 'forbidden' });
+    const pedPatch = isAdminLiteral(session) ? ped : { ...ped, editado_por: session.user, editado_em: new Date().toISOString() };
 
-    const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(ped) });
+    const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedPatch) });
     if (!r.ok) return res.status(502).json({ error: 'patch_pedido_failed' });
 
     const del = await sbJson(`/rest/v1/pedidos_vendas_itens?pedido_id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: JSON_HEADERS });
