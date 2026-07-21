@@ -923,6 +923,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <div class="cli-add-row">
       <input class="cli-add-input" id="cli-add-input" placeholder="Nome do novo cliente..." onkeydown="if(event.key==='Enter')adicionarCliente()"/>
       <select class="cli-add-owner" id="cli-add-owner" aria-label="Coordenador responsável"></select>
+      <select class="cli-add-owner" id="cli-add-uf" aria-label="Estado (UF)"><option value="">UF...</option></select>
       <button class="btn-add" onclick="adicionarCliente()">+ Adicionar</button>
     </div>
   </div>
