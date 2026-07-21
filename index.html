@@ -2180,7 +2180,7 @@ async function salvarMetaBanco(coord,mes,valor){
 
 async function sincronizarMetasLocaisBanco(){
   const resultados=[];
-  for(const coord of COORD_KEYS){
+  for(const coord of [...COORD_KEYS,...GESTOR_KEYS]){
     for(let mes=0;mes<12;mes++)resultados.push(await salvarMetaBanco(coord,mes,METAS[coord][mes]||0));
   }
   return resultados.every(Boolean);
@@ -2188,11 +2188,11 @@ async function sincronizarMetasLocaisBanco(){
 
 async function carregarRealizadoMetas(){
   metasRealizadoMes={};
-  COORD_KEYS.forEach(c=>metasRealizadoMes[c]=0);
-  const vendas=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mesAtual+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=3000',{ret:true});
-  if(Array.isArray(vendas))vendas.filter(dashPedidoValido).forEach(p=>{
-    if(metasRealizadoMes[p.coordenador]!==undefined)metasRealizadoMes[p.coordenador]+=vdVolumePedidoDash(p);
-  });
+  const listaTodoMes=await carregarVendasMes(mesAtual,anoAtual);
+  COORD_KEYS.forEach(c=>{metasRealizadoMes[c]=coordRow(c,listaTodoMes).volume;});
+  // Leandro/Vagner não têm carteira própria em pedidos_vendas — "realizado" deles é o total da equipe.
+  const totalEquipe=COORD_KEYS.reduce((s,c)=>s+metasRealizadoMes[c],0);
+  GESTOR_KEYS.forEach(g=>{metasRealizadoMes[g]=totalEquipe;});
 }
 
 async function irMetas(){
