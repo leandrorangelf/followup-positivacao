@@ -1680,10 +1680,11 @@ function renderPremiacaoContent(rows,isGestor){
     const metaEquipe=GESTOR_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
     const pctEquipe=metaEquipe>0?Math.round(totalVolume/metaEquipe*100):0;
     const valorGestor=premValorGestor(pctEquipe);
-    const barEquipeW=Math.min(100,Math.round(pctEquipe/130*100));
-    const proxEquipe=premProxFaixa(pctEquipe,metaEquipe);
-    const proxEquipeHTML=proxEquipe?`Faltam <strong>${proxEquipe.faltaCx.toLocaleString('pt-BR')} cx</strong> para ${proxEquipe.pct}% → ${fmtR(proxEquipe.valor)} cada`
-      :`<strong style="color:#86efac;display:inline-flex;align-items:center;gap:5px">${icon('check',13)} Faixa máxima atingida</strong>`;
+    const barEquipeW=Math.min(100,pctEquipe);
+    const faltaEquipe=Math.max(0,metaEquipe-totalVolume);
+    const proxEquipeHTML=pctEquipe>=100
+      ?`<strong style="color:#86efac;display:inline-flex;align-items:center;gap:5px">${icon('check',13)} Meta batida — segue proporcional</strong>`
+      :`Faltam <strong>${faltaEquipe.toLocaleString('pt-BR')} cx</strong> para 100% → ${fmtR(PREM_VALOR_GESTOR_100)} cada`;
     equipeHTML=`<div class="prem-equipe-card" style="margin-bottom:14px">
       <div class="prem-equipe-title" style="display:flex;align-items:center;gap:6px">${icon('trophy',16)} Leandro &amp; Vagner — equipe total · meta ${metaEquipe.toLocaleString('pt-BR')} cx</div>
       <div class="prem-equipe-row">
