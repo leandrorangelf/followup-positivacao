@@ -4801,7 +4801,6 @@ function dashRenderHistorico(hist,coordFiltro){
   vendasDashboard=vendasMes;
   if(isAdmin||isDiretoria){
     dashBaseRenderAdminDash(anoData);
-    dashAppendInteligencia('todos');
   }else{
     dadosLocais=vdAgruparVendasPorCliente(vendasMes,coordAtual);
     dashBaseRenderCoordDash(anoData);
