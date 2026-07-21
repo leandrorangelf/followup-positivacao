@@ -32,7 +32,7 @@ Apagar este arquivo (`TODO_CODEX.md`) quando tudo abaixo estiver concluído.
 
 ## 🔲 Falta fazer
 
-### Task 1 — Terminar profundidade dos gráficos + legibilidade do SKU no Dashboard
+### Task 1 — Terminar profundidade dos gráficos + legibilidade do SKU no Dashboard ✅ Concluída
 
 Arquivo: `index.html`. Sem lib de gráfico nova (projeto não usa nenhuma, só
 CSS/divs pra essas barras — manter esse padrão, não adicionar dependência).
