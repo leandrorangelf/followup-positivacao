@@ -2382,18 +2382,31 @@ adicionarCliente=async function(){
   toast('Cliente adicionado','ok');await carregarClientes();renderCliCoordTabs();renderCliList();pedidosCarregados=false;
 };
 
-editarCliente=async function(id){
+let _cliEditId=null;
+editarCliente=function(id){
   if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const encontrado=findClienteGlobal(id);if(!encontrado)return;
-  const nome=prompt('Novo nome do cliente:',encontrado.cliente.nome);if(nome===null)return;
-  const limpo=nome.trim().toUpperCase();if(!limpo){toast('Informe um nome válido','error');return;}
-  const duplicado=COORD_KEYS.some(coord=>(clientesDB[coord]||[]).some(c=>c.nome===limpo&&String(c.id)!==String(id)));
-  if(duplicado){toast('Já existe um cliente com esse nome','error');return;}
-  const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({nome:limpo})});
-  if(!res||!res.ok){toast('Não foi possível editar','error');return;}
-  await fetch('/api/pedidos-vendas/rename-cliente',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({clienteId:id,novoNome:limpo})});
-  await carregarClientes();renderCliCoordTabs();renderCliList();toast('Cliente atualizado (pedidos também)','ok');pedidosCarregados=false;
+  _cliEditId=id;
+  g('cli-editar-nome').value=encontrado.cliente.nome;
+  g('cli-editar-uf').innerHTML='<option value="">Sem UF cadastrada</option>'+DASH_UFS.map(uf=>`<option value="${uf}">${uf} — ${DASH_UF_NOMES[uf]}</option>`).join('');
+  g('cli-editar-uf').value=encontrado.cliente.uf||'';
+  g('modal-cli-editar').classList.add('open');
 };
+function fecharEditarCliente(){g('modal-cli-editar').classList.remove('open');_cliEditId=null;}
+async function salvarEditarCliente(){
+  if(!_cliEditId)return;
+  const id=_cliEditId;
+  const nome=g('cli-editar-nome').value.trim().toUpperCase();
+  if(!nome){toast('Informe um nome válido','error');return;}
+  const uf=g('cli-editar-uf').value||null;
+  const duplicado=COORD_KEYS.some(coord=>(clientesDB[coord]||[]).some(c=>c.nome===nome&&String(c.id)!==String(id)));
+  if(duplicado){toast('Já existe um cliente com esse nome','error');return;}
+  const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({nome,uf})});
+  if(!res||!res.ok){toast('Não foi possível editar','error');return;}
+  await fetch('/api/pedidos-vendas/rename-cliente',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({clienteId:id,novoNome:nome})});
+  fecharEditarCliente();
+  await carregarClientes();renderCliCoordTabs();renderCliList();toast('Cliente atualizado','ok');pedidosCarregados=false;
+}
 
 excluirCliente=async function(id){
   if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
