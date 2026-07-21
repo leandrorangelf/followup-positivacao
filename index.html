@@ -2266,11 +2266,11 @@ excluirMeta=async function(coord,index){
 
 restaurarMetasPadrao=async function(){
   if(!confirm('Restaurar todas as metas originais?'))return;
-  COORD_KEYS.forEach(c=>METAS[c]=[...METAS_PADRAO[c]]);
+  [...COORD_KEYS,...GESTOR_KEYS].forEach(c=>METAS[c]=[...METAS_PADRAO[c]]);
   persistMetas();
   renderMetas();
   const resultados=[];
-  for(const coord of COORD_KEYS){
+  for(const coord of [...COORD_KEYS,...GESTOR_KEYS]){
     for(let mes=0;mes<12;mes++)resultados.push(await salvarMetaBanco(coord,mes,METAS[coord][mes]));
   }
   toast(resultados.every(Boolean)?'Metas restauradas e sincronizadas':'Metas restauradas, mas alguma nao sincronizou',resultados.every(Boolean)?'ok':'error');
