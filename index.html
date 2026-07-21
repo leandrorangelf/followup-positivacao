@@ -4740,7 +4740,7 @@ async function irGnre(){
 }
 async function gnreCarregar(){
   const d=await sb('/rest/v1/pedidos_vendas?ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=created_at.desc&limit=5000',{ret:true});
-  gnrePedidos=(Array.isArray(d)?d:[]).filter(p=>dashPedidoValido(p)&&vdTipoPedido(p)!=='off');
+  gnrePedidos=(Array.isArray(d)?d:[]).filter(p=>dashPedidoValido(p)&&vdTipoPedido(p)!=='off'&&(!isFabiano()||vdOrigemFaturadoFabiano(p.origem)));
   gnreRender();
 }
 function gnreDataFmt(iso){return iso?new Date(iso).toLocaleDateString('pt-BR'):null;}
