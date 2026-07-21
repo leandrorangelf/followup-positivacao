@@ -2712,13 +2712,14 @@ function premPanelHTML(rows,volumeTotal){
         ${proxHTML}
       </div>`;
     }).join('');
-    const pctEquipe=PREM_META_EQUIPE>0?Math.round((volumeTotal||0)/PREM_META_EQUIPE*100):0;
+    const metaEquipe=GESTOR_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
+    const pctEquipe=metaEquipe>0?Math.round((volumeTotal||0)/metaEquipe*100):0;
     const valorLeandro=premValorGestor(pctEquipe);
     const barEquipeW=Math.min(100,Math.round(pctEquipe/130*100));
-    const proxEquipe=premProxFaixa(pctEquipe,PREM_META_EQUIPE);
+    const proxEquipe=premProxFaixa(pctEquipe,metaEquipe);
     const proxEquipeHTML=proxEquipe?`Faltam <strong>${proxEquipe.faltaCx} cx</strong> para ${proxEquipe.pct}% → ${fmtR(proxEquipe.valor)} cada`:`<strong style="color:#86efac;display:inline-flex;align-items:center;gap:5px">${icon('check',13)} Faixa máxima atingida</strong>`;
     const equipCard=`<div class="prem-equipe-card">
-      <div class="prem-equipe-title" style="display:flex;align-items:center;gap:6px">${icon('trophy',16)} Leandro &amp; Vagner — equipe total · meta ${PREM_META_EQUIPE.toLocaleString('pt-BR')} cx</div>
+      <div class="prem-equipe-title" style="display:flex;align-items:center;gap:6px">${icon('trophy',16)} Leandro &amp; Vagner — equipe total · meta ${metaEquipe.toLocaleString('pt-BR')} cx</div>
       <div class="prem-equipe-row">
         <div><div class="prem-equipe-valor">${fmtR(valorLeandro)} <span style="font-size:14px;color:#a5b4fc">cada</span></div><div class="prem-equipe-sub">${pctEquipe}% · ${(volumeTotal||0).toLocaleString('pt-BR')} cx realizadas</div></div>
         <div class="prem-equipe-bar-wrap"><div class="prem-equipe-bar" style="width:${barEquipeW}%"></div></div>
