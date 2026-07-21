@@ -10,6 +10,21 @@ const isAdminLiteral = (s) => s.user === 'admin';
 
 // vdPodeEditar() no client = user==='admin'
 const podeEditarPedidoVenda = isAdminLiteral;
+// Coordenador pode editar SÓ o próprio pedido, e só enquanto nada foi faturado
+// (mesma condição que já trava o botão "Editar" no client: faturadoCx===0).
+async function podeEditarPedidoVendaProprio(session, pedidoId) {
+  if (podeEditarPedidoVenda(session)) return true;
+  if (!isCoordenador(session)) return false;
+  const r = await sbJson(
+    `/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(pedidoId)}&select=coordenador,pedidos_vendas_itens(qty_faturada)`,
+    { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+  );
+  if (!r.ok || !Array.isArray(r.json) || !r.json[0]) return false;
+  const row = r.json[0];
+  if (row.coordenador !== session.user) return false;
+  const itens = Array.isArray(row.pedidos_vendas_itens) ? row.pedidos_vendas_itens : [];
+  return itens.every((i) => Number(i.qty_faturada || 0) === 0);
+}
 // vdPodeFaturar() = admin ou fabiano
 const podeFaturar = (s) => isAdminLiteral(s) || isFabiano(s);
 // vdPodeGerenciarGnre() = admin ou fabiano
