@@ -126,6 +126,7 @@ module.exports = {
   isCoordenador,
   isAdminLiteral,
   podeEditarPedidoVenda,
+  podeEditarPedidoVendaProprio,
   podeFaturar,
   podeGerenciarGnre,
   podeAnexarGnre,
