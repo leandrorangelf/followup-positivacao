@@ -2376,12 +2376,14 @@ adicionarCliente=async function(){
   if(user==='vagner'){toast('Vagner é somente leitura','error');return;}
   const nome=g('cli-add-input').value.trim().toUpperCase();
   const proprietario=g('cli-add-owner').value;
+  const uf=g('cli-add-uf')?(g('cli-add-uf').value||null):null;
   if(!nome){toast('Digite o nome do cliente','error');return;}
   if(!COORD_KEYS.includes(proprietario)){toast('Escolha o coordenador responsável','error');return;}
   const jaExiste=COORD_KEYS.some(coord=>(clientesDB[coord]||[]).some(c=>c.nome===nome));
   if(jaExiste){toast('Cliente já cadastrado','error');return;}
-  const res=await sb('/rest/v1/clientes',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome,coordenador:proprietario,ativo:true,ativo_desde:mesAtual,inativo_desde:13})});
+  const res=await sb('/rest/v1/clientes',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({nome,coordenador:proprietario,uf,ativo:true,ativo_desde:mesAtual,inativo_desde:13})});
   if(!res||!res.ok){toast('Erro ao adicionar','error');return;}
+  if(g('cli-add-uf'))g('cli-add-uf').value='';
   g('cli-add-input').value='';
   toast('Cliente adicionado','ok');await carregarClientes();renderCliCoordTabs();renderCliList();pedidosCarregados=false;
 };
