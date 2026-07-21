@@ -2651,7 +2651,6 @@ function dashAgendaMapaEstados(lista){
 }
 
 const PREM_FAIXAS=[{pct:130,valor:5000},{pct:120,valor:4750},{pct:110,valor:4500},{pct:100,valor:4000}];
-const PREM_META_EQUIPE=1500;
 function premValorCoord(pct){for(const f of PREM_FAIXAS)if(pct>=f.pct)return f.valor;return 0;}
 function premValorGestor(pct){
   if(pct<=0)return 0;
