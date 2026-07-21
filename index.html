@@ -2360,6 +2360,9 @@ renderCliCoordTabs=function(){
     g('cli-add-owner').innerHTML='<option value="">Responsável...</option>'+COORD_KEYS.map(c=>`<option value="${c}">${c}</option>`).join('');
     if(COORD_KEYS.includes(atual))g('cli-add-owner').value=atual;
   }
+  if(g('cli-add-uf')&&g('cli-add-uf').options.length<=1){
+    g('cli-add-uf').innerHTML='<option value="">UF...</option>'+DASH_UFS.map(uf=>`<option value="${uf}">${uf}</option>`).join('');
+  }
 };
 
 abrirToggle=function(id,ativoNesteMes){
