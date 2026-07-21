@@ -20,6 +20,13 @@ test('fiscal status is represented only by the orange dot', () => {
   assert.doesNotMatch(html, /sem\s*nf/i);
 });
 
+test('pedido PDF does not export the internal fiscal type label', () => {
+  const pedidoPdf = html.slice(html.indexOf('function vdExportarPedidoPDF'), html.indexOf('function vdPodeComentarPedido'));
+  assert.doesNotMatch(pedidoPdf, /String\(p\.tipo\|\|'in'\)\.toUpperCase\(\)/);
+  assert.match(pedidoPdf, /\['Status',''\]/);
+  assert.match(pedidoPdf, /didDrawCell/);
+});
+
 test('GNRE value button mentions GNRE explicitly', () => {
   assert.doesNotMatch(html, />Informar\/editar valor</);
   assert.match(html, />Informar\/editar GNRE</);
