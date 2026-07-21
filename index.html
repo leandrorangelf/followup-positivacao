@@ -1576,7 +1576,16 @@ async function irPremiacao(){
   await carregarPremiacao();
 }
 
-function premCoordRow(coord,lista){
+// Fonte única de "volume vendido por coordenador no mês" — usada por Premiação,
+// Dashboard (renderAdminDash) e Metas (carregarRealizadoMetas), pra evitar 3
+// implementações separadas que podem divergir entre si.
+async function carregarVendasMes(mes,ano){
+  const vendas=await sb(`/rest/v1/pedidos_vendas?mes=eq.${mes}&ano=eq.${ano}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true});
+  return (Array.isArray(vendas)?vendas:[]).filter(dashPedidoValido);
+}
+
+function coordRow(coord,listaTodoMes){
+  const lista=listaTodoMes.filter(p=>p.coordenador===coord);
   const d=vdAgruparVendasPorCliente(lista,coord);
   const ativos=clientesAtivos(coord);
   const meta=METAS[coord][mesAtual]||0;
@@ -1586,19 +1595,21 @@ function premCoordRow(coord,lista){
   const listaDist=lista.filter(p=>vdEhDistribuidora(p));
   const volumeComisF=fixo?0:listaFab.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
   const volumeComisD=fixo?0:listaDist.filter(p=>!clienteNaoComissiona(p.cliente_nome)).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
-  const pendentes=ativos.filter(c=>totCliD(d,c.nome)===0);
+  const comPedido=ativos.filter(c=>totCliD(d,c.nome)>0).length;
+  const pendentesLista=ativos.filter(c=>totCliD(d,c.nome)===0);
   const pctMeta=meta?Math.round(volume/meta*100):0;
-  return {coord,fixo,meta,volume,volumeComis:volumeComisF+volumeComisD,volumeComisF,volumeComisD,ativos,pendentes,pctMeta,valor:fixo?0:premValorCoord(pctMeta)};
+  return {coord,d,fixo,meta,volume,volumeComis:volumeComisF+volumeComisD,volumeComisF,volumeComisD,
+    ativos,comPedido,pendentes:pendentesLista,
+    pctPos:ativos.length?Math.round(comPedido/ativos.length*100):0,
+    pctMeta,valor:fixo?0:premValorCoord(pctMeta)};
 }
 
 async function carregarPremiacao(){
   g('prem-content').innerHTML='<div class="loading">Carregando...</div>';
   const isGestor=isAdmin||user==='vagner';
-  const filtroCoord=isGestor?'':('coordenador=eq.'+encodeURIComponent(coordAtual)+'&');
-  const vendas=await sb(`/rest/v1/pedidos_vendas?${filtroCoord}mes=eq.${mesAtual}&ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true});
-  const todasVendas=(Array.isArray(vendas)?vendas:[]).filter(dashPedidoValido);
+  const todasVendas=await carregarVendasMes(mesAtual,anoAtual);
   const coordsAlvo=isGestor?COORD_KEYS:[coordAtual];
-  const rows=coordsAlvo.map(c=>premCoordRow(c,todasVendas.filter(p=>p.coordenador===c)));
+  const rows=coordsAlvo.map(c=>coordRow(c,todasVendas));
   renderPremiacaoContent(rows,isGestor);
 }
 
