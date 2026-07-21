@@ -2183,10 +2183,11 @@ async function salvarMetaBanco(coord,mes,valor){
 }
 
 async function sincronizarMetasLocaisBanco(){
-  const resultados=[];
+  const tarefas=[];
   for(const coord of [...COORD_KEYS,...GESTOR_KEYS]){
-    for(let mes=0;mes<12;mes++)resultados.push(await salvarMetaBanco(coord,mes,METAS[coord][mes]||0));
+    for(let mes=0;mes<12;mes++)tarefas.push(salvarMetaBanco(coord,mes,METAS[coord][mes]||0));
   }
+  const resultados=await Promise.all(tarefas);
   return resultados.every(Boolean);
 }
 
