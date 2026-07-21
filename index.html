@@ -2274,10 +2274,11 @@ restaurarMetasPadrao=async function(){
   [...COORD_KEYS,...GESTOR_KEYS].forEach(c=>METAS[c]=[...METAS_PADRAO[c]]);
   persistMetas();
   renderMetas();
-  const resultados=[];
+  const tarefas=[];
   for(const coord of [...COORD_KEYS,...GESTOR_KEYS]){
-    for(let mes=0;mes<12;mes++)resultados.push(await salvarMetaBanco(coord,mes,METAS[coord][mes]));
+    for(let mes=0;mes<12;mes++)tarefas.push(salvarMetaBanco(coord,mes,METAS[coord][mes]));
   }
+  const resultados=await Promise.all(tarefas);
   toast(resultados.every(Boolean)?'Metas restauradas e sincronizadas':'Metas restauradas, mas alguma nao sincronizou',resultados.every(Boolean)?'ok':'error');
 };
 
