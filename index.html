@@ -4103,7 +4103,7 @@ async function vdExportarPDF(){
   const filtroCoord=vdCoordFiltro==='todos'?'':'coordenador=eq.'+encodeURIComponent(vdCoordFiltro)+'&';
   const todos=await sb('/rest/v1/pedidos_vendas?'+filtroCoord+'ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=created_at.desc',{ret:true});
   const listaTodos=Array.isArray(todos)?todos:[];
-  vdPdfListaCompleta=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p));
+  vdPdfListaCompleta=listaTodos.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&!vdGnreLiberada(p)&&(!isFabiano()||vdOrigemFaturadoFabiano(p.origem)));
   if(!vdPdfListaCompleta.length){toast('Nenhum pedido aguardando GNRE','error');return}
   const ul=g('pdf-gnre-lista');
   ul.innerHTML=vdPdfListaCompleta.map((p,i)=>{
