@@ -2110,18 +2110,25 @@ function toggleMenu(force){
   g('mobile-overlay').classList.toggle('open',open);
 }
 
-function setMesGlobal(value){
+async function setMesGlobal(value){
+  const sel=g('shell-mes');
+  if(sel&&sel.disabled)return; // ponytail: select fica travado durante o load, então trocas rápidas não se sobrepõem
   mesAtual=parseInt(value,10);
   pedidosCarregados=false;
-  const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-log','s-relatorios'].find(id=>g(id).style.display!=='none');
-  if(visible==='s-dash')carregarDashboard();
-  else if(visible==='s-ped')carregarPedidos();
-  else if(visible==='s-cli')renderCliList();
-  else if(visible==='s-metas')irMetas();
-  else if(visible==='s-vendas')vdCarregar();
-  else if(visible==='s-premiacao')carregarPremiacao();
-  else if(visible==='s-forecast')forecastCarregar();
-  else if(visible==='s-relatorios')irRelatorios();
+  if(sel)sel.disabled=true;
+  try{
+    const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-log','s-relatorios'].find(id=>g(id).style.display!=='none');
+    if(visible==='s-dash')await carregarDashboard();
+    else if(visible==='s-ped')await carregarPedidos();
+    else if(visible==='s-cli')await renderCliList();
+    else if(visible==='s-metas')await irMetas();
+    else if(visible==='s-vendas')await vdCarregar();
+    else if(visible==='s-premiacao')await carregarPremiacao();
+    else if(visible==='s-forecast')await forecastCarregar();
+    else if(visible==='s-relatorios')await irRelatorios();
+  }finally{
+    if(sel)sel.disabled=false;
+  }
 }
 
 async function logout(){
