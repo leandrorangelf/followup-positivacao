@@ -2148,7 +2148,7 @@ loadMetasLocal=function(){
   metasLocaisCarregadas=false;
   try{
     const saved=JSON.parse(localStorage.getItem('clean-followup-metas')||'null');
-    if(saved)COORD_KEYS.forEach(c=>{
+    if(saved)[...COORD_KEYS,...GESTOR_KEYS].forEach(c=>{
       if(Array.isArray(saved[c])&&saved[c].length===12){
         METAS[c]=saved[c].map(v=>Math.max(0,parseInt(v,10)||0));
         metasLocaisCarregadas=true;
