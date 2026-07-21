@@ -2584,13 +2584,15 @@ function dashCaixasPorUf(lista){
   return Object.values(porUf).map(r=>({uf:r.uf,nome:r.nome,cx:r.cx,pedidos:r.pedidos,clientes:r.clientes.size,clientesLista:Array.from(r.clientes.values()).sort((a,b)=>b.cx-a.cx)}));
 }
 function dashMapColor(cx,max){
-  if(!cx)return'#dbe1f5';
+  // ponytail: paleta própria (azul→teal) pro mapa, separada do roxo usado no resto da UI —
+  // combina com o gradiente já usado na legenda (.state-map-scale) em vez de destoar dela.
+  if(!cx)return'#eff6ff';
   const t=max?Math.max(.18,Math.min(1,cx/max)):0;
-  if(t>.82)return'#2e1d7c';
-  if(t>.62)return'#4f35b4';
-  if(t>.42)return'#6547d9';
-  if(t>.24)return'#8b79ee';
-  return'#b9c4ff';
+  if(t>.82)return'#0f766e';
+  if(t>.62)return'#14b8a6';
+  if(t>.42)return'#3fa9c9';
+  if(t>.24)return'#93c5fd';
+  return'#c7e3fb';
 }
 function dashMapaEstadosPanelHTML(lista,titulo,nota){
   const rows=dashCaixasPorUf(lista);
