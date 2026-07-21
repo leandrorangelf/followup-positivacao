@@ -3608,6 +3608,7 @@ function vdAbrirDet(id){
       (p.origem?vdOrigemBadgeHTML(p.origem):'<span class="orig-badge fabrica">Fábrica</span>')+
       (x.status==='faturado'||x.status==='entregue'||x.status==='parcial'?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+(x.status==='parcial'?'Faturado parcial':x.status==='entregue'?'Entregue':'Faturado')+'</span>':'')+
       (p.parcial_de?'<span class="vd-badge vd-b-remanescente">↩ Remanescente</span>':'')+
+      (p.editado_por?'<span class="vd-badge" style="background:var(--purple-soft);color:var(--purple)">Editado por '+vdEsc(p.editado_por)+'</span>':'')+
     '</div>'+
     '<div class="vd-card-info" style="margin-bottom:10px">'+
       '<div class="vd-info-pill"><span>Competência</span>'+MESES[p.mes]+'/'+p.ano+'</div>'+
