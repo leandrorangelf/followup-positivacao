@@ -9,6 +9,7 @@ const {
   isAdminLiteral,
   isFabiano,
   podeEditarPedidoVenda,
+  podeEditarPedidoVendaProprio,
   podeCriarPedidoVenda,
   podeFaturar,
   podeGerenciarGnre,
