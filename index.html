@@ -1014,6 +1014,25 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   </div>
 </div>
 
+<!-- MODAL EDITAR CLIENTE -->
+<div class="modal-bg" id="modal-cli-editar">
+  <div class="modal">
+    <div class="modal-title">Editar cliente</div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Nome</label>
+      <input id="cli-editar-nome" type="text" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;background:var(--bg);color:var(--text)">
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Estado (UF) — usado no mapa de vendas</label>
+      <select id="cli-editar-uf" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;background:var(--bg);color:var(--text)">
+        <option value="">Sem UF cadastrada</option>
+      </select>
+    </div>
+    <button class="btn-copy" onclick="salvarEditarCliente()">✓ Salvar</button>
+    <button class="btn-close" onclick="fecharEditarCliente()">Cancelar</button>
+  </div>
+</div>
+
 <!-- MODAL RESUMO -->
 <div class="modal-bg" id="modal">
   <div class="modal">
