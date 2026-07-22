@@ -3547,7 +3547,6 @@ async function vdSalvarPedido(){
   };
   const _cliUf=String(cli.uf||'').toUpperCase();
   if(!vdEditPedidoId){ped.status='pedido';ped.criado_por=user;ped.gnre_status=(vdForm.tipo==='off'||VD_UFS_ISENTO_GNRE.includes(_cliUf))?'isenta':'pendente';}
-  if(user==='vagner'&&vdEditPedidoId){toast('Vagner é somente leitura','error');return;}
   vdSalvandoPedido=true;
   const btnSalvar=g('vf-btn-save');
   try{
