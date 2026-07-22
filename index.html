@@ -2952,7 +2952,8 @@ const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':
 const vdTipoPedido=p=>String(p?.tipo||'in').toLowerCase();
 const vdEhDistribuidora=p=>{const o=p?.origem;return!(!o||o==='Fábrica');};
 const vdPodeEditar=()=>user==='admin';
-const vdPodeEditarProprio=p=>vdPodeEditar()||(!!coordAtual&&p.coordenador===coordAtual);
+// Vagner pode editar pedido (qualquer coordenador), mas não excluir/reverter/mudar origem — isso continua só admin.
+const vdPodeEditarProprio=p=>vdPodeEditar()||user==='vagner'||(!!coordAtual&&p.coordenador===coordAtual);
 const vdPodeGerenciarGnre=()=>user==='admin'||isFabiano();
 const vdPodeFaturar=()=>user==='admin'||isFabiano();
 function vdParseValor(v){return Number(String(v||'').replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''))||0;}

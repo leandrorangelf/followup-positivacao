@@ -8,20 +8,22 @@ const isDiretoria = (s) => !!s.isDiretoria;
 const isCoordenador = (s) => COORD_KEYS.includes(s.user);
 const isAdminLiteral = (s) => s.user === 'admin';
 
-// vdPodeEditar() no client = user==='admin'
+// vdPodeEditar() no client = user==='admin'. Continua controlando excluir/reverter-faturamento/origem.
 const podeEditarPedidoVenda = isAdminLiteral;
-// Coordenador pode editar SÓ o próprio pedido, e só enquanto nada foi faturado
-// (mesma condição que já trava o botão "Editar" no client: faturadoCx===0).
+// Editar pedido (ação "salvar" com id): admin sempre; Vagner ou coordenador só
+// enquanto nada foi faturado (mesma condição que trava o botão "Editar" no client:
+// faturadoCx===0). Vagner não é dono de coordenador, então pode editar qualquer um;
+// coordenador só o próprio.
 async function podeEditarPedidoVendaProprio(session, pedidoId) {
   if (podeEditarPedidoVenda(session)) return true;
-  if (!isCoordenador(session)) return false;
+  if (!isVagner(session) && !isCoordenador(session)) return false;
   const r = await sbJson(
     `/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(pedidoId)}&select=coordenador,pedidos_vendas_itens(qty_faturada)`,
     { method: 'GET', headers: { 'Content-Type': 'application/json' } }
   );
   if (!r.ok || !Array.isArray(r.json) || !r.json[0]) return false;
   const row = r.json[0];
-  if (row.coordenador !== session.user) return false;
+  if (!isVagner(session) && row.coordenador !== session.user) return false;
   const itens = Array.isArray(row.pedidos_vendas_itens) ? row.pedidos_vendas_itens : [];
   return itens.every((i) => Number(i.qty_faturada || 0) === 0);
 }
