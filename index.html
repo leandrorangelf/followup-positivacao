@@ -2837,8 +2837,17 @@ renderAdminDash=function(anoData){
   });
   const trendMax=Math.max(100,...trend.map(t=>t.pct));
   const trendMetaBottom=Math.round(100/trendMax*185)+18;
-  const coordTrendHistory=Array.from({length:6},(_,offset)=>{const absoluteMonth=Number(anoAtual)*12+mesAtual-5+offset;const year=Math.floor(absoluteMonth/12);const month=((absoluteMonth%12)+12)%12;const source=dashHistoricoVendas.length?dashHistoricoVendas:anoData;return source.filter(p=>Number(p.ano)===year&&Number(p.mes)===month);});
-  const coordTrendHTML=coord=>{const history=coordTrendHistory.map(lista=>coordRow(coord,lista).volume);const max=Math.max(1,...history);return '<div class="coord-trend" aria-label="Tendência dos últimos meses">'+history.map((v,i)=>'<span class="coord-trend-bar'+(i===history.length-1?' current':'')+'" style="height:'+Math.max(4,Math.round(v/max*28))+'px"></span>').join('')+'</div>';};
+  const coordTrendMonths=Array.from({length:6},(_,offset)=>{const absoluteMonth=Number(anoAtual)*12+mesAtual-5+offset;return{year:Math.floor(absoluteMonth/12),month:((absoluteMonth%12)+12)%12};});
+  const coordTrendHistory=coordTrendMonths.map(({year,month})=>{const source=dashHistoricoVendas.length?dashHistoricoVendas:anoData;return source.filter(p=>Number(p.ano)===year&&Number(p.mes)===month);});
+  const coordTrendHTML=coord=>{
+    const history=coordTrendHistory.map(lista=>coordRow(coord,lista).volume);
+    const max=Math.max(1,...history);
+    const bars=history.map((v,i)=>{
+      const label=MESES[coordTrendMonths[i].month].slice(0,3);
+      return '<div class="coord-trend-col"><span class="coord-trend-bar'+(i===history.length-1?' current':'')+'" style="height:'+Math.max(6,Math.round(v/max*44))+'px" title="'+label+': '+dashCx(v)+' cx"></span><span class="coord-trend-mlabel">'+label+'</span></div>';
+    }).join('');
+    return '<div class="coord-trend" aria-label="Tendência dos últimos meses">'+bars+'</div>';
+  };
   const sku=vdSkuDash(vendasMes);
   const skuTotal=Math.max(1,Object.values(sku).reduce((s,v)=>s+v,0));
   const pendingNames=rows.flatMap(r=>r.pendentes.slice(0,3).map(cli=>({name:cli.nome,coord:r.coord})));
