@@ -3108,6 +3108,7 @@ function vdDashboardResumoHTML(lista){
 
 async function irVendas(){
   vdOrigemFiltro='todos';
+  if(g('vd-origem-sel'))g('vd-origem-sel').value='todos';
   if(isDiretoria)vdCoordFiltro='todos';
   else if(isFabiano())vdCoordFiltro=vdCoordFiltro&&vdCoordFiltro!=='todos'&&COORD_KEYS.includes(vdCoordFiltro)?vdCoordFiltro:'todos';
   else if(!isAdmin)vdCoordFiltro=coordAtual;
