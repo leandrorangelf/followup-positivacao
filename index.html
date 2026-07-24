@@ -2196,15 +2196,6 @@ async function salvarMetaBanco(coord,mes,valor){
   return !!(post&&post.ok);
 }
 
-async function sincronizarMetasLocaisBanco(){
-  const tarefas=[];
-  for(const coord of [...COORD_KEYS,...GESTOR_KEYS]){
-    for(let mes=0;mes<12;mes++)tarefas.push(salvarMetaBanco(coord,mes,METAS[coord][mes]||0));
-  }
-  const resultados=await Promise.all(tarefas);
-  return resultados.every(Boolean);
-}
-
 async function carregarRealizadoMetas(){
   metasRealizadoMes={};
   const listaTodoMes=await carregarVendasMes(mesAtual,anoAtual);
