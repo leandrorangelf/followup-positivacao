@@ -3549,13 +3549,15 @@ async function vdSalvarPedido(){
   const total=itens.reduce((s,i)=>s+i.subtotal,0);
   const totCx=itens.reduce((s,i)=>s+i.qty_caixas,0);
   if(vdForm.prazo==='parcelado'&&!g('vf-p1').value){toast('Informe dias da parcela 1','error');return}
+  const original=vdEditPedidoId?vdPedidos.find(p=>p.id===vdEditPedidoId):null;
   const ped={
     coordenador:coordAtual,cliente_id:cli.id,cliente_nome:cli.nome,cliente_uf:cli.uf||null,
     tipo:vdForm.tipo,prazo_tipo:vdForm.prazo,
     parcela_1_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p1').value)||null):null,
     parcela_2_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p2').value)||null):null,
     parcela_3_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p3').value)||null):null,
-    total,total_caixas:totCx,observacao:g('vf-obs').value||null,mes:mesAtual,ano:anoAtual,
+    total,total_caixas:totCx,observacao:g('vf-obs').value||null,
+    mes:original?original.mes:mesAtual,ano:original?original.ano:anoAtual,
     origem:vdForm.origem||null
   };
   const _cliUf=String(cli.uf||'').toUpperCase();
@@ -3566,7 +3568,6 @@ async function vdSalvarPedido(){
   if(btnSalvar)btnSalvar.disabled=true;
   toast('Salvando...','',8000);
   let pedidoId=vdEditPedidoId;
-  const original=vdEditPedidoId?vdPedidos.find(p=>p.id===vdEditPedidoId):null;
   const itensOriginais=(original&&original.pedidos_vendas_itens||[]).map(i=>({
     pedido_id:vdEditPedidoId,sku:i.sku,qty_caixas:i.qty_caixas,valor_pacote:i.valor_pacote,
     packs_por_caixa:i.packs_por_caixa,subtotal:i.subtotal
