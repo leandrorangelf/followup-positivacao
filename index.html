@@ -2130,6 +2130,11 @@ function toggleMenu(force){
 async function setMesGlobal(value){
   const sel=g('shell-mes');
   if(sel&&sel.disabled)return; // ponytail: select fica travado durante o load, então trocas rápidas não se sobrepõem
+  if(g('s-vfn').style.display!=='none'){
+    toast('Termine ou cancele a edição do pedido antes de trocar o mês','error');
+    if(sel)sel.value=mesAtual;
+    return;
+  }
   mesAtual=parseInt(value,10);
   pedidosCarregados=false;
   if(sel)sel.disabled=true;
