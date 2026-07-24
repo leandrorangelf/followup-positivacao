@@ -2151,18 +2151,11 @@ async function logout(){
   show('s-login');
 }
 
-function loadMetasLocal(){
-  try{
-    const saved=JSON.parse(localStorage.getItem('clean-followup-metas')||'null');
-    if(saved)COORD_KEYS.forEach(c=>{if(Array.isArray(saved[c])&&saved[c].length===12)METAS[c]=saved[c].map(v=>Math.max(0,parseInt(v,10)||0));});
-  }catch(e){console.warn('Metas locais não carregadas',e);}
-}
-
 function persistMetas(){
   localStorage.setItem('clean-followup-metas',JSON.stringify(METAS));
 }
 
-loadMetasLocal=function(){
+function loadMetasLocal(){
   metasLocaisCarregadas=false;
   try{
     const saved=JSON.parse(localStorage.getItem('clean-followup-metas')||'null');
