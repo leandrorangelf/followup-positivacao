@@ -1775,12 +1775,7 @@ async function tentarRestaurarSessao(){
     aplicarSessao(sessao);
     setupShell();
     show('s-dash');
-    const temMetasLocais=loadMetasLocal();
-    if(isAdmin&&temMetasLocais){
-      await Promise.all([sincronizarMetasLocaisBanco(),carregarClientes()]);
-    } else {
-      await Promise.all([carregarMetas(),carregarClientes()]);
-    }
+    await Promise.all([carregarMetas(),carregarClientes()]);
     if(isFabiano()){vdFiltro='pendente';irVendas();}
     else irDash(true);
     return true;
