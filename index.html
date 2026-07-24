@@ -2218,11 +2218,7 @@ async function irMetas(){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return;}
   show('s-metas');renderNav('nav-dash','metas');
   await carregarClientes();
-  if(loadMetasLocal()){
-    await sincronizarMetasLocaisBanco();
-  }else{
-    await carregarMetas();
-  }
+  await carregarMetas();
   await carregarRealizadoMetas();
   renderMetas();
 }
