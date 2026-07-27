@@ -2911,7 +2911,9 @@ function vdRenderTotalizadorES(){
   const tot=vdTotalizadorES();
   el.className='vd-totalizador-es';
   el.innerHTML='<span class="lbl">Mover p/ estoque ES</span>'+VD_SKUS.map(s=>
-    '<span class="item"><span class="dot" style="background:'+VD_SKU_COLORS[s]+'"></span><strong>'+vdEsc(vdSkuLabel(s))+'</strong><span class="qtd">'+tot[s]+' cx</span></span>'
+    '<div class="es-card" style="color:'+VD_SKU_COLORS[s]+'">'+icon('cigarette',18)+
+      '<div class="es-card-txt"><strong>'+vdEsc(vdSkuLabel(s))+'</strong><span>'+tot[s]+' cx</span></div>'+
+    '</div>'
   ).join('');
 }
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50,GTWIN:50,CK:50};
