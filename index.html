@@ -2963,6 +2963,16 @@ async function vdSalvarEstoqueES(sku,val){
   await sb('/rest/v1/estoque_es',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({sku,qtd,atualizado_por:user,atualizado_em:new Date().toISOString()})});
   vdRenderEstoqueES();
 }
+async function vdLimparEstoqueES(){
+  if(!confirm('Zerar o estoque informado de todos os produtos?'))return;
+  const agora=new Date().toISOString();
+  await Promise.all(VD_SKUS.map(s=>{
+    vdEstoqueES[s]=0;
+    return sb('/rest/v1/estoque_es',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({sku:s,qtd:0,atualizado_por:user,atualizado_em:agora})});
+  }));
+  vdRenderEstoqueES();
+  toast('Estoque zerado','ok');
+}
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50,GTWIN:50,CK:50};
 function vdSkuLabel(s){return VD_SKU_LABELS[String(s||'').toUpperCase()]||String(s||'');}
 function vdSkuFull(s){return VD_SKU_FULL[String(s||'').toUpperCase()]||vdSkuLabel(s);}
