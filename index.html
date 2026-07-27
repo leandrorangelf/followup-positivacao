@@ -3535,14 +3535,18 @@ async function vdSalvarPedido(){
   if(!itens.length){toast('Adicione ao menos 1 SKU com qtd e valor','error');return}
   const total=itens.reduce((s,i)=>s+i.subtotal,0);
   const totCx=itens.reduce((s,i)=>s+i.qty_caixas,0);
-  if(vdForm.prazo==='parcelado'&&!g('vf-p1').value){toast('Informe dias da parcela 1','error');return}
+  if(vdForm.prazo==='solicitar'&&!g('vf-prazo-dias').value){toast('Informe os dias do prazo solicitado','error');return}
   const original=vdEditPedidoId?vdPedidos.find(p=>p.id===vdEditPedidoId):null;
+  const prazoAprovado=vdForm.prazo==='aprovado';
   const ped={
     coordenador:coordAtual,cliente_id:cli.id,cliente_nome:cli.nome,cliente_uf:cli.uf||null,
-    tipo:vdForm.tipo,prazo_tipo:vdForm.prazo,
-    parcela_1_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p1').value)||null):null,
-    parcela_2_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p2').value)||null):null,
-    parcela_3_dias:vdForm.prazo==='parcelado'?(parseInt(g('vf-p3').value)||null):null,
+    tipo:vdForm.tipo,
+    prazo_tipo:prazoAprovado?original.prazo_tipo:(vdForm.prazo==='2835'?'parcelado':'avista'),
+    parcela_1_dias:prazoAprovado?original.parcela_1_dias:(vdForm.prazo==='2835'?28:null),
+    parcela_2_dias:prazoAprovado?original.parcela_2_dias:(vdForm.prazo==='2835'?35:null),
+    parcela_3_dias:null,
+    prazo_status:prazoAprovado?original.prazo_status:(vdForm.prazo==='solicitar'?'pendente':null),
+    prazo_solicitado_dias:prazoAprovado?original.prazo_solicitado_dias:(vdForm.prazo==='solicitar'?(parseInt(g('vf-prazo-dias').value)||null):null),
     total,total_caixas:totCx,observacao:g('vf-obs').value||null,
     mes:original?original.mes:mesAtual,ano:original?original.ano:anoAtual,
     origem:vdForm.origem||null
