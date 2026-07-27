@@ -2932,6 +2932,8 @@ function vdTotalizadorES(){
 }
 function vdAbrirEstoqueES(){
   vdRenderEstoqueES();
+  const btnLimpar=g('es-modal-limpar');
+  if(btnLimpar)btnLimpar.style.display=(isAdmin||isFabiano())?'block':'none';
   g('modal-estoque-es').classList.add('open');
 }
 function vdRenderEstoqueES(){
