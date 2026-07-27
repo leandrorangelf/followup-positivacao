@@ -4019,8 +4019,7 @@ function vdEditarPedido(){
   vdPopCliSel();
   setTimeout(()=>{g('vf-cli').value=p.cliente_id},10);
   vdRenderSkus();
-  vdSetTipo(p.tipo);vdSetPrazo(p.prazo_tipo);
-  g('vf-p1').value=p.parcela_1_dias||'';g('vf-p2').value=p.parcela_2_dias||'';g('vf-p3').value=p.parcela_3_dias||'';
+  vdSetTipo(p.tipo);vdSetPrazo(vdForm.prazo,vdForm.dias);
   g('vf-obs').value=p.observacao||'';
   vdRecalc();
   vdFecharDet();
