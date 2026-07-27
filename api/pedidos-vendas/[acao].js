@@ -46,6 +46,7 @@ module.exports = async function handler(req, res) {
     case 'gnre-manage': return gnreManage(session, body, res);
     case 'status': return status(session, body, res);
     case 'rename-cliente': return renameCliente(session, body, res);
+    case 'prazo-decidir': return prazoDecidir(session, body, res);
     default: return res.status(404).json({ error: 'unknown_acao' });
   }
 };
