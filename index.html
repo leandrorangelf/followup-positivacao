@@ -2920,19 +2920,18 @@ function vdRenderTotalizadorES(){
   const tot=vdTotalizadorES();
   const podeEditarEstoque=isAdmin||isFabiano();
   el.className='vd-totalizador-es';
-  el.innerHTML='<span class="lbl">Mover p/ estoque ES</span>'+VD_SKUS.map(s=>{
+  el.innerHTML='<div class="es-panel"><span class="lbl">Mover p/<br>estoque ES</span>'+VD_SKUS.map(s=>{
     const disp=Number(vdEstoqueES[s]||0);
     const falta=Math.max(0,tot[s]-disp);
-    return '<div class="es-card" style="color:'+VD_SKU_COLORS[s]+'">'+icon('cigarette',18)+
-      '<div class="es-card-txt">'+
-        '<strong>'+vdEsc(vdSkuLabel(s))+'</strong>'+
-        '<span class="es-falta">Falta mover: '+falta+' cx</span>'+
+    return '<div class="es-item" style="color:'+VD_SKU_COLORS[s]+'">'+icon('cigarette',16)+
+      '<div class="es-item-txt">'+
+        '<strong>'+vdEsc(vdSkuLabel(s))+' · '+falta+'cx</strong>'+
         (podeEditarEstoque
           ?'<span class="es-estoque">Estoque: <input type="number" min="0" value="'+disp+'" onchange="vdSalvarEstoqueES(\''+s+'\',this.value)"></span>'
           :'<span class="es-estoque">Estoque: '+disp+' cx</span>')+
       '</div>'+
     '</div>';
-  }).join('');
+  }).join('')+'</div>';
 }
 async function vdSalvarEstoqueES(sku,val){
   const qtd=Math.max(0,parseInt(val)||0);
