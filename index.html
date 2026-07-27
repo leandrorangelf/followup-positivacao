@@ -2937,14 +2937,17 @@ function vdRenderEstoqueES(){
   const podeEditarEstoque=isAdmin||isFabiano();
   el.innerHTML=VD_SKUS.map(s=>{
     const disp=Number(vdEstoqueES[s]||0);
-    const falta=Math.max(0,tot[s]-disp);
-    return '<div class="es-item" style="color:'+VD_SKU_COLORS[s]+'">'+icon('cigarette',20)+
+    const necessario=tot[s];
+    const falta=Math.max(0,necessario-disp);
+    const pct=necessario>0?Math.min(100,Math.round(disp/necessario*100)):100;
+    return '<div class="es-item">'+
+      '<span style="color:'+VD_SKU_COLORS[s]+'">'+icon('cigarette',24)+'</span>'+
       '<div class="es-item-txt">'+
-        '<strong>'+vdEsc(vdSkuLabel(s))+'</strong>'+
-        '<span class="es-falta">Falta mover: '+falta+' cx</span>'+
+        '<div class="es-item-top"><strong>'+vdEsc(vdSkuLabel(s))+'</strong><span class="es-falta" style="color:'+VD_SKU_COLORS[s]+'">'+falta+' cx</span></div>'+
+        '<div class="es-bar"><div class="es-bar-fill" style="width:'+pct+'%;background:'+VD_SKU_COLORS[s]+'"></div></div>'+
         (podeEditarEstoque
-          ?'<span class="es-estoque">Estoque: <input type="number" min="0" value="'+disp+'" onchange="vdSalvarEstoqueES(\''+s+'\',this.value)"></span>'
-          :'<span class="es-estoque">Estoque: '+disp+' cx</span>')+
+          ?'<span class="es-estoque">Estoque atual: <input type="number" min="0" value="'+disp+'" onchange="vdSalvarEstoqueES(\''+s+'\',this.value)"> cx</span>'
+          :'<span class="es-estoque">Estoque atual: '+disp+' cx</span>')+
       '</div>'+
     '</div>';
   }).join('');
