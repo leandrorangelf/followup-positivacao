@@ -2966,6 +2966,7 @@ function vdGnreBadgeHTML(p){
   return '<span class=\"vd-badge '+cls+'\">'+vdGnreLabel(p)+'</span>';
 }
 function vdPrazoLabel(p){
+  if(p?.prazo_status==='pendente')return 'Solicitado: '+(p.prazo_solicitado_dias||'?')+'d (pendente)';
   if((p?.prazo_tipo||'avista')!=='parcelado')return 'À vista';
   const parcelas=[p.parcela_1_dias,p.parcela_2_dias,p.parcela_3_dias].filter(v=>v!==null&&v!==undefined&&String(v)!=='').map(v=>v+'d');
   return parcelas.length?'Parcelado: '+parcelas.join(' / '):'Parcelado';
