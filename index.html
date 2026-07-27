@@ -3476,10 +3476,7 @@ function vdAplicarFicha(){
   const at=clientesAtivos(coordAtual);
   const c=at.find(x=>x.id===id);if(!c)return;
   if(c.def_tipo)vdSetTipo(c.def_tipo);
-  if(c.def_prazo){
-    vdSetPrazo(c.def_prazo);
-    g('vf-p1').value=c.def_p1||'';g('vf-p2').value=c.def_p2||'';g('vf-p3').value=c.def_p3||'';
-  }
+  if(c.def_prazo==='parcelado')vdSetPrazo('2835');
   const sk=c.def_skus||{};
   VD_SKUS.forEach(s=>{vdForm.skus[s]={q:0,v:parseFloat(sk[s])||0}});
   vdRenderSkus();vdRecalc();
