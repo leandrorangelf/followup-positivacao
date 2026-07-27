@@ -3966,6 +3966,18 @@ async function vdMarcarGnreIsenta(id){
   await vdAtualizarGnre(id,{gnre_status:'isenta',gnre_pago_at:new Date().toISOString()},'GNRE isenta. Pedido liberado para faturamento');
 }
 
+async function vdDecidirPrazo(id,aprovar){
+  const resp=await fetch('/api/pedidos-vendas/prazo-decidir',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,aprovar})});
+  const j=await resp.json().catch(()=>({}));
+  if(!resp.ok||!j.ok){toast('Erro ao decidir prazo','error');return}
+  toast(aprovar?'Prazo aprovado':'Prazo rejeitado — pedido volta pra à vista','ok');
+  vdFecharDet();await vdCarregar();
+}
+async function vdAprovarPrazo(id){await vdDecidirPrazo(id,true)}
+async function vdRejeitarPrazo(id){
+  if(!confirm('Rejeitar essa solicitação de prazo? O pedido volta pra "À vista".'))return;
+  await vdDecidirPrazo(id,false);
+}
 async function vdMoverStatus(novo){
   if(!vdDetAtual)return;
   const respMov=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:vdDetAtual.id,tipo:'mover-status',novoStatus:novo})});
