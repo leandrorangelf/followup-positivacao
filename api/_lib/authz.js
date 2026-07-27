@@ -107,6 +107,13 @@ const GENERIC_TABLES = {
     PATCH: forecastPodeEditar,
     DELETE: forecastPodeEditar,
   },
+  // Estoque disponível por SKU na unidade ES, informado pelo Fabiano — usado só
+  // pra calcular quanto falta mover no card totalizador da tela de Vendas.
+  estoque_es: {
+    GET: () => true,
+    POST: (s) => isAdminLiteral(s) || isFabiano(s),
+    PATCH: (s) => isAdminLiteral(s) || isFabiano(s),
+  },
 };
 
 // Tabelas cujas linhas pertencem a um coordenador e devem ser restritas para quem
