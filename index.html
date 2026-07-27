@@ -3198,7 +3198,7 @@ function vdComplementarPedido(id){
   if(x.saldoCx<=0){toast('Sem saldo para complementar','info');return}
   vdForecastOrigemId=null;vdForecastOrigemLabel='';
   vdEditPedidoId=null;
-  vdForm={tipo:p.tipo||'in',prazo:p.prazo_tipo||'avista',skus:{}};
+  vdForm={tipo:p.tipo||'in',...vdPrazoParaForm(p),skus:{}};
   VD_SKUS.forEach(s=>{vdForm.skus[s]={q:0,v:0}});
   x.itens.forEach(i=>{
     const saldo=Math.max(0,Number(i.qty_caixas||0)-Number(i.qty_faturada||0));
