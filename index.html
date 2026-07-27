@@ -3142,6 +3142,7 @@ function vdPedidosFiltrados(){
   if(vdFiltro==='faturar')return baseFiltrada.filter(p=>vdTipoPedido(p)!=='off'&&vdResumoPedido(p).saldoCx>0&&vdGnreLiberada(p));
   if(vdFiltro==='parcial')return baseFiltrada.filter(vdPedidoFaturadoParcial);
   if(vdFiltro==='pendente')return baseFiltrada.filter(vdPedidoPendente);
+  if(vdFiltro==='prazo-pendente')return baseFiltrada.filter(p=>p.prazo_status==='pendente');
   return baseFiltrada;
 }
 
