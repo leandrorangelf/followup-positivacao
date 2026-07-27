@@ -3443,11 +3443,11 @@ function forecastConverterPedido(id){
   vdEditPedidoId=null;
   coordAtual=p.coordenador;
   vdCoordFiltro=p.coordenador;
-  vdForm={tipo:p.tipo||'in',prazo:'avista',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
+  vdForm={tipo:p.tipo||'in',prazo:'avista',dias:null,skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   const cli=(clientesDB[coordAtual]||[]).find(c=>c.id===p.cliente_id);
   if(cli){
     if(cli.def_tipo)vdForm.tipo=cli.def_tipo;
-    if(cli.def_prazo)vdForm.prazo=cli.def_prazo;
+    if(cli.def_prazo==='parcelado')vdForm.prazo='2835';
     const sk=cli.def_skus||{};
     VD_SKUS.forEach(s=>{vdForm.skus[s].v=parseFloat(sk[s])||0});
   }
