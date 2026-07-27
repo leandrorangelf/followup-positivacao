@@ -3146,7 +3146,6 @@ async function vdCarregar(){
 
 function vdSetFiltro(f){
   vdFiltro=f;
-  document.querySelectorAll('.vd-filter .vd-chip[data-f]').forEach(c=>c.classList.toggle('on',c.dataset.f===f));
   vdRenderKanban();
 }
 function vdPedidosParaFaturamento(){
