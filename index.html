@@ -3283,6 +3283,7 @@ function vdCardHTML(p,grupo){
       (p.prazo_status==='pendente'?'<span class="vd-badge" style="background:#FEF9C3;color:#854D0E">⏳ Prazo pendente · '+vdEsc(String(p.prazo_solicitado_dias||'?'))+'d</span>':'')+
     '</div>'+
     '<div class="vd-card-resumo">'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo · '+vdEsc(prazo)+'</div>'+
+    vdCardDatasHTML(p)+
   '</div>';
 }
 
