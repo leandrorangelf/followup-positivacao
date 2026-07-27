@@ -173,6 +173,7 @@ async function gnreAttach(session, body, res) {
   const { id, tipo, path, fileName, gnrePendente } = body;
   if (!id || !path) return res.status(400).json({ error: 'missing_fields' });
   if (!(await pedidoPertenceASessao(session, id))) return res.status(403).json({ error: 'forbidden' });
+  if (!(await prazoLiberado(id))) return res.status(409).json({ error: 'prazo_pendente' });
   const agora = new Date().toISOString();
   let payload;
   if (tipo === 'gnre') {
