@@ -3189,6 +3189,7 @@ function vdCardHTML(p,grupo){
       (isParcialOrigem?'<span class="vd-badge vd-b-remanescente">↩ Remanescente</span>':'')+
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
       (obsFat?'<span class="vd-badge" style="background:#FEF3C7;color:#92400E">📋 '+vdEsc(obsFat.substring(0,40))+'</span>':'')+
+      (p.prazo_status==='pendente'?'<span class="vd-badge" style="background:#FEF9C3;color:#854D0E">⏳ Prazo pendente · '+vdEsc(String(p.prazo_solicitado_dias||'?'))+'d</span>':'')+
     '</div>'+
     '<div class="vd-card-resumo">'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo · '+vdEsc(prazo)+'</div>'+
   '</div>';
