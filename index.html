@@ -3213,8 +3213,7 @@ function vdComplementarPedido(id){
     g('vf-obs').value='Remanescente de pedido parcial faturado em '+new Date(p.faturado_at||p.updated_at||'').toLocaleDateString('pt-BR');
   },50);
   vdRenderSkus();
-  vdSetTipo(vdForm.tipo);vdSetPrazo(vdForm.prazo);
-  g('vf-p1').value=p.parcela_1_dias||'';g('vf-p2').value=p.parcela_2_dias||'';g('vf-p3').value=p.parcela_3_dias||'';
+  vdSetTipo(vdForm.tipo);vdSetPrazo(vdForm.prazo,vdForm.dias);
   vdRecalc();
   show('s-vfn');renderNav('nav-vfn','vendas');
   toast('Pedido pré-preenchido com o saldo remanescente · '+x.saldoCx+' cx','info',4000);
