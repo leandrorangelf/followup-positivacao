@@ -59,6 +59,18 @@ async function pedidoPertenceASessao(session, pedidoId) {
   return r.json[0].coordenador === session.user;
 }
 
+// Bloqueia faturar/GNRE enquanto o pedido tem uma solicitação de prazo maior
+// aguardando decisão do Renan (login diretoria) — evita que o Fabiano avance
+// o fluxo com um prazo ainda não autorizado.
+async function prazoLiberado(pedidoId) {
+  if (!pedidoId) return true;
+  const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(pedidoId)}&select=prazo_status`, {
+    method: 'GET', headers: { 'Content-Type': 'application/json' },
+  });
+  if (!r.ok || !Array.isArray(r.json) || !r.json[0]) return true;
+  return r.json[0].prazo_status !== 'pendente';
+}
+
 // Tabelas de acesso simples (uma única regra por método), servidas pelo proxy genérico
 // api/db/[table].js. pedidos_vendas fica aqui só para leitura — toda escrita passa
 // pelos endpoints dedicados em api/pedidos-vendas/[acao].js por ter regras por-ação.
