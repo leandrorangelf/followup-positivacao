@@ -150,6 +150,7 @@ module.exports = {
   podeCriarPedidoVenda,
   vePrivilegiado,
   pedidoPertenceASessao,
+  prazoLiberado,
   GENERIC_TABLES,
   SCOPED_TABLES,
   scopeQuery,
