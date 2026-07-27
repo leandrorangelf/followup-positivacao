@@ -2892,6 +2892,24 @@ renderCoordDash=function(anoData){
 const VD_SKUS=['GR','GM','CM','CC','GTWIN','CK'];
 const VD_SKU_LABELS={GR:'GR',GM:'GM',CM:'CM',CC:'CC',GTWIN:'GTwin',CK:'CK'};
 const VD_SKU_FULL={GR:'GUDANG RED',GM:'GUDANG MENTA',CM:'CRETEC MENTA',CC:'CRETEC CEREJA',GTWIN:'GUDANG TWIN TEN',CK:'CLICK'};
+const VD_SKU_COLORS={GR:'#DC2626',GM:'#16A34A',CM:'#16A34A',CC:'#9F1239',GTWIN:'#2563EB',CK:'#6B7280'};
+function vdTotalizadorES(){
+  const tot={};VD_SKUS.forEach(s=>tot[s]=0);
+  vdPedidos.filter(p=>!vdEhDistribuidora(p)&&vdResumoPedido(p).status==='pedido')
+    .forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(tot[i.sku]!=null)tot[i.sku]+=Number(i.qty_caixas||0);}));
+  return tot;
+}
+function vdRenderTotalizadorES(){
+  const el=g('vd-totalizador-es');if(!el)return;
+  const tot=vdTotalizadorES();
+  el.innerHTML=VD_SKUS.map(s=>
+    '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--card)">'+
+      '<span style="width:10px;height:10px;border-radius:50%;background:'+VD_SKU_COLORS[s]+';display:inline-block"></span>'+
+      '<strong style="font-size:12px">'+vdEsc(vdSkuLabel(s))+'</strong>'+
+      '<span style="font-size:12px;color:var(--muted)">'+tot[s]+' cx</span>'+
+    '</div>'
+  ).join('');
+}
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50,GTWIN:50,CK:50};
 function vdSkuLabel(s){return VD_SKU_LABELS[String(s||'').toUpperCase()]||String(s||'');}
 function vdSkuFull(s){return VD_SKU_FULL[String(s||'').toUpperCase()]||vdSkuLabel(s);}
