@@ -2996,6 +2996,16 @@ function vdGnreBadgeHTML(p){
   const cls=st==='paga'||st==='isenta'?'vd-b-done':informado||st==='calculada'?'vd-b-partial':'vd-b-prazo';
   return '<span class=\"vd-badge '+cls+'\">'+vdGnreLabel(p)+'</span>';
 }
+function vdDataHora(iso){return iso?new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):null;}
+function vdTimelineHTML(p){
+  const linhas=[];
+  if(p.created_at)linhas.push(['Pedido criado',vdDataHora(p.created_at)+(p.criado_por?' · '+p.criado_por:'')]);
+  if(p.gnre_enviado_at)linhas.push(['GNRE enviada',vdDataHora(p.gnre_enviado_at)]);
+  if(p.gnre_pago_at)linhas.push(['GNRE paga',vdDataHora(p.gnre_pago_at)]);
+  if(p.faturado_at)linhas.push(['Faturado',vdDataHora(p.faturado_at)+(p.faturado_por?' · '+p.faturado_por:'')]);
+  if(!linhas.length)return '';
+  return '<div class="vd-timeline">'+linhas.map(l=>'<div class="vd-timeline-row"><span class="vd-timeline-lbl">'+vdEsc(l[0])+'</span><span class="vd-timeline-dt">'+vdEsc(l[1])+'</span></div>').join('')+'</div>';
+}
 function vdPrazoLabel(p){
   if(p?.prazo_status==='pendente')return 'Solicitado: '+(p.prazo_solicitado_dias||'?')+'d (pendente)';
   if((p?.prazo_tipo||'avista')!=='parcelado')return 'À vista';
