@@ -59,7 +59,10 @@ async function salvar(session, body, res) {
     // Editar pedido existente — admin sempre; coordenador só o próprio pedido
     // e só enquanto nada foi faturado (checagem contra o banco, não confia no client).
     if (!(await podeEditarPedidoVendaProprio(session, id))) return res.status(403).json({ error: 'forbidden' });
-    const pedPatch = isAdminLiteral(session) ? ped : { ...ped, editado_por: session.user, editado_em: new Date().toISOString() };
+    let pedPatch = isAdminLiteral(session) ? ped : { ...ped, editado_por: session.user, editado_em: new Date().toISOString() };
+    if (pedPatch.prazo_status === 'pendente') {
+      pedPatch = { ...pedPatch, prazo_solicitado_por: session.user, prazo_solicitado_em: new Date().toISOString() };
+    }
 
     const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedPatch) });
     if (!r.ok) return res.status(502).json({ error: 'patch_pedido_failed' });
