@@ -3113,7 +3113,7 @@ async function irVendas(){
   renderNav('nav-vendas','vendas');
   updateSideNav('vendas');
   if(isFabiano()&&vdFiltro==='todos')vdFiltro='pendente';
-  document.querySelectorAll('.vd-filter .vd-chip[data-f]').forEach(c=>c.classList.toggle('on',c.dataset.f===vdFiltro));
+  if(g('vd-status-sel'))g('vd-status-sel').value=vdFiltro;
   vdRenderCoordTabs();
   g('vd-sub').textContent=(vdCoordFiltro==='todos'?'Todos os coordenadores':vdCoordFiltro)+' · '+MESES[mesAtual]+'/'+anoAtual;
   await vdCarregar();
