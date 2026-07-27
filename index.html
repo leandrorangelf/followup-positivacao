@@ -1062,8 +1062,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <div id="s-vendas" class="screen" style="display:none">
   <div class="vd-header"><h2>Vendas</h2><div class="sub" id="vd-sub">— · —</div></div>
   <div class="vd-coord-tabs" id="vd-coord-tabs" style="display:none"></div>
-  <div id="vd-totalizador-es"></div>
   <div class="vd-filter">
+    <button class="vd-chip" onclick="vdAbrirEstoqueES()">📦 Estoque ES</button>
     <select onchange="vdSetFiltro(this.value)" id="vd-status-sel" style="padding:5px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-weight:600;background:var(--card);color:var(--text);cursor:pointer;height:32px">
       <option value="todos">Todos</option>
       <option value="faturar">⚠ Pra faturar</option>
