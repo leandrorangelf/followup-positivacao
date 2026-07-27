@@ -4008,7 +4008,7 @@ function vdEditarPedido(){
   if(!vdPodeEditarProprio(p)){toast('Acesso restrito','error');return}
   if(isAdmin&&COORD_KEYS.includes(p.coordenador))coordAtual=p.coordenador;
   vdEditPedidoId=p.id;
-  vdForm={tipo:p.tipo,prazo:p.prazo_tipo,origem:p.origem||'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
+  vdForm={tipo:p.tipo,...vdPrazoParaForm(p),origem:p.origem||'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   (p.pedidos_vendas_itens||[]).forEach(i=>{vdForm.skus[i.sku]={q:i.qty_caixas,v:i.valor_pacote}});
   g('vfn-title').textContent='Editar Pedido';
   // mostra barra de origem se houver
