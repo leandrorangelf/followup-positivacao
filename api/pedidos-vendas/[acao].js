@@ -88,9 +88,12 @@ async function salvar(session, body, res) {
   // Criar pedido novo — admin ou coordenador (botão "+", bloqueado para diretoria/vagner/fabiano).
   if (!podeCriarPedidoVenda(session)) return res.status(403).json({ error: 'forbidden' });
 
-  const pedBody = { ...ped };
+  let pedBody = { ...ped };
   if (!vePrivilegiado(session)) pedBody.coordenador = session.user; // coordenador só cria pro próprio nome
   pedBody.criado_por = session.user; // nunca confiar no client pra isso
+  if (pedBody.prazo_status === 'pendente') {
+    pedBody = { ...pedBody, prazo_solicitado_por: session.user, prazo_solicitado_em: new Date().toISOString() };
+  }
 
   const createR = await sbJson('/rest/v1/pedidos_vendas', { method: 'POST', headers: REPRESENTATION, body: JSON.stringify(pedBody) });
   if (!createR.ok || !Array.isArray(createR.json) || !createR.json[0]) return res.status(502).json({ error: 'create_pedido_failed' });
