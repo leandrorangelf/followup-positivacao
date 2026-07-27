@@ -2924,7 +2924,8 @@ const VD_SKU_FULL={GR:'GUDANG RED',GM:'GUDANG MENTA',CM:'CRETEC MENTA',CC:'CRETE
 const VD_SKU_COLORS={GR:'#DC2626',GM:'#16A34A',CM:'#16A34A',CC:'#9F1239',GTWIN:'#2563EB',CK:'#6B7280'};
 function vdTotalizadorES(){
   const tot={};VD_SKUS.forEach(s=>tot[s]=0);
-  vdPedidos.filter(p=>vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)&&vdResumoPedido(p).status==='pedido')
+  const ufsForaES=['RJ','SP'];
+  vdPedidos.filter(p=>vdTipoPedido(p)!=='off'&&!vdEhDistribuidora(p)&&!ufsForaES.includes(String(p.cliente_uf||'').toUpperCase())&&vdResumoPedido(p).status==='pedido')
     .forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(tot[i.sku]!=null)tot[i.sku]+=Number(i.qty_caixas||0);}));
   return tot;
 }
