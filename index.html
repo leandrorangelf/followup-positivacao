@@ -3459,7 +3459,6 @@ function forecastConverterPedido(id){
   g('vf-cli').value=p.cliente_id||'';
   vdRenderSkus();
   vdSetTipo(vdForm.tipo);vdSetPrazo(vdForm.prazo);
-  if(cli&&cli.def_prazo){g('vf-p1').value=cli.def_p1||'';g('vf-p2').value=cli.def_p2||'';g('vf-p3').value=cli.def_p3||'';}else{g('vf-p1').value='';g('vf-p2').value='';g('vf-p3').value='';}
   const baseObs='Convertido do Forecast: '+p.cliente_nome+' · '+MESES[p.forecast_mes]+'/'+p.forecast_ano+'.';
   g('vf-obs').value=p.observacao?(baseObs+' Obs forecast: '+p.observacao):baseObs;
   vdRecalc();
