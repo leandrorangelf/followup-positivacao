@@ -213,6 +213,21 @@ async function status(session, body, res) {
   return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
 }
 
+async function prazoDecidir(session, body, res) {
+  if (!isDiretoria(session)) return res.status(403).json({ error: 'forbidden' });
+  const { id, aprovar } = body;
+  if (!id || typeof aprovar !== 'boolean') return res.status(400).json({ error: 'missing_fields' });
+  const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=prazo_status,prazo_solicitado_dias`, { method: 'GET', headers: JSON_HEADERS });
+  if (!r.ok || !Array.isArray(r.json) || !r.json[0]) return res.status(404).json({ error: 'not_found' });
+  if (r.json[0].prazo_status !== 'pendente') return res.status(409).json({ error: 'not_pending' });
+  const agora = new Date().toISOString();
+  const payload = aprovar
+    ? { prazo_status: 'aprovado', prazo_tipo: 'parcelado', parcela_1_dias: r.json[0].prazo_solicitado_dias, parcela_2_dias: null, parcela_3_dias: null, prazo_decidido_por: session.user, prazo_decidido_em: agora }
+    : { prazo_status: 'rejeitado', prazo_tipo: 'avista', parcela_1_dias: null, parcela_2_dias: null, parcela_3_dias: null, prazo_decidido_por: session.user, prazo_decidido_em: agora };
+  const r2 = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(payload) });
+  return res.status(r2.ok ? 200 : 502).json({ ok: r2.ok });
+}
+
 async function renameCliente(session, body, res) {
   // Duas variantes que já existiam no client: renomear pedidos de UM cliente por id
   // (editarCliente, admin só — vagner é bloqueado antes de chegar aqui) e o utilitário
