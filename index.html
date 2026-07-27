@@ -358,7 +358,12 @@ body{background:var(--canvas);color:var(--ink)}
 .vd-metric .vsub{font-size:12px;color:var(--muted);margin-top:3px}
 .vd-metric .bar{height:7px;background:var(--gray-bg);border-radius:var(--r-sm);margin-top:10px;overflow:hidden}
 .vd-metric .bar span{display:block;height:100%;border-radius:var(--r-sm);transition:width .3s}
-.vd-filter{display:flex;gap:6px;padding:12px 22px;max-width:1540px;margin:0 auto;flex-wrap:wrap}
+.vd-filter{display:flex;gap:6px;padding:12px 22px;max-width:1540px;margin:0 auto;flex-wrap:wrap;align-items:center}
+.vd-totalizador-es{display:flex;align-items:center;gap:12px;padding:7px 22px;max-width:1540px;margin:0 auto;overflow-x:auto;white-space:nowrap;font-size:12px;border-bottom:1px solid var(--border)}
+.vd-totalizador-es .lbl{color:var(--muted);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.05em;flex:0 0 auto}
+.vd-totalizador-es .item{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+.vd-totalizador-es .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.vd-totalizador-es .qtd{color:var(--muted)}
 .vd-coord-tabs{display:flex;gap:7px;padding:14px 22px 0;overflow-x:auto;max-width:1540px;margin:0 auto}
 .vd-chip{padding:7px 14px;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;color:var(--text);font-family:inherit;white-space:nowrap}
 .vd-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
