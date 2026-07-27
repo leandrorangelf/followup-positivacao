@@ -3497,10 +3497,21 @@ function vdRenderSkus(){
 
 function vdUpdSku(s,k,v){vdForm.skus[s][k]=parseFloat(v)||0;vdRecalc()}
 function vdSetTipo(t){vdForm.tipo=t;document.querySelectorAll('.vd-toggle[data-tv]').forEach(b=>b.classList.toggle('on',b.dataset.tv===t))}
-function vdSetPrazo(p){
+function vdSetPrazo(p,dias){
   vdForm.prazo=p;
   document.querySelectorAll('.vd-toggle[data-pv]').forEach(b=>b.classList.toggle('on',b.dataset.pv===p));
-  g('vf-parc').style.display=p==='parcelado'?'block':'none';
+  g('vf-prazo-solicitar').style.display=p==='solicitar'?'block':'none';
+  if(p==='solicitar'&&dias!=null)g('vf-prazo-dias').value=dias;
+  const info=g('vf-prazo-aprovado-info');
+  if(p==='aprovado'){info.style.display='block';info.textContent='Prazo aprovado atualmente: '+(dias||'?')+' dias · clique em uma opção acima para alterar';}
+  else info.style.display='none';
+}
+function vdPrazoParaForm(p){
+  if(!p)return{prazo:'avista',dias:null};
+  if(p.prazo_status==='pendente')return{prazo:'solicitar',dias:p.prazo_solicitado_dias};
+  if(p.prazo_status==='aprovado')return{prazo:'aprovado',dias:p.parcela_1_dias};
+  if((p.prazo_tipo||'avista')==='parcelado')return{prazo:'2835',dias:null};
+  return{prazo:'avista',dias:null};
 }
 
 function vdRecalc(){
