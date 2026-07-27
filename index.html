@@ -2914,12 +2914,27 @@ function vdTotalizadorES(){
 function vdRenderTotalizadorES(){
   const el=g('vd-totalizador-es');if(!el)return;
   const tot=vdTotalizadorES();
+  const podeEditarEstoque=isAdmin||isFabiano();
   el.className='vd-totalizador-es';
-  el.innerHTML='<span class="lbl">Mover p/ estoque ES</span>'+VD_SKUS.map(s=>
-    '<div class="es-card" style="color:'+VD_SKU_COLORS[s]+'">'+icon('cigarette',18)+
-      '<div class="es-card-txt"><strong>'+vdEsc(vdSkuLabel(s))+'</strong><span>'+tot[s]+' cx</span></div>'+
-    '</div>'
-  ).join('');
+  el.innerHTML='<span class="lbl">Mover p/ estoque ES</span>'+VD_SKUS.map(s=>{
+    const disp=Number(vdEstoqueES[s]||0);
+    const falta=Math.max(0,tot[s]-disp);
+    return '<div class="es-card" style="color:'+VD_SKU_COLORS[s]+'">'+icon('cigarette',18)+
+      '<div class="es-card-txt">'+
+        '<strong>'+vdEsc(vdSkuLabel(s))+'</strong>'+
+        '<span class="es-falta">Falta mover: '+falta+' cx</span>'+
+        (podeEditarEstoque
+          ?'<span class="es-estoque">Estoque: <input type="number" min="0" value="'+disp+'" onchange="vdSalvarEstoqueES(\''+s+'\',this.value)"></span>'
+          :'<span class="es-estoque">Estoque: '+disp+' cx</span>')+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+async function vdSalvarEstoqueES(sku,val){
+  const qtd=Math.max(0,parseInt(val)||0);
+  vdEstoqueES[sku]=qtd;
+  await sb('/rest/v1/estoque_es',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({sku,qtd,atualizado_por:user,atualizado_em:new Date().toISOString()})});
+  vdRenderTotalizadorES();
 }
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50,GTWIN:50,CK:50};
 function vdSkuLabel(s){return VD_SKU_LABELS[String(s||'').toUpperCase()]||String(s||'');}
