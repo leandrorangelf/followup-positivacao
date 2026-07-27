@@ -8,6 +8,7 @@ const { sbJson } = require('../_lib/supabase');
 const {
   isAdminLiteral,
   isFabiano,
+  isDiretoria,
   podeEditarPedidoVenda,
   podeEditarPedidoVendaProprio,
   podeCriarPedidoVenda,
@@ -17,6 +18,7 @@ const {
   podeComentarPedido,
   vePrivilegiado,
   pedidoPertenceASessao,
+  prazoLiberado,
 } = require('../_lib/authz');
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
