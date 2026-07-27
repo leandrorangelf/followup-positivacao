@@ -3629,6 +3629,12 @@ function vdAbrirDet(id){
       _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar GNRE</button>');
     }
   }
+  const _prazoBtns=[];
+  if(isDiretoria&&p.prazo_status==='pendente'){
+    _prazoBtns.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAprovarPrazo(\''+p.id+'\')">✅ Aprovar prazo ('+vdEsc(String(p.prazo_solicitado_dias||'?'))+'d)</button>');
+    _prazoBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdRejeitarPrazo(\''+p.id+'\')">✕ Rejeitar prazo</button>');
+  }
+  const prazoAcoesHTML=_prazoBtns.length?'<div class="vd-card-actions" style="margin-bottom:10px">'+_prazoBtns.join('')+'</div>':'';
   const gnreAcoesHTML=_gnreBtns.length?'<div class="vd-card-actions" style="margin-bottom:10px">'+_gnreBtns.join('')+'</div>':'';
   const itensGrid=x.itens.length?
     '<div class="vd-card-oper">'+
