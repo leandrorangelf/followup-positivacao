@@ -2907,12 +2907,9 @@ function vdTotalizadorES(){
 function vdRenderTotalizadorES(){
   const el=g('vd-totalizador-es');if(!el)return;
   const tot=vdTotalizadorES();
-  el.innerHTML=VD_SKUS.map(s=>
-    '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--card)">'+
-      '<span style="width:10px;height:10px;border-radius:50%;background:'+VD_SKU_COLORS[s]+';display:inline-block"></span>'+
-      '<strong style="font-size:12px">'+vdEsc(vdSkuLabel(s))+'</strong>'+
-      '<span style="font-size:12px;color:var(--muted)">'+tot[s]+' cx</span>'+
-    '</div>'
+  el.className='vd-totalizador-es';
+  el.innerHTML='<span class="lbl">Mover p/ estoque ES</span>'+VD_SKUS.map(s=>
+    '<span class="item"><span class="dot" style="background:'+VD_SKU_COLORS[s]+'"></span><strong>'+vdEsc(vdSkuLabel(s))+'</strong><span class="qtd">'+tot[s]+' cx</span></span>'
   ).join('');
 }
 const VD_PACKS={GR:48,GM:48,CM:50,CC:50,GTWIN:50,CK:50};
