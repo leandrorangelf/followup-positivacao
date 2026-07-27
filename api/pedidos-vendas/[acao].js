@@ -193,6 +193,7 @@ async function gnreManage(session, body, res) {
   if (!podeGerenciarGnre(session)) return res.status(403).json({ error: 'forbidden' });
   const { id, payload } = body;
   if (!id || !payload || typeof payload !== 'object') return res.status(400).json({ error: 'missing_fields' });
+  if (!(await prazoLiberado(id))) return res.status(409).json({ error: 'prazo_pendente' });
   const safePayload = {};
   for (const k of Object.keys(payload)) if (GNRE_MANAGE_FIELDS.has(k)) safePayload[k] = payload[k];
   const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(safePayload) });
