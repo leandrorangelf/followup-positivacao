@@ -120,6 +120,7 @@ async function faturar(session, body, res) {
   if (!podeFaturar(session)) return res.status(403).json({ error: 'forbidden' });
   const { id, itensRows, pedidoPatch } = body;
   if (!id || !Array.isArray(itensRows) || !pedidoPatch) return res.status(400).json({ error: 'missing_fields' });
+  if (!(await prazoLiberado(id))) return res.status(409).json({ error: 'prazo_pendente' });
 
   const r = await sbJson('/rest/v1/pedidos_vendas_itens', { method: 'POST', headers: UPSERT_MINIMAL, body: JSON.stringify(itensRows) });
   if (!r.ok) return res.status(502).json({ error: 'itens_failed' });
