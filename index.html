@@ -3585,7 +3585,10 @@ function forecastConverterPedido(id){
 }
 
 function vdPopCliSel(){
-  const at=clientesAtivos(coordAtual);
+  const ehDiretoria=coordAtual===COORD_DIRETORIA;
+  const wrap=g('vf-cli-livre-wrap');
+  if(wrap){wrap.style.display=ehDiretoria?'block':'none';g('vf-cli-livre').value='';}
+  const at=ehDiretoria?COORD_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
   g('vf-cli').innerHTML='<option value="">— Selecione —</option>'+
     at.map(c=>'<option value="'+vdEsc(c.id)+'">'+vdEsc(c.nome)+(c.uf?' ('+vdEsc(c.uf)+')':'')+'</option>').join('');
 }
