@@ -3197,7 +3197,7 @@ async function irVendas(){
   if(isDiretoria)vdCoordFiltro='todos';
   else if(isFabiano())vdCoordFiltro=vdCoordFiltro&&vdCoordFiltro!=='todos'&&COORD_KEYS.includes(vdCoordFiltro)?vdCoordFiltro:'todos';
   else if(!isAdmin)vdCoordFiltro=coordAtual;
-  else if(vdCoordFiltro!=='todos'&&!COORD_KEYS.includes(vdCoordFiltro))vdCoordFiltro='todos';
+  else if(vdCoordFiltro!=='todos'&&!COORD_KEYS.includes(vdCoordFiltro)&&vdCoordFiltro!==COORD_DIRETORIA)vdCoordFiltro='todos';
   show('s-vendas');
   renderNav('nav-vendas','vendas');
   updateSideNav('vendas');
