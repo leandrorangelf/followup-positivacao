@@ -2455,7 +2455,7 @@ renderCliList=function(){
     const statusLabel=ativoNesteMes?`Ativo desde ${MESES[c.ativo_desde]||'início'}`:`Inativo desde ${MESES[c.inativo_desde]||'?'}`;
     return `<div class="cli-item ${ativoNesteMes?'':'inativo'}">
       <div class="cli-nome"><strong>${c.nome}</strong><div style="font-size:11px;color:var(--muted);margin-top:3px">${statusLabel}</div></div>
-      <label class="client-owner"><span class="client-owner-label">Responsável</span><select class="client-owner-select" aria-label="Responsável por ${c.nome}" onchange="alterarProprietario('${c.id}',this)">${COORD_KEYS.map(nome=>`<option value="${nome}" ${nome===coordenador?'selected':''}>${nome}</option>`).join('')}</select></label>
+      <label class="client-owner"><span class="client-owner-label">Responsável</span><select class="client-owner-select" aria-label="Responsável por ${c.nome}" onchange="alterarProprietario('${c.id}',this)">${CLI_OWNER_KEYS.map(nome=>`<option value="${nome}" ${nome===coordenador?'selected':''}>${nome}</option>`).join('')}</select></label>
       <div class="cli-actions"><button class="client-edit" onclick="editarCliente('${c.id}')">Editar</button><button class="client-edit" onclick="abrirToggle('${c.id}',${ativoNesteMes})">${ativoNesteMes?'Inativar':'Reativar'}</button><button class="client-edit client-delete" onclick="excluirCliente('${c.id}')">Excluir</button></div>
     </div>`;
   }).join('')||'<div class="empty">Nenhum cliente encontrado.</div>';
