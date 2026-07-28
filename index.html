@@ -3212,7 +3212,8 @@ function vdRenderCoordTabs(){
   const el=g('vd-coord-tabs');
   el.style.display=(isAdmin||isDiretoria||isFabiano())?'flex':'none';
   if(!(isAdmin||isDiretoria||isFabiano())){el.innerHTML='';return}
-  el.innerHTML=['todos',...COORD_KEYS].map(c=>
+  const tabs=['todos',...COORD_KEYS,...(isAdmin?[COORD_DIRETORIA]:[])];
+  el.innerHTML=tabs.map(c=>
     '<button class="admin-tab '+(c===vdCoordFiltro?'active':'')+'" onclick="vdSetCoord(\''+c+'\')">'+(c==='todos'?'Todos':c)+'</button>'
   ).join('');
 }
