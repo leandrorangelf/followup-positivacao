@@ -1507,9 +1507,11 @@ function icon(name,size){
 const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
 // Pseudo-coordenador só pra marcar vendas avulsas lançadas por admin/vagner (ex.: acordo
 // fechado direto pela diretoria). Fica FORA de COORD_KEYS de propósito — não deve aparecer
-// nos ~20 lugares que iteram COORD_KEYS assumindo carteira/meta (mesma lógica de GESTOR_KEYS
-// abaixo, mas sem meta nenhuma).
+// nos lugares que iteram COORD_KEYS assumindo meta/positivação (mesma lógica de GESTOR_KEYS
+// abaixo, mas sem meta nenhuma). Pode, porém, ser dono de cliente na tela de Clientes — ver
+// CLI_OWNER_KEYS logo abaixo, usado só nesse contexto (não em metas/positivação).
 const COORD_DIRETORIA='Diretoria';
+const CLI_OWNER_KEYS=[...COORD_KEYS,COORD_DIRETORIA];
 // Gerência (Leandro+Vagner juntos, UMA meta combinada, não duas somadas) — sem carteira de
 // clientes (não entra em COORD_KEYS de propósito — não deve aparecer nos ~20 lugares que
 // iteram COORD_KEYS assumindo carteira).
