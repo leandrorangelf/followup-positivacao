@@ -2873,20 +2873,26 @@ renderAdminDash=function(anoData){
       <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes}</div></div><div class="attention-list">${pendingNames.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.name}</strong><br><small style="color:var(--muted)">${p.coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
     </div>
     ${dashMapaEstadosPanelHTML(vendasMes,'Caixas vendidas por estado','Mapa do Brasil por UF em '+MESES[mesAtual]+' '+anoAtual)}
-    <section class="panel" style="max-width:760px;margin:0 auto"><div class="panel-title-row"><div class="panel-title">Performance por coordenador</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual} · clique numa linha pra ver o mix de produtos</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Coordenador</th><th>Positivação</th><th>Volume vendido</th><th>Meta</th><th>Cumprimento</th><th>Tendência</th><th>Sem venda</th></tr></thead><tbody>${rows.map(r=>{
-      const perfCls=r.pctMeta>=100?'good':r.pctMeta>=80?'warn':'bad';
-      const skuCoord=vdSkuDash(vendasMes.filter(p=>p.coordenador===r.coord));
-      return`<tr class="coord-row-${perfCls}" style="cursor:pointer" onclick="dashToggleCoordRow('${r.coord}')"><td class="table-name">${r.coord}</td><td>${r.pctPos}%</td><td>${r.volume.toLocaleString('pt-BR')} cx</td><td>${r.meta.toLocaleString('pt-BR')} cx</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-progress"><span style="width:${Math.min(100,r.pctMeta)}%"></span></div><strong class="coord-status coord-status-${perfCls}">${r.pctMeta}%</strong></div></td><td>${coordTrendHTML(r.coord)}</td><td>${r.pendentes.length}</td></tr>`+
-      `<tr class="coord-expand-row" data-coord="${r.coord}" style="display:none"><td colspan="7" style="padding:0;border:none"><div style="max-width:420px;margin:0 auto">${vdSkuQtdPanelHTML(skuCoord,'Mix de produtos · '+r.coord,MESES[mesAtual]+' '+anoAtual)}</div></td></tr>`;
-    }).join('')}</tbody></table></div></section>
-    </div>`;
+    <div class="dash-lower">
+      <section class="panel"><div class="panel-title-row"><div class="panel-title">Performance por coordenador</div><div class="panel-note">${MESES[mesAtual]} ${anoAtual} · clique numa linha pra ver os clientes</div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Coordenador</th><th>Positivação</th><th>Volume vendido</th><th>Meta</th><th>Cumprimento</th><th>Tendência</th><th>Sem venda</th></tr></thead><tbody>${rows.map(r=>{
+        const perfCls=r.pctMeta>=100?'good':r.pctMeta>=80?'warn':'bad';
+        dashCompradoresPorCoord[r.coord]=r.ativos.filter(c=>totCliD(r.d,c.nome)>0).map(c=>({nome:c.nome,total:totCliD(r.d,c.nome)}));
+        return`<tr class="coord-row-${perfCls}" data-coord="${r.coord}" style="cursor:pointer" onclick="dashSelecionarCoordCard('${r.coord}')"><td class="table-name">${r.coord}</td><td>${r.pctPos}%</td><td>${r.volume.toLocaleString('pt-BR')} cx</td><td>${r.meta.toLocaleString('pt-BR')} cx</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-progress"><span style="width:${Math.min(100,r.pctMeta)}%"></span></div><strong class="coord-status coord-status-${perfCls}">${r.pctMeta}%</strong></div></td><td>${coordTrendHTML(r.coord)}</td><td>${r.pendentes.length}</td></tr>`;
+      }).join('')}</tbody></table></div></section>
+      ${dashClientesPanelHTML(rows[0]?rows[0].coord:'')}
+    </div></div>`;
   dashAgendaMapaEstados(vendasMes);
   updateSideNav('dash');
 };
-function dashToggleCoordRow(coord){
-  document.querySelectorAll('#dash-content .coord-expand-row').forEach(tr=>{
-    tr.style.display=(tr.dataset.coord===coord&&tr.style.display==='none')?'table-row':'none';
-  });
+function dashClientesPanelHTML(coord){
+  const lista=(dashCompradoresPorCoord[coord]||[]).slice().sort((a,b)=>b.total-a.total);
+  const linhas=lista.map(c=>'<div class="attention-row"><span><strong>'+vdEsc(c.nome)+'</strong></span><span class="attention-count">'+dashCx(c.total)+' cx</span></div>').join('')||'<div class="empty">Nenhum cliente com pedido no período.</div>';
+  return '<aside class="panel" id="dash-clientes-panel"><div class="panel-title-row"><div class="panel-title">Clientes que compraram'+(coord?' · '+vdEsc(coord):'')+'</div><div class="attention-count">'+lista.length+'</div></div><div class="attention-list">'+linhas+'</div></aside>';
+}
+function dashSelecionarCoordCard(coord){
+  document.querySelectorAll('#dash-content tbody tr[data-coord]').forEach(tr=>{tr.style.background=tr.dataset.coord===coord?'var(--purple-soft)':'';});
+  const panel=document.getElementById('dash-clientes-panel');
+  if(panel)panel.outerHTML=dashClientesPanelHTML(coord);
 }
 
 renderCoordDash=function(anoData){
