@@ -3602,7 +3602,7 @@ function vdPopCliSel(){
   const ehDiretoria=coordAtual===COORD_DIRETORIA;
   const wrap=g('vf-cli-livre-wrap');
   if(wrap){wrap.style.display=ehDiretoria?'block':'none';g('vf-cli-livre').value='';}
-  const at=ehDiretoria?COORD_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
+  const at=ehDiretoria?CLI_OWNER_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
   g('vf-cli').innerHTML='<option value="">— Selecione —</option>'+
     at.map(c=>'<option value="'+vdEsc(c.id)+'">'+vdEsc(c.nome)+(c.uf?' ('+vdEsc(c.uf)+')':'')+'</option>').join('');
 }
@@ -3661,7 +3661,7 @@ async function vdSalvarPedido(){
   }else{
     const cli_id=g('vf-cli').value;
     if(!cli_id){toast('Escolha o cliente','error');return}
-    const at=coordAtual===COORD_DIRETORIA?COORD_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
+    const at=coordAtual===COORD_DIRETORIA?CLI_OWNER_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
     cli=at.find(c=>c.id===cli_id);
     if(!cli){toast('Cliente inválido','error');return}
   }
