@@ -2350,7 +2350,7 @@ renderCliList=function(){
 let cliOwnerFilter='todos',cliSearchTerm='';
 
 function findClienteGlobal(id){
-  for(const coordenador of COORD_KEYS){
+  for(const coordenador of CLI_OWNER_KEYS){
     const cliente=(clientesDB[coordenador]||[]).find(c=>String(c.id)===String(id));
     if(cliente)return{cliente,coordenador};
   }
