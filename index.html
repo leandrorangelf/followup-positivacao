@@ -2438,7 +2438,7 @@ excluirCliente=async function(id){
 async function alterarProprietario(id,select){
   const encontrado=findClienteGlobal(id);if(!encontrado)return;
   const novo=select.value,anterior=encontrado.coordenador;
-  if(!COORD_KEYS.includes(novo)||novo===anterior)return;
+  if(!CLI_OWNER_KEYS.includes(novo)||novo===anterior)return;
   select.disabled=true;
   const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({coordenador:novo})});
   if(!res||!res.ok){select.value=anterior;select.disabled=false;toast('Não foi possível trocar o responsável','error');return;}
