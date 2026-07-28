@@ -2417,7 +2417,7 @@ async function salvarEditarCliente(){
   const nome=g('cli-editar-nome').value.trim().toUpperCase();
   if(!nome){toast('Informe um nome válido','error');return;}
   const uf=g('cli-editar-uf').value||null;
-  const duplicado=COORD_KEYS.some(coord=>(clientesDB[coord]||[]).some(c=>c.nome===nome&&String(c.id)!==String(id)));
+  const duplicado=CLI_OWNER_KEYS.some(coord=>(clientesDB[coord]||[]).some(c=>c.nome===nome&&String(c.id)!==String(id)));
   if(duplicado){toast('Já existe um cliente com esse nome','error');return;}
   const res=await sb('/rest/v1/clientes?id=eq.'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({nome,uf})});
   if(!res||!res.ok){toast('Não foi possível editar','error');return;}
