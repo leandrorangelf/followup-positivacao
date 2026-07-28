@@ -3640,11 +3640,17 @@ function vdRecalc(){
 
 async function vdSalvarPedido(){
   if(vdSalvandoPedido)return;
-  const cli_id=g('vf-cli').value;
-  if(!cli_id){toast('Escolha o cliente','error');return}
-  const at=clientesAtivos(coordAtual);
-  const cli=at.find(c=>c.id===cli_id);
-  if(!cli){toast('Cliente inválido','error');return}
+  const nomeLivre=coordAtual===COORD_DIRETORIA?(g('vf-cli-livre').value||'').trim():'';
+  let cli;
+  if(nomeLivre){
+    cli={id:null,nome:nomeLivre,uf:null};
+  }else{
+    const cli_id=g('vf-cli').value;
+    if(!cli_id){toast('Escolha o cliente','error');return}
+    const at=coordAtual===COORD_DIRETORIA?COORD_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
+    cli=at.find(c=>c.id===cli_id);
+    if(!cli){toast('Cliente inválido','error');return}
+  }
   const itens=VD_SKUS.filter(s=>(vdForm.skus[s].q||0)>0&&(vdForm.skus[s].v||0)>0).map(s=>({
     sku:s,qty_caixas:vdForm.skus[s].q,valor_pacote:vdForm.skus[s].v,packs_por_caixa:VD_PACKS[s],
     subtotal:vdForm.skus[s].q*VD_PACKS[s]*vdForm.skus[s].v
