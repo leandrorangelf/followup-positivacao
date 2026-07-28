@@ -3306,6 +3306,7 @@ function vdCardHTML(p,grupo){
   const stEnd=x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Faturado parcial':'';
   const isParcialOrigem=!!p.parcial_de;
   const obsFat=String(p.faturamento_observacao||'').trim();
+  const temComentario=!!(String(p.comentario_vagner||'').trim()||String(p.comentario_fabiano||'').trim());
   return '<div class="vd-card-ped vd-card-'+(grupo||'liberado')+'" onclick="vdAbrirDet(\''+p.id+'\')">'+
     '<div class="vd-card-row"><div class="vd-card-cli">'+vdEsc(p.cliente_nome)+(p.cliente_uf?' · '+vdEsc(p.cliente_uf):'')+
       (p.origem?'<div class="vd-card-origem" style="margin-top:5px">'+vdOrigemBadgeHTML(p.origem)+'</div>':'')+'</div></div>'+
@@ -3316,6 +3317,7 @@ function vdCardHTML(p,grupo){
       (stEnd?'<span class="vd-badge '+(x.status==='parcial'?'vd-b-partial':'vd-b-done')+'">'+stEnd+'</span>':'')+
       (obsFat?'<span class="vd-badge" style="background:#FEF3C7;color:#92400E">📋 '+vdEsc(obsFat.substring(0,40))+'</span>':'')+
       (p.prazo_status==='pendente'?'<span class="vd-badge" style="background:#FEF9C3;color:#854D0E">⏳ Prazo pendente · '+vdEsc(String(p.prazo_solicitado_dias||'?'))+'d</span>':'')+
+      (temComentario?'<span class="vd-badge" style="background:#F97316;color:#fff;font-weight:800">💬 Comentário</span>':'')+
     '</div>'+
     '<div class="vd-card-resumo">'+cx+' cx pedido · '+x.faturadoCx+' fat. · '+x.saldoCx+' saldo · '+vdEsc(prazo)+'</div>'+
     vdCardDatasHTML(p)+
