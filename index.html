@@ -2862,8 +2862,6 @@ renderAdminDash=function(anoData){
     }).join('');
     return '<div class="coord-trend" aria-label="Tendência dos últimos meses">'+bars+'</div>';
   };
-  const sku=vdSkuDash(vendasMes);
-  const skuTotal=Math.max(1,Object.values(sku).reduce((s,v)=>s+v,0));
   const pendingNames=rows.flatMap(r=>r.pendentes.slice(0,3).map(cli=>({name:cli.nome,coord:r.coord})));
 
   g('dash-content').innerHTML=`<div class="dash-page-shell">
