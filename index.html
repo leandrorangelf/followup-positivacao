@@ -2358,19 +2358,19 @@ function findClienteGlobal(id){
 }
 
 renderCliCoordTabs=function(){
-  const total=COORD_KEYS.reduce((s,c)=>s+(clientesDB[c]||[]).length,0);
+  const total=CLI_OWNER_KEYS.reduce((s,c)=>s+(clientesDB[c]||[]).length,0);
   g('cli-coord-tabs').innerHTML=`<div class="client-management-toolbar">
     <input class="client-search" type="search" placeholder="Buscar cliente..." value="${cliSearchTerm}" oninput="cliSearchTerm=this.value;renderCliList()">
     <select class="client-filter" onchange="cliOwnerFilter=this.value;renderCliList()">
       <option value="todos" ${cliOwnerFilter==='todos'?'selected':''}>Todos os responsáveis</option>
-      ${COORD_KEYS.map(c=>`<option value="${c}" ${cliOwnerFilter===c?'selected':''}>${c}</option>`).join('')}
+      ${CLI_OWNER_KEYS.map(c=>`<option value="${c}" ${cliOwnerFilter===c?'selected':''}>${c}</option>`).join('')}
     </select>
     <span class="client-count">${total} clientes cadastrados</span>
   </div>`;
   if(g('cli-add-owner')){
     const atual=g('cli-add-owner').value;
-    g('cli-add-owner').innerHTML='<option value="">Responsável...</option>'+COORD_KEYS.map(c=>`<option value="${c}">${c}</option>`).join('');
-    if(COORD_KEYS.includes(atual))g('cli-add-owner').value=atual;
+    g('cli-add-owner').innerHTML='<option value="">Responsável...</option>'+CLI_OWNER_KEYS.map(c=>`<option value="${c}">${c}</option>`).join('');
+    if(CLI_OWNER_KEYS.includes(atual))g('cli-add-owner').value=atual;
   }
   if(g('cli-add-uf')&&g('cli-add-uf').options.length<=1){
     g('cli-add-uf').innerHTML='<option value="">UF...</option>'+DASH_UFS.map(uf=>`<option value="${uf}">${uf}</option>`).join('');
