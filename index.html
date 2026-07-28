@@ -3219,7 +3219,8 @@ function vdRenderCoordTabs(){
 }
 
 async function vdSetCoord(c){
-  if(!(isAdmin||isDiretoria||isFabiano())||(c!=='todos'&&!COORD_KEYS.includes(c)))return;
+  const valido=c==='todos'||COORD_KEYS.includes(c)||(c===COORD_DIRETORIA&&isAdmin);
+  if(!(isAdmin||isDiretoria||isFabiano())||!valido)return;
   vdCoordFiltro=c;
   if(c!=='todos')coordAtual=c;
   vdRenderCoordTabs();
