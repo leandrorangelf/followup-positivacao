@@ -161,6 +161,7 @@ module.exports = {
   vePrivilegiado,
   pedidoPertenceASessao,
   prazoLiberado,
+  podeDecidirPrazo,
   GENERIC_TABLES,
   SCOPED_TABLES,
   scopeQuery,
