@@ -111,6 +111,13 @@ async function salvar(session, body, res) {
     return res.status(502).json({ error: 'insert_itens_failed' });
   }
 
+  await notificar(['fabiano', 'admin'], 'pedido_criado', 'Novo pedido criado',
+    `${pedBody.cliente_nome || 'Cliente'} · ${pedBody.coordenador || session.user}`, '/vendas').catch(() => {});
+  if (pedBody.prazo_status === 'pendente') {
+    await notificar(['admin', 'vagner', 'diretoria'], 'prazo_solicitado', 'Prazo especial solicitado',
+      `${pedBody.cliente_nome || 'Pedido'} · ${pedBody.prazo_solicitado_dias || '?'} dias`, '/vendas').catch(() => {});
+  }
+
   let forecastConvertido = false;
   if (forecastOrigemId) {
     const rf = await sbJson(`/rest/v1/forecast_pedidos?id=eq.${encodeURIComponent(forecastOrigemId)}`, {
