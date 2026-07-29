@@ -215,7 +215,7 @@ async function status(session, body, res) {
 }
 
 async function prazoDecidir(session, body, res) {
-  if (!isDiretoria(session)) return res.status(403).json({ error: 'forbidden' });
+  if (!podeDecidirPrazo(session)) return res.status(403).json({ error: 'forbidden' });
   const { id, aprovar } = body;
   if (!id || typeof aprovar !== 'boolean') return res.status(400).json({ error: 'missing_fields' });
   const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=prazo_status,prazo_solicitado_dias`, { method: 'GET', headers: JSON_HEADERS });
