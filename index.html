@@ -849,6 +849,10 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir menu">Menu</button>
     <div class="topbar-title" id="topbar-title">Visão geral</div>
     <div class="topbar-period"><span>Período</span><select id="shell-mes" onchange="setMesGlobal(this.value)"></select></div>
+    <div class="topbar-sino">
+      <button class="sino-btn" onclick="sinoToggle()" aria-label="Notificações">🔔<span class="sino-badge" id="sino-badge" style="display:none">0</span></button>
+      <div class="sino-dropdown" id="sino-dropdown" style="display:none"></div>
+    </div>
   </header>
 </div>
 
