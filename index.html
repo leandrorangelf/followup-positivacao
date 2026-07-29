@@ -3045,6 +3045,7 @@ const vdPodeEditar=()=>user==='admin';
 const vdPodeEditarProprio=p=>vdPodeEditar()||user==='vagner'||(!!coordAtual&&p.coordenador===coordAtual);
 const vdPodeGerenciarGnre=()=>user==='admin'||isFabiano();
 const vdPodeFaturar=()=>user==='admin'||isFabiano();
+const vdPodeDecidirPrazo=()=>user==='admin'||user==='vagner'||isDiretoria;
 function vdParseValor(v){return Number(String(v||'').replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''))||0;}
 const VD_UFS_ISENTO_GNRE=['RJ','ES'];
 function vdGnreStatus(p){
