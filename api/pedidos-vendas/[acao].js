@@ -242,7 +242,7 @@ async function prazoDecidir(session, body, res) {
   if (!podeDecidirPrazo(session)) return res.status(403).json({ error: 'forbidden' });
   const { id, aprovar } = body;
   if (!id || typeof aprovar !== 'boolean') return res.status(400).json({ error: 'missing_fields' });
-  const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=prazo_status,prazo_solicitado_dias`, { method: 'GET', headers: JSON_HEADERS });
+  const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=prazo_status,prazo_solicitado_dias,prazo_solicitado_por,cliente_nome`, { method: 'GET', headers: JSON_HEADERS });
   if (!r.ok || !Array.isArray(r.json) || !r.json[0]) return res.status(404).json({ error: 'not_found' });
   if (r.json[0].prazo_status !== 'pendente') return res.status(409).json({ error: 'not_pending' });
   const agora = new Date().toISOString();
@@ -250,6 +250,11 @@ async function prazoDecidir(session, body, res) {
     ? { prazo_status: 'aprovado', prazo_tipo: 'parcelado', parcela_1_dias: r.json[0].prazo_solicitado_dias, parcela_2_dias: null, parcela_3_dias: null, prazo_decidido_por: session.user, prazo_decidido_em: agora }
     : { prazo_status: 'rejeitado', prazo_tipo: 'avista', parcela_1_dias: null, parcela_2_dias: null, parcela_3_dias: null, prazo_decidido_por: session.user, prazo_decidido_em: agora };
   const r2 = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(payload) });
+  if (r2.ok && r.json[0].prazo_solicitado_por) {
+    const titulo = aprovar ? 'Prazo especial aprovado' : 'Prazo especial rejeitado';
+    await notificar([r.json[0].prazo_solicitado_por], 'prazo_decidido', titulo,
+      `${r.json[0].cliente_nome || 'Pedido'} · ${r.json[0].prazo_solicitado_dias || '?'} dias`, '/vendas').catch(() => {});
+  }
   return res.status(r2.ok ? 200 : 502).json({ ok: r2.ok });
 }
 
