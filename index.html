@@ -1815,6 +1815,47 @@ function aplicarSessao(sessao){
   user=sessao.user;isAdmin=sessao.isAdmin;isDiretoria=sessao.isDiretoria;
   coordAtual=sessao.coordAtual;cliCoordAtual=sessao.cliCoordAtual;
   initPush();
+  iniciarPollNotificacoes();
+}
+let sinoNotifs=[];
+let sinoPollStarted=false;
+function iniciarPollNotificacoes(){
+  if(sinoPollStarted)return;
+  sinoPollStarted=true;
+  carregarNotificacoes();
+  setInterval(carregarNotificacoes,60000);
+}
+async function carregarNotificacoes(){
+  const r=await fetch('/api/notificacoes',{credentials:'same-origin'});
+  if(!r.ok)return;
+  const {lista,naoLidas}=await r.json();
+  sinoNotifs=Array.isArray(lista)?lista:[];
+  const badge=g('sino-badge');
+  if(naoLidas>0){badge.style.display='flex';badge.textContent=naoLidas>9?'9+':String(naoLidas);}
+  else badge.style.display='none';
+  sinoRenderDropdown();
+}
+function sinoRenderDropdown(){
+  const el=g('sino-dropdown');
+  if(!sinoNotifs.length){el.innerHTML='<div class="sino-vazio">Sem notificações</div>';return}
+  el.innerHTML=sinoNotifs.map(n=>
+    '<button class="sino-item'+(n.lida?'':' nao-lida')+'" onclick="sinoClicarNotif(\''+n.id+'\')">'+
+    '<div>'+vdEsc(n.titulo)+'</div>'+
+    (n.corpo?'<div style="color:var(--muted);font-weight:400;margin-top:2px">'+vdEsc(n.corpo)+'</div>':'')+
+    '</button>'
+  ).join('');
+}
+function sinoToggle(){
+  const el=g('sino-dropdown');
+  const abrindo=el.style.display==='none';
+  el.style.display=abrindo?'block':'none';
+  if(abrindo)carregarNotificacoes();
+}
+async function sinoClicarNotif(id){
+  g('sino-dropdown').style.display='none';
+  await fetch('/api/notificacoes',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+  carregarNotificacoes();
+  irVendas();
 }
 function urlBase64ToUint8Array(base64String){
   const padding='='.repeat((4-base64String.length%4)%4);
