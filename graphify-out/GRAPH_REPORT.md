@@ -9,17 +9,17 @@
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- Community 0
-- Community 1
-- Community 2
-- Community 3
-- Community 4
-- Community 5
-- Community 6
-- Community 7
-- Community 8
-- Community 9
-- Community 10
+- Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)
+- Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)
+- Autorizacao (authz.js)
+- Sessao & Autenticacao (auth.js, login/logout/me)
+- Login & Senhas + Testes de Authz
+- Teste: Design System
+- Teste: Dashboard
+- Teste: Copy da UI
+- Teste: Dashboard Profundidade
+- Teste: Contraste Sistema Claro
+- Config Vercel
 
 ## God Nodes (most connected - your core abstractions)
 1. `sbJson()` - 20 edges
@@ -50,43 +50,43 @@
 
 ## Communities (11 total, 1 thin omitted)
 
-### Community 0 - "Community 0"
+### Community 0 - "Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)"
 Cohesion: 0.19
 Nodes (23): isFabiano(), podeComentarPedido(), podeFaturar(), podeGerenciarGnre(), prazoLiberado(), sbJson(), comentar(), faturar() (+15 more)
 
-### Community 1 - "Community 1"
+### Community 1 - "Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)"
 Cohesion: 0.12
 Nodes (14): { GENERIC_TABLES, scopeQuery, enforceBodyOwnership, ALLOWED_PREFER }, { getSession }, { sbFetch }, { getSession }, { sbFetch, sbJson, SUPABASE_URL }, { vePrivilegiado }, { getSession }, { podeAnexarGnre, pedidoPertenceASessao } (+6 more)
 
-### Community 2 - "Community 2"
+### Community 2 - "Autorizacao (authz.js)"
 Cohesion: 0.25
 Nodes (18): { COORD_KEYS }, enforceBodyOwnership(), forecastPodeEditar(), isAdminLiteral(), isCoordenador(), isDiretoria(), isVagner(), pedidoPertenceASessao() (+10 more)
 
-### Community 3 - "Community 3"
+### Community 3 - "Sessao & Autenticacao (auth.js, login/logout/me)"
 Cohesion: 0.18
 Nodes (13): { getSession }, { isAdminLiteral, isDiretoria }, { sbJson }, { clearSessionCookie }, { getSession }, clearSessionCookie(), crypto, getSecret() (+5 more)
 
-### Community 4 - "Community 4"
+### Community 4 - "Login & Senhas + Testes de Authz"
 Cohesion: 0.18
 Nodes (10): attempts, { SENHAS_HASH, COORD_KEYS }, { sha256Hex, setSessionCookie }, sha256Hex(), COORD_KEYS, SENHAS_HASH, assert, { podeCriarPedidoVenda, podeEditarPedidoVendaProprio } (+2 more)
 
-### Community 5 - "Community 5"
+### Community 5 - "Teste: Design System"
 Cohesion: 0.33
 Nodes (5): assert, fs, html, screens, test
 
-### Community 6 - "Community 6"
+### Community 6 - "Teste: Dashboard"
 Cohesion: 0.40
 Nodes (4): assert, fs, html, test
 
-### Community 7 - "Community 7"
+### Community 7 - "Teste: Copy da UI"
 Cohesion: 0.40
 Nodes (4): assert, fs, html, test
 
-### Community 8 - "Community 8"
+### Community 8 - "Teste: Dashboard Profundidade"
 Cohesion: 0.50
 Nodes (3): assert, fs, html
 
-### Community 9 - "Community 9"
+### Community 9 - "Teste: Contraste Sistema Claro"
 Cohesion: 0.50
 Nodes (3): assert, fs, html
 
@@ -98,13 +98,13 @@ Nodes (3): assert, fs, html
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `sbJson()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`?**
+- **Why does `sbJson()` connect `Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)` to `Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)`, `Autorizacao (authz.js)`, `Sessao & Autenticacao (auth.js, login/logout/me)`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
-- **Why does `getSession()` connect `Community 3` to `Community 0`, `Community 1`?**
+- **Why does `getSession()` connect `Sessao & Autenticacao (auth.js, login/logout/me)` to `Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)`, `Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)`?**
   _High betweenness centrality (0.030) - this node is a cross-community bridge._
-- **Why does `podeEditarPedidoVendaProprio()` connect `Community 2` to `Community 0`, `Community 4`?**
+- **Why does `podeEditarPedidoVendaProprio()` connect `Autorizacao (authz.js)` to `Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)`, `Login & Senhas + Testes de Authz`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
 - **What connects `crypto`, `{ COORD_KEYS }`, `{ sbJson }` to the rest of the system?**
   _52 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Community 1` be split into smaller, more focused modules?**
+- **Should `Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)` be split into smaller, more focused modules?**
   _Cohesion score 0.12105263157894737 - nodes in this community are weakly interconnected._
