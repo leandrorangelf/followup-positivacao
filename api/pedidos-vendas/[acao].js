@@ -215,6 +215,13 @@ async function gnreManage(session, body, res) {
   const safePayload = {};
   for (const k of Object.keys(payload)) if (GNRE_MANAGE_FIELDS.has(k)) safePayload[k] = payload[k];
   const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(safePayload) });
+  if (r.ok && ['enviada', 'paga', 'isenta'].includes(safePayload.gnre_status)) {
+    const infoR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=coordenador,cliente_nome`, { method: 'GET', headers: JSON_HEADERS });
+    if (infoR.ok && Array.isArray(infoR.json) && infoR.json[0]) {
+      const labels = { enviada: 'GNRE enviada', paga: 'GNRE paga', isenta: 'GNRE isenta' };
+      await notificar([infoR.json[0].coordenador], 'gnre', labels[safePayload.gnre_status], infoR.json[0].cliente_nome || 'Pedido', '/vendas').catch(() => {});
+    }
+  }
   return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
 }
 
