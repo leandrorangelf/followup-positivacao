@@ -115,8 +115,7 @@ Se recusar ou o navegador não suportar: segue normal, sininho continua funciona
 
 ## Pontos em aberto (decidir na hora de implementar, não bloqueiam o design)
 
-- **Lista de usuários "diretoria"**: hoje diretoria é uma flag de sessão (`isDiretoria`), não necessariamente um único `session.user` fixo — precisa confirmar com quantos logins de diretoria existem (`api/_lib/senhas.js`) pra saber se `notificar(['diretoria'], ...)` já resolve ou se precisa expandir pra uma lista.
-- **Ícone/nome da notificação do SO**: usar um ícone genérico Clean Tobacco (precisa existir um `.png`/`.svg` servido estaticamente).
+- **Ícone da notificação do SO**: usar um ícone genérico Clean Tobacco (precisa existir um `.png`/`.svg` servido estaticamente) — se não houver um pronto no repo, usar um favicon simples como placeholder.
 
 ## Fora de escopo (v1)
 
