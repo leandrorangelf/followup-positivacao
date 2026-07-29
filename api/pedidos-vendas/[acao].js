@@ -5,6 +5,7 @@
 // autenticada e autorizada no servidor, com a service_role key.
 const { getSession } = require('../_lib/auth');
 const { sbJson } = require('../_lib/supabase');
+const { notificar } = require('../_lib/push');
 const {
   isAdminLiteral,
   isFabiano,
