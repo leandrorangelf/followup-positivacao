@@ -1802,6 +1802,35 @@ async function login(){
 function aplicarSessao(sessao){
   user=sessao.user;isAdmin=sessao.isAdmin;isDiretoria=sessao.isDiretoria;
   coordAtual=sessao.coordAtual;cliCoordAtual=sessao.cliCoordAtual;
+  initPush();
+}
+function urlBase64ToUint8Array(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const rawData=atob(base64);
+  const outputArray=new Uint8Array(rawData.length);
+  for(let i=0;i<rawData.length;i++)outputArray[i]=rawData.charCodeAt(i);
+  return outputArray;
+}
+async function initPush(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
+  if(localStorage.getItem('push_decidido'))return;
+  if(!confirm('Ativar notificações do navegador? Você recebe avisos de prazo, faturamento e GNRE mesmo com o app fechado.')){
+    localStorage.setItem('push_decidido','1');
+    return;
+  }
+  try{
+    const reg=await navigator.serviceWorker.register('/sw.js');
+    const keyResp=await fetch('/api/push/vapid-public-key',{credentials:'same-origin'});
+    const {publicKey}=await keyResp.json();
+    if(!publicKey){localStorage.setItem('push_decidido','1');return}
+    const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(publicKey)});
+    const json=sub.toJSON();
+    await fetch('/api/push/subscribe',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({endpoint:json.endpoint,keys:json.keys})});
+    localStorage.setItem('push_decidido','1');
+  }catch(e){
+    localStorage.setItem('push_decidido','1');
+  }
 }
 
 async function tentarRestaurarSessao(){
