@@ -1,0 +1,237 @@
+{
+  ".claude/settings.json": {
+    "mtime": 1783341975.9460175,
+    "ast_hash": "a222fedeb3cff2596556a7508e782922",
+    "semantic_hash": "a222fedeb3cff2596556a7508e782922"
+  },
+  ".claude/settings.local.json": {
+    "mtime": 1785329047.4472978,
+    "ast_hash": "b238ef592d28c168b7eded93769461af",
+    "semantic_hash": "b238ef592d28c168b7eded93769461af"
+  },
+  "api/_lib/auth.js": {
+    "mtime": 1783086943.9541347,
+    "ast_hash": "6f68d392cb862cba8a04338bc10828d5",
+    "semantic_hash": "6f68d392cb862cba8a04338bc10828d5"
+  },
+  "api/_lib/authz.js": {
+    "mtime": 1785327504.7400622,
+    "ast_hash": "e1b2a701d1aac32942020214585c7aa6",
+    "semantic_hash": "e1b2a701d1aac32942020214585c7aa6"
+  },
+  "api/_lib/senhas.js": {
+    "mtime": 1784642576.939005,
+    "ast_hash": "16264d54cccae2fa228fa29c7ff50cba",
+    "semantic_hash": "16264d54cccae2fa228fa29c7ff50cba"
+  },
+  "api/_lib/supabase.js": {
+    "mtime": 1783086951.1497264,
+    "ast_hash": "3a98d0e6f2a5b038d4d607addc05021e",
+    "semantic_hash": "3a98d0e6f2a5b038d4d607addc05021e"
+  },
+  "api/audit.js": {
+    "mtime": 1783088344.4658241,
+    "ast_hash": "73817dbaeeced152a70cd83b23f93fd3",
+    "semantic_hash": "73817dbaeeced152a70cd83b23f93fd3"
+  },
+  "api/auth/login.js": {
+    "mtime": 1783086993.1727087,
+    "ast_hash": "6ddf33df3b6433ed372d1e8df6ade031",
+    "semantic_hash": "6ddf33df3b6433ed372d1e8df6ade031"
+  },
+  "api/auth/logout.js": {
+    "mtime": 1783086997.1763225,
+    "ast_hash": "78f2796b9b306f07f6da2800891ebe5f",
+    "semantic_hash": "78f2796b9b306f07f6da2800891ebe5f"
+  },
+  "api/auth/me.js": {
+    "mtime": 1783087002.9999728,
+    "ast_hash": "7468c77c377da100984448284e0e3d85",
+    "semantic_hash": "7468c77c377da100984448284e0e3d85"
+  },
+  "api/db/[table].js": {
+    "mtime": 1783087968.3959394,
+    "ast_hash": "6819c5bf78d90d3c1107097d08a9cf8e",
+    "semantic_hash": "6819c5bf78d90d3c1107097d08a9cf8e"
+  },
+  "api/gnre/sign.js": {
+    "mtime": 1783087481.55956,
+    "ast_hash": "1586a481a39beb6cc1e7418d40977fff",
+    "semantic_hash": "1586a481a39beb6cc1e7418d40977fff"
+  },
+  "api/gnre/upload.js": {
+    "mtime": 1783089607.0030599,
+    "ast_hash": "6845267615d4032b97e9b4e7fa94446b",
+    "semantic_hash": "6845267615d4032b97e9b4e7fa94446b"
+  },
+  "api/pedidos-vendas/[acao].js": {
+    "mtime": 1785327524.3565817,
+    "ast_hash": "392715afb9e62132861c7667fb4bfb80",
+    "semantic_hash": "392715afb9e62132861c7667fb4bfb80"
+  },
+  "api/tv-data.js": {
+    "mtime": 1783088588.3418276,
+    "ast_hash": "e8a516217660b5976707a22541893abf",
+    "semantic_hash": "e8a516217660b5976707a22541893abf"
+  },
+  "supabase-anexos-gnre.sql": {
+    "mtime": 1784572323.4849377,
+    "ast_hash": "9d9d049ff62339f55f1d980ec9f0a17c",
+    "semantic_hash": "9d9d049ff62339f55f1d980ec9f0a17c"
+  },
+  "supabase-comentario-vagner.sql": {
+    "mtime": 1783006280.6225107,
+    "ast_hash": "401cadd8b9f502f93db6f68a4e8b0c08",
+    "semantic_hash": "401cadd8b9f502f93db6f68a4e8b0c08"
+  },
+  "supabase-editado-por-coord.sql": {
+    "mtime": 1784648987.8402195,
+    "ast_hash": "9673e4e9773dd01b3c0610fc58939033",
+    "semantic_hash": "9673e4e9773dd01b3c0610fc58939033"
+  },
+  "supabase-normaliza-gnre-url.sql": {
+    "mtime": 1784572723.0703733,
+    "ast_hash": "af9fc47ab9f47910a3faec4080f7cb49",
+    "semantic_hash": "af9fc47ab9f47910a3faec4080f7cb49"
+  },
+  "supabase-prazo-aprovacao.sql": {
+    "mtime": 1785158046.398505,
+    "ast_hash": "5703684c742c7d04240bfecf51cd4023",
+    "semantic_hash": "5703684c742c7d04240bfecf51cd4023"
+  },
+  "tests/authz.test.js": {
+    "mtime": 1784724543.15584,
+    "ast_hash": "c0a373ee20768e20c937a35ec39d239f",
+    "semantic_hash": "c0a373ee20768e20c937a35ec39d239f"
+  },
+  "tests/dashboard-profundidade.test.js": {
+    "mtime": 1784654208.5017061,
+    "ast_hash": "f07fd59a0f283429bb21195dbcaaa34c",
+    "semantic_hash": "f07fd59a0f283429bb21195dbcaaa34c"
+  },
+  "tests/dashboard.test.js": {
+    "mtime": 1784567114.4608066,
+    "ast_hash": "bfe0bb8075db56f5e89823962a78e382",
+    "semantic_hash": "bfe0bb8075db56f5e89823962a78e382"
+  },
+  "tests/design-system.test.js": {
+    "mtime": 1784568312.4834516,
+    "ast_hash": "d14fbd61fc0384303c8d819f91f4a12b",
+    "semantic_hash": "d14fbd61fc0384303c8d819f91f4a12b"
+  },
+  "tests/sistema-claro-contraste.test.js": {
+    "mtime": 1784655421.409996,
+    "ast_hash": "ed4854e2c2ca1b8ec2807575707d87d3",
+    "semantic_hash": "ed4854e2c2ca1b8ec2807575707d87d3"
+  },
+  "tests/ui-copy.test.js": {
+    "mtime": 1784656472.0426383,
+    "ast_hash": "acea0dacee91e5152e586ca2f9636eca",
+    "semantic_hash": "acea0dacee91e5152e586ca2f9636eca"
+  },
+  "vercel.json": {
+    "mtime": 1783087849.0084066,
+    "ast_hash": "b43d994d336bdcba8005fd921b8b889b",
+    "semantic_hash": "b43d994d336bdcba8005fd921b8b889b"
+  },
+  "CLAUDE.md": {
+    "mtime": 1783091441.0703065,
+    "ast_hash": "ab7e94752753d35b05bd55ab77e692e7",
+    "semantic_hash": "ab7e94752753d35b05bd55ab77e692e7"
+  },
+  "TODO_CODEX.md": {
+    "mtime": 1784654208.4917588,
+    "ast_hash": "8961470d501b27cf77d3344a99ed182d",
+    "semantic_hash": "8961470d501b27cf77d3344a99ed182d"
+  },
+  "docs/superpowers/plans/2026-07-20-aba-consulta-gnre.md": {
+    "mtime": 1784574851.981794,
+    "ast_hash": "b6945c6bf902d152ef12760bbefee813",
+    "semantic_hash": "b6945c6bf902d152ef12760bbefee813"
+  },
+  "docs/superpowers/plans/2026-07-20-sistema-visual-hibrido.md": {
+    "mtime": 1784566756.5533328,
+    "ast_hash": "13487c92345c22dbab0e831644ee97d3",
+    "semantic_hash": "13487c92345c22dbab0e831644ee97d3"
+  },
+  "docs/superpowers/plans/2026-07-21-dashboard-profundidade.md": {
+    "mtime": 1784653412.1496985,
+    "ast_hash": "1a590a0d8c196babf8c9b06432c3869f",
+    "semantic_hash": "1a590a0d8c196babf8c9b06432c3869f"
+  },
+  "docs/superpowers/plans/2026-07-21-sistema-claro-contraste.md": {
+    "mtime": 1784654985.5040936,
+    "ast_hash": "5b02b18e9e3a2786a64c66f694b1f9f1",
+    "semantic_hash": "5b02b18e9e3a2786a64c66f694b1f9f1"
+  },
+  "docs/superpowers/plans/2026-07-27-prazo-aprovacao-totalizador-es.md": {
+    "mtime": 1785157696.1909997,
+    "ast_hash": "fa6ccef0640e390b41412799b942cd05",
+    "semantic_hash": "fa6ccef0640e390b41412799b942cd05"
+  },
+  "docs/superpowers/plans/2026-07-28-diretoria-vendas-diretas-dashboard.md": {
+    "mtime": 1785257791.6434474,
+    "ast_hash": "be987ed90948da12326d012bd81491c3",
+    "semantic_hash": "be987ed90948da12326d012bd81491c3"
+  },
+  "docs/superpowers/specs/2026-07-13-faturamento-parcial-operacional-design.md": {
+    "mtime": 1783946310.7461536,
+    "ast_hash": "775a636f987c86ed99b64e2f63a64811",
+    "semantic_hash": "775a636f987c86ed99b64e2f63a64811"
+  },
+  "docs/superpowers/specs/2026-07-20-aba-consulta-gnre-design.md": {
+    "mtime": 1784574507.791356,
+    "ast_hash": "76428755d2072d1aa4c00c5a774b56ad",
+    "semantic_hash": "76428755d2072d1aa4c00c5a774b56ad"
+  },
+  "docs/superpowers/specs/2026-07-20-premiacao-tab-icon-system-design.md": {
+    "mtime": 1784552688.439371,
+    "ast_hash": "48081dd9450e374fe5ca9f3240e1c81f",
+    "semantic_hash": "48081dd9450e374fe5ca9f3240e1c81f"
+  },
+  "docs/superpowers/specs/2026-07-20-sistema-visual-hibrido-design.md": {
+    "mtime": 1784566754.0522902,
+    "ast_hash": "6e6401ab36af75ff45900c21554c604c",
+    "semantic_hash": "6e6401ab36af75ff45900c21554c604c"
+  },
+  "docs/superpowers/specs/2026-07-21-dashboard-profundidade-design.md": {
+    "mtime": 1784653340.8185945,
+    "ast_hash": "1052d880574ab1a48509d9a250e496fd",
+    "semantic_hash": "1052d880574ab1a48509d9a250e496fd"
+  },
+  "docs/superpowers/specs/2026-07-21-sistema-claro-contraste-design.md": {
+    "mtime": 1784654926.8404076,
+    "ast_hash": "909ff9658a6a80f1e477158dc53da55f",
+    "semantic_hash": "909ff9658a6a80f1e477158dc53da55f"
+  },
+  "docs/superpowers/specs/2026-07-27-prazo-e-totalizador-es-design.md": {
+    "mtime": 1785156545.3525243,
+    "ast_hash": "8bc76ac30ef0bece133d8a26ef0be3e0",
+    "semantic_hash": "8bc76ac30ef0bece133d8a26ef0be3e0"
+  },
+  "docs/superpowers/specs/2026-07-28-diretoria-vendas-diretas-dashboard-design.md": {
+    "mtime": 1785257499.098174,
+    "ast_hash": "d3f9b14c8f60bf726b496b7876468673",
+    "semantic_hash": "d3f9b14c8f60bf726b496b7876468673"
+  },
+  "index.html": {
+    "mtime": 1785327550.2695086,
+    "ast_hash": "a90a776457bd5b32d787e1c61f8796c6",
+    "semantic_hash": "a90a776457bd5b32d787e1c61f8796c6"
+  },
+  "skill-observations/cross-cutting-principles.md": {
+    "mtime": 1784653233.366842,
+    "ast_hash": "e5515c9a6c724e1542c928e031eea379",
+    "semantic_hash": "e5515c9a6c724e1542c928e031eea379"
+  },
+  "skill-observations/last-review-date.txt": {
+    "mtime": 1784653234.6038144,
+    "ast_hash": "79ee5d90fb4821850f8ddaed6694e4bb",
+    "semantic_hash": "79ee5d90fb4821850f8ddaed6694e4bb"
+  },
+  "skill-observations/log.md": {
+    "mtime": 1784653232.139534,
+    "ast_hash": "4c37c69f172b34ecbbc5dd482f37eba2",
+    "semantic_hash": "4c37c69f172b34ecbbc5dd482f37eba2"
+  }
+}
