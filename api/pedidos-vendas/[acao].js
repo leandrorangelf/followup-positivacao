@@ -19,6 +19,7 @@ const {
   vePrivilegiado,
   pedidoPertenceASessao,
   prazoLiberado,
+  podeDecidirPrazo,
 } = require('../_lib/authz');
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
