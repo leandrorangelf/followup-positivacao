@@ -8,7 +8,6 @@ const { sbJson } = require('../_lib/supabase');
 const {
   isAdminLiteral,
   isFabiano,
-  isDiretoria,
   podeEditarPedidoVenda,
   podeEditarPedidoVendaProprio,
   podeCriarPedidoVenda,
