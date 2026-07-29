@@ -83,7 +83,7 @@ async function notificar(usuarios, tipo, titulo, corpo, url) {
 Chamado de dentro de `api/pedidos-vendas/[acao].js`, depois que a escrita no Supabase já foi confirmada (nunca antes — notificação é best-effort, não pode bloquear nem falhar a ação principal):
 
 - `salvar` (sem `id`, criação nova) → `notificar(['fabiano','admin'], 'pedido_criado', ...)`
-- `salvar` (`ped.prazo_status==='pendente'`) → `notificar(['admin','vagner','diretoria-users'], 'prazo_solicitado', ...)` — diretoria não é um `session.user` literal (é uma flag `isDiretoria`), então a lista de destinatários desse papel precisa vir de `COORD_KEYS`-like constante ou da tabela de sessões conhecidas; resolver isso na implementação (ver "Pontos em aberto" abaixo).
+- `salvar` (`ped.prazo_status==='pendente'`) → `notificar(['admin','vagner','diretoria'], 'prazo_solicitado', ...)` — `'diretoria'` é o único login desse perfil em `api/_lib/senhas.js` (`SENHAS_HASH['diretoria']`), então `session.user==='diretoria'` já bate 1:1 com o valor gravado em `usuario`.
 - `prazo-decidir` → `notificar([prazo_solicitado_por], 'prazo_decidido', ...)`
 - `faturar`, quando o resultado fecha o pedido (`status` final `faturado`) → `notificar([pedido.coordenador], 'pedido_faturado', ...)`
 - `gnre-manage` (ações que marcam enviada/paga/isenta) → `notificar([pedido.coordenador], 'gnre', ...)`
