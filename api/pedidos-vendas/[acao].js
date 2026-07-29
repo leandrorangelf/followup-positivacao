@@ -67,6 +67,10 @@ async function salvar(session, body, res) {
 
     const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedPatch) });
     if (!r.ok) return res.status(502).json({ error: 'patch_pedido_failed' });
+    if (pedPatch.prazo_status === 'pendente') {
+      await notificar(['admin', 'vagner', 'diretoria'], 'prazo_solicitado', 'Prazo especial solicitado',
+        `${ped.cliente_nome || 'Pedido'} · ${pedPatch.prazo_solicitado_dias || '?'} dias`, '/vendas').catch(() => {});
+    }
 
     const del = await sbJson(`/rest/v1/pedidos_vendas_itens?pedido_id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: JSON_HEADERS });
     if (!del.ok) {
