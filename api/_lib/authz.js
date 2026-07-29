@@ -59,6 +59,9 @@ async function pedidoPertenceASessao(session, pedidoId) {
   return r.json[0].coordenador === session.user;
 }
 
+// Quem pode aprovar/rejeitar uma solicitação de prazo maior: admin, Vagner ou diretoria.
+const podeDecidirPrazo = (s) => isAdminLiteral(s) || isVagner(s) || isDiretoria(s);
+
 // Bloqueia faturar/GNRE enquanto o pedido tem uma solicitação de prazo maior
 // aguardando decisão do Renan (login diretoria) — evita que o Fabiano avance
 // o fluxo com um prazo ainda não autorizado.
