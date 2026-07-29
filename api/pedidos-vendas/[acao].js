@@ -139,6 +139,12 @@ async function faturar(session, body, res) {
 
   const patch = { ...pedidoPatch, faturado_por: session.user };
   const r2 = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(patch) });
+  if (r2.ok && (patch.status === 'faturado' || patch.status === 'entregue')) {
+    const infoR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=coordenador,cliente_nome`, { method: 'GET', headers: JSON_HEADERS });
+    if (infoR.ok && Array.isArray(infoR.json) && infoR.json[0]) {
+      await notificar([infoR.json[0].coordenador], 'pedido_faturado', 'Pedido faturado', infoR.json[0].cliente_nome || 'Pedido', '/vendas').catch(() => {});
+    }
+  }
   return res.status(200).json({ ok: true, pedidoOk: r2.ok });
 }
 
