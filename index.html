@@ -2901,10 +2901,10 @@ function dashOverviewHTML(cfg){
 }
 function dashMainKpisHTML(cfg){
   const pctPend=dashPct(cfg.pendentes,cfg.totalAtivos);
-  // ponytail: só as 2 métricas que não repetem o hero (volume/meta/saldo já aparecem lá em cima)
-  return '<div class="dash-kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))">'+
+  return '<div class="dash-kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))">'+
     dashKpiHTML('Positivação',dashPct(cfg.comPedido,cfg.totalAtivos)+'%','',dashCx(cfg.comPedido)+' de '+dashCx(cfg.totalAtivos)+' clientes ativos','good','good')+
     dashKpiHTML('Clientes sem venda',dashCx(cfg.pendentes),'',pctPend+'% da carteira ativa','danger','bad')+
+    dashKpiHTML('Caixas faturadas',dashCx(cfg.faturadoCx||0),'cx','já saíram no período','info','good')+
   '</div>';
 }
 
