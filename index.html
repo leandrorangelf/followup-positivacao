@@ -1473,6 +1473,11 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <button class="admin-tab" data-rel-st="pendente" onclick="relFiltrarStatus('pendente')">⏳ Pendentes</button>
         <button class="admin-tab" data-rel-st="faturado" onclick="relFiltrarStatus('faturado')">✅ Faturados</button>
       </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+        <button class="admin-tab active" data-rel-tp="todos" onclick="relFiltrarTipo('todos')">Todos</button>
+        <button class="admin-tab" data-rel-tp="in" onclick="relFiltrarTipo('in')" style="color:#166534"><span class="dot-status dot-in"></span> IN</button>
+        <button class="admin-tab" data-rel-tp="off" onclick="relFiltrarTipo('off')" style="color:#92400E"><span class="dot-status dot-off"></span> OFF</button>
+      </div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="rel-tabs">
       <button class="admin-tab active" onclick="relAba('pedidos')" id="rel-tab-pedidos">Pedidos</button>
