@@ -5219,6 +5219,12 @@ function relFiltrarStatus(v){
   relAba(relAbaAtual);
 }
 
+function relFiltrarTipo(v){
+  relTipoFiltro=v;
+  document.querySelectorAll('[data-rel-tp]').forEach(b=>b.classList.toggle('active',b.dataset.relTp===v));
+  relAba(relAbaAtual);
+}
+
 function relAba(aba){
   relAbaAtual=aba;
   document.querySelectorAll('[id^="rel-tab-"]').forEach(b=>b.classList.toggle('active',b.id==='rel-tab-'+aba));
