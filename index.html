@@ -3685,10 +3685,19 @@ function forecastConverterPedido(id){
   show('s-vfn');renderNav('nav-vfn','vendas');updateSideNav('vendas');
 }
 
-function vdPopCliSel(){
+function vdPopCliSel(forcarId){
   const ehDiretoria=coordAtual===COORD_DIRETORIA;
   const at=ehDiretoria?CLI_OWNER_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
-  g('vf-cli').innerHTML='<option value="">— Selecione —</option>'+
+  // Ao editar um pedido antigo, o cliente pode ter ficado inativo (ou mudado de mês de corte)
+  // desde então — clientesAtivos() olha só o mês atual, então sem isso ele some da lista e o
+  // <select> fica em branco mesmo com o pedido apontando pra ele.
+  let extraHTML='';
+  if(forcarId&&!at.some(c=>c.id===forcarId)){
+    const todos=ehDiretoria?CLI_OWNER_KEYS.flatMap(c=>clientesDB[c]||[]):(clientesDB[coordAtual]||[]);
+    const extra=todos.find(c=>c.id===forcarId);
+    if(extra)extraHTML='<option value="'+vdEsc(extra.id)+'">'+vdEsc(extra.nome)+(extra.uf?' ('+vdEsc(extra.uf)+')':'')+' · inativo</option>';
+  }
+  g('vf-cli').innerHTML='<option value="">— Selecione —</option>'+extraHTML+
     at.map(c=>'<option value="'+vdEsc(c.id)+'">'+vdEsc(c.nome)+(c.uf?' ('+vdEsc(c.uf)+')':'')+'</option>').join('');
 }
 
