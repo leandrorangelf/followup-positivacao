@@ -3427,7 +3427,7 @@ function vdComplementarPedido(id){
   });
   g('vfn-title').textContent='Complementar Pedido';
   g('vf-btn-save').textContent='Salvar Pedido Complementar';
-  vdPopCliSel();
+  vdPopCliSel(p.cliente_id);
   setTimeout(()=>{
     const sel=g('vf-cli');if(sel){sel.value=p.cliente_id;vdOnCliSel();}
     g('vf-obs').value='Remanescente de pedido parcial faturado em '+new Date(p.faturado_at||p.updated_at||'').toLocaleDateString('pt-BR');
