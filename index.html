@@ -5780,17 +5780,29 @@ function relRenderPedidos(lista){
 function relTotalizadorSkuHTML(listaCompleta){
   const lista=listaCompleta.filter(p=>!vdEhDistribuidora(p));
   if(!lista.length)return'';
-  const skuTots={};VD_SKUS.forEach(s=>skuTots[s]=0);
-  lista.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(skuTots[i.sku]!==undefined)skuTots[i.sku]+=Number(i.qty_caixas||0);}));
-  const rows=Object.entries(skuTots).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const skuTots={};VD_SKUS.forEach(s=>skuTots[s]={total:0,in:0,off:0});
+  lista.forEach(p=>{
+    const tipo=vdTipoPedido(p);
+    (p.pedidos_vendas_itens||[]).forEach(i=>{
+      if(!skuTots[i.sku])return;
+      const q=Number(i.qty_caixas||0);
+      skuTots[i.sku].total+=q;
+      skuTots[i.sku][tipo==='off'?'off':'in']+=q;
+    });
+  });
+  const rows=Object.entries(skuTots).filter(([,v])=>v.total>0).sort((a,b)=>b[1].total-a[1].total);
   if(!rows.length)return'';
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
     <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por SKU <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas que saíram da Fábrica no período, por produto (não inclui distribuidoras)</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
-      ${rows.map(([sku,cx])=>`<div style="border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+      ${rows.map(([sku,v])=>`<div style="border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${vdEsc(sku)}</div>
-        <div style="font-size:22px;font-weight:800">${relFmt(cx)}</div>
+        <div style="font-size:22px;font-weight:800">${relFmt(v.total)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;display:flex;justify-content:center;gap:8px">
+          <span><span class="dot-status dot-in"></span> ${relFmt(v.in)}</span>
+          <span><span class="dot-status dot-off"></span> ${relFmt(v.off)}</span>
+        </div>
       </div>`).join('')}
     </div>
   </div>`;
