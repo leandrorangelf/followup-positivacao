@@ -5784,29 +5784,14 @@ function relTotalizadorSkuHTML(listaCompleta){
   lista.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(skuTots[i.sku]!==undefined)skuTots[i.sku]+=Number(i.qty_caixas||0);}));
   const rows=Object.entries(skuTots).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
   if(!rows.length)return'';
-  const totCx=rows.reduce((s,[,v])=>s+v,0);
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
     <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por SKU <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas que saíram da Fábrica no período, por produto (não inclui distribuidoras)</span></div>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:12px">
-        <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
-          <th style="text-align:left;padding:8px 10px">SKU</th>
-          <th style="text-align:center;padding:8px">Total cx</th>
-          <th style="text-align:center;padding:8px">% do total</th>
-        </tr></thead>
-        <tbody>${rows.map(([sku,cx],i)=>`<tr style="border-top:1px solid var(--border);${i%2===1?'background:var(--soft)':''}">
-          <td style="padding:7px 10px;font-weight:600">${vdEsc(sku)}</td>
-          <td style="padding:7px 8px;text-align:center;font-weight:700">${relFmt(cx)}</td>
-          <td style="padding:7px 8px;text-align:center;color:var(--muted)">${totCx>0?Math.round(cx/totCx*100):0}%</td>
-        </tr>`).join('')}
-        <tr style="background:var(--border);font-weight:700;font-size:11px;border-top:2px solid var(--text)">
-          <td style="padding:8px 10px">TOTAL</td>
-          <td style="text-align:center;padding:8px">${relFmt(totCx)}</td>
-          <td style="text-align:center;padding:8px">100%</td>
-        </tr>
-        </tbody>
-      </table>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
+      ${rows.map(([sku,cx])=>`<div style="border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${vdEsc(sku)}</div>
+        <div style="font-size:22px;font-weight:800">${relFmt(cx)}</div>
+      </div>`).join('')}
     </div>
   </div>`;
 }
