@@ -5792,7 +5792,7 @@ function relTotalizadorClientesHTML(listaCompleta){
   const totSaldo=rows.reduce((s,r)=>s+r.saldoCx,0);
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— soma de todos os pedidos do período, por cliente</span></div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— soma dos pedidos de Fábrica no período, por cliente (não inclui distribuidoras)</span></div>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px">
         <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
