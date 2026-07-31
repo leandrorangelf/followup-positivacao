@@ -5773,7 +5773,8 @@ function relRenderPedidos(lista){
   </div>
   ${relTotalizadorClientesHTML(lista)}`;
 }
-function relTotalizadorClientesHTML(lista){
+function relTotalizadorClientesHTML(listaCompleta){
+  const lista=listaCompleta.filter(p=>!vdEhDistribuidora(p));
   const porCliente={};
   lista.forEach(p=>{
     const k=p.cliente_nome;
