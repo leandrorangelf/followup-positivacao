@@ -5770,6 +5770,58 @@ function relRenderPedidos(lista){
         </tr>
       </tbody>
     </table>
+  </div>
+  ${relTotalizadorClientesHTML(lista)}`;
+}
+function relTotalizadorClientesHTML(lista){
+  const porCliente={};
+  lista.forEach(p=>{
+    const k=p.cliente_nome;
+    if(!porCliente[k])porCliente[k]={nome:k,uf:p.cliente_uf,coord:p.coordenador,pedidos:0,cx:0,faturadoCx:0,saldoCx:0};
+    const x=vdResumoPedido(p);
+    porCliente[k].pedidos++;
+    porCliente[k].cx+=x.pedidoCx;
+    porCliente[k].faturadoCx+=x.faturadoCx;
+    porCliente[k].saldoCx+=x.saldoCx;
+  });
+  const rows=Object.values(porCliente).sort((a,b)=>b.cx-a.cx);
+  if(!rows.length)return'';
+  const totCx=rows.reduce((s,r)=>s+r.cx,0);
+  const totFat=rows.reduce((s,r)=>s+r.faturadoCx,0);
+  const totSaldo=rows.reduce((s,r)=>s+r.saldoCx,0);
+  return`
+  <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— soma de todos os pedidos do período, por cliente</span></div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
+          <th style="text-align:left;padding:8px 10px">Cliente</th>
+          <th style="text-align:left;padding:8px">UF</th>
+          <th style="text-align:left;padding:8px">Coord</th>
+          <th style="text-align:center;padding:8px">Pedidos</th>
+          <th style="text-align:center;padding:8px">Total cx</th>
+          <th style="text-align:center;padding:8px">Faturado cx</th>
+          <th style="text-align:center;padding:8px">Saldo cx</th>
+        </tr></thead>
+        <tbody>${rows.map((r,i)=>`<tr style="border-top:1px solid var(--border);${i%2===1?'background:var(--soft)':''}">
+          <td style="padding:7px 10px;font-weight:600">${vdEsc(r.nome)}</td>
+          <td style="padding:7px 8px;color:var(--muted)">${vdEsc(r.uf||'—')}</td>
+          <td style="padding:7px 8px;font-size:11px;color:var(--muted)">${vdEsc(r.coord)}</td>
+          <td style="padding:7px 8px;text-align:center">${r.pedidos}</td>
+          <td style="padding:7px 8px;text-align:center;font-weight:700">${relFmt(r.cx)}</td>
+          <td style="padding:7px 8px;text-align:center;color:var(--green)">${relFmt(r.faturadoCx)}</td>
+          <td style="padding:7px 8px;text-align:center;color:${r.saldoCx?'var(--warning)':'var(--muted)'}">${relFmt(r.saldoCx)}</td>
+        </tr>`).join('')}
+        <tr style="background:var(--border);font-weight:700;font-size:11px;border-top:2px solid var(--text)">
+          <td colspan="3" style="padding:8px 10px">TOTAL — ${rows.length} cliente(s)</td>
+          <td style="text-align:center;padding:8px">${lista.length}</td>
+          <td style="text-align:center;padding:8px">${relFmt(totCx)}</td>
+          <td style="text-align:center;padding:8px">${relFmt(totFat)}</td>
+          <td style="text-align:center;padding:8px">${relFmt(totSaldo)}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>`;
 }
 
