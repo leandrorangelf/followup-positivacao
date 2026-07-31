@@ -1733,9 +1733,9 @@ function premPendentesHTML(r){
   </div>`;
 }
 
-function renderPremiacaoContent(rows,isGestor){
+function renderPremiacaoContent(rows,isGestor,volumeDiretoria){
   const fmtR=v=>'R$ '+v.toLocaleString('pt-BR');
-  const totalVolume=rows.reduce((s,r)=>s+r.volume,0);
+  const totalVolume=rows.reduce((s,r)=>s+r.volume,0)+(volumeDiretoria||0);
 
   let equipeHTML='';
   if(isGestor){
