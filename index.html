@@ -5084,7 +5084,8 @@ async function irRelatorios(){
   const sel=g('rel-coord');
   if(sel){
     sel.innerHTML='<option value="todos">Todos os coordenadores</option>'+
-      COORD_KEYS.map(c=>`<option value="${vdEsc(c)}">${vdEsc(c)}</option>`).join('');
+      COORD_KEYS.map(c=>`<option value="${vdEsc(c)}">${vdEsc(c)}</option>`).join('')+
+      (isAdmin||isDiretoria?`<option value="${vdEsc(COORD_DIRETORIA)}">${vdEsc(COORD_DIRETORIA)}</option>`:'');
     if(!isAdmin&&!isDiretoria&&user!=='vagner'){sel.value=coordAtual;sel.disabled=true;}
     else{sel.value=relCoordFiltro;sel.disabled=false;}
   }
