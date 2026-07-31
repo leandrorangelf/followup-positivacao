@@ -5187,6 +5187,7 @@ function relForecastFiltrado(){
 function relFiltroResumo(lista){
   const partes=[relMesFiltro==='todos'?'ano inteiro':(relMesFiltro==='atual'?MESES[mesAtual]:MESES[Number(relMesFiltro)]),relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro];
   if(relOrigemFiltro!=='todos')partes.push(relOrigemFiltro==='fabrica'?'fábrica':relOrigemFiltro==='dist'?'distribuidoras':relOrigemFiltro);
+  if(relTipoFiltro!=='todos')partes.push(relTipoFiltro.toUpperCase());
   if(relStatusFiltro!=='todos')partes.push(relStatusFiltro);
   if(relBuscaFiltro.trim())partes.push('busca: '+relBuscaFiltro.trim());
   return `${anoAtual} · ${partes.join(' · ')} · ${lista.length} registro(s)`;
