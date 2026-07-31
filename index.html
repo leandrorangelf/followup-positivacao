@@ -3675,7 +3675,7 @@ function forecastConverterPedido(id){
   (p.forecast_pedidos_itens||[]).forEach(i=>{if(vdForm.skus[i.sku])vdForm.skus[i.sku].q=Number(i.qty_caixas||0)});
   g('vfn-title').textContent='Converter Forecast em Pedido';
   g('vf-btn-save').textContent='Salvar Pedido Real';
-  vdPopCliSel();
+  vdPopCliSel(p.cliente_id);
   g('vf-cli').value=p.cliente_id||'';
   vdRenderSkus();
   vdSetTipo(vdForm.tipo);vdSetPrazo(vdForm.prazo);
