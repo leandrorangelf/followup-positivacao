@@ -2986,6 +2986,7 @@ renderCoordDash=function(anoData){
   const pendentes=ativos.filter(c=>totCliD(dadosLocais,c.nome)===0);
   const pctPos=ativos.length?Math.round(comPedido/ativos.length*100):0;
   const pctMeta=meta?Math.round(volume/meta*100):0;
+  const faturadoCx=vendasDashboard.reduce((s,p)=>s+vdResumoPedido(p).faturadoCx,0);
   const parciais=ativos.filter(c=>{
     const d=dadosLocais[c.nome]||{};
     const preenchidos=VD_SKUS.filter(sk=>(d[sk.toLowerCase()]||0)>0).length;
