@@ -4262,7 +4262,7 @@ function vdEditarPedido(){
   if(bar&&lbl&&p.origem){bar.style.display='flex';lbl.innerHTML=vdOrigemBadgeHTML(p.origem);const gp=vdOrigemGrupo(p.origem);bar.style.background=gp==='fabrica'?'#F0FDF4':gp==='new'?'var(--purple-soft)':'#EDE9FE';bar.style.borderColor=gp==='fabrica'?'#86EFAC':gp==='new'?'#BFDBFE':'#C4B5FD';}
   else if(bar)bar.style.display='none';
   g('vf-btn-save').textContent='Salvar Alterações';
-  vdPopCliSel();
+  vdPopCliSel(p.cliente_id);
   setTimeout(()=>{g('vf-cli').value=p.cliente_id},10);
   vdRenderSkus();
   vdSetTipo(p.tipo);vdSetPrazo(vdForm.prazo,vdForm.dias);
