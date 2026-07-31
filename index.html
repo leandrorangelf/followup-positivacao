@@ -2949,7 +2949,7 @@ renderAdminDash=function(anoData){
   g('dash-content').innerHTML=`<div class="dash-page-shell">
     ${dashCommandHTML('Dashboard','Leitura executiva do mês, com meta, carteira, faturamento e atenções comerciais.','<span class="dash-chip">Equipe <strong>'+dashCx(totalAtivos)+' clientes</strong></span>')}
     ${dashOverviewHTML({vendas:vendasMes,volume,meta})}
-    ${dashMainKpisHTML({volume,meta,comPedido,totalAtivos,pendentes})}
+    ${dashMainKpisHTML({volume,meta,comPedido,totalAtivos,pendentes,faturadoCx})}
     <div class="dash-grid">
       <section class="panel"><div class="panel-title-row"><div class="panel-title">Evolução de vendas realizadas</div><div class="panel-note">Cumprimento da meta em ${anoAtual}</div></div><div class="trend-bars"><div class="trend-meta-line" style="bottom:${trendMetaBottom}px"><span>100% meta</span></div>${trend.map((t,i)=>`<div class="trend-col"><div class="trend-volume">${t.vol.toLocaleString('pt-BR')} cx</div><div class="trend-value">${t.pct}%</div><div class="trend-bar" style="height:${Math.max(4,Math.round(t.pct/trendMax*185))}px;opacity:${i===mesAtual?1:.42}"></div><div class="trend-label">${t.label}</div></div>`).join('')}</div></section>
       <aside class="panel"><div class="panel-title-row"><div class="panel-title">Atenção hoje</div><div class="attention-count">${pendentes}</div></div><div class="attention-list">${pendingNames.slice(0,7).map(p=>`<div class="attention-row"><span><strong>${p.name}</strong><br><small style="color:var(--muted)">${p.coord}</small></span><span class="attention-count">Sem venda</span></div>`).join('')||'<div class="empty">Nenhuma pendência no período.</div>'}</div></aside>
