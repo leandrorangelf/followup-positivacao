@@ -2846,7 +2846,7 @@ function premPanelHTML(rows,volumeTotal){
         ${proxHTML}
       </div>`;
     }).join('');
-    const metaEquipe=GESTOR_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
+    const metaEquipe=COORD_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
     const pctEquipe=metaEquipe>0?Math.round((volumeTotal||0)/metaEquipe*100):0;
     const valorLeandro=premValorGestor(pctEquipe);
     const barEquipeW=Math.min(100,pctEquipe);
