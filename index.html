@@ -2398,11 +2398,11 @@ excluirMeta=async function(coord,index){
 
 restaurarMetasPadrao=async function(){
   if(!confirm('Restaurar todas as metas originais?'))return;
-  [...COORD_KEYS,...GESTOR_KEYS].forEach(c=>METAS[c]=[...METAS_PADRAO[c]]);
+  COORD_KEYS.forEach(c=>METAS[c]=[...METAS_PADRAO[c]]);
   persistMetas();
   renderMetas();
   const tarefas=[];
-  for(const coord of [...COORD_KEYS,...GESTOR_KEYS]){
+  for(const coord of COORD_KEYS){
     for(let mes=0;mes<12;mes++)tarefas.push(salvarMetaBanco(coord,mes,METAS[coord][mes]));
   }
   const resultados=await Promise.all(tarefas);
