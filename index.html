@@ -1744,7 +1744,7 @@ function renderPremiacaoContent(rows,isGestor,volumeDiretoria){
 
   let equipeHTML='';
   if(isGestor){
-    const metaEquipe=GESTOR_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
+    const metaEquipe=COORD_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
     const pctEquipe=metaEquipe>0?Math.round(totalVolume/metaEquipe*100):0;
     const valorGestor=premValorGestor(pctEquipe);
     const barEquipeW=Math.min(100,pctEquipe);
