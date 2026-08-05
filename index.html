@@ -5110,6 +5110,7 @@ let relSelecionados=new Set();
 
 async function irRelatorios(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
+  relSelecionados.clear();
   show('s-relatorios');
   updateSideNav('relatorios');
   const sel=g('rel-coord');
