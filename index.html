@@ -5787,7 +5787,7 @@ function relRenderPedidos(lista){
           const distSkuTots={};VD_SKUS.forEach(s=>distSkuTots[s]=0);
           distPed.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(distSkuTots[i.sku]!==undefined)distSkuTots[i.sku]+=Number(i.qty_caixas||0);}));
           return `<tr style="background:#F0FDF4;font-size:11px;font-weight:700;border-top:1px solid #86EFAC">
-  <td colspan="7" style="padding:6px 10px;color:#166534">🏭 Subtotal Fábrica — ${fabPed.length} pedidos</td>
+  <td colspan="8" style="padding:6px 10px;color:#166534">🏭 Subtotal Fábrica — ${fabPed.length} pedidos</td>
   ${VD_SKUS.map(s=>`<td style="text-align:center;padding:6px 5px;color:#166534">${fabSkuTots[s]||'—'}</td>`).join('')}
   <td style="text-align:center;padding:6px;color:#166534">${fabCxTot}</td><td></td>
 </tr>
