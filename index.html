@@ -5911,6 +5911,28 @@ function relToggleSel(id){
   else relSelecionados.add(id);
   relRenderBarraSelecao();
 }
+function relRenderAdicionar(q){
+  const box=g('rel-add-resultados');
+  if(!box)return;
+  if(!q||!q.trim()){box.innerHTML='';return;}
+  const query=relNorm(q);
+  const found=relDados.filter(p=>relTextoPedido(p).includes(query)).slice(0,12);
+  if(!found.length){box.innerHTML='<div class="empty" style="padding:8px 0">Nenhuma venda encontrada.</div>';return;}
+  box.innerHTML=found.map(p=>{
+    const x=vdResumoPedido(p);
+    const marcado=relSelecionados.has(p.id);
+    return`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-top:1px solid var(--border);font-size:12px">
+      <div style="min-width:0;font-weight:600">${vdEsc(p.cliente_nome)} <span style="color:var(--muted);font-weight:400">· ${vdEsc(p.coordenador)} · ${MESES[p.mes]?.slice(0,3)||'—'} · ${x.pedidoCx} cx</span></div>
+      <button class="${marcado?'secondary-btn':'primary-btn'}" style="flex:0 0 auto" onclick="relToggleSelAdd('${p.id}',this)">${marcado?'✓ Adicionado':'+ Adicionar'}</button>
+    </div>`;
+  }).join('');
+}
+function relToggleSelAdd(id,btn){
+  relToggleSel(id);
+  const marcado=relSelecionados.has(id);
+  btn.textContent=marcado?'✓ Adicionado':'+ Adicionar';
+  btn.className=marcado?'secondary-btn':'primary-btn';
+}
 function relToggleSelTodos(marcar){
   relListaFiltrada(true).forEach(p=>marcar?relSelecionados.add(p.id):relSelecionados.delete(p.id));
   relAba(relAbaAtual);
