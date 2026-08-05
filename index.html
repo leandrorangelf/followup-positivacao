@@ -5734,6 +5734,7 @@ function relRenderPedidos(lista){
     }).join('');
     const mes=MESES[p.mes]?.slice(0,3)||'—';
     return`<tr style="border-top:1px solid var(--border);${i%2===1?'background:var(--soft)':''}">
+      <td style="padding:7px 8px"><input type="checkbox" onchange="relToggleSel('${p.id}')" ${relSelecionados.has(p.id)?'checked':''}></td>
       <td style="padding:7px 8px;color:var(--muted);font-size:11px">${i+1}</td>
       <td style="padding:7px 10px;font-weight:600">${vdEsc(p.cliente_nome)}</td>
       <td style="padding:7px 8px;color:var(--muted)">${vdEsc(p.cliente_uf||'—')}</td>
