@@ -5899,8 +5899,34 @@ function relTotalizadorClientesHTML(listaCompleta){
   </div>`;
 }
 
+function relToggleSel(id){
+  if(relSelecionados.has(id))relSelecionados.delete(id);
+  else relSelecionados.add(id);
+  relRenderBarraSelecao();
+}
+function relToggleSelTodos(marcar){
+  relListaFiltrada(true).forEach(p=>marcar?relSelecionados.add(p.id):relSelecionados.delete(p.id));
+  relAba(relAbaAtual);
+}
+function relLimparSelecao(){
+  relSelecionados.clear();
+  relAba(relAbaAtual);
+}
+function relRenderBarraSelecao(){
+  const bar=g('rel-sel-bar');
+  if(!bar)return;
+  const n=relSelecionados.size;
+  bar.style.display=(relAbaAtual==='pedidos'&&n>0)?'flex':'none';
+  if(n>0)g('rel-sel-count').textContent=n+' pedido(s) selecionado(s) para o relatório personalizado';
+}
+function relImprimirSelecionados(){
+  const lista=relDados.filter(p=>relSelecionados.has(p.id));
+  relImprimirLista(lista,'Relatório Personalizado');
+}
 function relImprimirPedidos(){
-  const lista=relListaFiltrada(true);
+  relImprimirLista(relListaFiltrada(true),'Relatório de Pedidos');
+}
+function relImprimirLista(lista,titulo){
   const RSKUS=VD_SKUS;
   const skuTots={};RSKUS.forEach(s=>skuTots[s]=0);
   lista.forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{if(skuTots[i.sku]!==undefined)skuTots[i.sku]+=Number(i.qty_caixas||0);}));
