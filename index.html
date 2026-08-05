@@ -5249,6 +5249,7 @@ function relAba(aba){
   else if(aba==='faturado')relRenderFaturado(lista);
   else if(aba==='forecast')relRenderForecast(forecast);
   else if(aba==='pedidos')relRenderPedidos(lista);
+  relRenderBarraSelecao();
 }
 
 function relFmt(n){return Number(n||0).toLocaleString('pt-BR');}
