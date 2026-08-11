@@ -4135,7 +4135,7 @@ async function vdReverterFaturamento(id){
     if(!respRev.ok||!jRev.ok){toast('Erro ao reverter itens','error');return}
     if(!jRev.pedidoOk){toast('Itens revertidos, mas status do pedido não atualizou','error')}
     else toast('Faturamento revertido','ok');
-    auditLog('reverter_faturamento','Reversão de faturamento · '+p.cliente_nome,'Coordenador: '+p.coordenador+' · '+x.faturadoCx+' cx revertidas para pendente');
+    auditLog('reverter_faturamento','Reversão de faturamento · '+p.cliente_nome,'Coordenador: '+p.coordenador+' · '+x.faturadoCx+' cx revertidas para pendente',p.id);
     await vdCarregar();
   }catch(e){toast('Erro ao reverter faturamento','error');}
 }
