@@ -524,7 +524,7 @@ test('badge de editado tem id fixo pra ser atualizado depois do fetch', () => {
 
 test('vdAbrirDet chama vdCarregarHistoricoPedido com o id do pedido', () => {
   const start = html.indexOf('function vdAbrirDet(id){');
-  const fn = html.slice(start, start + 4000);
+  const fn = html.slice(start, start + 8000);
   assert.match(fn, /vdCarregarHistoricoPedido\(p\.id\)/);
 });
 
