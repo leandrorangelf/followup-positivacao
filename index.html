@@ -4031,7 +4031,7 @@ async function vdSalvarComentario(){
     }
     p[campo]=txt||null;
     if(vdDetAtual&&vdDetAtual.id===p.id)vdDetAtual=p;
-    auditLog('editar','Comentario do '+autor+' · '+p.cliente_nome,txt||'Comentario removido');
+    auditLog('editar','Comentario do '+autor+' · '+p.cliente_nome,txt||'Comentario removido',p.id);
     toast(txt?'Comentario salvo':'Comentario removido','ok');
     vdFecharComentario();
     vdRenderKanban();
