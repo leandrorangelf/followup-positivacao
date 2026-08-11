@@ -86,7 +86,7 @@ test('GET sem pedido_id continua exigindo admin/diretoria', async () => {
 });
 
 test('GET sem pedido_id libera admin (comportamento atual preservado)', async () => {
-  global.fetch = async () => ({ ok: true, text: async () => JSON.stringify([]) });
+  global.fetch = async () => ({ ok: true, status: 200, text: async () => JSON.stringify([]) });
   const res = mockRes();
   await handler(req({ user: 'admin' }, 'GET', '/api/audit', undefined), res);
   assert.equal(res.statusCode, 200);
