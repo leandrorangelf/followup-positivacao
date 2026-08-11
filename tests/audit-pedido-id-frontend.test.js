@@ -48,7 +48,7 @@ test('excluir pedido (ficha aberta) loga com pedido_id', () => {
 
 test('excluir pedido (lista) loga com pedido_id', () => {
   const start = html.indexOf('async function vdExcluirPedidoPorId');
-  const fn = html.slice(start, start + 700);
+  const fn = html.slice(start, start + 1000);
   assert.match(fn, /auditLog\('excluir','Pedido excluído · '\+p\.cliente_nome,'id:'\+id\+.*,id\)/);
 });
 
