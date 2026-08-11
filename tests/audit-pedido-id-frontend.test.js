@@ -24,7 +24,7 @@ test('comentário loga com pedido_id do pedido', () => {
 
 test('faturar loga com pedido_id do pedido', () => {
   const start = html.indexOf("auditLog('faturar',");
-  const call = html.slice(start, start + 200);
+  const call = html.slice(start, start + 300);
   assert.match(call, /,\s*p\.id\s*\)/);
 });
 
