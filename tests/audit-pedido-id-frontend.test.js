@@ -12,9 +12,9 @@ test('auditLog aceita pedidoId e manda pedido_id no body', () => {
 });
 
 test('criar/editar pedido loga com pedidoId', () => {
-  const start = html.indexOf("auditLog(acao,\n      (acao==='criar'");
+  const start = html.indexOf("auditLog(acao,");
   assert.ok(start !== -1, 'call site de criar/editar pedido não encontrado');
-  const call = html.slice(start, start + 250);
+  const call = html.slice(start, start + 300);
   assert.match(call, /,\s*pedidoId\s*\)/);
 });
 
