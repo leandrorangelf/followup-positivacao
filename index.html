@@ -4186,7 +4186,7 @@ async function vdAtualizarGnre(id,payload,msg){
   const respGnre=await fetch('/api/pedidos-vendas/gnre-manage',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,payload})});
   const jGnre=await respGnre.json().catch(()=>({}));
   if(!respGnre.ok||!jGnre.ok){toast('Erro ao atualizar GNRE. Rode o SQL de GNRE no Supabase.','error');return}
-  auditLog('editar','GNRE atualizada · '+p.cliente_nome,'Status: '+(payload.gnre_status||vdGnreStatus(p))+(payload.gnre_valor!=null?' · Valor: '+vdFmt(payload.gnre_valor):''));
+  auditLog('editar','GNRE atualizada · '+p.cliente_nome,'Status: '+(payload.gnre_status||vdGnreStatus(p))+(payload.gnre_valor!=null?' · Valor: '+vdFmt(payload.gnre_valor):''),id);
   toast(msg||'GNRE atualizada','ok');
   await vdCarregar();
 }
