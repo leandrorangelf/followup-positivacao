@@ -4105,7 +4105,8 @@ async function vdSalvarFaturamento(){
     else toast(completo?'Pedido faturado por completo':'Faturamento parcial registrado','ok');
     auditLog('faturar',
       (completo?'Faturamento completo':'Faturamento parcial')+' · '+p.cliente_nome,
-      'Coordenador: '+p.coordenador+' · '+totalAgora+' cx faturadas agora · saldo restante: '+Math.max(0,x.saldoCx-totalAgora)+' cx'
+      'Coordenador: '+p.coordenador+' · '+totalAgora+' cx faturadas agora · saldo restante: '+Math.max(0,x.saldoCx-totalAgora)+' cx',
+      p.id
     );
     vdFecharFaturamento();await vdCarregar();
   }finally{
