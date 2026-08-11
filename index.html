@@ -4637,7 +4637,7 @@ function nomeUsuarioLog(u){
   const labels={admin:'Leandro',vagner:'Vagner',fabiano:'Fabiano',diretoria:'Diretoria','Igor Cater':'Igor Cater','Marcio Vit':'Marcio Vit','Vitor Valle':'Vitor Valle','Rosana':'Rosana'};
   return labels[u]||u||'Usuário';
 }
-async function auditLog(acao, descricao, detalhes){
+async function auditLog(acao, descricao, detalhes, pedidoId){
   // Log é paralelo: nunca pode impedir a ação principal do sistema.
   if(!user||isDiretoria)return;
   const acaoSegura=['criar','editar','excluir','faturar'].includes(acao)?acao:'criar';
@@ -4645,7 +4645,7 @@ async function auditLog(acao, descricao, detalhes){
     await fetch('/api/audit',{
       method:'POST',credentials:'same-origin',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({acao:acaoSegura,descricao,detalhes:detalhes||null})
+      body:JSON.stringify({acao:acaoSegura,descricao,detalhes:detalhes||null,pedido_id:pedidoId||null})
     });
   }catch(e){console.warn('Log não registrado:',e);}
 }
