@@ -4215,10 +4215,12 @@ async function vdMarcarGnreIsenta(id){
 }
 
 async function vdDecidirPrazo(id,aprovar){
+  const p=vdPedidos.find(x=>x.id===id);
   const resp=await fetch('/api/pedidos-vendas/prazo-decidir',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,aprovar})});
   const j=await resp.json().catch(()=>({}));
   if(!resp.ok||!j.ok){toast('Erro ao decidir prazo','error');return}
   toast(aprovar?'Prazo aprovado':'Prazo rejeitado — pedido volta pra à vista','ok');
+  auditLog('editar',(aprovar?'Prazo aprovado':'Prazo rejeitado')+(p?' · '+p.cliente_nome:''),'Decidido por '+user,id);
   vdFecharDet();await vdCarregar();
 }
 async function vdAprovarPrazo(id){await vdDecidirPrazo(id,true)}
