@@ -58,7 +58,7 @@ test('restaurar pedido loga com pedido_id', () => {
 
 test('decisão de prazo agora gera log com pedido_id', () => {
   const start = html.indexOf('async function vdDecidirPrazo');
-  const fn = html.slice(start, start + 500);
+  const fn = html.slice(start, start + 700);
   assert.match(fn, /auditLog\('editar'/);
   assert.match(fn, /,\s*id\s*\)/);
 });
