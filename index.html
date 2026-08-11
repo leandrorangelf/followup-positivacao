@@ -4750,7 +4750,7 @@ async function logRestaurarPedido(id){
   const respRest=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo:'restaurar'})});
   const jRest=await respRest.json().catch(()=>({}));
   if(!respRest.ok||!jRest.ok){toast('Erro ao restaurar pedido','error');return;}
-  auditLog('editar','Pedido restaurado','id:'+id);
+  auditLog('editar','Pedido restaurado','id:'+id,id);
   toast('Pedido restaurado com sucesso!','success');
   carregarLog();
 }
