@@ -55,9 +55,9 @@ test('GET com pedido_id permite coordenador dono do pedido', async () => {
   global.fetch = async (url) => {
     const u = String(url);
     if (u.includes('/rest/v1/pedidos_vendas')) {
-      return { ok: true, text: async () => JSON.stringify([{ coordenador: 'Marcio Vit' }]) };
+      return { ok: true, status: 200, text: async () => JSON.stringify([{ coordenador: 'Marcio Vit' }]) };
     }
-    return { ok: true, text: async () => JSON.stringify([{ id: 1, acao: 'editar' }]) };
+    return { ok: true, status: 200, text: async () => JSON.stringify([{ id: 1, acao: 'editar' }]) };
   };
   const res = mockRes();
   await handler(req({ user: 'Marcio Vit' }, 'GET', '/api/audit?pedido_id=eq.ped-123', undefined), res);
