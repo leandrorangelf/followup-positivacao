@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "id": "vercel",
+      "label": "vercel.json",
+      "file_type": "code",
+      "source_file": "vercel.json",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "vercel_rewrites",
+      "label": "rewrites",
+      "file_type": "code",
+      "source_file": "vercel.json",
+      "source_location": "L2",
+      "_origin": "ast"
+    }
+  ],
+  "edges": [
+    {
+      "source": "vercel",
+      "target": "vercel_rewrites",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "vercel.json",
+      "source_location": "L2",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
