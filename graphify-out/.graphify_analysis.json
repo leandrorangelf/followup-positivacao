@@ -1,0 +1,646 @@
+{
+  "communities": {
+    "0": [
+      "api_lib_authz",
+      "api_lib_authz_coord_keys",
+      "api_lib_authz_enforcebodyownership",
+      "api_lib_authz_forecastpodeeditar",
+      "api_lib_authz_isadminliteral",
+      "api_lib_authz_iscoordenador",
+      "api_lib_authz_isdiretoria",
+      "api_lib_authz_isfabiano",
+      "api_lib_authz_isvagner",
+      "api_lib_authz_pedidopertenceasessao",
+      "api_lib_authz_pedsomenteleitura",
+      "api_lib_authz_podeanexargnre",
+      "api_lib_authz_podecomentarpedido",
+      "api_lib_authz_podecriarpedidovenda",
+      "api_lib_authz_podedecidirprazo",
+      "api_lib_authz_podeeditarpedidovendaproprio",
+      "api_lib_authz_podefaturar",
+      "api_lib_authz_podegerenciargnre",
+      "api_lib_authz_prazoliberado",
+      "api_lib_authz_sbjson",
+      "api_lib_authz_scoped_tables",
+      "api_lib_authz_scopequery",
+      "api_lib_authz_veprivilegiado",
+      "api_lib_push_notificar",
+      "api_lib_supabase_sbjson",
+      "api_pedidos_vendas_acao",
+      "api_pedidos_vendas_acao_comentar",
+      "api_pedidos_vendas_acao_faturar",
+      "api_pedidos_vendas_acao_getsession",
+      "api_pedidos_vendas_acao_gnre_manage_fields",
+      "api_pedidos_vendas_acao_gnreattach",
+      "api_pedidos_vendas_acao_gnremanage",
+      "api_pedidos_vendas_acao_isadminliteral_isfabiano_podeeditarpedidovenda_podeeditarpedidovendaproprio_podecriarpedidovenda_podefaturar_podegerenciargnre_podeanexargnre_podecomentarpedido_veprivilegiado_pedidopertenceasessao_prazoliberado_podedecidirprazo",
+      "api_pedidos_vendas_acao_json_headers",
+      "api_pedidos_vendas_acao_minimal",
+      "api_pedidos_vendas_acao_notificar",
+      "api_pedidos_vendas_acao_origem",
+      "api_pedidos_vendas_acao_prazodecidir",
+      "api_pedidos_vendas_acao_renamecliente",
+      "api_pedidos_vendas_acao_representation",
+      "api_pedidos_vendas_acao_reverterfaturamento",
+      "api_pedidos_vendas_acao_salvar",
+      "api_pedidos_vendas_acao_sbjson",
+      "api_pedidos_vendas_acao_status",
+      "api_pedidos_vendas_acao_upsert_minimal"
+    ],
+    "1": [
+      "api__lib_auth_sessao",
+      "api_auth_logout",
+      "api_auth_logout_clearsessioncookie",
+      "api_auth_me",
+      "api_auth_me_getsession",
+      "api_lib_auth",
+      "api_lib_auth_clearsessioncookie",
+      "api_lib_auth_crypto",
+      "api_lib_auth_getsecret",
+      "api_lib_auth_getsession",
+      "api_lib_auth_parsecookies",
+      "api_lib_auth_setsessioncookie",
+      "api_lib_auth_sign",
+      "api_lib_auth_verify",
+      "api_notificacoes",
+      "api_notificacoes_getsession",
+      "api_notificacoes_sbjson",
+      "api_push_acao",
+      "api_push_acao_getsession",
+      "api_push_acao_sbjson",
+      "tests_notificacoes_endpoint_test",
+      "tests_notificacoes_endpoint_test_assert",
+      "tests_notificacoes_endpoint_test_auth",
+      "tests_notificacoes_endpoint_test_handler",
+      "tests_notificacoes_endpoint_test_mock",
+      "tests_notificacoes_endpoint_test_mockres",
+      "tests_notificacoes_endpoint_test_test",
+      "tests_push_endpoint_test",
+      "tests_push_endpoint_test_assert",
+      "tests_push_endpoint_test_auth",
+      "tests_push_endpoint_test_handler",
+      "tests_push_endpoint_test_mock",
+      "tests_push_endpoint_test_mockres",
+      "tests_push_endpoint_test_test"
+    ],
+    "2": [
+      "api__lib_authz_pedidopertencaasessao",
+      "api_db_table",
+      "api_db_table_generic_tables_scopequery_enforcebodyownership_allowed_prefer",
+      "api_db_table_getsession",
+      "api_db_table_sbfetch",
+      "api_gnre_sign",
+      "api_gnre_sign_getsession",
+      "api_gnre_sign_sbfetch_sbjson_supabase_url",
+      "api_gnre_sign_veprivilegiado",
+      "api_gnre_upload",
+      "api_gnre_upload_getsession",
+      "api_gnre_upload_podeanexargnre_pedidopertenceasessao",
+      "api_gnre_upload_readrawbody",
+      "api_gnre_upload_sbfetch",
+      "api_lib_authz_allowed_prefer",
+      "api_lib_authz_generic_tables",
+      "api_lib_supabase",
+      "api_lib_supabase_sbfetch",
+      "api_lib_supabase_servicekey",
+      "api_tv_data",
+      "api_tv_data_sbjson",
+      "claude_md_telas_principais"
+    ],
+    "3": [
+      "index_html_aplicarsessao",
+      "index_html_carregardashboard",
+      "index_html_carregarrealizadometas",
+      "index_html_carregartv",
+      "index_html_coordrow",
+      "index_html_dashmapcolor",
+      "index_html_dashrendermapabrasil",
+      "index_html_irdash",
+      "index_html_irpremiacao",
+      "index_html_irtv",
+      "index_html_login",
+      "index_html_navto",
+      "index_html_renderadmindash",
+      "index_html_rendercoorddash",
+      "index_html_rendernav",
+      "index_html_show",
+      "index_html_tentarrestaurarsessao",
+      "index_html_tvmapcolor",
+      "index_html_tvrendermapabrasil",
+      "index_html_vdlistadashboard",
+      "index_html_vdskuqtdpanelhtml",
+      "todo_codex_md_task1_dashboard_charts"
+    ],
+    "4": [
+      "api__lib_authz_enforcebodyownership",
+      "api__lib_authz_scopequery",
+      "claude_md_arquitetura_seguranca",
+      "claude_md_hook_autocommit",
+      "docs_superpowers_plans_2026_07_20_aba_consulta_gnre_aba_gnre",
+      "docs_superpowers_plans_2026_07_20_aba_consulta_gnre_gnrecarregar",
+      "docs_superpowers_plans_2026_07_20_aba_consulta_gnre_gnrerender",
+      "docs_superpowers_plans_2026_07_20_aba_consulta_gnre_irgnre",
+      "docs_superpowers_plans_2026_07_20_aba_consulta_gnre_plan",
+      "docs_superpowers_specs_2026_07_20_aba_consulta_gnre_design_aba_gnre",
+      "docs_superpowers_specs_2026_07_20_aba_consulta_gnre_design_filtro_cliente_gnre",
+      "docs_superpowers_specs_2026_07_20_aba_consulta_gnre_design_filtro_status_gnre",
+      "docs_superpowers_specs_2026_07_27_prazo_e_totalizador_es_design_totalizador_estoque_es",
+      "index_html_vdpodeeditar",
+      "index_html_vdsalvarpedido",
+      "index_vdabrirdet",
+      "index_vdabrirgnrearquivo",
+      "index_vdehdistribuidora",
+      "index_vdgnrebadgehtml",
+      "index_vdresumopedido",
+      "index_vdtotalizadores"
+    ],
+    "5": [
+      "docs_superpowers_specs_2026_07_20_premiacao_tab_icon_system_design_aba_premiacao",
+      "docs_superpowers_specs_2026_07_20_premiacao_tab_icon_system_design_coord_salario_fixo",
+      "docs_superpowers_specs_2026_07_21_dashboard_profundidade_design_coluna_tendencia",
+      "docs_superpowers_specs_2026_07_21_dashboard_profundidade_design_profundidade_dos_graficos",
+      "docs_superpowers_specs_2026_07_21_dashboard_profundidade_design_trendmax",
+      "docs_superpowers_specs_2026_07_28_diretoria_vendas_diretas_dashboard_design_linha_expansivel_sku_mix",
+      "docs_superpowers_specs_2026_07_28_diretoria_vendas_diretas_dashboard_design_pseudo_coordenador_diretoria",
+      "docs_superpowers_specs_2026_08_11_historico_pedido_design_audit_log_pedido_id",
+      "docs_superpowers_specs_2026_08_11_historico_pedido_design_badge_editado_por",
+      "docs_superpowers_specs_2026_08_11_historico_pedido_design_historico_de_pedido",
+      "index_auditlog",
+      "index_calcpremiacao",
+      "index_coord_keys",
+      "index_renderadmindash",
+      "index_renderadminprem",
+      "index_rendercoorddash",
+      "index_renderpremiacao",
+      "index_vdpopclisel",
+      "index_vdrendercoordtabs",
+      "index_vdsalvarpedido",
+      "index_vdsetcoord"
+    ],
+    "6": [
+      "api_lib_push",
+      "api_lib_push_ensurevapid",
+      "api_lib_push_sbjson",
+      "api_lib_push_webpush",
+      "tests_pedidos_vendas_notificacoes_test",
+      "tests_pedidos_vendas_notificacoes_test_assert",
+      "tests_pedidos_vendas_notificacoes_test_auth",
+      "tests_pedidos_vendas_notificacoes_test_handler",
+      "tests_pedidos_vendas_notificacoes_test_mock",
+      "tests_pedidos_vendas_notificacoes_test_mockres",
+      "tests_pedidos_vendas_notificacoes_test_notificarcalls",
+      "tests_pedidos_vendas_notificacoes_test_push",
+      "tests_pedidos_vendas_notificacoes_test_req",
+      "tests_pedidos_vendas_notificacoes_test_test",
+      "tests_push_test",
+      "tests_push_test_assert",
+      "tests_push_test_notificar",
+      "tests_push_test_test",
+      "tests_push_test_webpush"
+    ],
+    "7": [
+      "docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_plan",
+      "docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_prazo_aprovacao_feature",
+      "docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_prazodecidir_fn",
+      "docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_prazoliberado_fn",
+      "docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_supabase_sql",
+      "docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_totalizador_es_feature",
+      "docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_vddecidirprazo_fn",
+      "docs_superpowers_plans_2026_07_29_notificacoes_web_push_notificar_fn",
+      "docs_superpowers_plans_2026_07_29_notificacoes_web_push_plan",
+      "docs_superpowers_plans_2026_07_29_notificacoes_web_push_push_notification_system",
+      "docs_superpowers_plans_2026_07_29_notificacoes_web_push_sino_topbar",
+      "docs_superpowers_plans_2026_07_29_notificacoes_web_push_sw_js",
+      "docs_superpowers_plans_2026_07_29_notificacoes_web_push_webpush_dependency",
+      "docs_superpowers_plans_2026_08_11_historico_pedido_audit_log_pedido_id",
+      "docs_superpowers_plans_2026_08_11_historico_pedido_auditlog_fn",
+      "docs_superpowers_plans_2026_08_11_historico_pedido_plan",
+      "docs_superpowers_plans_2026_08_11_historico_pedido_vdcarregarhistoricopedido_fn",
+      "docs_superpowers_plans_2026_08_11_historico_pedido_vddecidirprazo_fn"
+    ],
+    "8": [
+      "api__lib_authz_pedidopertenceasessao",
+      "api_audit",
+      "api_audit_getsession",
+      "api_audit_isadminliteral_isdiretoria_pedidopertenceasessao",
+      "api_audit_sbjson",
+      "index_html_auditlog",
+      "index_html_registraratividade",
+      "tests_audit_pedido_id_test",
+      "tests_audit_pedido_id_test_assert",
+      "tests_audit_pedido_id_test_auth",
+      "tests_audit_pedido_id_test_handler",
+      "tests_audit_pedido_id_test_mock",
+      "tests_audit_pedido_id_test_mockres",
+      "tests_audit_pedido_id_test_req",
+      "tests_audit_pedido_id_test_test"
+    ],
+    "9": [
+      "api__lib_senhas_coord_keys",
+      "api_auth_login",
+      "api_auth_login_attempts",
+      "api_auth_login_senhas_hash_coord_keys",
+      "api_auth_login_sha256hex_setsessioncookie",
+      "api_lib_auth_sha256hex",
+      "api_lib_senhas",
+      "api_lib_senhas_coord_keys",
+      "api_lib_senhas_senhas_hash",
+      "tests_authz_test",
+      "tests_authz_test_assert",
+      "tests_authz_test_mockpedido",
+      "tests_authz_test_podecriarpedidovenda_podeeditarpedidovendaproprio",
+      "tests_authz_test_senhas_hash",
+      "tests_authz_test_test"
+    ],
+    "10": [
+      "docs_superpowers_plans_2026_07_20_sistema_visual_hibrido_design_tokens_unification",
+      "docs_superpowers_plans_2026_07_20_sistema_visual_hibrido_plan",
+      "docs_superpowers_plans_2026_07_20_sistema_visual_hibrido_tests_design_system_test_js",
+      "docs_superpowers_plans_2026_07_21_dashboard_profundidade_coord_trend_sparkline",
+      "docs_superpowers_plans_2026_07_21_dashboard_profundidade_plan",
+      "docs_superpowers_plans_2026_07_21_dashboard_profundidade_tests_dashboard_profundidade_test_js",
+      "docs_superpowers_plans_2026_07_21_dashboard_profundidade_trend_meta_line",
+      "docs_superpowers_plans_2026_07_21_sistema_claro_contraste_light_theme_tokens",
+      "docs_superpowers_plans_2026_07_21_sistema_claro_contraste_plan",
+      "docs_superpowers_plans_2026_07_21_sistema_claro_contraste_semantic_performance_highlight",
+      "docs_superpowers_plans_2026_07_21_sistema_claro_contraste_tests_sistema_claro_contraste_test_js",
+      "docs_superpowers_plans_2026_07_28_diretoria_vendas_diretas_dashboard_coord_diretoria_pseudo",
+      "docs_superpowers_plans_2026_07_28_diretoria_vendas_diretas_dashboard_expandable_coord_row",
+      "docs_superpowers_plans_2026_07_28_diretoria_vendas_diretas_dashboard_plan"
+    ],
+    "11": [
+      "api__lib_authz_isdiretoria",
+      "api__lib_authz_prazoliberado",
+      "api__lib_push_notificar",
+      "api_pedidos_vendas__acao__prazo_decidir",
+      "api_pedidos_vendas__acao__salvar",
+      "docs_superpowers_specs_2026_07_27_prazo_e_totalizador_es_design_filtro_aguardando_aprovacao_prazo",
+      "docs_superpowers_specs_2026_07_27_prazo_e_totalizador_es_design_prazo_com_aprovacao",
+      "docs_superpowers_specs_2026_07_27_prazo_e_totalizador_es_design_prazo_status_colunas",
+      "docs_superpowers_specs_2026_07_29_notificacoes_web_push_design_notificacoes_table",
+      "docs_superpowers_specs_2026_07_29_notificacoes_web_push_design_notificacoes_web_push",
+      "docs_superpowers_specs_2026_07_29_notificacoes_web_push_design_push_subscriptions_table",
+      "docs_superpowers_specs_2026_07_29_notificacoes_web_push_design_sininho_topbar",
+      "docs_superpowers_specs_2026_07_29_notificacoes_web_push_design_sw_js"
+    ],
+    "12": [
+      "docs_superpowers_specs_2026_07_20_sistema_visual_hibrido_design_cor_roxo_acao",
+      "docs_superpowers_specs_2026_07_20_sistema_visual_hibrido_design_sistema_visual_hibrido",
+      "docs_superpowers_specs_2026_07_20_sistema_visual_hibrido_design_token_root_css",
+      "docs_superpowers_specs_2026_07_20_sistema_visual_hibrido_design_tv_excecao",
+      "docs_superpowers_specs_2026_07_21_sistema_claro_contraste_design_cor_roxo_selecao",
+      "docs_superpowers_specs_2026_07_21_sistema_claro_contraste_design_cores_semanticas",
+      "docs_superpowers_specs_2026_07_21_sistema_claro_contraste_design_sistema_claro_contraste_semantico"
+    ],
+    "13": [
+      "api__lib_authz_generic_tables",
+      "api__lib_supabase_fetch",
+      "api_db__table_",
+      "api_pedidos_vendas__acao_",
+      "claude_md_sb_helper",
+      "index_html_sb"
+    ],
+    "14": [
+      "index_html_dashanaliseclientes",
+      "index_html_dashinteligenciahtml",
+      "index_html_dashintelkpishtml",
+      "index_html_dashstatusrecompra",
+      "todo_codex_md_task2_painel_cliente",
+      "todo_codex_md_task3_fotos_produto"
+    ],
+    "15": [
+      "tests_design_system_test",
+      "tests_design_system_test_assert",
+      "tests_design_system_test_fs",
+      "tests_design_system_test_html",
+      "tests_design_system_test_screens",
+      "tests_design_system_test_test"
+    ],
+    "16": [
+      "docs_superpowers_specs_2026_07_13_faturamento_parcial_operacional_design_faturamento_parcial_operacional",
+      "docs_superpowers_specs_2026_07_13_faturamento_parcial_operacional_design_filtro_faturados_parciais",
+      "docs_superpowers_specs_2026_07_13_faturamento_parcial_operacional_design_filtro_pendentes",
+      "docs_superpowers_specs_2026_07_13_faturamento_parcial_operacional_design_kanban_faturado_entregue",
+      "index_qty_faturada"
+    ],
+    "17": [
+      "package",
+      "package_dependencies",
+      "package_dependencies_web_push",
+      "package_name",
+      "package_private"
+    ],
+    "18": [
+      "tests_audit_pedido_id_frontend_test",
+      "tests_audit_pedido_id_frontend_test_assert",
+      "tests_audit_pedido_id_frontend_test_fs",
+      "tests_audit_pedido_id_frontend_test_html",
+      "tests_audit_pedido_id_frontend_test_test"
+    ],
+    "19": [
+      "tests_dashboard_test",
+      "tests_dashboard_test_assert",
+      "tests_dashboard_test_fs",
+      "tests_dashboard_test_html",
+      "tests_dashboard_test_test"
+    ],
+    "20": [
+      "tests_historico_pedido_ui_test",
+      "tests_historico_pedido_ui_test_assert",
+      "tests_historico_pedido_ui_test_fs",
+      "tests_historico_pedido_ui_test_html",
+      "tests_historico_pedido_ui_test_test"
+    ],
+    "21": [
+      "tests_push_frontend_test",
+      "tests_push_frontend_test_assert",
+      "tests_push_frontend_test_fs",
+      "tests_push_frontend_test_html",
+      "tests_push_frontend_test_test"
+    ],
+    "22": [
+      "tests_sino_notificacoes_test",
+      "tests_sino_notificacoes_test_assert",
+      "tests_sino_notificacoes_test_fs",
+      "tests_sino_notificacoes_test_html",
+      "tests_sino_notificacoes_test_test"
+    ],
+    "23": [
+      "tests_ui_copy_test",
+      "tests_ui_copy_test_assert",
+      "tests_ui_copy_test_fs",
+      "tests_ui_copy_test_html",
+      "tests_ui_copy_test_test"
+    ],
+    "24": [
+      "tests_dashboard_profundidade_test",
+      "tests_dashboard_profundidade_test_assert",
+      "tests_dashboard_profundidade_test_fs",
+      "tests_dashboard_profundidade_test_html"
+    ],
+    "25": [
+      "tests_sistema_claro_contraste_test",
+      "tests_sistema_claro_contraste_test_assert",
+      "tests_sistema_claro_contraste_test_fs",
+      "tests_sistema_claro_contraste_test_html"
+    ],
+    "26": [
+      "tests_sw_test",
+      "tests_sw_test_assert",
+      "tests_sw_test_fs",
+      "tests_sw_test_test"
+    ],
+    "27": [
+      "index_html_gnrecarregar",
+      "index_html_irgnre",
+      "index_html_irregistro"
+    ],
+    "28": [
+      "index_html_vdabrirfaturamento",
+      "index_html_vdpodefaturar",
+      "index_html_vdsalvarfaturamento"
+    ],
+    "29": [
+      "index_html_vdatualizargnre",
+      "index_html_vdmarcargnreenviada",
+      "index_html_vdmarcargnrepaga"
+    ],
+    "30": [
+      "skill_observations_cross_cutting_principles_md",
+      "skill_observations_last_review_date_txt",
+      "skill_observations_log_md"
+    ],
+    "31": [
+      "docs_superpowers_specs_2026_07_20_premiacao_tab_icon_system_design_sistema_de_icones_svg",
+      "index_icon"
+    ],
+    "32": [
+      "index_html_vddecidirprazo",
+      "index_html_vdpodedecidirprazo"
+    ],
+    "33": [
+      "index_html_vdexportarpdf",
+      "index_html_vdexportarpedidopdf"
+    ],
+    "34": [
+      "index_html_vdpodegerenciargnre",
+      "index_html_vduploadgnrestorage"
+    ],
+    "35": [
+      "vercel",
+      "vercel_rewrites"
+    ],
+    "36": [
+      "claude_md_perfis_usuario"
+    ],
+    "37": [
+      "index_html_carregarmetas"
+    ],
+    "38": [
+      "index_html_dashmainkpishtml"
+    ],
+    "39": [
+      "index_html_dashoverviewhtml"
+    ],
+    "40": [
+      "index_html_forecastpodeeditar"
+    ],
+    "41": [
+      "index_html_setmesglobal"
+    ],
+    "42": [
+      "sw"
+    ]
+  },
+  "cohesion": {
+    "0": 0.13232323232323231,
+    "1": 0.0784313725490196,
+    "2": 0.11255411255411256,
+    "3": 0.1038961038961039,
+    "4": 0.1,
+    "5": 0.10476190476190476,
+    "6": 0.10526315789473684,
+    "7": 0.11764705882352941,
+    "8": 0.13333333333333333,
+    "9": 0.1619047619047619,
+    "10": 0.14285714285714285,
+    "11": 0.19230769230769232,
+    "12": 0.3333333333333333,
+    "13": 0.4,
+    "14": 0.4,
+    "15": 0.3333333333333333,
+    "16": 0.4,
+    "17": 0.4,
+    "18": 0.4,
+    "19": 0.4,
+    "20": 0.4,
+    "21": 0.4,
+    "22": 0.4,
+    "23": 0.4,
+    "24": 0.5,
+    "25": 0.5,
+    "26": 0.5,
+    "27": 0.6666666666666666,
+    "28": 0.6666666666666666,
+    "29": 0.6666666666666666,
+    "30": 0.6666666666666666,
+    "31": 1.0,
+    "32": 1.0,
+    "33": 1.0,
+    "34": 1.0,
+    "35": 1.0,
+    "36": 1.0,
+    "37": 1.0,
+    "38": 1.0,
+    "39": 1.0,
+    "40": 1.0,
+    "41": 1.0,
+    "42": 1.0
+  },
+  "gods": [
+    {
+      "id": "api_lib_supabase_sbjson",
+      "label": "sbJson()",
+      "degree": 24
+    },
+    {
+      "id": "api_lib_auth_getsession",
+      "label": "getSession()",
+      "degree": 11
+    },
+    {
+      "id": "api_lib_authz_veprivilegiado",
+      "label": "vePrivilegiado()",
+      "degree": 11
+    },
+    {
+      "id": "api_pedidos_vendas_acao_status",
+      "label": "status()",
+      "degree": 11
+    },
+    {
+      "id": "api_lib_authz_isadminliteral",
+      "label": "isAdminLiteral()",
+      "degree": 10
+    },
+    {
+      "id": "api_lib_authz_isfabiano",
+      "label": "isFabiano()",
+      "degree": 9
+    },
+    {
+      "id": "api_lib_authz_isvagner",
+      "label": "isVagner()",
+      "degree": 9
+    },
+    {
+      "id": "api_lib_push_notificar",
+      "label": "notificar()",
+      "degree": 9
+    },
+    {
+      "id": "api_pedidos_vendas_acao_salvar",
+      "label": "salvar()",
+      "degree": 8
+    },
+    {
+      "id": "api_lib_authz_isdiretoria",
+      "label": "isDiretoria()",
+      "degree": 7
+    }
+  ],
+  "surprises": [
+    {
+      "source": "vdPodeEditar()",
+      "target": "scopeQuery (authz.js)",
+      "source_files": [
+        "index.html",
+        "CLAUDE.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "semantically_similar_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; semantically similar concepts with no structural link"
+    },
+    {
+      "source": "Task 1 — profundidade dos gráficos + legibilidade do SKU no Dashboard",
+      "target": "Hook .claude/settings.json (auto commit+push)",
+      "source_files": [
+        "TODO_CODEX.md",
+        "CLAUDE.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "conceptually_related_to",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Notificações via Web Push + sininho in-app",
+      "target": "Histórico de ações por pedido (Vendas)",
+      "source_files": [
+        "docs/superpowers/specs/2026-07-29-notificacoes-web-push-design.md",
+        "docs/superpowers/specs/2026-08-11-historico-pedido-design.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "semantically_similar_to",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities; semantically similar concepts with no structural link"
+    },
+    {
+      "source": "sb(path, opts) — fetch autenticado",
+      "target": "Helper sb(path, opts)",
+      "source_files": [
+        "index.html",
+        "CLAUDE.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "Aba de Consulta GNRE (s-gnre)",
+      "target": "scopeQuery (authz.js)",
+      "source_files": [
+        "docs/superpowers/specs/2026-07-20-aba-consulta-gnre-design.md",
+        "CLAUDE.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    }
+  ],
+  "questions": [
+    {
+      "type": "ambiguous_edge",
+      "question": "What is the exact relationship between `Arquitetura de segurança (migração 2026-07-03)` and `Hook .claude/settings.json (auto commit+push)`?",
+      "why": "Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low."
+    },
+    {
+      "type": "ambiguous_edge",
+      "question": "What is the exact relationship between `Task 2 — Painel de cliente (histórico + produtos + prazos)` and `Task 3 — Fotos de produto (bloqueada)`?",
+      "why": "Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Histórico de ações por pedido (Vendas)` connect `Community 5` to `Community 8`, `Community 11`, `Community 4`?",
+      "why": "High betweenness centrality (0.199) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `vdAbrirDet` connect `Community 4` to `Community 5`?",
+      "why": "High betweenness centrality (0.117) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `crypto`, `{ COORD_KEYS }`, `{ sbJson }` to the rest of the system?",
+      "why": "174 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.13232323232323231 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 1` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.0784313725490196 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

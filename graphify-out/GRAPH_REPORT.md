@@ -1,110 +1,236 @@
-# Graph Report - .  (2026-07-29)
+# Graph Report - .  (2026-08-13)
 
 ## Corpus Check
-- Corpus is ~34,489 words - fits in a single context window. You may not need a graph.
+- Corpus is ~49,234 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 120 nodes · 244 edges · 11 communities (10 shown, 1 thin omitted)
-- Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 25 edges (avg confidence: 0.5)
-- Token cost: 0 input · 0 output
+- 365 nodes · 499 edges · 43 communities (32 shown, 11 thin omitted)
+- Extraction: 88% EXTRACTED · 12% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.67)
+- Token cost: 412,132 input · 0 output
 
 ## Community Hubs (Navigation)
-- Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)
-- Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)
-- Autorizacao (authz.js)
-- Sessao & Autenticacao (auth.js, login/logout/me)
-- Login & Senhas + Testes de Authz
-- Teste: Design System
-- Teste: Dashboard
-- Teste: Copy da UI
-- Teste: Dashboard Profundidade
-- Teste: Contraste Sistema Claro
-- Config Vercel
+- Community 0
+- Community 1
+- Community 2
+- Community 3
+- Community 4
+- Community 5
+- Community 6
+- Community 7
+- Community 8
+- Community 9
+- Community 10
+- Community 11
+- Community 12
+- Community 13
+- Community 14
+- Community 15
+- Community 16
+- Community 17
+- Community 18
+- Community 19
+- Community 20
+- Community 21
+- Community 22
+- Community 23
+- Community 24
+- Community 25
+- Community 26
+- Community 27
+- Community 28
+- Community 29
+- Community 30
+- Community 31
+- Community 32
+- Community 33
+- Community 34
+- Community 35
+- Community 36
+- Community 38
+- Community 39
+- Community 41
 
 ## God Nodes (most connected - your core abstractions)
-1. `sbJson()` - 20 edges
-2. `vePrivilegiado()` - 11 edges
-3. `status()` - 11 edges
-4. `isAdminLiteral()` - 10 edges
-5. `getSession()` - 9 edges
+1. `sbJson()` - 24 edges
+2. `getSession()` - 11 edges
+3. `vePrivilegiado()` - 11 edges
+4. `status()` - 11 edges
+5. `isAdminLiteral()` - 10 edges
 6. `isFabiano()` - 9 edges
 7. `isVagner()` - 9 edges
-8. `isDiretoria()` - 7 edges
-9. `podeEditarPedidoVendaProprio()` - 7 edges
-10. `podeCriarPedidoVenda()` - 7 edges
+8. `notificar()` - 9 edges
+9. `salvar()` - 8 edges
+10. `isDiretoria()` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `renameCliente()` --calls--> `isAdminLiteral()`  [EXTRACTED]
-  api/pedidos-vendas/[acao].js → api/_lib/authz.js
-- `podeEditarPedidoVendaProprio()` --calls--> `sbJson()`  [EXTRACTED]
-  api/_lib/authz.js → api/_lib/supabase.js
-- `gnreAttach()` --calls--> `podeAnexarGnre()`  [EXTRACTED]
-  api/pedidos-vendas/[acao].js → api/_lib/authz.js
-- `pedidoPertenceASessao()` --calls--> `sbJson()`  [EXTRACTED]
-  api/_lib/authz.js → api/_lib/supabase.js
-- `gnreAttach()` --calls--> `pedidoPertenceASessao()`  [EXTRACTED]
-  api/pedidos-vendas/[acao].js → api/_lib/authz.js
+- `vdPodeEditar()` --semantically_similar_to--> `scopeQuery (authz.js)`  [INFERRED] [semantically similar]
+  index.html → CLAUDE.md
+- `Task 1 — profundidade dos gráficos + legibilidade do SKU no Dashboard` --conceptually_related_to--> `Hook .claude/settings.json (auto commit+push)`  [EXTRACTED]
+  TODO_CODEX.md → CLAUDE.md
+- `Notificações via Web Push + sininho in-app` --semantically_similar_to--> `Histórico de ações por pedido (Vendas)`  [INFERRED] [semantically similar]
+  docs/superpowers/specs/2026-07-29-notificacoes-web-push-design.md → docs/superpowers/specs/2026-08-11-historico-pedido-design.md
+- `sb(path, opts) — fetch autenticado` --references--> `Helper sb(path, opts)`  [EXTRACTED]
+  index.html → CLAUDE.md
+- `Aba de Consulta GNRE (s-gnre)` --references--> `scopeQuery (authz.js)`  [EXTRACTED]
+  docs/superpowers/specs/2026-07-20-aba-consulta-gnre-design.md → CLAUDE.md
 
 ## Import Cycles
 - None detected.
 
-## Communities (11 total, 1 thin omitted)
+## Hyperedges (group relationships)
+- **Fluxo de autenticação e sessão** — index_html_login, index_html_aplicarsessao, index_html_tentarrestaurarsessao, api_auth_login, api__lib_auth_sessao [INFERRED 0.85]
+- **Arquitetura de autorização por tabela/ação** — claude_md_arquitetura_seguranca, api__lib_authz_generic_tables, api_db__table_, api_pedidos_vendas__acao_, index_html_sb [EXTRACTED 1.00]
+- **Fluxo de anexos GNRE (upload, status, assinatura de URL)** — index_html_vduploadgnrestorage, index_html_vdatualizargnre, index_html_vdmarcargnreenviada, index_html_vdmarcargnrepaga, api_gnre_upload, api_gnre_sign, api__lib_authz_pedidopertencaasessao [INFERRED 0.85]
+- **Performance por Coordenador Table Evolution** — docs_superpowers_plans_2026_07_21_dashboard_profundidade_coord_trend_sparkline, docs_superpowers_plans_2026_07_21_sistema_claro_contraste_semantic_performance_highlight, docs_superpowers_plans_2026_07_28_diretoria_vendas_diretas_dashboard_expandable_coord_row [INFERRED 0.85]
+- **Prazo Approval, Notification & Audit Pipeline** — docs_superpowers_plans_2026_07_27_prazo_aprovacao_totalizador_es_prazo_aprovacao_feature, docs_superpowers_plans_2026_07_29_notificacoes_web_push_push_notification_system, docs_superpowers_plans_2026_08_11_historico_pedido_audit_log_pedido_id [INFERRED 0.75]
+- **index.html Visual Design System Overhaul** — docs_superpowers_plans_2026_07_20_sistema_visual_hibrido_plan, docs_superpowers_plans_2026_07_21_sistema_claro_contraste_plan, docs_superpowers_plans_2026_07_21_dashboard_profundidade_plan [INFERRED 0.75]
+- **Duas features independentes bundladas na tela de Vendas** — docs_superpowers_specs_2026_07_27_prazo_e_totalizador_es_design_prazo_com_aprovacao, docs_superpowers_specs_2026_07_27_prazo_e_totalizador_es_design_totalizador_estoque_es, docs_superpowers_specs_2026_07_27_prazo_e_totalizador_es_design_prazo_status_colunas [INFERRED 0.75]
+- **Padrão de disparo best-effort de notificação após escrita confirmada** — api_pedidos_vendas__acao__prazo_decidir, api_pedidos_vendas__acao__salvar, api__lib_push_notificar, docs_superpowers_specs_2026_07_29_notificacoes_web_push_design_notificacoes_web_push [INFERRED 0.80]
+- **Sistema de tokens visuais compartilhado entre specs de UI (híbrido e contraste)** — docs_superpowers_specs_2026_07_20_sistema_visual_hibrido_design_sistema_visual_hibrido, docs_superpowers_specs_2026_07_21_sistema_claro_contraste_design_sistema_claro_contraste_semantico, docs_superpowers_specs_2026_07_20_sistema_visual_hibrido_design_cor_roxo_acao, docs_superpowers_specs_2026_07_21_sistema_claro_contraste_design_cor_roxo_selecao [INFERRED 0.75]
 
-### Community 0 - "Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)"
-Cohesion: 0.19
-Nodes (23): isFabiano(), podeComentarPedido(), podeFaturar(), podeGerenciarGnre(), prazoLiberado(), sbJson(), comentar(), faturar() (+15 more)
+## Communities (43 total, 11 thin omitted)
 
-### Community 1 - "Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)"
+### Community 0 - "Community 0"
+Cohesion: 0.13
+Nodes (43): { COORD_KEYS }, enforceBodyOwnership(), forecastPodeEditar(), isAdminLiteral(), isCoordenador(), isDiretoria(), isFabiano(), isVagner() (+35 more)
+
+### Community 1 - "Community 1"
+Cohesion: 0.08
+Nodes (25): Sessão HMAC (auth.js), { clearSessionCookie }, { getSession }, clearSessionCookie(), crypto, getSecret(), getSession(), parseCookies() (+17 more)
+
+### Community 2 - "Community 2"
+Cohesion: 0.11
+Nodes (16): pedidoPertenceASessao (authz.js), { GENERIC_TABLES, scopeQuery, enforceBodyOwnership, ALLOWED_PREFER }, { getSession }, { sbFetch }, { getSession }, { sbFetch, sbJson, SUPABASE_URL }, { vePrivilegiado }, { getSession } (+8 more)
+
+### Community 3 - "Community 3"
+Cohesion: 0.10
+Nodes (20): aplicarSessao(sessao), carregarDashboard(silencioso), carregarTv(silencioso), coordRow(coord, listaTodoMes), dashMapColor(cx, max), dashRenderMapaBrasil(containerId, rows), irDash(skipClientes), irTv() — painel de TV público (+12 more)
+
+### Community 4 - "Community 4"
+Cohesion: 0.10
+Nodes (20): enforceBodyOwnership (authz.js), scopeQuery (authz.js), Arquitetura de segurança (migração 2026-07-03), Hook .claude/settings.json (auto commit+push), GNRE Consulta Tab, gnreCarregar(), gnreRender(), irGnre() (+12 more)
+
+### Community 5 - "Community 5"
+Cohesion: 0.10
+Nodes (19): Aba Premiação (s-premiacao), COORD_SALARIO_FIXO (Marcio Vit), Coluna Tendência (mini-barras CSS), Profundidade dos gráficos do Dashboard, trendMax (linha 100% da meta), Linha expansível de mix de SKU (dashboard), Pseudo-coordenador "Diretoria", audit_log.pedido_id (nova coluna) (+11 more)
+
+### Community 6 - "Community 6"
+Cohesion: 0.11
+Nodes (14): ensureVapid(), { sbJson }, webpush, assert, auth, handler, { mock }, notificarCalls (+6 more)
+
+### Community 7 - "Community 7"
 Cohesion: 0.12
-Nodes (14): { GENERIC_TABLES, scopeQuery, enforceBodyOwnership, ALLOWED_PREFER }, { getSession }, { sbFetch }, { getSession }, { sbFetch, sbJson, SUPABASE_URL }, { vePrivilegiado }, { getSession }, { podeAnexarGnre, pedidoPertenceASessao } (+6 more)
+Nodes (16): Prazo com Aprovação + Totalizador ES Plan, Prazo com Aprovação do Renan (Feature), prazoDecidir() (backend action), supabase-prazo-aprovacao.sql, Totalizador de Estoque ES (Feature), vdDecidirPrazo() (frontend), notificar(), Notificações via Web Push + Sininho Plan (+8 more)
 
-### Community 2 - "Autorizacao (authz.js)"
-Cohesion: 0.25
-Nodes (18): { COORD_KEYS }, enforceBodyOwnership(), forecastPodeEditar(), isAdminLiteral(), isCoordenador(), isDiretoria(), isVagner(), pedidoPertenceASessao() (+10 more)
+### Community 8 - "Community 8"
+Cohesion: 0.13
+Nodes (11): pedidoPertenceASessao (api/_lib/authz.js), { getSession }, { isAdminLiteral, isDiretoria, pedidoPertenceASessao }, { sbJson }, auditLog(acao, descricao, detalhes, pedidoId), registrarAtividade(tipo, descricao, detalhes), assert, auth (+3 more)
 
-### Community 3 - "Sessao & Autenticacao (auth.js, login/logout/me)"
-Cohesion: 0.18
-Nodes (13): { getSession }, { isAdminLiteral, isDiretoria }, { sbJson }, { clearSessionCookie }, { getSession }, clearSessionCookie(), crypto, getSecret() (+5 more)
+### Community 9 - "Community 9"
+Cohesion: 0.16
+Nodes (11): COORD_KEYS / senhas.js hashes, attempts, { SENHAS_HASH, COORD_KEYS }, { sha256Hex, setSessionCookie }, sha256Hex(), COORD_KEYS, SENHAS_HASH, assert (+3 more)
 
-### Community 4 - "Login & Senhas + Testes de Authz"
-Cohesion: 0.18
-Nodes (10): attempts, { SENHAS_HASH, COORD_KEYS }, { sha256Hex, setSessionCookie }, sha256Hex(), COORD_KEYS, SENHAS_HASH, assert, { podeCriarPedidoVenda, podeEditarPedidoVendaProprio } (+2 more)
+### Community 10 - "Community 10"
+Cohesion: 0.14
+Nodes (14): Unified Design Tokens (Light Surfaces + Dark Islands), Sistema Visual Híbrido Plan, tests/design-system.test.js, Coordinator Trend Sparkline Column, Dashboard Profundidade Plan, tests/dashboard-profundidade.test.js, Trend Meta Line + Volume Above Percentage, Light Base Tokens (#f4f7fb / #172136 / #d9e2ee) (+6 more)
 
-### Community 5 - "Teste: Design System"
+### Community 11 - "Community 11"
+Cohesion: 0.19
+Nodes (13): isDiretoria(session), prazoLiberado(pedidoId), notificar(usuarios,tipo,titulo,corpo,url) (api/_lib/push.js), case 'prazo-decidir' (api/pedidos-vendas/[acao].js), case 'salvar' (api/pedidos-vendas/[acao].js), Filtro "Aguardando aprovação de prazo", Prazo com Aprovação (28/35 / solicitar maior), pedidos_vendas.prazo_status e colunas relacionadas (+5 more)
+
+### Community 12 - "Community 12"
+Cohesion: 0.33
+Nodes (7): Roxo #6547d9 como cor de ação, Sistema Visual Híbrido, Bloco :root único de tokens CSS, TV como exceção deliberada (escura, clamp()), Roxo como seleção e ação principal, Cores semânticas (verde/âmbar/vermelho), Sistema Claro e Contraste Semântico
+
+### Community 13 - "Community 13"
+Cohesion: 0.40
+Nodes (6): GENERIC_TABLES (authz.js), fetch ao Supabase via service_role (supabase.js), api/db/[table].js proxy genérico, api/pedidos-vendas/[acao].js endpoints dedicados, Helper sb(path, opts), sb(path, opts) — fetch autenticado
+
+### Community 14 - "Community 14"
+Cohesion: 0.40
+Nodes (6): dashAnaliseClientes(hist, coordFiltro), dashInteligenciaHTML(coordFiltro) — não mais chamada pelo Dashboard, dashIntelKpisHTML(hist, analise), dashStatusRecompra(c), Task 2 — Painel de cliente (histórico + produtos + prazos), Task 3 — Fotos de produto (bloqueada)
+
+### Community 15 - "Community 15"
 Cohesion: 0.33
 Nodes (5): assert, fs, html, screens, test
 
-### Community 6 - "Teste: Dashboard"
+### Community 16 - "Community 16"
+Cohesion: 0.40
+Nodes (5): Faturamento Parcial como Faturado Operacional, Filtro Faturados Parciais, Filtro Pendentes (sem caixa faturada), Kanban Faturado/Entregue, pedidos_vendas.qty_faturada
+
+### Community 17 - "Community 17"
+Cohesion: 0.40
+Nodes (4): dependencies, web-push, name, private
+
+### Community 18 - "Community 18"
 Cohesion: 0.40
 Nodes (4): assert, fs, html, test
 
-### Community 7 - "Teste: Copy da UI"
+### Community 19 - "Community 19"
 Cohesion: 0.40
 Nodes (4): assert, fs, html, test
 
-### Community 8 - "Teste: Dashboard Profundidade"
+### Community 20 - "Community 20"
+Cohesion: 0.40
+Nodes (4): assert, fs, html, test
+
+### Community 21 - "Community 21"
+Cohesion: 0.40
+Nodes (4): assert, fs, html, test
+
+### Community 22 - "Community 22"
+Cohesion: 0.40
+Nodes (4): assert, fs, html, test
+
+### Community 23 - "Community 23"
+Cohesion: 0.40
+Nodes (4): assert, fs, html, test
+
+### Community 24 - "Community 24"
 Cohesion: 0.50
 Nodes (3): assert, fs, html
 
-### Community 9 - "Teste: Contraste Sistema Claro"
+### Community 25 - "Community 25"
 Cohesion: 0.50
 Nodes (3): assert, fs, html
+
+### Community 26 - "Community 26"
+Cohesion: 0.50
+Nodes (3): assert, fs, test
+
+### Community 29 - "Community 29"
+Cohesion: 0.67
+Nodes (3): vdAtualizarGnre(id, payload, msg), vdMarcarGnreEnviada(id), vdMarcarGnrePaga(id)
+
+### Community 30 - "Community 30"
+Cohesion: 0.67
+Nodes (3): skill-observations/cross-cutting-principles.md (checklist vazio), skill-observations/last-review-date.txt (2026-07-21), skill-observations/log.md (Skill Observation Log, vazio)
+
+## Ambiguous Edges - Review These
+- `Arquitetura de segurança (migração 2026-07-03)` → `Hook .claude/settings.json (auto commit+push)`  [AMBIGUOUS]
+  CLAUDE.md · relation: conceptually_related_to
+- `Task 2 — Painel de cliente (histórico + produtos + prazos)` → `Task 3 — Fotos de produto (bloqueada)`  [AMBIGUOUS]
+  TODO_CODEX.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **52 isolated node(s):** `crypto`, `{ COORD_KEYS }`, `{ sbJson }`, `{ getSession }`, `{ sbJson }` (+47 more)
+- **170 isolated node(s):** `crypto`, `{ COORD_KEYS }`, `{ sbJson }`, `webpush`, `{ sbJson }` (+165 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `sbJson()` connect `Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)` to `Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)`, `Autorizacao (authz.js)`, `Sessao & Autenticacao (auth.js, login/logout/me)`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
-- **Why does `getSession()` connect `Sessao & Autenticacao (auth.js, login/logout/me)` to `Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)`, `Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
-- **Why does `podeEditarPedidoVendaProprio()` connect `Autorizacao (authz.js)` to `Pedidos de Vendas - Acoes (faturar, GNRE, comentario, prazo)`, `Login & Senhas + Testes de Authz`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **What is the exact relationship between `Arquitetura de segurança (migração 2026-07-03)` and `Hook .claude/settings.json (auto commit+push)`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **What is the exact relationship between `Task 2 — Painel de cliente (histórico + produtos + prazos)` and `Task 3 — Fotos de produto (bloqueada)`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **Why does `Histórico de ações por pedido (Vendas)` connect `Community 5` to `Community 8`, `Community 11`, `Community 4`?**
+  _High betweenness centrality (0.199) - this node is a cross-community bridge._
+- **Why does `vdAbrirDet` connect `Community 4` to `Community 5`?**
+  _High betweenness centrality (0.117) - this node is a cross-community bridge._
 - **What connects `crypto`, `{ COORD_KEYS }`, `{ sbJson }` to the rest of the system?**
-  _52 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Rotas Genericas & GNRE (db proxy, sign, upload, tv-data)` be split into smaller, more focused modules?**
-  _Cohesion score 0.12105263157894737 - nodes in this community are weakly interconnected._
+  _174 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 0` be split into smaller, more focused modules?**
+  _Cohesion score 0.13232323232323231 - nodes in this community are weakly interconnected._
+- **Should `Community 1` be split into smaller, more focused modules?**
+  _Cohesion score 0.0784313725490196 - nodes in this community are weakly interconnected._
