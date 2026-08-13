@@ -1377,39 +1377,6 @@
       "contributor": null
     },
     {
-      "id": "index_vdgnrebadgehtml",
-      "label": "vdGnreStatus/vdGnreLabel/vdGnreBadgeHTML",
-      "file_type": "code",
-      "source_file": "C:\\Users\\leand\\OneDrive\\Documentos\\GITPROJECT\\followup-positivacao\\docs\\superpowers\\specs\\2026-07-20-aba-consulta-gnre-design.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "index_vdabrirgnrearquivo",
-      "label": "vdAbrirGnreArquivo",
-      "file_type": "code",
-      "source_file": "C:\\Users\\leand\\OneDrive\\Documentos\\GITPROJECT\\followup-positivacao\\docs\\superpowers\\specs\\2026-07-20-aba-consulta-gnre-design.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "api__lib_authz_scopequery",
-      "label": "scopeQuery (api/_lib/authz.js)",
-      "file_type": "code",
-      "source_file": "C:\\Users\\leand\\OneDrive\\Documentos\\GITPROJECT\\followup-positivacao\\docs\\superpowers\\specs\\2026-07-20-aba-consulta-gnre-design.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
       "id": "docs_superpowers_specs_2026_07_20_premiacao_tab_icon_system_design_sistema_de_icones_svg",
       "label": "Sistema de Ícones SVG inline",
       "file_type": "rationale",
@@ -1905,17 +1872,6 @@
       "id": "docs_superpowers_specs_2026_08_11_historico_pedido_design_badge_editado_por",
       "label": "Badge \"Editado por X (Nx)\"",
       "file_type": "concept",
-      "source_file": "C:\\Users\\leand\\OneDrive\\Documentos\\GITPROJECT\\followup-positivacao\\docs\\superpowers\\specs\\2026-08-11-historico-pedido-design.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "api_audit",
-      "label": "api/audit.js (POST/GET)",
-      "file_type": "code",
       "source_file": "C:\\Users\\leand\\OneDrive\\Documentos\\GITPROJECT\\followup-positivacao\\docs\\superpowers\\specs\\2026-08-11-historico-pedido-design.md",
       "source_location": null,
       "source_url": null,
