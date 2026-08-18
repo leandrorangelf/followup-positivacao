@@ -2428,31 +2428,45 @@ async function renderAgendaTodos(seg,sab){
   COORD_KEYS.forEach(c=>{porCoordMes[c]={};});
   (Array.isArray(registrosMes)?registrosMes:[]).forEach(r=>{if(porCoordMes[r.coordenador])porCoordMes[r.coordenador][r.data]=r;});
 
-  const theadMes=`<tr>
-    <th style="padding:6px 8px;font-size:11px;text-align:left;position:sticky;left:0;background:var(--card)">Coordenador</th>
-    ${diasMes.map(dt=>{
-      const dObj=new Date(dt+'T00:00:00');
-      const isHoje=dt===hoje;
-      return `<th style="padding:4px 3px;font-size:9px;text-align:center;min-width:26px;color:${isHoje?'var(--purple)':'var(--muted)'};background:${isHoje?'var(--purple-soft)':'transparent'}">${DIAS_SEMANA_AG[dObj.getDay()][0]}<br>${dObj.getDate()}</th>`;
-    }).join('')}
-    <th style="padding:6px 4px;font-size:9px;text-align:center">Viagens</th>
-  </tr>`;
-  const tbodyMes=COORD_KEYS.map(c=>{
-    const cells=diasMes.map(dt=>{
-      const r=porCoordMes[c][dt];
-      if(!r)return `<td style="padding:2px 3px;text-align:center">—</td>`;
-      const cfg=TIPOS_DIA_AG[r.tipo]||TIPOS_DIA_AG.outro;
-      const tit=`${cfg.label}${r.cidade?' · '+r.cidade:''}${r.estado?' · '+r.estado:''}`;
-      return `<td style="padding:2px 3px;text-align:center;background:${cfg.bg}" title="${tit}"><span style="font-size:9px;color:${cfg.cor};font-weight:700">${cfg.label[0]}</span></td>`;
+  // Quem tem agenda em cada dia do mês (pode ter mais de um coordenador no mesmo dia)
+  const porDiaMes={};
+  diasMes.forEach(dt=>{porDiaMes[dt]=[];});
+  COORD_KEYS.forEach(c=>{Object.entries(porCoordMes[c]).forEach(([dt,r])=>{if(porDiaMes[dt])porDiaMes[dt].push({coord:c,...r});});});
+
+  // Grade completa de semanas (Dom-Sáb), com dias do mês anterior/seguinte pra preencher
+  const primeiroDiaSemana=iniMes.getDay();
+  const celulas=[];
+  for(let i=0;i<primeiroDiaSemana;i++)celulas.push(null);
+  diasMes.forEach(dt=>celulas.push(dt));
+  while(celulas.length%7!==0)celulas.push(null);
+
+  const nomeAbrev=c=>c.split(' ')[0];
+  const celulasHTML=celulas.map(dt=>{
+    if(!dt)return `<div style="min-height:96px;background:var(--soft, var(--bg));border:1px solid var(--border);opacity:.4"></div>`;
+    const isHoje=dt===hoje;
+    const eventos=porDiaMes[dt]||[];
+    const dObj=new Date(dt+'T00:00:00');
+    const chips=eventos.map(ev=>{
+      const cfg=TIPOS_DIA_AG[ev.tipo]||TIPOS_DIA_AG.outro;
+      const tit=`${ev.coord} · ${cfg.label}${ev.cidade?' · '+ev.cidade:''}${ev.estado?' · '+ev.estado:''}`;
+      return `<div title="${tit}" style="font-size:10px;padding:2px 5px;margin-top:2px;border-radius:5px;background:${cfg.bg};color:${cfg.cor};font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nomeAbrev(ev.coord)} · ${cfg.label}</div>`;
     }).join('');
-    const totalViagens=Object.values(porCoordMes[c]).filter(r=>r.tipo==='viagem').length;
-    return `<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 8px;font-size:11px;font-weight:600;white-space:nowrap;position:sticky;left:0;background:var(--card)">${c}</td>${cells}<td style="padding:6px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--purple)">${totalViagens||'—'}</td></tr>`;
+    return `<div style="min-height:96px;padding:6px;border:1px solid var(--border);background:${isHoje?'var(--purple-soft)':'var(--card)'}">
+      <div style="font-size:11px;font-weight:${isHoje?'800':'600'};color:${isHoje?'var(--purple)':'var(--text)'}">${dObj.getDate()}</div>
+      ${chips}
+    </div>`;
   }).join('');
 
   g('agenda-mensal').innerHTML=`
     <div class="panel-title-row"><div class="panel-title">Calendário do mês — ${MESES[mesAtual]} ${anoAtual}</div></div>
-    <div class="panel" style="overflow-x:auto;margin-top:8px">
-      <table class="data-table" style="min-width:700px;font-size:11px"><thead>${theadMes}</thead><tbody>${tbodyMes}</tbody></table>
+    <div class="panel" style="overflow-x:auto;margin-top:8px;padding:0">
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));min-width:770px">
+        ${DIAS_SEMANA_AG.map(d=>`<div style="text-align:center;font-size:10px;font-weight:700;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">${d}</div>`).join('')}
+        ${celulasHTML}
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:10px">
+      ${Object.entries(TIPOS_DIA_AG).map(([k,v])=>`<span style="display:inline-flex;align-items:center;gap:4px"><span style="background:${v.bg};color:${v.cor};border-radius:4px;padding:1px 6px;font-weight:700">${v.label}</span></span>`).join('')}
     </div>`;
 }
 
