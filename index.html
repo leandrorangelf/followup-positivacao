@@ -1002,6 +1002,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <button class="secondary-btn" onclick="irSemanaAgendaAtual()">Hoje</button>
     </div>
     <div id="agenda-grid"><div class="loading">Carregando...</div></div>
+    <div id="agenda-mensal" style="margin-top:18px"></div>
   </div>
   <div class="bottom-nav" id="nav-agenda"></div>
 </div>
@@ -2316,7 +2317,7 @@ async function irAgenda(){
   const podeEscolher=isAdmin||user==='vagner'||isDiretoria;
   g('agenda-coord-tabs').style.display=podeEscolher?'flex':'none';
   if(podeEscolher){
-    if(!COORD_KEYS.includes(agendaCoordAtual))agendaCoordAtual=COORD_KEYS[0];
+    if(agendaCoordAtual!=='todos'&&!COORD_KEYS.includes(agendaCoordAtual))agendaCoordAtual='todos';
     renderAgendaCoordTabs();
   }else{
     agendaCoordAtual=user;
@@ -2326,8 +2327,8 @@ async function irAgenda(){
 }
 
 function renderAgendaCoordTabs(){
-  g('agenda-coord-tabs').innerHTML=COORD_KEYS.map(c=>
-    `<button class="cli-coord-tab ${c===agendaCoordAtual?'active':''}" onclick="setAgendaCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
+  g('agenda-coord-tabs').innerHTML=['todos',...COORD_KEYS].map(c=>
+    `<button class="cli-coord-tab ${c===agendaCoordAtual?'active':''}" onclick="setAgendaCoord('${c}')">${c==='todos'?'Todos':c.split(' ')[0]}</button>`).join('');
 }
 function setAgendaCoord(c){agendaCoordAtual=c;renderAgendaCoordTabs();carregarAgendaSemana();}
 
@@ -2336,6 +2337,9 @@ async function carregarAgendaSemana(){
   const seg=new Date(agendaSegunda);
   const sab=new Date(seg);sab.setDate(seg.getDate()+5);
   g('agenda-semana-titulo').textContent=`${agFmtData(agIsoDate(seg))} – ${agFmtData(agIsoDate(sab))}`;
+
+  if(agendaCoordAtual==='todos'){await renderAgendaTodos(seg,sab);return;}
+  g('agenda-mensal').innerHTML='';
 
   const coord=agendaCoordAtual||user;
   const qs=`coordenador=eq.${encodeURIComponent(coord)}&data=gte.${agIsoDate(seg)}&data=lte.${agIsoDate(sab)}&select=*`;
@@ -2371,6 +2375,85 @@ async function carregarAgendaSemana(){
       </div>
     </div>`;
   }).join('')}</div>`;
+}
+
+// Visão "Todos": tabela da semana (coordenador x dia) + calendário do mês inteiro abaixo.
+// Só quem enxerga todo mundo (admin/vagner/diretoria) chega aqui — cada um edita/marca
+// dias entrando na própria aba (clicar num coordenador na lista de abas já faz isso).
+async function renderAgendaTodos(seg,sab){
+  const diasSemana=[];
+  for(let i=0;i<6;i++){const d=new Date(seg);d.setDate(seg.getDate()+i);diasSemana.push(agIsoDate(d));}
+  const hoje=agIsoDate(new Date());
+
+  const registrosSemana=await sb(`/rest/v1/agenda_semanal?data=gte.${agIsoDate(seg)}&data=lte.${agIsoDate(sab)}&select=*`,{ret:true});
+  const porCoordSemana={};
+  COORD_KEYS.forEach(c=>{porCoordSemana[c]={};});
+  (Array.isArray(registrosSemana)?registrosSemana:[]).forEach(r=>{if(porCoordSemana[r.coordenador])porCoordSemana[r.coordenador][r.data]=r;});
+
+  const theadSemana=`<tr>
+    <th style="padding:6px 8px;font-size:11px;text-align:left;position:sticky;left:0;background:var(--card)">Coordenador</th>
+    ${diasSemana.map(dt=>{
+      const dObj=new Date(dt+'T00:00:00');
+      const isHoje=dt===hoje;
+      return `<th style="padding:4px 3px;font-size:9px;text-align:center;color:${isHoje?'var(--purple)':'var(--muted)'};background:${isHoje?'var(--purple-soft)':'transparent'}">${DIAS_SEMANA_AG[dObj.getDay()]}<br>${agFmtData(dt)}</th>`;
+    }).join('')}
+  </tr>`;
+  const tbodySemana=COORD_KEYS.map(c=>{
+    const cells=diasSemana.map(dt=>{
+      const r=porCoordSemana[c][dt];
+      if(!r)return `<td style="padding:4px;text-align:center">—</td>`;
+      const cfg=TIPOS_DIA_AG[r.tipo]||TIPOS_DIA_AG.outro;
+      const tit=`${cfg.label}${r.cidade?' · '+r.cidade:''}${r.estado?' · '+r.estado:''}`;
+      return `<td style="padding:4px;text-align:center;background:${cfg.bg}" title="${tit}"><span style="font-size:10px;color:${cfg.cor};font-weight:700">${cfg.label[0]}</span></td>`;
+    }).join('');
+    return `<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 8px;font-size:11px;font-weight:600;white-space:nowrap;position:sticky;left:0;background:var(--card)">${c}</td>${cells}</tr>`;
+  }).join('');
+
+  g('agenda-grid').innerHTML=`
+    <div class="panel" style="overflow-x:auto">
+      <table class="data-table" style="min-width:520px"><thead>${theadSemana}</thead><tbody>${tbodySemana}</tbody></table>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:10px">
+      ${Object.entries(TIPOS_DIA_AG).map(([k,v])=>`<span style="display:inline-flex;align-items:center;gap:4px"><span style="background:${v.bg};color:${v.cor};border-radius:4px;padding:1px 6px;font-weight:700">${v.label[0]}</span> ${v.label}</span>`).join('')}
+    </div>`;
+
+  // Calendário do mês inteiro (usa o mês global do app, mesmo seletor do topbar)
+  const iniMes=new Date(anoAtual,mesAtual,1);
+  const fimMes=new Date(anoAtual,mesAtual+1,0);
+  const diasMes=[];
+  for(let d=new Date(iniMes);d<=fimMes;d.setDate(d.getDate()+1))diasMes.push(agIsoDate(d));
+
+  const registrosMes=await sb(`/rest/v1/agenda_semanal?data=gte.${agIsoDate(iniMes)}&data=lte.${agIsoDate(fimMes)}&select=*`,{ret:true});
+  const porCoordMes={};
+  COORD_KEYS.forEach(c=>{porCoordMes[c]={};});
+  (Array.isArray(registrosMes)?registrosMes:[]).forEach(r=>{if(porCoordMes[r.coordenador])porCoordMes[r.coordenador][r.data]=r;});
+
+  const theadMes=`<tr>
+    <th style="padding:6px 8px;font-size:11px;text-align:left;position:sticky;left:0;background:var(--card)">Coordenador</th>
+    ${diasMes.map(dt=>{
+      const dObj=new Date(dt+'T00:00:00');
+      const isHoje=dt===hoje;
+      return `<th style="padding:4px 3px;font-size:9px;text-align:center;min-width:26px;color:${isHoje?'var(--purple)':'var(--muted)'};background:${isHoje?'var(--purple-soft)':'transparent'}">${DIAS_SEMANA_AG[dObj.getDay()][0]}<br>${dObj.getDate()}</th>`;
+    }).join('')}
+    <th style="padding:6px 4px;font-size:9px;text-align:center">Viagens</th>
+  </tr>`;
+  const tbodyMes=COORD_KEYS.map(c=>{
+    const cells=diasMes.map(dt=>{
+      const r=porCoordMes[c][dt];
+      if(!r)return `<td style="padding:2px 3px;text-align:center">—</td>`;
+      const cfg=TIPOS_DIA_AG[r.tipo]||TIPOS_DIA_AG.outro;
+      const tit=`${cfg.label}${r.cidade?' · '+r.cidade:''}${r.estado?' · '+r.estado:''}`;
+      return `<td style="padding:2px 3px;text-align:center;background:${cfg.bg}" title="${tit}"><span style="font-size:9px;color:${cfg.cor};font-weight:700">${cfg.label[0]}</span></td>`;
+    }).join('');
+    const totalViagens=Object.values(porCoordMes[c]).filter(r=>r.tipo==='viagem').length;
+    return `<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 8px;font-size:11px;font-weight:600;white-space:nowrap;position:sticky;left:0;background:var(--card)">${c}</td>${cells}<td style="padding:6px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--purple)">${totalViagens||'—'}</td></tr>`;
+  }).join('');
+
+  g('agenda-mensal').innerHTML=`
+    <div class="panel-title-row"><div class="panel-title">Calendário do mês — ${MESES[mesAtual]} ${anoAtual}</div></div>
+    <div class="panel" style="overflow-x:auto;margin-top:8px">
+      <table class="data-table" style="min-width:700px;font-size:11px"><thead>${theadMes}</thead><tbody>${tbodyMes}</tbody></table>
+    </div>`;
 }
 
 function editarDiaAgenda(data){
