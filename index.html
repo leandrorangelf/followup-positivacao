@@ -818,6 +818,10 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
       <span>Forecast</span>
     </button>
+    <button class="side-link" id="side-agenda" onclick="navTo('agenda')">
+      <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+      <span>Agenda</span>
+    </button>
     <button class="side-link" id="side-relatorios" onclick="navTo('relatorios')">
       <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg>
       <span>Relatórios</span>
@@ -981,6 +985,58 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   </div>
   <div id="prem-content" class="page-pad"><div class="loading">Carregando...</div></div>
   <div class="bottom-nav" id="nav-premiacao"></div>
+</div>
+
+<!-- AGENDA SEMANAL -->
+<div id="s-agenda" class="screen" style="display:none">
+  <div class="app-header">
+    <div class="hdr-row"><div class="hdr-title">Agenda semanal</div></div>
+    <div class="hdr-sub">Onde cada coordenador está na semana</div>
+  </div>
+  <div class="page-pad">
+    <div class="cli-coord-tabs" id="agenda-coord-tabs" style="display:none"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <button class="secondary-btn" onclick="navSemanaAgenda(-1)">‹</button>
+      <span id="agenda-semana-titulo" style="font-size:13px;font-weight:600;flex:1;text-align:center"></span>
+      <button class="secondary-btn" onclick="navSemanaAgenda(1)">›</button>
+      <button class="secondary-btn" onclick="irSemanaAgendaAtual()">Hoje</button>
+    </div>
+    <div id="agenda-grid"><div class="loading">Carregando...</div></div>
+  </div>
+  <div class="bottom-nav" id="nav-agenda"></div>
+</div>
+
+<!-- MODAL AGENDA -->
+<div class="modal-bg" id="modal-agenda">
+  <div class="modal">
+    <div class="modal-title" id="agenda-modal-data">—</div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Situação</label>
+      <select id="agenda-modal-tipo" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;background:var(--bg);color:var(--text)">
+        <option value="escritorio">Escritório</option>
+        <option value="viagem">Viagem</option>
+        <option value="cliente">Visita a cliente</option>
+        <option value="home">Home office</option>
+        <option value="folga">Folga</option>
+        <option value="outro">Outro</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Cidade</label>
+      <input id="agenda-modal-cidade" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;background:var(--bg);color:var(--text)" placeholder="ex: São Paulo">
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Estado</label>
+      <input id="agenda-modal-estado" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;background:var(--bg);color:var(--text)" placeholder="ex: SP" maxlength="2">
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Observação</label>
+      <input id="agenda-modal-obs" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;background:var(--bg);color:var(--text)" placeholder="Opcional">
+    </div>
+    <button class="btn-copy" onclick="salvarDiaAgenda()">✓ Salvar</button>
+    <button class="btn-close" style="margin-top:8px;color:var(--red)" onclick="excluirDiaAgenda()">Excluir registro</button>
+    <button class="btn-close" style="margin-top:8px" onclick="fecharModalAgenda()">Cancelar</button>
+  </div>
 </div>
 
 <!-- MODAL REATIVAR -->
@@ -1517,7 +1573,8 @@ const ICONS={
   truck:'<rect x="2" y="7" width="12" height="10"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="19" r="1.6"/><circle cx="17.5" cy="19" r="1.6"/>',
   sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
-  cigarette:'<rect x="2" y="10" width="17" height="4" rx="1.3"/><rect x="15" y="10" width="4" height="4" fill="currentColor" stroke="none"/><path d="M21.5 10v4"/><path d="M8.5 5.5c0-1.2 1.3-2 1.3-3.2M12.5 5.5c0-1.2 1.3-2 1.3-3.2"/>'
+  cigarette:'<rect x="2" y="10" width="17" height="4" rx="1.3"/><rect x="15" y="10" width="4" height="4" fill="currentColor" stroke="none"/><path d="M21.5 10v4"/><path d="M8.5 5.5c0-1.2 1.3-2 1.3-3.2M12.5 5.5c0-1.2 1.3-2 1.3-3.2"/>',
+  calendar:'<rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>'
 };
 function icon(name,size){
   size=size||16;
@@ -1586,7 +1643,7 @@ async function sb(path,opts={}){
 }
 
 function show(id){
-  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-vfn','s-vficha','s-log','s-registro','s-relatorios','s-gnre'].forEach(screenId=>{
+  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-agenda','s-vfn','s-vficha','s-log','s-registro','s-relatorios','s-gnre'].forEach(screenId=>{
     const screen=g(screenId);
     if(screen)screen.style.display='none';
   });
@@ -1609,6 +1666,7 @@ function renderNav(navId,active){
     {id:'forecast',icon:'forecast',label:'Forecast'},
     {id:'cli',icon:'users',label:'Clientes'},
     {id:'metas',icon:'target',label:'Metas'},
+    {id:'agenda',icon:'calendar',label:'Agenda'},
     {id:'registro',icon:'document',label:'Registro'},
     {id:'gnre',icon:'document',label:'GNRE'},
   ]:isDiretoria?[
@@ -1617,12 +1675,14 @@ function renderNav(navId,active){
     {id:'dash',icon:'dashboard',label:'Dashboard'},
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'forecast',icon:'forecast',label:'Forecast'},
+    {id:'agenda',icon:'calendar',label:'Agenda'},
     {id:'gnre',icon:'document',label:'GNRE'},
   ]:[
     {id:'dash',icon:'dashboard',label:'Dashboard'},
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'premiacao',icon:'trophy',label:'Premiação'},
     {id:'forecast',icon:'forecast',label:'Forecast'},
+    {id:'agenda',icon:'calendar',label:'Agenda'},
     {id:'gnre',icon:'document',label:'GNRE'},
   ];
   g(navId).innerHTML=tabs.map(t=>`
@@ -1634,7 +1694,7 @@ function renderNav(navId,active){
 }
 
 function navTo(id){
-  if(isDiretoria && !['dash','vendas','forecast','relatorios','gestao','planilha','gnre'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
+  if(isDiretoria && !['dash','vendas','forecast','relatorios','gestao','planilha','gnre','agenda'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
   if(isFabiano()&&!['vendas','registro','gnre'].includes(id)){toast('Fabiano acessa apenas Vendas e Registro','error');return;}
   if(user==='vagner'&&['log'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
   if(id==='dash'){irDash();}
@@ -1642,6 +1702,7 @@ function navTo(id){
   else if(id==='cli'){irCli();}
   else if(id==='metas'){irMetas();}
   else if(id==='premiacao'){irPremiacao();}
+  else if(id==='agenda'){irAgenda();}
   else if(id==='log'){irLog();}
   else if(id==='forecast'){irForecast();}
   else if(id==='vendas'){irVendas();}
@@ -2218,6 +2279,146 @@ async function adicionarCliente(){
   pedidosCarregados=false;
 }
 
+// ── AGENDA SEMANAL ──
+const TIPOS_DIA_AG={
+  escritorio:{label:'Escritório',cor:'#1f3a5f',bg:'#eaf0f6'},
+  viagem:{label:'Viagem',cor:'#7C3AED',bg:'#EDE9FE'},
+  cliente:{label:'Visita a cliente',cor:'#0891b2',bg:'#e0f7fa'},
+  home:{label:'Home office',cor:'#10B981',bg:'#D1FAE5'},
+  folga:{label:'Folga',cor:'#b7791f',bg:'#fff7e8'},
+  outro:{label:'Outro',cor:'#667085',bg:'#f2f4f7'},
+};
+const DIAS_SEMANA_AG=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+let agendaSegunda=null;
+let agendaCoordAtual=null;
+
+function agIsoDate(d){return d.toISOString().slice(0,10);}
+function agFmtData(iso){const p=iso.split('-');return p[2]+'/'+p[1];}
+
+function agIniciarSemana(){
+  const hoje=new Date();
+  const dia=hoje.getDay();
+  const diff=dia===0?-6:1-dia;
+  agendaSegunda=new Date(hoje);
+  agendaSegunda.setDate(hoje.getDate()+diff);
+  agendaSegunda.setHours(0,0,0,0);
+}
+function navSemanaAgenda(d){
+  if(!agendaSegunda)agIniciarSemana();
+  agendaSegunda.setDate(agendaSegunda.getDate()+d*7);
+  carregarAgendaSemana();
+}
+function irSemanaAgendaAtual(){agIniciarSemana();carregarAgendaSemana();}
+
+async function irAgenda(){
+  show('s-agenda');
+  renderNav('nav-agenda','agenda');
+  const podeEscolher=isAdmin||user==='vagner'||isDiretoria;
+  g('agenda-coord-tabs').style.display=podeEscolher?'flex':'none';
+  if(podeEscolher){
+    if(!COORD_KEYS.includes(agendaCoordAtual))agendaCoordAtual=COORD_KEYS[0];
+    renderAgendaCoordTabs();
+  }else{
+    agendaCoordAtual=user;
+  }
+  if(!agendaSegunda)agIniciarSemana();
+  await carregarAgendaSemana();
+}
+
+function renderAgendaCoordTabs(){
+  g('agenda-coord-tabs').innerHTML=COORD_KEYS.map(c=>
+    `<button class="cli-coord-tab ${c===agendaCoordAtual?'active':''}" onclick="setAgendaCoord('${c}')">${c.split(' ')[0]}</button>`).join('');
+}
+function setAgendaCoord(c){agendaCoordAtual=c;renderAgendaCoordTabs();carregarAgendaSemana();}
+
+async function carregarAgendaSemana(){
+  if(!agendaSegunda)agIniciarSemana();
+  const seg=new Date(agendaSegunda);
+  const sab=new Date(seg);sab.setDate(seg.getDate()+5);
+  g('agenda-semana-titulo').textContent=`${agFmtData(agIsoDate(seg))} – ${agFmtData(agIsoDate(sab))}`;
+
+  const coord=agendaCoordAtual||user;
+  const qs=`coordenador=eq.${encodeURIComponent(coord)}&data=gte.${agIsoDate(seg)}&data=lte.${agIsoDate(sab)}&select=*`;
+  const registros=await sb(`/rest/v1/agenda_semanal?${qs}`,{ret:true});
+  const porDia={};
+  (Array.isArray(registros)?registros:[]).forEach(r=>{porDia[r.data]=r;});
+
+  const dias=[];
+  for(let i=0;i<6;i++){const d=new Date(seg);d.setDate(seg.getDate()+i);dias.push(agIsoDate(d));}
+  const hoje=agIsoDate(new Date());
+  const editavel=!isDiretoria;
+
+  g('agenda-grid').innerHTML=`<div style="display:flex;gap:6px;flex-wrap:wrap">${dias.map(data=>{
+    const r=porDia[data];
+    const dObj=new Date(data+'T00:00:00');
+    const nomeDia=DIAS_SEMANA_AG[dObj.getDay()];
+    const isHoje=data===hoje;
+    const cfg=r?TIPOS_DIA_AG[r.tipo]:null;
+    const acao=cfg
+      ?(editavel?`<button class="secondary-btn" style="font-size:10px;padding:3px 8px;margin-top:6px" onclick="editarDiaAgenda('${data}')">Editar</button>`:'')
+      :(editavel?`<button class="secondary-btn" style="font-size:10px;padding:5px 10px;width:100%" onclick="editarDiaAgenda('${data}')">+ Marcar</button>`:'<div style="font-size:10px;color:var(--muted)">—</div>');
+    return `<div style="flex:1;min-width:120px">
+      <div style="text-align:center;font-size:11px;font-weight:700;padding:6px 4px;border:1px solid var(--border);border-bottom:none;border-radius:var(--r-sm) var(--r-sm) 0 0;background:${isHoje?'var(--purple-soft)':'var(--bg)'};color:${isHoje?'var(--purple)':'var(--muted)'}">
+        ${nomeDia} ${agFmtData(data)}
+      </div>
+      <div style="border:1px solid var(--border);border-radius:0 0 var(--r-sm) var(--r-sm);padding:8px;background:${cfg?cfg.bg:'var(--card)'};min-height:96px">
+        ${cfg?`
+          <div style="font-size:11px;font-weight:700;color:${cfg.cor}">${cfg.label}</div>
+          ${r.cidade||r.estado?`<div style="font-size:10px;color:var(--muted)">${[r.cidade,r.estado].filter(Boolean).join(' · ')}</div>`:''}
+          ${r.observacao?`<div style="font-size:10px;color:var(--muted);margin-top:3px">${r.observacao}</div>`:''}
+        `:''}
+        ${acao}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function editarDiaAgenda(data){
+  g('agenda-modal-data').textContent=new Date(data+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'});
+  g('agenda-modal-tipo').value='escritorio';
+  g('agenda-modal-cidade').value='';
+  g('agenda-modal-estado').value='';
+  g('agenda-modal-obs').value='';
+  g('modal-agenda').dataset.data=data;
+  g('modal-agenda').classList.add('open');
+  const coord=agendaCoordAtual||user;
+  sb(`/rest/v1/agenda_semanal?coordenador=eq.${encodeURIComponent(coord)}&data=eq.${data}&select=*`,{ret:true}).then(rows=>{
+    const r=Array.isArray(rows)?rows[0]:null;
+    if(!r)return;
+    g('agenda-modal-tipo').value=r.tipo||'escritorio';
+    g('agenda-modal-cidade').value=r.cidade||'';
+    g('agenda-modal-estado').value=r.estado||'';
+    g('agenda-modal-obs').value=r.observacao||'';
+  });
+}
+function fecharModalAgenda(){g('modal-agenda').classList.remove('open');}
+
+async function salvarDiaAgenda(){
+  const data=g('modal-agenda').dataset.data;
+  const coord=agendaCoordAtual||user;
+  const tipo=g('agenda-modal-tipo').value;
+  const cidade=g('agenda-modal-cidade').value.trim();
+  const estado=g('agenda-modal-estado').value.trim();
+  const observacao=g('agenda-modal-obs').value.trim();
+  const body={coordenador:coord,data,tipo,cidade:cidade||null,estado:estado||null,observacao:observacao||null,updated_at:new Date().toISOString()};
+  const res=await sb(`/rest/v1/agenda_semanal?on_conflict=coordenador,data`,{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});
+  if(res&&res.ok===false){toast('Erro ao salvar','error');return;}
+  fecharModalAgenda();
+  toast('Agenda salva!','ok');
+  await carregarAgendaSemana();
+}
+
+async function excluirDiaAgenda(){
+  const data=g('modal-agenda').dataset.data;
+  const coord=agendaCoordAtual||user;
+  if(!confirm('Excluir registro deste dia?'))return;
+  const res=await sb(`/rest/v1/agenda_semanal?coordenador=eq.${encodeURIComponent(coord)}&data=eq.${data}`,{method:'DELETE'});
+  if(res&&res.ok===false){toast('Erro ao excluir','error');return;}
+  fecharModalAgenda();
+  toast('Registro excluído.','ok');
+  await carregarAgendaSemana();
+}
+
 // ── SHELL E GESTÃO DO GESTOR ──
 function setupShell(){
   const sourceLogo=document.querySelector('.login-logo img');
@@ -2232,15 +2433,15 @@ function setupShell(){
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
   document.querySelectorAll('.no-vagner').forEach(el=>el.style.display=(user==='vagner')?'none':'');
   document.querySelectorAll('.no-fabiano').forEach(el=>el.style.display=isFabiano()?'none':'');
-  ['side-dash','side-forecast','side-tv','side-relatorios'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
+  ['side-dash','side-forecast','side-tv','side-relatorios','side-agenda'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
   if(g('side-premiacao'))g('side-premiacao').style.display=(isDiretoria||isFabiano())?'none':'';
   if(g('side-gestao'))g('side-gestao').style.display=isDiretoria?'':'none';
   if(g('side-planilha'))g('side-planilha').style.display=isDiretoria?'':'none';
 }
 
 function updateSideNav(active){
-  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',forecast:'Forecast comercial',log:'Log de atividades',relatorios:'Relatórios inteligentes'};
-  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','forecast','log','relatorios'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
+  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',forecast:'Forecast comercial',agenda:'Agenda semanal',log:'Log de atividades',relatorios:'Relatórios inteligentes'};
+  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','forecast','agenda','log','relatorios'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
   if(g('topbar-title'))g('topbar-title').textContent=titles[active]||'Follow-up Positivação';
   if(g('shell-mes'))g('shell-mes').value=mesAtual;
 }

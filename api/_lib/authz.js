@@ -117,11 +117,20 @@ const GENERIC_TABLES = {
     POST: (s) => isAdminLiteral(s) || isFabiano(s),
     PATCH: (s) => isAdminLiteral(s) || isFabiano(s),
   },
+  // Agenda semanal: cada coordenador vê/edita a própria; admin, vagner e diretoria
+  // veem todos (vePrivilegiado via scopeQuery), mas diretoria não escreve (só leitura,
+  // mesmo padrão de pedSomenteLeitura). Fabiano não acessa esta tela (bloqueado no navTo).
+  agenda_semanal: {
+    GET: () => true,
+    POST: (s) => !isDiretoria(s) && !isFabiano(s),
+    PATCH: (s) => !isDiretoria(s) && !isFabiano(s),
+    DELETE: (s) => !isDiretoria(s) && !isFabiano(s),
+  },
 };
 
 // Tabelas cujas linhas pertencem a um coordenador e devem ser restritas para quem
 // não é "privilegiado" (só vê/edita o próprio coordenador).
-const SCOPED_TABLES = new Set(['pedidos', 'pedidos_vendas', 'forecast_pedidos']);
+const SCOPED_TABLES = new Set(['pedidos', 'pedidos_vendas', 'forecast_pedidos', 'agenda_semanal']);
 
 function scopeQuery(table, session, params) {
   if (!SCOPED_TABLES.has(table) || vePrivilegiado(session)) return params;
