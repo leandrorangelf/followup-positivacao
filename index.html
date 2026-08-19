@@ -2323,7 +2323,7 @@ async function irAgenda(){
   const podeEscolher=isAdmin||user==='vagner'||isDiretoria;
   g('agenda-coord-tabs').style.display=podeEscolher?'flex':'none';
   if(podeEscolher){
-    if(agendaCoordAtual!=='todos'&&!COORD_KEYS.includes(agendaCoordAtual))agendaCoordAtual='todos';
+    if(agendaCoordAtual!=='todos'&&agendaCoordAtual!=='vagner'&&!COORD_KEYS.includes(agendaCoordAtual))agendaCoordAtual='todos';
     renderAgendaCoordTabs();
   }else{
     agendaCoordAtual=user;
@@ -2333,8 +2333,8 @@ async function irAgenda(){
 }
 
 function renderAgendaCoordTabs(){
-  g('agenda-coord-tabs').innerHTML=['todos',...COORD_KEYS].map(c=>
-    `<button class="cli-coord-tab ${c===agendaCoordAtual?'active':''}" onclick="setAgendaCoord('${c}')">${c==='todos'?'Todos':c.split(' ')[0]}</button>`).join('');
+  g('agenda-coord-tabs').innerHTML=['todos','vagner',...COORD_KEYS].map(c=>
+    `<button class="cli-coord-tab ${c===agendaCoordAtual?'active':''}" onclick="setAgendaCoord('${c}')">${c==='todos'?'Todos':(c==='vagner'?'Vagner':c.split(' ')[0])}</button>`).join('');
 }
 function setAgendaCoord(c){agendaCoordAtual=c;renderAgendaCoordTabs();carregarAgendaSemana();}
 
@@ -2386,14 +2386,17 @@ async function carregarAgendaSemana(){
 // Visão "Todos": tabela da semana (coordenador x dia) + calendário do mês inteiro abaixo.
 // Só quem enxerga todo mundo (admin/vagner/diretoria) chega aqui — cada um edita/marca
 // dias entrando na própria aba (clicar num coordenador na lista de abas já faz isso).
+// Vagner entra na lista junto com os coordenadores pra aparecer nessa visão agregada.
+const nomeAgendaPessoa=c=>c==='vagner'?'Vagner':c;
 async function renderAgendaTodos(seg,sab){
+  const pessoas=['vagner',...COORD_KEYS];
   const diasSemana=[];
   for(let i=0;i<6;i++){const d=new Date(seg);d.setDate(seg.getDate()+i);diasSemana.push(agIsoDate(d));}
   const hoje=agIsoDate(new Date());
 
   const registrosSemana=await sb(`/rest/v1/agenda_semanal?data=gte.${agIsoDate(seg)}&data=lte.${agIsoDate(sab)}&select=*`,{ret:true});
   const porCoordSemana={};
-  COORD_KEYS.forEach(c=>{porCoordSemana[c]={};});
+  pessoas.forEach(c=>{porCoordSemana[c]={};});
   (Array.isArray(registrosSemana)?registrosSemana:[]).forEach(r=>{if(porCoordSemana[r.coordenador])porCoordSemana[r.coordenador][r.data]=r;});
 
   const theadSemana=`<tr>
@@ -2404,7 +2407,7 @@ async function renderAgendaTodos(seg,sab){
       return `<th style="padding:4px 3px;font-size:9px;text-align:center;color:${isHoje?'var(--purple)':'var(--muted)'};background:${isHoje?'var(--purple-soft)':'transparent'}">${DIAS_SEMANA_AG[dObj.getDay()]}<br>${agFmtData(dt)}</th>`;
     }).join('')}
   </tr>`;
-  const tbodySemana=COORD_KEYS.map(c=>{
+  const tbodySemana=pessoas.map(c=>{
     const cells=diasSemana.map(dt=>{
       const r=porCoordSemana[c][dt];
       if(!r)return `<td style="padding:4px;text-align:center">—</td>`;
@@ -2412,7 +2415,7 @@ async function renderAgendaTodos(seg,sab){
       const tit=`${cfg.label}${r.cidade?' · '+r.cidade:''}${r.estado?' · '+r.estado:''}`;
       return `<td style="padding:4px;text-align:center;background:${cfg.bg}" title="${tit}"><span style="color:${cfg.cor}">${agIcon(r.tipo,14)}</span></td>`;
     }).join('');
-    return `<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 8px;font-size:11px;font-weight:600;white-space:nowrap;position:sticky;left:0;background:var(--card)">${c}</td>${cells}</tr>`;
+    return `<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 8px;font-size:11px;font-weight:600;white-space:nowrap;position:sticky;left:0;background:var(--card)">${nomeAgendaPessoa(c)}</td>${cells}</tr>`;
   }).join('');
 
   g('agenda-grid').innerHTML=`
@@ -2431,13 +2434,13 @@ async function renderAgendaTodos(seg,sab){
 
   const registrosMes=await sb(`/rest/v1/agenda_semanal?data=gte.${agIsoDate(iniMes)}&data=lte.${agIsoDate(fimMes)}&select=*`,{ret:true});
   const porCoordMes={};
-  COORD_KEYS.forEach(c=>{porCoordMes[c]={};});
+  pessoas.forEach(c=>{porCoordMes[c]={};});
   (Array.isArray(registrosMes)?registrosMes:[]).forEach(r=>{if(porCoordMes[r.coordenador])porCoordMes[r.coordenador][r.data]=r;});
 
   // Quem tem agenda em cada dia do mês (pode ter mais de um coordenador no mesmo dia)
   const porDiaMes={};
   diasMes.forEach(dt=>{porDiaMes[dt]=[];});
-  COORD_KEYS.forEach(c=>{Object.entries(porCoordMes[c]).forEach(([dt,r])=>{if(porDiaMes[dt])porDiaMes[dt].push({coord:c,...r});});});
+  pessoas.forEach(c=>{Object.entries(porCoordMes[c]).forEach(([dt,r])=>{if(porDiaMes[dt])porDiaMes[dt].push({coord:c,...r});});});
 
   // Grade completa de semanas (Dom-Sáb), com dias do mês anterior/seguinte pra preencher
   const primeiroDiaSemana=iniMes.getDay();
@@ -2446,7 +2449,7 @@ async function renderAgendaTodos(seg,sab){
   diasMes.forEach(dt=>celulas.push(dt));
   while(celulas.length%7!==0)celulas.push(null);
 
-  const nomeAbrev=c=>c.split(' ')[0];
+  const nomeAbrev=c=>c==='vagner'?'Vagner':c.split(' ')[0];
   const celulasHTML=celulas.map(dt=>{
     if(!dt)return `<div style="min-height:96px;background:var(--soft, var(--bg));border:1px solid var(--border);opacity:.4"></div>`;
     const isHoje=dt===hoje;
