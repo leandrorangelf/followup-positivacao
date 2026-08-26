@@ -1601,7 +1601,9 @@ const CLI_OWNER_KEYS=[...COORD_KEYS,COORD_DIRETORIA];
 // iteram COORD_KEYS assumindo carteira).
 const GESTOR_KEYS=['Gerência'];
 // Coordenadores com salário fixo — não têm premiação variável
-const COORD_SALARIO_FIXO=new Set(['Junior']);
+// (era Marcio Vit; a renomeação pra Junior levou esse registro por engano —
+// Junior tem premiação/comissão normal, igual aos demais coordenadores)
+const COORD_SALARIO_FIXO=new Set([]);
 // Clientes que não geram comissão (COMISSIONAR S/ = NÃO)
 const _SEM_COM=new Set(['FREEDOM TECH LTDA','FREEDOM TECH']);
 const clienteNaoComissiona=nome=>{if(!nome)return false;const n=nome.trim().toUpperCase();return _SEM_COM.has(n)||n.startsWith('NEW BLUETEX');};
