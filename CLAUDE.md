@@ -62,7 +62,7 @@ Definidos em `api/_lib/senhas.js` / `COORD_KEYS`:
 - `vagner` (Gerente) — `isAdmin=true` mas somente leitura na tela de Pedidos legada
 - `diretoria` — somente leitura
 - `fabiano` (Faturamento) — gerencia GNRE e faturamento
-- Coordenadores: `Igor Cater`, `Marcio Vit`, `Vitor Valle`, `Rosana` — só veem/editam o próprio nome
+- Coordenadores: `Igor Cater`, `Junior`, `Vitor Valle`, `Rosana` — só veem/editam o próprio nome
 
 Senhas foram rotacionadas em 2026-07-03 (as anteriores ficaram expostas publicamente antes da migração). Se precisar trocar de novo, gerar novo hash SHA-256 e atualizar `api/_lib/senhas.js` — nunca voltar a colocar hashes no `index.html`.
 

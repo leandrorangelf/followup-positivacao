@@ -773,7 +773,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <option value="diretoria">Diretoria (Somente leitura)</option>
         <option value="fabiano">Fabiano (Faturamento)</option>
         <option value="Igor Cater">Igor Cater</option>
-        <option value="Marcio Vit">Marcio Vit</option>
+        <option value="Junior">Junior</option>
         <option value="Vitor Valle">Vitor Valle</option>
         <option value="Rosana">Rosana</option>
       </select>
@@ -1484,7 +1484,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
           <option value="admin">Leandro</option>
           <option value="vagner">Vagner</option>
           <option value="Igor Cater">Igor Cater</option>
-          <option value="Marcio Vit">Marcio Vit</option>
+          <option value="Junior">Junior</option>
           <option value="Vitor Valle">Vitor Valle</option>
           <option value="Rosana">Rosana</option>
         </select>
@@ -1588,7 +1588,7 @@ function icon(name,size){
 }
 
 
-const COORD_KEYS=['Igor Cater','Marcio Vit','Rosana','Vitor Valle'];
+const COORD_KEYS=['Igor Cater','Junior','Rosana','Vitor Valle'];
 // Pseudo-coordenador só pra marcar vendas avulsas lançadas por admin/vagner (ex.: acordo
 // fechado direto pela diretoria). Fica FORA de COORD_KEYS de propósito — não deve aparecer
 // nos lugares que iteram COORD_KEYS assumindo meta/positivação (mesma lógica de GESTOR_KEYS
@@ -1601,11 +1601,11 @@ const CLI_OWNER_KEYS=[...COORD_KEYS,COORD_DIRETORIA];
 // iteram COORD_KEYS assumindo carteira).
 const GESTOR_KEYS=['Gerência'];
 // Coordenadores com salário fixo — não têm premiação variável
-const COORD_SALARIO_FIXO=new Set(['Marcio Vit']);
+const COORD_SALARIO_FIXO=new Set(['Junior']);
 // Clientes que não geram comissão (COMISSIONAR S/ = NÃO)
 const _SEM_COM=new Set(['FREEDOM TECH LTDA','FREEDOM TECH']);
 const clienteNaoComissiona=nome=>{if(!nome)return false;const n=nome.trim().toUpperCase();return _SEM_COM.has(n)||n.startsWith('NEW BLUETEX');};
-const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Marcio Vit':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
+const METAS={'Igor Cater':[131,267,192,241,279,251,269,296,305,308,311,234],'Junior':[310,326,335,345,356,374,385,396,416,437,450,473],'Rosana':[541,429,502,547,591,597,633,645,658,671,685,479],'Vitor Valle':[122,96,134,139,140,150,153,169,172,177,213,217]};
 GESTOR_KEYS.forEach(k=>{METAS[k]=METAS[k]||Array(12).fill(0);});
 METAS['Gerência'][new Date().getMonth()]=2000;
 const METAS_PADRAO=JSON.parse(JSON.stringify(METAS));
@@ -4977,7 +4977,7 @@ async function forecastExcluir(id){
 
 // ===================== LOG DE AUDITORIA =====================
 function nomeUsuarioLog(u){
-  const labels={admin:'Leandro',vagner:'Vagner',fabiano:'Fabiano',diretoria:'Diretoria','Igor Cater':'Igor Cater','Marcio Vit':'Marcio Vit','Vitor Valle':'Vitor Valle','Rosana':'Rosana'};
+  const labels={admin:'Leandro',vagner:'Vagner',fabiano:'Fabiano',diretoria:'Diretoria','Igor Cater':'Igor Cater','Junior':'Junior','Vitor Valle':'Vitor Valle','Rosana':'Rosana'};
   return labels[u]||u||'Usuário';
 }
 async function auditLog(acao, descricao, detalhes, pedidoId){
