@@ -6281,9 +6281,10 @@ function relRenderPedidos(lista){
   ${relTotalizadorClientesHTML(lista)}
   ${relTotalizadorSkuHTML(lista)}`;
 }
+let relTotSkuRows=[];
 function relTotalizadorSkuHTML(listaCompleta){
   const lista=listaCompleta.filter(p=>!vdEhDistribuidora(p));
-  if(!lista.length)return'';
+  if(!lista.length){relTotSkuRows=[];return'';}
   const skuTots={};VD_SKUS.forEach(s=>skuTots[s]={total:0,in:0,off:0});
   lista.forEach(p=>{
     const tipo=vdTipoPedido(p);
@@ -6295,10 +6296,14 @@ function relTotalizadorSkuHTML(listaCompleta){
     });
   });
   const rows=Object.entries(skuTots).filter(([,v])=>v.total>0).sort((a,b)=>b[1].total-a[1].total);
+  relTotSkuRows=rows;
   if(!rows.length)return'';
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por SKU <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas que saíram da Fábrica no período, por produto (não inclui distribuidoras)</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700">Totalizador por SKU <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas que saíram da Fábrica no período, por produto (não inclui distribuidoras)</span></div>
+      <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarTotalizadorSku()">⬇ Exportar Excel</button>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
       ${rows.map(([sku,v])=>`<div style="border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${vdEsc(sku)}</div>
@@ -6311,6 +6316,27 @@ function relTotalizadorSkuHTML(listaCompleta){
     </div>
   </div>`;
 }
+function relCsvEscape(v){
+  const s=String(v??'');
+  return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+function relBaixarCsv(filename,linhas){
+  const csv=linhas.map(l=>l.map(relCsvEscape).join(';')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function relExportarTotalizadorSku(){
+  if(!relTotSkuRows.length){toast('Nada para exportar','error');return;}
+  const linhas=[['SKU','Total cx','In cx','Off cx']];
+  let totTotal=0,totIn=0,totOff=0;
+  relTotSkuRows.forEach(([sku,v])=>{linhas.push([sku,v.total,v.in,v.off]);totTotal+=v.total;totIn+=v.in;totOff+=v.off;});
+  linhas.push(['TOTAL',totTotal,totIn,totOff]);
+  relBaixarCsv('totalizador-sku.csv',linhas);
+}
+let relTotClientesRows=[];
 function relTotalizadorClientesHTML(listaCompleta){
   const lista=listaCompleta.filter(p=>!vdEhDistribuidora(p));
   const GUDANG_SKUS=['GR','GM','GTWIN'];
@@ -6329,6 +6355,7 @@ function relTotalizadorClientesHTML(listaCompleta){
     });
   });
   const rows=Object.values(porCliente).sort((a,b)=>b.totalCx-a.totalCx);
+  relTotClientesRows=rows;
   if(!rows.length)return'';
   const totPedidos=rows.reduce((s,r)=>s+r.pedidos,0);
   const totGudang=rows.reduce((s,r)=>s+r.gudangCx,0);
@@ -6337,7 +6364,10 @@ function relTotalizadorClientesHTML(listaCompleta){
   const totCx=rows.reduce((s,r)=>s+r.totalCx,0);
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas de Fábrica no período, por cliente, separado Gudang x Cretec (não inclui distribuidoras)</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700">Totalizador por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas de Fábrica no período, por cliente, separado Gudang x Cretec (não inclui distribuidoras)</span></div>
+      <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarTotalizadorClientes()">⬇ Exportar Excel</button>
+    </div>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px">
         <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
@@ -6372,6 +6402,18 @@ function relTotalizadorClientesHTML(listaCompleta){
       </table>
     </div>
   </div>`;
+}
+function relExportarTotalizadorClientes(){
+  if(!relTotClientesRows.length){toast('Nada para exportar','error');return;}
+  const linhas=[['Cliente','UF','Coordenador','Pedidos','Gudang cx','Cretec cx','Click cx','Total cx']];
+  relTotClientesRows.forEach(r=>linhas.push([r.nome,r.uf||'',r.coord||'',r.pedidos,r.gudangCx,r.cretecCx,r.clickCx,r.totalCx]));
+  const totPedidos=relTotClientesRows.reduce((s,r)=>s+r.pedidos,0);
+  const totGudang=relTotClientesRows.reduce((s,r)=>s+r.gudangCx,0);
+  const totCretec=relTotClientesRows.reduce((s,r)=>s+r.cretecCx,0);
+  const totClick=relTotClientesRows.reduce((s,r)=>s+r.clickCx,0);
+  const totCx=relTotClientesRows.reduce((s,r)=>s+r.totalCx,0);
+  linhas.push(['TOTAL','','',totPedidos,totGudang,totCretec,totClick,totCx]);
+  relBaixarCsv('totalizador-clientes.csv',linhas);
 }
 
 function relToggleSel(id){
