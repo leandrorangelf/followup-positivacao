@@ -713,7 +713,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <div><div class="section-title">Registro de Faturamento</div><div class="section-sub">Histórico de faturamentos confirmados por pedido</div></div>
     </div>
     <div class="reg-fat-filters">
-      <select id="reg-mes" onchange="regRender()"></select>
+      <select id="reg-mes" onchange="regCarregar()"></select>
+      <select id="reg-ano" onchange="regCarregar()"></select>
       <select id="reg-coord" onchange="regRender()">
         <option value="todos">Todos os coordenadores</option>
       </select>
@@ -1526,7 +1527,9 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <select id="rel-mes" class="client-filter" onchange="relFiltrarMes(this.value)" style="min-width:130px">
           <option value="atual">Mês atual</option>
           <option value="todos">Ano inteiro</option>
+          <option value="custom">Período personalizado</option>
         </select>
+        <select id="rel-ano" class="client-filter" onchange="relFiltrarAno(this.value)" style="min-width:100px"></select>
         <select id="rel-origem" class="client-filter" onchange="relFiltrarOrigem(this.value)" style="min-width:150px">
           <option value="todos">Todas as origens</option>
           <option value="fabrica">🏭 Fábrica</option>
@@ -1534,6 +1537,18 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         </select>
         <input id="rel-busca" class="client-search" placeholder="Buscar cliente, UF, origem..." oninput="relFiltrarBusca(this.value)" style="min-width:220px">
         <button class="secondary-btn" onclick="irRelatorios()">↺ Atualizar</button>
+      </div>
+      <div id="rel-periodo-custom" style="display:none;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;padding:8px;background:var(--bg-soft,#f4f4f5);border-radius:var(--r-md)">
+        <button class="admin-tab" onclick="relPeriodoRapido(3)">Últimos 3 meses</button>
+        <button class="admin-tab" onclick="relPeriodoRapido(6)">Últimos 6 meses</button>
+        <button class="admin-tab" onclick="relPeriodoRapido(12)">Últimos 12 meses</button>
+        <span style="font-size:12px;color:var(--muted)">De</span>
+        <select id="rel-periodo-de-mes" class="client-filter" style="min-width:110px"></select>
+        <select id="rel-periodo-de-ano" class="client-filter" style="min-width:90px"></select>
+        <span style="font-size:12px;color:var(--muted)">até</span>
+        <select id="rel-periodo-ate-mes" class="client-filter" style="min-width:110px"></select>
+        <select id="rel-periodo-ate-ano" class="client-filter" style="min-width:90px"></select>
+        <button class="primary-btn" onclick="relAplicarPeriodo()">Aplicar</button>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
         <button class="admin-tab active" data-rel-st="todos" onclick="relFiltrarStatus('todos')">Todos</button>
@@ -5017,10 +5032,17 @@ async function irRegistro(){
   show('s-registro');
   renderNav('nav-registro','registro');
   updateSideNav('registro');
-  g('reg-fat-lista').innerHTML='<div class="vd-empty">Carregando...</div>';
   const mesEl=g('reg-mes');
   if(!mesEl.options.length){
-    MESES.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m+' '+anoAtual;if(i===mesAtual)o.selected=true;mesEl.appendChild(o);});
+    const oTodos=document.createElement('option');oTodos.value='todos';oTodos.textContent='Ano inteiro';mesEl.appendChild(oTodos);
+    MESES.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m;if(i===mesAtual)o.selected=true;mesEl.appendChild(o);});
+  }
+  const anoEl=g('reg-ano');
+  if(anoEl&&!anoEl.options.length){
+    const oSempre=document.createElement('option');oSempre.value='todos';oSempre.textContent='📅 Total geral (todos os anos)';anoEl.appendChild(oSempre);
+    const anos=[];
+    for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
+    anos.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent='Ano '+y;if(y===anoAtual)o.selected=true;anoEl.appendChild(o);});
   }
   const coordEl=g('reg-coord');
   if(coordEl.options.length===1){
@@ -5029,8 +5051,15 @@ async function irRegistro(){
   if(!isAdmin&&!isFabiano()&&user!=='vagner'){
     g('reg-coord').value=coordAtual;g('reg-coord').disabled=true;
   }
-  const mes=parseInt(g('reg-mes').value);
-  const lista=await sb('/rest/v1/pedidos_vendas?mes=eq.'+mes+'&ano=eq.'+anoAtual+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=faturado_at.desc.nullslast',{ret:true});
+  await regCarregar();
+}
+async function regCarregar(){
+  g('reg-fat-lista').innerHTML='<div class="vd-empty">Carregando...</div>';
+  const mesVal=g('reg-mes').value;
+  const anoVal=g('reg-ano').value;
+  const filtroMes=mesVal==='todos'?'':'mes=eq.'+mesVal+'&';
+  const filtroAno=anoVal==='todos'?'':'ano=eq.'+anoVal+'&';
+  const lista=await sb('/rest/v1/pedidos_vendas?'+filtroMes+filtroAno+'deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=faturado_at.desc.nullslast',{ret:true});
   regPedidos=Array.isArray(lista)?lista.filter(p=>(vdResumoPedido(p).faturadoCx>0||p.is_parcial)&&(!isFabiano()||vdOrigemFaturadoFabiano(p.origem))):[];
   regRender();
 }
@@ -5475,7 +5504,8 @@ carregarDashboard=async function(silencioso=false,forcarBusca=false){
 };
 
 // ===================== RELATÓRIOS =====================
-let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='atual',relOrigemFiltro='todos',relStatusFiltro='todos',relTipoFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
+let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='atual',relAnoFiltro=anoAtual,relOrigemFiltro='todos',relStatusFiltro='todos',relTipoFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
+let relPeriodoDe={mes:mesAtual,ano:anoAtual},relPeriodoAte={mes:mesAtual,ano:anoAtual};
 let relSelecionados=new Set();
 
 async function irRelatorios(){
@@ -5492,10 +5522,25 @@ async function irRelatorios(){
     else{sel.value=relCoordFiltro;sel.disabled=false;}
   }
   if(g('rel-mes')){
-    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option>'+
+    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option><option value="custom">Período personalizado</option>'+
       MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');
     g('rel-mes').value=relMesFiltro;
   }
+  if(g('rel-ano')){
+    const anos=[];
+    for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
+    g('rel-ano').innerHTML='<option value="todos">📅 Total geral (todos os anos)</option>'+anos.map(y=>'<option value="'+y+'">Ano '+y+'</option>').join('');
+    g('rel-ano').value=relAnoFiltro;
+  }
+  if(g('rel-periodo-de-mes')&&!g('rel-periodo-de-mes').options.length){
+    const anos=[];
+    for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
+    ['rel-periodo-de-mes','rel-periodo-ate-mes'].forEach(id=>{g(id).innerHTML=MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');});
+    ['rel-periodo-de-ano','rel-periodo-ate-ano'].forEach(id=>{g(id).innerHTML=anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');});
+    g('rel-periodo-de-mes').value=relPeriodoDe.mes;g('rel-periodo-de-ano').value=relPeriodoDe.ano;
+    g('rel-periodo-ate-mes').value=relPeriodoAte.mes;g('rel-periodo-ate-ano').value=relPeriodoAte.ano;
+  }
+  if(g('rel-periodo-custom'))g('rel-periodo-custom').style.display=relMesFiltro==='custom'?'flex':'none';
   if(g('rel-busca'))g('rel-busca').value=relBuscaFiltro;
   await relCarregar();
 }
@@ -5506,9 +5551,19 @@ async function relCarregar(){
   g('rel-content').innerHTML='<div class="loading">Carregando relatórios...</div>';
   try{
     const filtroCoord=(!isAdmin&&!isDiretoria&&user!=='vagner')?`coordenador=eq.${encodeURIComponent(coordAtual)}&`:'';
+    let filtroAno='',filtroAnoForecast='';
+    if(relMesFiltro==='custom'){
+      const anos=[];
+      for(let y=relPeriodoDe.ano;y<=relPeriodoAte.ano;y++)anos.push(y);
+      filtroAno=`ano=in.(${anos.join(',')})&`;
+      filtroAnoForecast=`forecast_ano=in.(${anos.join(',')})&`;
+    }else if(relAnoFiltro!=='todos'){
+      filtroAno=`ano=eq.${relAnoFiltro}&`;
+      filtroAnoForecast=`forecast_ano=eq.${relAnoFiltro}&`;
+    }
     const [vendas,forecast]=await Promise.all([
-      sb(`/rest/v1/pedidos_vendas?${filtroCoord}ano=eq.${anoAtual}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
-      sb(`/rest/v1/forecast_pedidos?${filtroCoord}forecast_ano=eq.${anoAtual}&select=*,forecast_pedidos_itens(*)&limit=3000`,{ret:true})
+      sb(`/rest/v1/pedidos_vendas?${filtroCoord}${filtroAno}deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=10000`,{ret:true}),
+      sb(`/rest/v1/forecast_pedidos?${filtroCoord}${filtroAnoForecast}select=*,forecast_pedidos_itens(*)&limit=5000`,{ret:true})
     ]);
     relDados=Array.isArray(vendas)?vendas.filter(dashPedidoValido):[];
     relForecastDados=Array.isArray(forecast)?forecast:[];
@@ -5523,6 +5578,12 @@ function relMesPedido(p){return Number(p?.mes);}
 function relMesForecast(p){return Number(p?.forecast_mes ?? p?.mes ?? p?.mes_previsto ?? mesAtual);}
 function relPassaMes(p,forecast=false){
   if(relMesFiltro==='todos')return true;
+  if(relMesFiltro==='custom'){
+    const mes=Number(forecast?relMesForecast(p):relMesPedido(p));
+    const ano=Number(forecast?(p?.forecast_ano??p?.ano):p?.ano);
+    const idx=ano*12+mes,ini=relPeriodoDe.ano*12+relPeriodoDe.mes,fim=relPeriodoAte.ano*12+relPeriodoAte.mes;
+    return idx>=ini&&idx<=fim;
+  }
   const mes=relMesFiltro==='atual'?mesAtual:Number(relMesFiltro);
   return Number(forecast?relMesForecast(p):relMesPedido(p))===mes;
 }
@@ -5585,7 +5646,34 @@ function relFiltrarCoord(v){
 
 function relFiltrarMes(v){
   relMesFiltro=v;
-  relAba(relAbaAtual);
+  if(g('rel-periodo-custom'))g('rel-periodo-custom').style.display=v==='custom'?'flex':'none';
+  if(v==='custom')return;
+  relCarregar();
+}
+
+function relPeriodoRapido(n){
+  const fimIdx=anoAtual*12+mesAtual;
+  const iniIdx=fimIdx-(n-1);
+  relPeriodoDe={ano:Math.floor(iniIdx/12),mes:((iniIdx%12)+12)%12};
+  relPeriodoAte={ano:anoAtual,mes:mesAtual};
+  g('rel-periodo-de-mes').value=relPeriodoDe.mes;g('rel-periodo-de-ano').value=relPeriodoDe.ano;
+  g('rel-periodo-ate-mes').value=relPeriodoAte.mes;g('rel-periodo-ate-ano').value=relPeriodoAte.ano;
+  relAplicarPeriodo();
+}
+
+function relAplicarPeriodo(){
+  relPeriodoDe={mes:parseInt(g('rel-periodo-de-mes').value),ano:parseInt(g('rel-periodo-de-ano').value)};
+  relPeriodoAte={mes:parseInt(g('rel-periodo-ate-mes').value),ano:parseInt(g('rel-periodo-ate-ano').value)};
+  if(relPeriodoDe.ano*12+relPeriodoDe.mes>relPeriodoAte.ano*12+relPeriodoAte.mes){
+    toast('Período inválido: "De" é depois de "Até"','error');return;
+  }
+  relMesFiltro='custom';
+  relCarregar();
+}
+
+function relFiltrarAno(v){
+  relAnoFiltro=v==='todos'?'todos':parseInt(v);
+  relCarregar();
 }
 
 function relFiltrarOrigem(v){
@@ -6193,9 +6281,10 @@ function relRenderPedidos(lista){
   ${relTotalizadorClientesHTML(lista)}
   ${relTotalizadorSkuHTML(lista)}`;
 }
+let relTotSkuRows=[];
 function relTotalizadorSkuHTML(listaCompleta){
   const lista=listaCompleta.filter(p=>!vdEhDistribuidora(p));
-  if(!lista.length)return'';
+  if(!lista.length){relTotSkuRows=[];return'';}
   const skuTots={};VD_SKUS.forEach(s=>skuTots[s]={total:0,in:0,off:0});
   lista.forEach(p=>{
     const tipo=vdTipoPedido(p);
@@ -6207,10 +6296,14 @@ function relTotalizadorSkuHTML(listaCompleta){
     });
   });
   const rows=Object.entries(skuTots).filter(([,v])=>v.total>0).sort((a,b)=>b[1].total-a[1].total);
+  relTotSkuRows=rows;
   if(!rows.length)return'';
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por SKU <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas que saíram da Fábrica no período, por produto (não inclui distribuidoras)</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700">Totalizador por SKU <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas que saíram da Fábrica no período, por produto (não inclui distribuidoras)</span></div>
+      <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarTotalizadorSku()">⬇ Exportar Excel</button>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
       ${rows.map(([sku,v])=>`<div style="border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${vdEsc(sku)}</div>
@@ -6223,26 +6316,58 @@ function relTotalizadorSkuHTML(listaCompleta){
     </div>
   </div>`;
 }
+function relCsvEscape(v){
+  const s=String(v??'');
+  return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+function relBaixarCsv(filename,linhas){
+  const csv=linhas.map(l=>l.map(relCsvEscape).join(';')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function relExportarTotalizadorSku(){
+  if(!relTotSkuRows.length){toast('Nada para exportar','error');return;}
+  const linhas=[['SKU','Total cx','In cx','Off cx']];
+  let totTotal=0,totIn=0,totOff=0;
+  relTotSkuRows.forEach(([sku,v])=>{linhas.push([sku,v.total,v.in,v.off]);totTotal+=v.total;totIn+=v.in;totOff+=v.off;});
+  linhas.push(['TOTAL',totTotal,totIn,totOff]);
+  relBaixarCsv('totalizador-sku.csv',linhas);
+}
+let relTotClientesRows=[];
 function relTotalizadorClientesHTML(listaCompleta){
   const lista=listaCompleta.filter(p=>!vdEhDistribuidora(p));
+  const GUDANG_SKUS=['GR','GM','GTWIN'];
+  const CRETEC_SKUS=['CM','CC'];
   const porCliente={};
   lista.forEach(p=>{
     const k=p.cliente_nome;
-    if(!porCliente[k])porCliente[k]={nome:k,uf:p.cliente_uf,coord:p.coordenador,pedidos:0,cx:0,faturadoCx:0,saldoCx:0};
-    const x=vdResumoPedido(p);
+    if(!porCliente[k])porCliente[k]={nome:k,uf:p.cliente_uf,coord:p.coordenador,pedidos:0,gudangCx:0,cretecCx:0,clickCx:0,totalCx:0};
     porCliente[k].pedidos++;
-    porCliente[k].cx+=x.pedidoCx;
-    porCliente[k].faturadoCx+=x.faturadoCx;
-    porCliente[k].saldoCx+=x.saldoCx;
+    (p.pedidos_vendas_itens||[]).forEach(i=>{
+      const q=Number(i.qty_caixas||0);
+      if(GUDANG_SKUS.includes(i.sku))porCliente[k].gudangCx+=q;
+      else if(CRETEC_SKUS.includes(i.sku))porCliente[k].cretecCx+=q;
+      else if(i.sku==='CK')porCliente[k].clickCx+=q;
+      porCliente[k].totalCx+=q;
+    });
   });
-  const rows=Object.values(porCliente).sort((a,b)=>b.cx-a.cx);
+  const rows=Object.values(porCliente).sort((a,b)=>b.totalCx-a.totalCx);
+  relTotClientesRows=rows;
   if(!rows.length)return'';
-  const totCx=rows.reduce((s,r)=>s+r.cx,0);
-  const totFat=rows.reduce((s,r)=>s+r.faturadoCx,0);
-  const totSaldo=rows.reduce((s,r)=>s+r.saldoCx,0);
+  const totPedidos=rows.reduce((s,r)=>s+r.pedidos,0);
+  const totGudang=rows.reduce((s,r)=>s+r.gudangCx,0);
+  const totCretec=rows.reduce((s,r)=>s+r.cretecCx,0);
+  const totClick=rows.reduce((s,r)=>s+r.clickCx,0);
+  const totCx=rows.reduce((s,r)=>s+r.totalCx,0);
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px">Totalizador por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— soma dos pedidos de Fábrica no período, por cliente (não inclui distribuidoras)</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700">Totalizador por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas de Fábrica no período, por cliente, separado Gudang x Cretec (não inclui distribuidoras)</span></div>
+      <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarTotalizadorClientes()">⬇ Exportar Excel</button>
+    </div>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px">
         <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
@@ -6250,30 +6375,45 @@ function relTotalizadorClientesHTML(listaCompleta){
           <th style="text-align:left;padding:8px">UF</th>
           <th style="text-align:left;padding:8px">Coord</th>
           <th style="text-align:center;padding:8px">Pedidos</th>
+          <th style="text-align:center;padding:8px">Gudang cx</th>
+          <th style="text-align:center;padding:8px">Cretec cx</th>
+          <th style="text-align:center;padding:8px">Click cx</th>
           <th style="text-align:center;padding:8px">Total cx</th>
-          <th style="text-align:center;padding:8px">Faturado cx</th>
-          <th style="text-align:center;padding:8px">Saldo cx</th>
         </tr></thead>
         <tbody>${rows.map((r,i)=>`<tr style="border-top:1px solid var(--border);${i%2===1?'background:var(--soft)':''}">
           <td style="padding:7px 10px;font-weight:600">${vdEsc(r.nome)}</td>
           <td style="padding:7px 8px;color:var(--muted)">${vdEsc(r.uf||'—')}</td>
           <td style="padding:7px 8px;font-size:11px;color:var(--muted)">${vdEsc(r.coord)}</td>
           <td style="padding:7px 8px;text-align:center">${r.pedidos}</td>
-          <td style="padding:7px 8px;text-align:center;font-weight:700">${relFmt(r.cx)}</td>
-          <td style="padding:7px 8px;text-align:center;color:var(--green)">${relFmt(r.faturadoCx)}</td>
-          <td style="padding:7px 8px;text-align:center;color:${r.saldoCx?'var(--warning)':'var(--muted)'}">${relFmt(r.saldoCx)}</td>
+          <td style="padding:7px 8px;text-align:center">${r.gudangCx?relFmt(r.gudangCx):'—'}</td>
+          <td style="padding:7px 8px;text-align:center">${r.cretecCx?relFmt(r.cretecCx):'—'}</td>
+          <td style="padding:7px 8px;text-align:center">${r.clickCx?relFmt(r.clickCx):'—'}</td>
+          <td style="padding:7px 8px;text-align:center;font-weight:700">${relFmt(r.totalCx)}</td>
         </tr>`).join('')}
         <tr style="background:var(--border);font-weight:700;font-size:11px;border-top:2px solid var(--text)">
           <td colspan="3" style="padding:8px 10px">TOTAL — ${rows.length} cliente(s)</td>
-          <td style="text-align:center;padding:8px">${lista.length}</td>
+          <td style="text-align:center;padding:8px">${totPedidos}</td>
+          <td style="text-align:center;padding:8px">${relFmt(totGudang)}</td>
+          <td style="text-align:center;padding:8px">${relFmt(totCretec)}</td>
+          <td style="text-align:center;padding:8px">${relFmt(totClick)}</td>
           <td style="text-align:center;padding:8px">${relFmt(totCx)}</td>
-          <td style="text-align:center;padding:8px">${relFmt(totFat)}</td>
-          <td style="text-align:center;padding:8px">${relFmt(totSaldo)}</td>
         </tr>
         </tbody>
       </table>
     </div>
   </div>`;
+}
+function relExportarTotalizadorClientes(){
+  if(!relTotClientesRows.length){toast('Nada para exportar','error');return;}
+  const linhas=[['Cliente','UF','Coordenador','Pedidos','Gudang cx','Cretec cx','Click cx','Total cx']];
+  relTotClientesRows.forEach(r=>linhas.push([r.nome,r.uf||'',r.coord||'',r.pedidos,r.gudangCx,r.cretecCx,r.clickCx,r.totalCx]));
+  const totPedidos=relTotClientesRows.reduce((s,r)=>s+r.pedidos,0);
+  const totGudang=relTotClientesRows.reduce((s,r)=>s+r.gudangCx,0);
+  const totCretec=relTotClientesRows.reduce((s,r)=>s+r.cretecCx,0);
+  const totClick=relTotClientesRows.reduce((s,r)=>s+r.clickCx,0);
+  const totCx=relTotClientesRows.reduce((s,r)=>s+r.totalCx,0);
+  linhas.push(['TOTAL','','',totPedidos,totGudang,totCretec,totClick,totCx]);
+  relBaixarCsv('totalizador-clientes.csv',linhas);
 }
 
 function relToggleSel(id){
