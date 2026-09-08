@@ -5039,10 +5039,10 @@ async function irRegistro(){
   }
   const anoEl=g('reg-ano');
   if(anoEl&&!anoEl.options.length){
-    const oSempre=document.createElement('option');oSempre.value='todos';oSempre.textContent='Todos os anos (sempre)';anoEl.appendChild(oSempre);
+    const oSempre=document.createElement('option');oSempre.value='todos';oSempre.textContent='📅 Total geral (todos os anos)';anoEl.appendChild(oSempre);
     const anos=[];
     for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
-    anos.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;if(y===anoAtual)o.selected=true;anoEl.appendChild(o);});
+    anos.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent='Ano '+y;if(y===anoAtual)o.selected=true;anoEl.appendChild(o);});
   }
   const coordEl=g('reg-coord');
   if(coordEl.options.length===1){
@@ -5529,7 +5529,7 @@ async function irRelatorios(){
   if(g('rel-ano')){
     const anos=[];
     for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
-    g('rel-ano').innerHTML='<option value="todos">Todos os anos (sempre)</option>'+anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');
+    g('rel-ano').innerHTML='<option value="todos">📅 Total geral (todos os anos)</option>'+anos.map(y=>'<option value="'+y+'">Ano '+y+'</option>').join('');
     g('rel-ano').value=relAnoFiltro;
   }
   if(g('rel-periodo-de-mes')&&!g('rel-periodo-de-mes').options.length){
