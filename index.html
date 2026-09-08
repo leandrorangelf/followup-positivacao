@@ -5026,6 +5026,7 @@ async function irRegistro(){
   }
   const anoEl=g('reg-ano');
   if(anoEl&&!anoEl.options.length){
+    const oSempre=document.createElement('option');oSempre.value='todos';oSempre.textContent='Todos os anos (sempre)';anoEl.appendChild(oSempre);
     const anos=[];
     for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
     anos.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;if(y===anoAtual)o.selected=true;anoEl.appendChild(o);});
@@ -5042,9 +5043,10 @@ async function irRegistro(){
 async function regCarregar(){
   g('reg-fat-lista').innerHTML='<div class="vd-empty">Carregando...</div>';
   const mesVal=g('reg-mes').value;
-  const ano=parseInt(g('reg-ano').value)||anoAtual;
+  const anoVal=g('reg-ano').value;
   const filtroMes=mesVal==='todos'?'':'mes=eq.'+mesVal+'&';
-  const lista=await sb('/rest/v1/pedidos_vendas?'+filtroMes+'ano=eq.'+ano+'&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=faturado_at.desc.nullslast',{ret:true});
+  const filtroAno=anoVal==='todos'?'':'ano=eq.'+anoVal+'&';
+  const lista=await sb('/rest/v1/pedidos_vendas?'+filtroMes+filtroAno+'deleted_at=is.null&select=*,pedidos_vendas_itens(*)&order=faturado_at.desc.nullslast',{ret:true});
   regPedidos=Array.isArray(lista)?lista.filter(p=>(vdResumoPedido(p).faturadoCx>0||p.is_parcial)&&(!isFabiano()||vdOrigemFaturadoFabiano(p.origem))):[];
   regRender();
 }
@@ -5513,7 +5515,7 @@ async function irRelatorios(){
   if(g('rel-ano')){
     const anos=[];
     for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
-    g('rel-ano').innerHTML=anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');
+    g('rel-ano').innerHTML='<option value="todos">Todos os anos (sempre)</option>'+anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');
     g('rel-ano').value=relAnoFiltro;
   }
   if(g('rel-busca'))g('rel-busca').value=relBuscaFiltro;
@@ -5526,9 +5528,11 @@ async function relCarregar(){
   g('rel-content').innerHTML='<div class="loading">Carregando relatórios...</div>';
   try{
     const filtroCoord=(!isAdmin&&!isDiretoria&&user!=='vagner')?`coordenador=eq.${encodeURIComponent(coordAtual)}&`:'';
+    const filtroAno=relAnoFiltro==='todos'?'':`ano=eq.${relAnoFiltro}&`;
+    const filtroAnoForecast=relAnoFiltro==='todos'?'':`forecast_ano=eq.${relAnoFiltro}&`;
     const [vendas,forecast]=await Promise.all([
-      sb(`/rest/v1/pedidos_vendas?${filtroCoord}ano=eq.${relAnoFiltro}&deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=5000`,{ret:true}),
-      sb(`/rest/v1/forecast_pedidos?${filtroCoord}forecast_ano=eq.${relAnoFiltro}&select=*,forecast_pedidos_itens(*)&limit=3000`,{ret:true})
+      sb(`/rest/v1/pedidos_vendas?${filtroCoord}${filtroAno}deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=10000`,{ret:true}),
+      sb(`/rest/v1/forecast_pedidos?${filtroCoord}${filtroAnoForecast}select=*,forecast_pedidos_itens(*)&limit=5000`,{ret:true})
     ]);
     relDados=Array.isArray(vendas)?vendas.filter(dashPedidoValido):[];
     relForecastDados=Array.isArray(forecast)?forecast:[];
@@ -5609,7 +5613,7 @@ function relFiltrarMes(v){
 }
 
 function relFiltrarAno(v){
-  relAnoFiltro=parseInt(v);
+  relAnoFiltro=v==='todos'?'todos':parseInt(v);
   relCarregar();
 }
 
