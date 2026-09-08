@@ -1527,6 +1527,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <select id="rel-mes" class="client-filter" onchange="relFiltrarMes(this.value)" style="min-width:130px">
           <option value="atual">Mês atual</option>
           <option value="todos">Ano inteiro</option>
+          <option value="custom">Período personalizado</option>
         </select>
         <select id="rel-ano" class="client-filter" onchange="relFiltrarAno(this.value)" style="min-width:100px"></select>
         <select id="rel-origem" class="client-filter" onchange="relFiltrarOrigem(this.value)" style="min-width:150px">
@@ -1536,6 +1537,18 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         </select>
         <input id="rel-busca" class="client-search" placeholder="Buscar cliente, UF, origem..." oninput="relFiltrarBusca(this.value)" style="min-width:220px">
         <button class="secondary-btn" onclick="irRelatorios()">↺ Atualizar</button>
+      </div>
+      <div id="rel-periodo-custom" style="display:none;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;padding:8px;background:var(--bg-soft,#f4f4f5);border-radius:var(--r-md)">
+        <button class="admin-tab" onclick="relPeriodoRapido(3)">Últimos 3 meses</button>
+        <button class="admin-tab" onclick="relPeriodoRapido(6)">Últimos 6 meses</button>
+        <button class="admin-tab" onclick="relPeriodoRapido(12)">Últimos 12 meses</button>
+        <span style="font-size:12px;color:var(--muted)">De</span>
+        <select id="rel-periodo-de-mes" class="client-filter" style="min-width:110px"></select>
+        <select id="rel-periodo-de-ano" class="client-filter" style="min-width:90px"></select>
+        <span style="font-size:12px;color:var(--muted)">até</span>
+        <select id="rel-periodo-ate-mes" class="client-filter" style="min-width:110px"></select>
+        <select id="rel-periodo-ate-ano" class="client-filter" style="min-width:90px"></select>
+        <button class="primary-btn" onclick="relAplicarPeriodo()">Aplicar</button>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
         <button class="admin-tab active" data-rel-st="todos" onclick="relFiltrarStatus('todos')">Todos</button>
@@ -5492,6 +5505,7 @@ carregarDashboard=async function(silencioso=false,forcarBusca=false){
 
 // ===================== RELATÓRIOS =====================
 let relDados=[],relForecastDados=[],relCoordFiltro='todos',relMesFiltro='atual',relAnoFiltro=anoAtual,relOrigemFiltro='todos',relStatusFiltro='todos',relTipoFiltro='todos',relBuscaFiltro='',relCarregando=false,relAbaAtual='pedidos';
+let relPeriodoDe={mes:mesAtual,ano:anoAtual},relPeriodoAte={mes:mesAtual,ano:anoAtual};
 let relSelecionados=new Set();
 
 async function irRelatorios(){
@@ -5508,7 +5522,7 @@ async function irRelatorios(){
     else{sel.value=relCoordFiltro;sel.disabled=false;}
   }
   if(g('rel-mes')){
-    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option>'+
+    g('rel-mes').innerHTML='<option value="atual">Mês atual ('+vdEsc(MESES[mesAtual])+')</option><option value="todos">Ano inteiro</option><option value="custom">Período personalizado</option>'+
       MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');
     g('rel-mes').value=relMesFiltro;
   }
@@ -5518,6 +5532,15 @@ async function irRelatorios(){
     g('rel-ano').innerHTML='<option value="todos">Todos os anos (sempre)</option>'+anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');
     g('rel-ano').value=relAnoFiltro;
   }
+  if(g('rel-periodo-de-mes')&&!g('rel-periodo-de-mes').options.length){
+    const anos=[];
+    for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
+    ['rel-periodo-de-mes','rel-periodo-ate-mes'].forEach(id=>{g(id).innerHTML=MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');});
+    ['rel-periodo-de-ano','rel-periodo-ate-ano'].forEach(id=>{g(id).innerHTML=anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');});
+    g('rel-periodo-de-mes').value=relPeriodoDe.mes;g('rel-periodo-de-ano').value=relPeriodoDe.ano;
+    g('rel-periodo-ate-mes').value=relPeriodoAte.mes;g('rel-periodo-ate-ano').value=relPeriodoAte.ano;
+  }
+  if(g('rel-periodo-custom'))g('rel-periodo-custom').style.display=relMesFiltro==='custom'?'flex':'none';
   if(g('rel-busca'))g('rel-busca').value=relBuscaFiltro;
   await relCarregar();
 }
@@ -5528,8 +5551,16 @@ async function relCarregar(){
   g('rel-content').innerHTML='<div class="loading">Carregando relatórios...</div>';
   try{
     const filtroCoord=(!isAdmin&&!isDiretoria&&user!=='vagner')?`coordenador=eq.${encodeURIComponent(coordAtual)}&`:'';
-    const filtroAno=relAnoFiltro==='todos'?'':`ano=eq.${relAnoFiltro}&`;
-    const filtroAnoForecast=relAnoFiltro==='todos'?'':`forecast_ano=eq.${relAnoFiltro}&`;
+    let filtroAno='',filtroAnoForecast='';
+    if(relMesFiltro==='custom'){
+      const anos=[];
+      for(let y=relPeriodoDe.ano;y<=relPeriodoAte.ano;y++)anos.push(y);
+      filtroAno=`ano=in.(${anos.join(',')})&`;
+      filtroAnoForecast=`forecast_ano=in.(${anos.join(',')})&`;
+    }else if(relAnoFiltro!=='todos'){
+      filtroAno=`ano=eq.${relAnoFiltro}&`;
+      filtroAnoForecast=`forecast_ano=eq.${relAnoFiltro}&`;
+    }
     const [vendas,forecast]=await Promise.all([
       sb(`/rest/v1/pedidos_vendas?${filtroCoord}${filtroAno}deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=10000`,{ret:true}),
       sb(`/rest/v1/forecast_pedidos?${filtroCoord}${filtroAnoForecast}select=*,forecast_pedidos_itens(*)&limit=5000`,{ret:true})
@@ -5547,6 +5578,12 @@ function relMesPedido(p){return Number(p?.mes);}
 function relMesForecast(p){return Number(p?.forecast_mes ?? p?.mes ?? p?.mes_previsto ?? mesAtual);}
 function relPassaMes(p,forecast=false){
   if(relMesFiltro==='todos')return true;
+  if(relMesFiltro==='custom'){
+    const mes=Number(forecast?relMesForecast(p):relMesPedido(p));
+    const ano=Number(forecast?(p?.forecast_ano??p?.ano):p?.ano);
+    const idx=ano*12+mes,ini=relPeriodoDe.ano*12+relPeriodoDe.mes,fim=relPeriodoAte.ano*12+relPeriodoAte.mes;
+    return idx>=ini&&idx<=fim;
+  }
   const mes=relMesFiltro==='atual'?mesAtual:Number(relMesFiltro);
   return Number(forecast?relMesForecast(p):relMesPedido(p))===mes;
 }
@@ -5609,7 +5646,29 @@ function relFiltrarCoord(v){
 
 function relFiltrarMes(v){
   relMesFiltro=v;
-  relAba(relAbaAtual);
+  if(g('rel-periodo-custom'))g('rel-periodo-custom').style.display=v==='custom'?'flex':'none';
+  if(v==='custom')return;
+  relCarregar();
+}
+
+function relPeriodoRapido(n){
+  const fimIdx=anoAtual*12+mesAtual;
+  const iniIdx=fimIdx-(n-1);
+  relPeriodoDe={ano:Math.floor(iniIdx/12),mes:((iniIdx%12)+12)%12};
+  relPeriodoAte={ano:anoAtual,mes:mesAtual};
+  g('rel-periodo-de-mes').value=relPeriodoDe.mes;g('rel-periodo-de-ano').value=relPeriodoDe.ano;
+  g('rel-periodo-ate-mes').value=relPeriodoAte.mes;g('rel-periodo-ate-ano').value=relPeriodoAte.ano;
+  relAplicarPeriodo();
+}
+
+function relAplicarPeriodo(){
+  relPeriodoDe={mes:parseInt(g('rel-periodo-de-mes').value),ano:parseInt(g('rel-periodo-de-ano').value)};
+  relPeriodoAte={mes:parseInt(g('rel-periodo-ate-mes').value),ano:parseInt(g('rel-periodo-ate-ano').value)};
+  if(relPeriodoDe.ano*12+relPeriodoDe.mes>relPeriodoAte.ano*12+relPeriodoAte.mes){
+    toast('Período inválido: "De" é depois de "Até"','error');return;
+  }
+  relMesFiltro='custom';
+  relCarregar();
 }
 
 function relFiltrarAno(v){
