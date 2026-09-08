@@ -5602,9 +5602,9 @@ function relPopularOrigens(){
   sel.value=[...sel.options].some(o=>o.value===atual)?atual:'todos';
   relOrigemFiltro=sel.value;
 }
-function relListaFiltrada(aplicarStatus=true){
+function relListaFiltrada(aplicarStatus=true,ignorarMes=false){
   let lista=relCoordFiltro==='todos'?relDados:relDados.filter(p=>p.coordenador===relCoordFiltro);
-  lista=lista.filter(p=>relPassaMes(p,false));
+  if(!ignorarMes)lista=lista.filter(p=>relPassaMes(p,false));
   if(relOrigemFiltro==='fabrica')lista=lista.filter(p=>!vdEhDistribuidora(p));
   else if(relOrigemFiltro==='dist')lista=lista.filter(p=>vdEhDistribuidora(p));
   else if(relOrigemFiltro!=='todos')lista=lista.filter(p=>(p.origem||'')===relOrigemFiltro);
@@ -6279,7 +6279,64 @@ function relRenderPedidos(lista){
     </table>
   </div>
   ${relTotalizadorClientesHTML(lista)}
+  ${relTotalizadorMensalHTML()}
   ${relTotalizadorSkuHTML(lista)}`;
+}
+let relTotMensalRows=[];
+function relTotalizadorMensalHTML(){
+  const lista=relListaFiltrada(true,true).filter(p=>!vdEhDistribuidora(p));
+  const porCliente={};
+  lista.forEach(p=>{
+    const k=p.cliente_nome;
+    if(!porCliente[k])porCliente[k]={nome:k,meses:Array(12).fill(0),total:0};
+    const x=vdResumoPedido(p);
+    const mes=Number(p.mes);
+    if(mes>=0&&mes<=11)porCliente[k].meses[mes]+=x.pedidoCx;
+    porCliente[k].total+=x.pedidoCx;
+  });
+  const rows=Object.values(porCliente).sort((a,b)=>b.total-a.total);
+  relTotMensalRows=rows;
+  if(!rows.length){relTotMensalRows=[];return'';}
+  const totMeses=Array(12).fill(0);
+  rows.forEach(r=>r.meses.forEach((v,i)=>totMeses[i]+=v));
+  const totGeral=rows.reduce((s,r)=>s+r.total,0);
+  return`
+  <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700">Totalizador mensal por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— evolução do ano inteiro (Fábrica), independente do filtro de mês acima; use a busca para ver um cliente só</span></div>
+      <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarTotalizadorMensal()">⬇ Exportar Excel</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
+          <th style="text-align:left;padding:8px 10px;position:sticky;left:0;background:var(--soft)">Cliente</th>
+          ${MESES.map(m=>`<th style="text-align:center;padding:8px 5px">${vdEsc(m.slice(0,3))}</th>`).join('')}
+          <th style="text-align:center;padding:8px 10px">Total</th>
+        </tr></thead>
+        <tbody>${rows.map((r,i)=>`<tr style="border-top:1px solid var(--border);${i%2===1?'background:var(--soft)':''}">
+          <td style="padding:7px 10px;font-weight:600;position:sticky;left:0;background:${i%2===1?'var(--soft)':'var(--card)'}">${vdEsc(r.nome)}</td>
+          ${r.meses.map(v=>`<td style="text-align:center;padding:7px 5px">${v?relFmt(v):'—'}</td>`).join('')}
+          <td style="text-align:center;padding:7px 10px;font-weight:700">${relFmt(r.total)}</td>
+        </tr>`).join('')}
+        <tr style="background:var(--border);font-weight:700;font-size:11px;border-top:2px solid var(--text)">
+          <td style="padding:8px 10px;position:sticky;left:0;background:var(--border)">TOTAL — ${rows.length} cliente(s)</td>
+          ${totMeses.map(v=>`<td style="text-align:center;padding:8px 5px">${relFmt(v)}</td>`).join('')}
+          <td style="text-align:center;padding:8px 10px">${relFmt(totGeral)}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function relExportarTotalizadorMensal(){
+  if(!relTotMensalRows.length){toast('Nada para exportar','error');return;}
+  const linhas=[['Cliente',...MESES,'Total']];
+  relTotMensalRows.forEach(r=>linhas.push([r.nome,...r.meses,r.total]));
+  const totMeses=Array(12).fill(0);
+  relTotMensalRows.forEach(r=>r.meses.forEach((v,i)=>totMeses[i]+=v));
+  const totGeral=relTotMensalRows.reduce((s,r)=>s+r.total,0);
+  linhas.push(['TOTAL',...totMeses,totGeral]);
+  relBaixarCsv('totalizador-mensal-clientes.csv',linhas);
 }
 let relTotSkuRows=[];
 function relTotalizadorSkuHTML(listaCompleta){
