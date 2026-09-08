@@ -1479,7 +1479,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="page-pad">
     <div class="section-head">
       <div><div class="section-title">Log de atividades</div><div class="section-sub">Feed geral de atividades do sistema.</div></div>
-      <div style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <select id="log-filtro-usuario" class="client-filter" onchange="carregarLog()" style="min-width:160px">
           <option value="">Todos os usuários</option>
           <option value="admin">Leandro</option>
@@ -1489,6 +1489,14 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
           <option value="Vitor Valle">Vitor Valle</option>
           <option value="Rosana">Rosana</option>
         </select>
+        <select id="log-filtro-coord" class="client-filter" onchange="carregarLog()" style="min-width:160px">
+          <option value="">Todos os coordenadores</option>
+          <option value="Igor Cater">Igor Cater</option>
+          <option value="Junior">Junior</option>
+          <option value="Vitor Valle">Vitor Valle</option>
+          <option value="Rosana">Rosana</option>
+          <option value="Diretoria">Diretoria</option>
+        </select>
         <select id="log-filtro-acao" class="client-filter" onchange="carregarLog()" style="min-width:140px">
           <option value="">Todas as ações</option>
           <option value="criar">Criação</option>
@@ -1496,6 +1504,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
           <option value="excluir">Exclusão</option>
           <option value="faturar">Faturamento</option>
         </select>
+        <input id="log-filtro-cliente" class="client-filter" type="text" placeholder="Buscar cliente..." oninput="logFiltrarClienteDebounce()" style="min-width:180px;padding:8px 10px">
         <button class="secondary-btn" onclick="carregarLog()">↺ Atualizar</button>
       </div>
     </div>
@@ -5061,14 +5070,26 @@ async function irLog(){
   updateSideNav('log');
   await carregarLog();
 }
+let logFiltrarClienteTimer=null;
+function logFiltrarClienteDebounce(){
+  clearTimeout(logFiltrarClienteTimer);
+  logFiltrarClienteTimer=setTimeout(carregarLog,350);
+}
 async function carregarLog(){
   if(!g('log-content'))return;
   g('log-content').innerHTML='<div class="loading">Carregando...</div>';
   const filtroUser=g('log-filtro-usuario')?.value||'';
+  const filtroCoord=g('log-filtro-coord')?.value||'';
   const filtroAcao=g('log-filtro-acao')?.value||'';
+  const filtroCliente=(g('log-filtro-cliente')?.value||'').trim();
   let url='/api/audit?order=criado_em.desc&limit=200';
   if(filtroUser)url+='&usuario=eq.'+encodeURIComponent(filtroUser);
   if(filtroAcao)url+='&acao=eq.'+encodeURIComponent(filtroAcao);
+  // Não existe coluna de coordenador na tabela — todo auditLog() grava "Coordenador: X"
+  // em `detalhes` (ver index.html, chamadas de auditLog), então filtramos por texto ali.
+  if(filtroCoord)url+='&detalhes=ilike.*'+encodeURIComponent('Coordenador: '+filtroCoord)+'*';
+  // Cliente também não tem coluna própria — `descricao` sempre traz "... · <Cliente>".
+  if(filtroCliente)url+='&descricao=ilike.*'+encodeURIComponent(filtroCliente)+'*';
   const data=await sb(url,{ret:true});
   if(!Array.isArray(data)||!data.length){
     g('log-content').innerHTML='<div class="log-empty">📋 Nenhum registro encontrado.</div>';
