@@ -1566,6 +1566,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <button class="admin-tab" onclick="relAba('inteligencia')" id="rel-tab-inteligencia">Inteligência</button>
       <button class="admin-tab" onclick="relAba('faturado')" id="rel-tab-faturado">Faturado</button>
       <button class="admin-tab" onclick="relAba('forecast')" id="rel-tab-forecast">Forecast</button>
+      <button class="admin-tab" onclick="relAba('fabrica')" id="rel-tab-fabrica">🏭 Fábrica</button>
     </div>
     <div id="rel-content"><div class="loading">Carregando...</div></div>
   </div>
@@ -5701,6 +5702,16 @@ function relFiltrarTipo(v){
 function relAba(aba){
   relAbaAtual=aba;
   document.querySelectorAll('[id^="rel-tab-"]').forEach(b=>b.classList.toggle('active',b.id==='rel-tab-'+aba));
+  if(aba==='fabrica'&&(relAnoFiltro!=='todos'||relMesFiltro!=='todos'||relOrigemFiltro!=='fabrica')){
+    relAnoFiltro='todos';relMesFiltro='todos';relOrigemFiltro='fabrica';
+    if(g('rel-mes'))g('rel-mes').value='todos';
+    if(g('rel-ano'))g('rel-ano').value='todos';
+    if(g('rel-origem'))g('rel-origem').value='fabrica';
+    if(g('rel-periodo-custom'))g('rel-periodo-custom').style.display='none';
+    relCarregar();
+    return;
+  }
+  if(aba==='fabrica'){relRenderFabrica();relRenderBarraSelecao();return;}
   const lista=relListaFiltrada(true);
   const forecast=relForecastFiltrado();
   g('rel-sub').textContent=relFiltroResumo(aba==='forecast'?forecast:lista);
@@ -6051,6 +6062,122 @@ function relRenderFaturado(lista){
       </tbody>
     </table>
   </div>`;
+}
+
+const FABRICA_CORES=['var(--purple)','var(--accent)','#f59e0b','#0ea5e9','#ef4444','#16a34a'];
+let relFabricaAnos=[],relFabricaPorAno={};
+function relRenderFabrica(){
+  let base=relDados.filter(p=>!vdEhDistribuidora(p));
+  if(relCoordFiltro!=='todos')base=base.filter(p=>p.coordenador===relCoordFiltro);
+  if(relTipoFiltro!=='todos')base=base.filter(p=>vdTipoPedido(p)===relTipoFiltro);
+  g('rel-sub').textContent=`Comparativo de crescimento da fábrica · ${relCoordFiltro==='todos'?'todos os coordenadores':relCoordFiltro}${relTipoFiltro!=='todos'?' · '+relTipoFiltro.toUpperCase():''} · ignora os filtros de mês/ano/origem acima`;
+  if(!base.length){g('rel-content').innerHTML='<div class="empty">Nenhum pedido de fábrica encontrado.</div>';relFabricaAnos=[];return;}
+
+  const anos=[...new Set(base.map(p=>Number(p.ano)))].sort((a,b)=>a-b);
+  const porAno={};
+  anos.forEach(a=>porAno[a]={meses:Array(12).fill(0),valor:Array(12).fill(0),pedidos:0});
+  base.forEach(p=>{
+    const ano=Number(p.ano),mes=Number(p.mes);
+    if(!porAno[ano]||!(mes>=0&&mes<=11))return;
+    const x=vdResumoPedido(p);
+    porAno[ano].meses[mes]+=x.pedidoCx;
+    porAno[ano].valor[mes]+=x.pedidoValor;
+    porAno[ano].pedidos+=1;
+  });
+  relFabricaAnos=anos;relFabricaPorAno=porAno;
+
+  const somaAte=(arr,fim)=>fim<0?0:arr.slice(0,fim+1).reduce((s,v)=>s+v,0);
+  const mesRealizadoAte=ano=>ano===anoAtual?mesAtual-1:11;
+  const pctVar=(atual,ant)=>ant>0?(atual-ant)/ant*100:null;
+  const varHTML=(pct,detalhe)=>{
+    if(pct===null)return`<span style="color:var(--muted)">—</span>`;
+    const alta=pct>=0;
+    return`<span style="font-weight:700;color:${alta?'var(--success)':'var(--danger)'}">${alta?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span>${detalhe?` <span style="color:var(--muted);font-size:11px">${detalhe}</span>`:''}`;
+  };
+
+  // comparações ano a ano (período justo: só meses já fechados no ano mais recente do par)
+  const comparacoesAno={};
+  for(let i=1;i<anos.length;i++){
+    const antAno=anos[i-1],atualAno=anos[i];
+    const fim=mesRealizadoAte(atualAno);
+    if(fim<0)continue;
+    const antTotal=somaAte(porAno[antAno].meses,fim);
+    const atualTotal=somaAte(porAno[atualAno].meses,fim);
+    comparacoesAno[atualAno]={antAno,fim,antTotal,atualTotal,pct:pctVar(atualTotal,antTotal)};
+  }
+
+  // KPIs do mês atual
+  const mesAnteriorIdx=mesAtual===0?11:mesAtual-1;
+  const anoDoMesAnterior=mesAtual===0?anoAtual-1:anoAtual;
+  const cxMesAtual=porAno[anoAtual]?porAno[anoAtual].meses[mesAtual]:0;
+  const cxMesAnterior=porAno[anoDoMesAnterior]?porAno[anoDoMesAnterior].meses[mesAnteriorIdx]:0;
+  const cxMesmoMesAnoPassado=porAno[anoAtual-1]?porAno[anoAtual-1].meses[mesAtual]:0;
+  const pctVsMesAnterior=pctVar(cxMesAtual,cxMesAnterior);
+  const pctVsMesmoMesAnoPassado=pctVar(cxMesAtual,cxMesmoMesAnoPassado);
+  const cmpAtual=comparacoesAno[anoAtual];
+
+  const kpisHTML=`<div class="dash-kpis" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:14px">
+    <div class="dash-kpi info"><div class="dash-kpi-label">${MESES[mesAtual]}/${anoAtual} · fábrica</div><div class="dash-kpi-value">${relFmt(cxMesAtual)} <small>cx</small></div><div class="dash-kpi-sub">pedido no mês</div></div>
+    <div class="dash-kpi ${pctVsMesAnterior===null?'':pctVsMesAnterior>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mês anterior</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctVsMesAnterior)}</div><div class="dash-kpi-sub">${MESES[mesAnteriorIdx]}/${anoDoMesAnterior}: ${relFmt(cxMesAnterior)} cx</div></div>
+    <div class="dash-kpi ${pctVsMesmoMesAnoPassado===null?'':pctVsMesmoMesAnoPassado>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mesmo mês ano passado</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctVsMesmoMesAnoPassado)}</div><div class="dash-kpi-sub">${MESES[mesAtual]}/${anoAtual-1}: ${relFmt(cxMesmoMesAnoPassado)} cx</div></div>
+    <div class="dash-kpi ${cmpAtual?(cmpAtual.pct>=0?'good':'danger'):''}"><div class="dash-kpi-label">${anoAtual} vs. ${anoAtual-1}</div><div class="dash-kpi-value" style="font-size:20px">${cmpAtual?varHTML(cmpAtual.pct):'<span style="color:var(--muted)">—</span>'}</div><div class="dash-kpi-sub">${cmpAtual?(cmpAtual.fim===11?'ano completo':'Jan-'+MESES[cmpAtual.fim].slice(0,3))+': '+relFmt(cmpAtual.atualTotal)+' vs '+relFmt(cmpAtual.antTotal)+' cx':'sem ano anterior pra comparar'}</div></div>
+  </div>`;
+
+  const graficoHTML=`<div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">Caixas pedidas por mês, ano a ano</div>
+    ${relSvgBarChartGrupos(MESES.map(m=>m.slice(0,3)),anos.map((a,i)=>({nome:String(a),valores:porAno[a].meses,cor:FABRICA_CORES[i%FABRICA_CORES.length]})))}
+  </div>`;
+
+  const headerMeses=`<tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
+    <th style="text-align:left;padding:8px 10px">Ano</th>
+    ${MESES.map(m=>`<th style="text-align:center;padding:8px 5px">${vdEsc(m.slice(0,3))}</th>`).join('')}
+    <th style="text-align:center;padding:8px 10px">Total</th>
+    <th style="text-align:center;padding:8px 10px">vs. ano anterior</th>
+  </tr>`;
+  const linhasTabela=anos.map((a,i)=>{
+    const total=somaAte(porAno[a].meses,11);
+    const cmp=comparacoesAno[a];
+    const bg=i%2===1?'var(--soft)':'var(--card)';
+    return`<tr style="border-top:1px solid var(--border);background:${bg}">
+      <td style="padding:7px 10px;font-weight:700">${a}</td>
+      ${porAno[a].meses.map(v=>`<td style="text-align:center;padding:7px 5px">${v?relFmt(v):'—'}</td>`).join('')}
+      <td style="text-align:center;padding:7px 10px;font-weight:700">${relFmt(total)}</td>
+      <td style="text-align:center;padding:7px 10px;font-size:12px">${cmp?varHTML(cmp.pct,cmp.fim===11?'':'(Jan-'+MESES[cmp.fim].slice(0,3)+')'):'<span style="color:var(--muted)">—</span>'}</td>
+    </tr>`;
+  }).join('');
+  const totalGeralPorMes=Array(12).fill(0);
+  anos.forEach(a=>porAno[a].meses.forEach((v,mi)=>totalGeralPorMes[mi]+=v));
+
+  const tabelaHTML=`<div style="background:var(--card);border-radius:var(--r-md);padding:16px;box-shadow:var(--shadow-sm)">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700">Fábrica por mês e ano <span style="font-size:11px;color:var(--muted);font-weight:400">— caixas pedidas (não conta distribuidoras)</span></div>
+      <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarFabrica()">⬇ Exportar Excel</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>${headerMeses}</thead>
+        <tbody>${linhasTabela}
+          <tr style="background:var(--border);font-weight:700;font-size:11px;border-top:2px solid var(--text)">
+            <td style="padding:8px 10px">TOTAL</td>
+            ${totalGeralPorMes.map(v=>`<td style="text-align:center;padding:8px 5px">${relFmt(v)}</td>`).join('')}
+            <td style="text-align:center;padding:8px 10px">${relFmt(totalGeralPorMes.reduce((s,v)=>s+v,0))}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+
+  g('rel-content').innerHTML=kpisHTML+graficoHTML+tabelaHTML;
+}
+function relExportarFabrica(){
+  if(!relFabricaAnos.length){toast('Nada para exportar','error');return;}
+  const linhas=[['Ano',...MESES,'Total']];
+  relFabricaAnos.forEach(a=>{
+    const meses=relFabricaPorAno[a].meses;
+    linhas.push([a,...meses,meses.reduce((s,v)=>s+v,0)]);
+  });
+  relBaixarCsv('fabrica-comparativo-anual.csv',linhas);
 }
 
 function relImprimirFaturado(){
