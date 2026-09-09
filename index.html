@@ -1586,7 +1586,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <div id="s-fabrica" class="screen" style="display:none">
   <div class="page-pad">
     <div class="section-head">
-      <div><div class="section-title">🏭 Fábrica</div><div class="section-sub">Volume da fábrica por mês, Gudang x Cretec e crescimento ano a ano</div></div>
+      <div><div class="section-title">🏭 Fábrica</div><div class="section-sub">Volume da fábrica por mês, Gudang x Cretec x Click e crescimento ano a ano</div></div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px;background:var(--bg-soft,#f4f4f5);border-radius:var(--r-md)">
         <span style="font-size:12px;font-weight:600;color:var(--muted)">Comparar de Jan até:</span>
         <select id="fab-fim-mes" class="client-filter" onchange="fabAplicarPeriodo()" style="min-width:150px">
@@ -5575,6 +5575,7 @@ async function irRelatorios(){
 // ── FÁBRICA (comparativo de crescimento, sem distribuidora) ──
 const FAB_GUDANG_SKUS=['GR','GM','GTWIN'];
 const FAB_CRETEC_SKUS=['CM','CC'];
+const FAB_CLICK_SKUS=['CK'];
 let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={},fabFimMesFiltro='auto',fabAnoA=null,fabAnoB=null;
 async function irFabrica(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
@@ -5609,7 +5610,7 @@ function fabRender(){
 
   const anos=[...new Set(fabDados.map(p=>Number(p.ano)))].sort((a,b)=>a-b);
   const porAno={};
-  anos.forEach(a=>porAno[a]={total:Array(12).fill(0),gudang:Array(12).fill(0),cretec:Array(12).fill(0)});
+  anos.forEach(a=>porAno[a]={total:Array(12).fill(0),gudang:Array(12).fill(0),cretec:Array(12).fill(0),click:Array(12).fill(0)});
   fabDados.forEach(p=>{
     const ano=Number(p.ano),mes=Number(p.mes);
     if(!porAno[ano]||!(mes>=0&&mes<=11))return;
@@ -5618,6 +5619,7 @@ function fabRender(){
       const q=Number(i.qty_caixas||0);
       if(FAB_GUDANG_SKUS.includes(i.sku))porAno[ano].gudang[mes]+=q;
       else if(FAB_CRETEC_SKUS.includes(i.sku))porAno[ano].cretec[mes]+=q;
+      else if(FAB_CLICK_SKUS.includes(i.sku))porAno[ano].click[mes]+=q;
     });
   });
   fabAnos=anos;fabPorAno=porAno;
@@ -5659,32 +5661,34 @@ function fabRender(){
   const totalB=somaAte(porAno[fabAnoB]?.total||Array(12).fill(0),fimEscolhido);
   const gudangB=somaAte(porAno[fabAnoB]?.gudang||Array(12).fill(0),fimEscolhido);
   const cretecB=somaAte(porAno[fabAnoB]?.cretec||Array(12).fill(0),fimEscolhido);
+  const clickB=somaAte(porAno[fabAnoB]?.click||Array(12).fill(0),fimEscolhido);
   const pctAB=pctVar(totalB,totalA);
   const periodoLabel=ano=>'Jan-'+MESES[fimEscolhido].slice(0,3)+'/'+String(ano).slice(2);
 
   const kpisHTML=`<div class="dash-kpis" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:14px">
     <div class="dash-kpi info"><div class="dash-kpi-label">Total ${periodoLabel(fabAnoA)}</div><div class="dash-kpi-value">${relFmt(totalA)} <small>cx</small></div><div class="dash-kpi-sub">ano ${fabAnoA}</div></div>
-    <div class="dash-kpi info"><div class="dash-kpi-label">Total ${periodoLabel(fabAnoB)}</div><div class="dash-kpi-value">${relFmt(totalB)} <small>cx</small></div><div class="dash-kpi-sub">ano ${fabAnoB} — Gudang ${relFmt(gudangB)} · Cretec ${relFmt(cretecB)}</div></div>
+    <div class="dash-kpi info"><div class="dash-kpi-label">Total ${periodoLabel(fabAnoB)}</div><div class="dash-kpi-value">${relFmt(totalB)} <small>cx</small></div><div class="dash-kpi-sub">ano ${fabAnoB} — Gudang ${relFmt(gudangB)} · Cretec ${relFmt(cretecB)} · Click ${relFmt(clickB)}</div></div>
     <div class="dash-kpi ${pctAB===null?'':pctAB>=0?'good':'danger'}"><div class="dash-kpi-label">${fabAnoB} vs. ${fabAnoA}</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctAB)}</div><div class="dash-kpi-sub">${periodoLabel(fabAnoA)} → ${periodoLabel(fabAnoB)}</div></div>
     <div class="dash-kpi"><div class="dash-kpi-label">Período comparado</div><div class="dash-kpi-value" style="font-size:20px">Jan–${MESES[fimEscolhido].slice(0,3)}</div><div class="dash-kpi-sub">${fimManual!==null?'fixado no filtro':'automático (até o último mês fechado)'}</div></div>
   </div>`;
 
-  // gráfico único: mês a mês, cronológico, Gudang x Cretec
+  // gráfico único: mês a mês, cronológico, Gudang x Cretec x Click
   const primeiroAno=anos[0];
-  let labels=[],gud=[],cre=[];
+  let labels=[],gud=[],cre=[],cli=[];
   for(let y=primeiroAno;y<=anoAtual;y++){
     const fimMes=y===anoAtual?mesAtual:11;
     for(let m=0;m<=fimMes;m++){
       labels.push(MESES[m].slice(0,3)+'/'+String(y).slice(2));
       gud.push(porAno[y]?.gudang[m]||0);
       cre.push(porAno[y]?.cretec[m]||0);
+      cli.push(porAno[y]?.click[m]||0);
     }
   }
-  const primeiroComDado=labels.findIndex((_,i)=>(gud[i]+cre[i])>0);
-  if(primeiroComDado>0){labels=labels.slice(primeiroComDado);gud=gud.slice(primeiroComDado);cre=cre.slice(primeiroComDado);}
+  const primeiroComDado=labels.findIndex((_,i)=>(gud[i]+cre[i]+cli[i])>0);
+  if(primeiroComDado>0){labels=labels.slice(primeiroComDado);gud=gud.slice(primeiroComDado);cre=cre.slice(primeiroComDado);cli=cli.slice(primeiroComDado);}
   const graficoHTML=`<section class="panel" style="margin-bottom:16px">
-    <div class="panel-title-row"><div class="panel-title">Volume mês a mês — Gudang x Cretec</div><div class="panel-note">${labels[0]||''} até ${labels[labels.length-1]||''}</div></div>
-    ${relSvgBarChartGrupos(labels,[{nome:'Gudang',valores:gud,cor:'var(--purple)'},{nome:'Cretec',valores:cre,cor:'var(--accent)'}])}
+    <div class="panel-title-row"><div class="panel-title">Volume mês a mês — Gudang x Cretec x Click</div><div class="panel-note">${labels[0]||''} até ${labels[labels.length-1]||''}</div></div>
+    ${relSvgBarChartGrupos(labels,[{nome:'Gudang',valores:gud,cor:'var(--purple)'},{nome:'Cretec',valores:cre,cor:'var(--accent)'},{nome:'Click',valores:cli,cor:'var(--amber)'}])}
   </section>`;
 
   // gráficos ano a ano (comparando o mesmo intervalo Jan-fim em cada ano)
@@ -5692,14 +5696,15 @@ function fabRender(){
   const totAnos=anos.map(a=>somaAte(porAno[a].total,mesRealizadoAte(a)));
   const gudAnos=anos.map(a=>somaAte(porAno[a].gudang,mesRealizadoAte(a)));
   const creAnos=anos.map(a=>somaAte(porAno[a].cretec,mesRealizadoAte(a)));
+  const cliAnos=anos.map(a=>somaAte(porAno[a].click,mesRealizadoAte(a)));
   const graficosAnoHTML=`<div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px">
     <section class="panel" style="flex:1 1 480px;min-width:420px;margin-bottom:0">
-      <div class="panel-title-row"><div class="panel-title">Total por ano (Gudang + Cretec)</div><div class="panel-note">${notaPeriodo}</div></div>
+      <div class="panel-title-row"><div class="panel-title">Total por ano (Gudang + Cretec + Click)</div><div class="panel-note">${notaPeriodo}</div></div>
       ${relSvgBarChartGrupos(anos.map(String),[{nome:'Total',valores:totAnos,cor:'var(--purple)'}])}
     </section>
     <section class="panel" style="flex:1 1 480px;min-width:420px;margin-bottom:0">
-      <div class="panel-title-row"><div class="panel-title">Gudang x Cretec por ano</div><div class="panel-note">${notaPeriodo}</div></div>
-      ${relSvgBarChartGrupos(anos.map(String),[{nome:'Gudang',valores:gudAnos,cor:'var(--purple)'},{nome:'Cretec',valores:creAnos,cor:'var(--accent)'}])}
+      <div class="panel-title-row"><div class="panel-title">Gudang x Cretec x Click por ano</div><div class="panel-note">${notaPeriodo}</div></div>
+      ${relSvgBarChartGrupos(anos.map(String),[{nome:'Gudang',valores:gudAnos,cor:'var(--purple)'},{nome:'Cretec',valores:creAnos,cor:'var(--accent)'},{nome:'Click',valores:cliAnos,cor:'var(--amber)'}])}
     </section>
   </div>`;
 
@@ -5712,16 +5717,18 @@ function fabRender(){
   const linhasTabela=anos.map(a=>{
     const totalG=porAno[a].gudang.reduce((s,v)=>s+v,0);
     const totalC=porAno[a].cretec.reduce((s,v)=>s+v,0);
+    const totalCk=porAno[a].click.reduce((s,v)=>s+v,0);
     const total=somaAte(porAno[a].total,11);
     const cmp=comparacoesAno[a];
     return`<tr style="background:var(--gray-bg)"><td colspan="15" class="table-name" style="padding-top:12px;font-weight:800">${a}</td></tr>`+
       linha('Gudang',porAno[a].gudang,totalG,'var(--purple)',false)+
       linha('Cretec',porAno[a].cretec,totalC,'var(--accent)',false)+
+      linha('Click',porAno[a].click,totalCk,'var(--amber)',false)+
       linha('Total',porAno[a].total,total,null,true,cmp?varHTML(cmp.pct,cmp.fim===11?'':'(até '+MESES[cmp.fim].slice(0,3)+')'):'<span style="color:var(--muted)">—</span>');
   }).join('');
 
   const tabelaHTML=`<section class="panel">
-    <div class="panel-title-row"><div class="panel-title">Fábrica por mês — Gudang, Cretec e Total</div><div class="panel-note">caixas pedidas · não conta distribuidoras</div>
+    <div class="panel-title-row"><div class="panel-title">Fábrica por mês — Gudang, Cretec, Click e Total</div><div class="panel-note">caixas pedidas · não conta distribuidoras</div>
       <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="fabExportar()">⬇ Exportar Excel</button>
     </div>
     <div class="table-scroll"><table class="data-table" style="min-width:980px">
@@ -5739,6 +5746,7 @@ function fabExportar(){
     const p=fabPorAno[a];
     linhas.push([a,'Gudang',...p.gudang,p.gudang.reduce((s,v)=>s+v,0)]);
     linhas.push([a,'Cretec',...p.cretec,p.cretec.reduce((s,v)=>s+v,0)]);
+    linhas.push([a,'Click',...p.click,p.click.reduce((s,v)=>s+v,0)]);
     linhas.push([a,'Total',...p.total,p.total.reduce((s,v)=>s+v,0)]);
   });
   relBaixarCsv('fabrica-gudang-cretec.csv',linhas);
