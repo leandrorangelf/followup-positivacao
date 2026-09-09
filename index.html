@@ -6341,12 +6341,13 @@ function relTotalizadorMensalHTML(){
   if(rows.length===1){
     const r=rows[0];
     const graficos=anos.map(a=>`
-      <div style="flex:1 1 420px;min-width:380px;max-width:560px;text-align:center">
+      <div style="flex:1 1 460px;min-width:420px;max-width:960px;text-align:center">
         <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px">${a} <span style="font-weight:500;color:var(--muted);font-size:16px">— ${relFmt(r.porAno[a].total)} cx</span></div>
         ${relSvgBarChartGrupos(MESES.map(m=>m.slice(0,3)),[
           {nome:'Gudang',valores:r.porAno[a].gudang,cor:'var(--purple)'},
           {nome:'Cretec',valores:r.porAno[a].cretec,cor:'var(--accent)'}
         ])}
+        ${relTabelaGudangCretec(MESES.map(m=>m.slice(0,3)),r.porAno[a].gudang,r.porAno[a].cretec)}
       </div>`).join('');
     let crescimentoHtml='';
     if(anos.length>=2){
@@ -6411,11 +6412,11 @@ function relTotalizadorMensalHTML(){
 function relFmt1(v){return(Math.round(v*10)/10).toLocaleString('pt-BR',{minimumFractionDigits:v%1?1:0,maximumFractionDigits:1});}
 function relSvgBarChartGrupos(labels,series){
   const n=series.length;
-  const width=Math.max(480,labels.length*(28*n+22)),height=260,padL=8,padR=8,padT=24,padB=30;
+  const width=Math.max(560,labels.length*(32*n+24)),height=280,padL=8,padR=8,padT=24,padB=30;
   const chartW=width-padL-padR,chartH=height-padT-padB;
   const max=Math.max(1,...series.flatMap(s=>s.valores));
   const gap=chartW/labels.length;
-  const barW=Math.min(26,(gap*0.8)/n);
+  const barW=Math.min(30,(gap*0.8)/n);
   const grupoW=barW*n;
   const bars=labels.map((lab,i)=>{
     const x0=padL+i*gap+(gap-grupoW)/2;
@@ -6429,6 +6430,26 @@ function relSvgBarChartGrupos(labels,series){
   }).join('');
   const legenda=series.map(s=>`<span style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-size:14px;font-weight:600;color:var(--text)"><span style="width:12px;height:12px;border-radius:3px;background:${s.cor};display:inline-block"></span>${vdEsc(s.nome)}</span>`).join('');
   return `<div style="margin-bottom:8px;display:flex;justify-content:center">${legenda}</div><div style="overflow-x:auto"><svg viewBox="0 0 ${width} ${height}" style="width:100%;max-width:${width}px;height:${height}px;display:block;margin:0 auto">${bars}</svg></div>`;
+}
+function relTabelaGudangCretec(labels,gudang,cretec){
+  const total=labels.map((_,i)=>(gudang[i]||0)+(cretec[i]||0));
+  const linha=(rotulo,valores,cor,negrito)=>`<tr${negrito?' style="border-top:1px solid var(--border);font-weight:700"':''}>
+    <td style="text-align:left;padding:5px 8px;position:sticky;left:0;background:var(--card);${cor?`color:${cor}`:''}">${vdEsc(rotulo)}</td>
+    ${valores.map(v=>`<td style="text-align:center;padding:5px 6px">${v?relFmt(v):'—'}</td>`).join('')}
+  </tr>`;
+  return `<div style="overflow-x:auto;margin-top:10px">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.05em">
+        <th style="text-align:left;padding:5px 8px;position:sticky;left:0;background:var(--card)"></th>
+        ${labels.map(l=>`<th style="text-align:center;padding:5px 6px">${vdEsc(l)}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${linha('Gudang',gudang,'var(--purple)')}
+        ${linha('Cretec',cretec,'var(--accent)')}
+        ${linha('Total',total,null,true)}
+      </tbody>
+    </table>
+  </div>`;
 }
 function relExportarTotalizadorMensal(){
   if(!relTotMensalRows.length){toast('Nada para exportar','error');return;}
