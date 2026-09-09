@@ -1588,11 +1588,24 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <div class="section-head">
       <div><div class="section-title">🏭 Fábrica</div><div class="section-sub">Volume da fábrica por mês, Gudang x Cretec e crescimento ano a ano</div></div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <span style="font-size:12px;color:var(--muted)">Comparar ano a ano até:</span>
+        <span style="font-size:12px;color:var(--muted)">Gráficos ano a ano até:</span>
         <select id="fab-fim-mes" class="client-filter" onchange="fabFiltrarFim(this.value)" style="min-width:190px">
           <option value="auto">Automático (último mês fechado)</option>
         </select>
         <button class="secondary-btn" onclick="irFabrica()">↺ Atualizar</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding:8px;background:var(--bg-soft,#f4f4f5);border-radius:var(--r-md)">
+        <span style="font-size:12px;font-weight:600;color:var(--muted)">Período dos cards:</span>
+        <button class="admin-tab" onclick="fabPeriodoRapido(3)">Últimos 3 meses</button>
+        <button class="admin-tab" onclick="fabPeriodoRapido(6)">Últimos 6 meses</button>
+        <button class="admin-tab" onclick="fabPeriodoRapido(12)">Últimos 12 meses</button>
+        <span style="font-size:12px;color:var(--muted)">De</span>
+        <select id="fab-periodo-de-mes" class="client-filter" style="min-width:110px"></select>
+        <select id="fab-periodo-de-ano" class="client-filter" style="min-width:90px"></select>
+        <span style="font-size:12px;color:var(--muted)">até</span>
+        <select id="fab-periodo-ate-mes" class="client-filter" style="min-width:110px"></select>
+        <select id="fab-periodo-ate-ano" class="client-filter" style="min-width:90px"></select>
+        <button class="primary-btn" onclick="fabAplicarPeriodo()">Aplicar</button>
       </div>
     </div>
     <div id="fab-content"><div class="loading">Carregando...</div></div>
@@ -5572,6 +5585,9 @@ async function irRelatorios(){
 const FAB_GUDANG_SKUS=['GR','GM','GTWIN'];
 const FAB_CRETEC_SKUS=['CM','CC'];
 let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={},fabFimMesFiltro='auto';
+const fabUltimoMesFechadoIdx=mesAtual===0?11:mesAtual-1;
+const fabUltimoMesFechadoAno=mesAtual===0?anoAtual-1:anoAtual;
+let fabPeriodoDe={mes:fabUltimoMesFechadoIdx,ano:fabUltimoMesFechadoAno},fabPeriodoAte={mes:fabUltimoMesFechadoIdx,ano:fabUltimoMesFechadoAno};
 async function irFabrica(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
   show('s-fabrica');
@@ -5581,7 +5597,32 @@ async function irFabrica(){
     MESES.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent='até '+m;fimEl.appendChild(o);});
   }
   if(fimEl)fimEl.value=fabFimMesFiltro;
+  if(g('fab-periodo-de-mes')&&!g('fab-periodo-de-mes').options.length){
+    const anos=[];
+    for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
+    ['fab-periodo-de-mes','fab-periodo-ate-mes'].forEach(id=>{g(id).innerHTML=MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');});
+    ['fab-periodo-de-ano','fab-periodo-ate-ano'].forEach(id=>{g(id).innerHTML=anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');});
+    g('fab-periodo-de-mes').value=fabPeriodoDe.mes;g('fab-periodo-de-ano').value=fabPeriodoDe.ano;
+    g('fab-periodo-ate-mes').value=fabPeriodoAte.mes;g('fab-periodo-ate-ano').value=fabPeriodoAte.ano;
+  }
   await fabCarregar();
+}
+function fabPeriodoRapido(n){
+  const fimIdx=fabUltimoMesFechadoAno*12+fabUltimoMesFechadoIdx;
+  const iniIdx=fimIdx-(n-1);
+  fabPeriodoDe={ano:Math.floor(iniIdx/12),mes:((iniIdx%12)+12)%12};
+  fabPeriodoAte={ano:fabUltimoMesFechadoAno,mes:fabUltimoMesFechadoIdx};
+  g('fab-periodo-de-mes').value=fabPeriodoDe.mes;g('fab-periodo-de-ano').value=fabPeriodoDe.ano;
+  g('fab-periodo-ate-mes').value=fabPeriodoAte.mes;g('fab-periodo-ate-ano').value=fabPeriodoAte.ano;
+  fabRender();
+}
+function fabAplicarPeriodo(){
+  fabPeriodoDe={mes:parseInt(g('fab-periodo-de-mes').value),ano:parseInt(g('fab-periodo-de-ano').value)};
+  fabPeriodoAte={mes:parseInt(g('fab-periodo-ate-mes').value),ano:parseInt(g('fab-periodo-ate-ano').value)};
+  if(fabPeriodoDe.ano*12+fabPeriodoDe.mes>fabPeriodoAte.ano*12+fabPeriodoAte.mes){
+    toast('Período inválido: "De" é depois de "Até"','error');return;
+  }
+  fabRender();
 }
 function fabFiltrarFim(v){
   fabFimMesFiltro=v;
@@ -5637,20 +5678,28 @@ function fabRender(){
     comparacoesAno[atualAno]={antAno,fim,antTotal,atualTotal,pct:pctVar(atualTotal,antTotal)};
   }
 
-  const mesAnteriorIdx=mesAtual===0?11:mesAtual-1;
-  const anoDoMesAnterior=mesAtual===0?anoAtual-1:anoAtual;
-  const cxMesAtual=porAno[anoAtual]?porAno[anoAtual].total[mesAtual]:0;
-  const cxMesAnterior=porAno[anoDoMesAnterior]?porAno[anoDoMesAnterior].total[mesAnteriorIdx]:0;
-  const cxMesmoMesAnoPassado=porAno[anoAtual-1]?porAno[anoAtual-1].total[mesAtual]:0;
-  const pctVsMesAnterior=pctVar(cxMesAtual,cxMesAnterior);
-  const pctVsMesmoMesAnoPassado=pctVar(cxMesAtual,cxMesmoMesAnoPassado);
-  const cmpAtual=comparacoesAno[anoAtual];
+  // KPIs do período selecionado nos filtros ("Período dos cards")
+  const fabSomaPeriodo=(pegar,de,ate)=>{
+    let s=0;
+    for(let idx=de.ano*12+de.mes;idx<=ate.ano*12+ate.mes;idx++){
+      const ano=Math.floor(idx/12),mes=((idx%12)+12)%12;
+      if(porAno[ano])s+=pegar(porAno[ano])[mes]||0;
+    }
+    return s;
+  };
+  const periodoLabel=(de,ate)=>MESES[de.mes].slice(0,3)+'/'+String(de.ano).slice(2)+(de.mes===ate.mes&&de.ano===ate.ano?'':' - '+MESES[ate.mes].slice(0,3)+'/'+String(ate.ano).slice(2));
+  const totalPeriodo=fabSomaPeriodo(p=>p.total,fabPeriodoDe,fabPeriodoAte);
+  const gudangPeriodo=fabSomaPeriodo(p=>p.gudang,fabPeriodoDe,fabPeriodoAte);
+  const cretecPeriodo=fabSomaPeriodo(p=>p.cretec,fabPeriodoDe,fabPeriodoAte);
+  const deAnt={mes:fabPeriodoDe.mes,ano:fabPeriodoDe.ano-1},ateAnt={mes:fabPeriodoAte.mes,ano:fabPeriodoAte.ano-1};
+  const totalPeriodoAnt=fabSomaPeriodo(p=>p.total,deAnt,ateAnt);
+  const pctPeriodo=pctVar(totalPeriodo,totalPeriodoAnt);
 
   const kpisHTML=`<div class="dash-kpis" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:14px">
-    <div class="dash-kpi info"><div class="dash-kpi-label">${MESES[mesAtual]}/${anoAtual}</div><div class="dash-kpi-value">${relFmt(cxMesAtual)} <small>cx</small></div><div class="dash-kpi-sub">pedido no mês</div></div>
-    <div class="dash-kpi ${pctVsMesAnterior===null?'':pctVsMesAnterior>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mês anterior</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctVsMesAnterior)}</div><div class="dash-kpi-sub">${MESES[mesAnteriorIdx]}/${anoDoMesAnterior}: ${relFmt(cxMesAnterior)} cx</div></div>
-    <div class="dash-kpi ${pctVsMesmoMesAnoPassado===null?'':pctVsMesmoMesAnoPassado>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mesmo mês ano passado</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctVsMesmoMesAnoPassado)}</div><div class="dash-kpi-sub">${MESES[mesAtual]}/${anoAtual-1}: ${relFmt(cxMesmoMesAnoPassado)} cx</div></div>
-    <div class="dash-kpi ${cmpAtual?(cmpAtual.pct>=0?'good':'danger'):''}"><div class="dash-kpi-label">${anoAtual} vs. ${anoAtual-1}</div><div class="dash-kpi-value" style="font-size:20px">${cmpAtual?varHTML(cmpAtual.pct):'<span style="color:var(--muted)">—</span>'}</div><div class="dash-kpi-sub">${cmpAtual?(cmpAtual.fim===11?'ano completo':'Jan-'+MESES[cmpAtual.fim].slice(0,3))+': '+relFmt(cmpAtual.atualTotal)+' vs '+relFmt(cmpAtual.antTotal)+' cx':'sem ano anterior pra comparar'}</div></div>
+    <div class="dash-kpi info"><div class="dash-kpi-label">Total no período</div><div class="dash-kpi-value">${relFmt(totalPeriodo)} <small>cx</small></div><div class="dash-kpi-sub">${periodoLabel(fabPeriodoDe,fabPeriodoAte)}</div></div>
+    <div class="dash-kpi info"><div class="dash-kpi-label">Gudang no período</div><div class="dash-kpi-value">${relFmt(gudangPeriodo)} <small>cx</small></div><div class="dash-kpi-sub">${totalPeriodo?Math.round(gudangPeriodo/totalPeriodo*100):0}% do total</div></div>
+    <div class="dash-kpi info"><div class="dash-kpi-label">Cretec no período</div><div class="dash-kpi-value">${relFmt(cretecPeriodo)} <small>cx</small></div><div class="dash-kpi-sub">${totalPeriodo?Math.round(cretecPeriodo/totalPeriodo*100):0}% do total</div></div>
+    <div class="dash-kpi ${pctPeriodo===null?'':pctPeriodo>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mesmo período ano anterior</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctPeriodo)}</div><div class="dash-kpi-sub">${periodoLabel(deAnt,ateAnt)}: ${relFmt(totalPeriodoAnt)} cx</div></div>
   </div>`;
 
   // gráfico único: mês a mês, cronológico, Gudang x Cretec
@@ -6615,7 +6664,7 @@ function relTotalizadorMensalHTML(){
 function relFmt1(v){return(Math.round(v*10)/10).toLocaleString('pt-BR',{minimumFractionDigits:v%1?1:0,maximumFractionDigits:1});}
 function relSvgBarChartGrupos(labels,series){
   const n=series.length;
-  const width=Math.max(560,labels.length*(32*n+24)),height=280,padL=8,padR=8,padT=24,padB=30;
+  const width=Math.max(560,labels.length*(32*n+24)),height=300,padL=8,padR=8,padT=32,padB=30;
   const chartW=width-padL-padR,chartH=height-padT-padB;
   const max=Math.max(1,...series.flatMap(s=>s.valores));
   const gap=chartW/labels.length;
@@ -6628,7 +6677,8 @@ function relSvgBarChartGrupos(labels,series){
       const h=v>0?Math.max(v/max*chartH,2):0;
       const x=x0+si*barW;
       const y=padT+chartH-h;
-      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(barW-2).toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${s.cor}"><title>${vdEsc(s.nome)} — ${vdEsc(lab)}: ${relFmt(v)} cx</title></rect>`;
+      const rotuloValor=v>0?`<text x="${(x+(barW-2)/2).toFixed(1)}" y="${(y-6).toFixed(1)}" font-size="${n>1?'10':'13'}" font-weight="700" text-anchor="middle" fill="var(--text)">${relFmt1(v)}</text>`:'';
+      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(barW-2).toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${s.cor}"><title>${vdEsc(s.nome)} — ${vdEsc(lab)}: ${relFmt(v)} cx</title></rect>${rotuloValor}`;
     }).join('')+`<text x="${(x0+grupoW/2).toFixed(1)}" y="${(padT+chartH+20).toFixed(1)}" font-size="13" text-anchor="middle" fill="var(--muted)">${vdEsc(lab)}</text>`;
   }).join('');
   const legenda=series.map(s=>`<span style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-size:14px;font-weight:600;color:var(--text)"><span style="width:12px;height:12px;border-radius:3px;background:${s.cor};display:inline-block"></span>${vdEsc(s.nome)}</span>`).join('');
