@@ -6302,7 +6302,7 @@ let relTotMensalAnos=[];
 function relTotalizadorMensalHTML(){
   const GUDANG_SKUS=['GR','GM','GTWIN'];
   const CRETEC_SKUS=['CM','CC'];
-  const lista=relListaFiltrada(true,true).filter(p=>!vdEhDistribuidora(p));
+  const lista=relListaFiltrada(true,relMesFiltro!=='custom').filter(p=>!vdEhDistribuidora(p));
   const anosPresentes=[...new Set(lista.map(p=>Number(p.ano)))].sort((a,b)=>a-b);
   const anos=anosPresentes.length?anosPresentes:[anoAtual];
   const multiAno=anos.length>1;
@@ -6384,7 +6384,7 @@ function relTotalizadorMensalHTML(){
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:700">Totalizador mensal por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— evolução por mês${multiAno?' e por ano (colunas separadas por ano)':''}, independente do filtro de mês acima; use a busca para ver um cliente só (gráficos e crescimento)</span></div>
+      <div style="font-size:13px;font-weight:700">Totalizador mensal por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— evolução por mês${multiAno?' e por ano (colunas separadas por ano)':''}${relMesFiltro==='custom'?' — respeitando o período selecionado acima':' (ano completo, ignora a seleção de um mês/ano único acima — use "Período personalizado" pra restringir)'}; use a busca para ver um cliente só (gráficos e crescimento)</span></div>
       <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarTotalizadorMensal()">⬇ Exportar Excel</button>
     </div>
     ${extra}
