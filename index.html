@@ -827,6 +827,10 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg>
       <span>Relatórios</span>
     </button>
+    <button class="side-link" id="side-fabrica" onclick="navTo('fabrica')">
+      <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V10l5 3v-3l5 3V8l6 3v10z"/><path d="M3 21h18"/></svg>
+      <span>Fábrica</span>
+    </button>
     <button class="side-link" id="side-tv" onclick="navTo('tv')">
       <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       <span>TV externa</span>
@@ -1578,6 +1582,17 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   </div>
 </div>
 
+<!-- FÁBRICA (comparativo de crescimento) -->
+<div id="s-fabrica" class="screen" style="display:none">
+  <div class="page-pad">
+    <div class="section-head">
+      <div><div class="section-title">🏭 Fábrica</div><div class="section-sub">Volume da fábrica por mês, Gudang x Cretec e crescimento ano a ano</div></div>
+      <div><button class="secondary-btn" onclick="irFabrica()">↺ Atualizar</button></div>
+    </div>
+    <div id="fab-content"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1676,7 +1691,7 @@ async function sb(path,opts={}){
 }
 
 function show(id){
-  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-agenda','s-vfn','s-vficha','s-log','s-registro','s-relatorios','s-gnre'].forEach(screenId=>{
+  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-agenda','s-vfn','s-vficha','s-log','s-registro','s-relatorios','s-fabrica','s-gnre'].forEach(screenId=>{
     const screen=g(screenId);
     if(screen)screen.style.display='none';
   });
@@ -1727,7 +1742,7 @@ function renderNav(navId,active){
 }
 
 function navTo(id){
-  if(isDiretoria && !['dash','vendas','forecast','relatorios','gestao','planilha','gnre','agenda'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
+  if(isDiretoria && !['dash','vendas','forecast','relatorios','fabrica','gestao','planilha','gnre','agenda'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
   if(isFabiano()&&!['vendas','registro','gnre'].includes(id)){toast('Fabiano acessa apenas Vendas e Registro','error');return;}
   if(user==='vagner'&&['log'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
   if(id==='dash'){irDash();}
@@ -1741,6 +1756,7 @@ function navTo(id){
   else if(id==='vendas'){irVendas();}
   else if(id==='registro'){irRegistro();}
   else if(id==='relatorios'){irRelatorios();}
+  else if(id==='fabrica'){irFabrica();}
   else if(id==='tv'){window.open(location.origin+location.pathname.replace(/\/[^\/]*$/,'')+'/tv','_blank');}
   else if(id==='gestao'){irGestao();}
   else if(id==='planilha'){irPlanilha();}
@@ -2566,15 +2582,15 @@ function setupShell(){
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
   document.querySelectorAll('.no-vagner').forEach(el=>el.style.display=(user==='vagner')?'none':'');
   document.querySelectorAll('.no-fabiano').forEach(el=>el.style.display=isFabiano()?'none':'');
-  ['side-dash','side-forecast','side-tv','side-relatorios','side-agenda'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
+  ['side-dash','side-forecast','side-tv','side-relatorios','side-fabrica','side-agenda'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
   if(g('side-premiacao'))g('side-premiacao').style.display=(isDiretoria||isFabiano())?'none':'';
   if(g('side-gestao'))g('side-gestao').style.display=isDiretoria?'':'none';
   if(g('side-planilha'))g('side-planilha').style.display=isDiretoria?'':'none';
 }
 
 function updateSideNav(active){
-  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',forecast:'Forecast comercial',agenda:'Agenda semanal',log:'Log de atividades',relatorios:'Relatórios inteligentes'};
-  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','forecast','agenda','log','relatorios'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
+  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',forecast:'Forecast comercial',agenda:'Agenda semanal',log:'Log de atividades',relatorios:'Relatórios inteligentes',fabrica:'Volume e crescimento da fábrica'};
+  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','forecast','agenda','log','relatorios','fabrica'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
   if(g('topbar-title'))g('topbar-title').textContent=titles[active]||'Follow-up Positivação';
   if(g('shell-mes'))g('shell-mes').value=mesAtual;
 }
@@ -2597,7 +2613,7 @@ async function setMesGlobal(value){
   pedidosCarregados=false;
   if(sel)sel.disabled=true;
   try{
-    const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-log','s-relatorios'].find(id=>g(id).style.display!=='none');
+    const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-log','s-relatorios','s-fabrica'].find(id=>g(id).style.display!=='none');
     if(visible==='s-dash')await carregarDashboard();
     else if(visible==='s-ped')await carregarPedidos();
     else if(visible==='s-cli')await renderCliList();
@@ -2606,6 +2622,7 @@ async function setMesGlobal(value){
     else if(visible==='s-premiacao')await carregarPremiacao();
     else if(visible==='s-forecast')await forecastCarregar();
     else if(visible==='s-relatorios')await irRelatorios();
+    else if(visible==='s-fabrica')await irFabrica();
   }finally{
     if(sel)sel.disabled=false;
   }
@@ -5543,6 +5560,140 @@ async function irRelatorios(){
   if(g('rel-periodo-custom'))g('rel-periodo-custom').style.display=relMesFiltro==='custom'?'flex':'none';
   if(g('rel-busca'))g('rel-busca').value=relBuscaFiltro;
   await relCarregar();
+}
+
+// ── FÁBRICA (comparativo de crescimento, sem distribuidora) ──
+const FAB_GUDANG_SKUS=['GR','GM','GTWIN'];
+const FAB_CRETEC_SKUS=['CM','CC'];
+let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={};
+async function irFabrica(){
+  if(isFabiano()){toast('Acesso não disponível','error');return;}
+  show('s-fabrica');
+  updateSideNav('fabrica');
+  await fabCarregar();
+}
+async function fabCarregar(){
+  if(fabCarregando)return;
+  fabCarregando=true;
+  g('fab-content').innerHTML='<div class="loading">Carregando...</div>';
+  try{
+    const d=await sb('/rest/v1/pedidos_vendas?deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=20000',{ret:true});
+    fabDados=(Array.isArray(d)?d:[]).filter(dashPedidoValido).filter(p=>!vdEhDistribuidora(p));
+    fabRender();
+  }catch(e){g('fab-content').innerHTML='<div class="empty">Erro ao carregar dados.</div>';}
+  finally{fabCarregando=false;}
+}
+function fabRender(){
+  if(!fabDados.length){g('fab-content').innerHTML='<div class="empty">Nenhum pedido de fábrica encontrado.</div>';fabAnos=[];return;}
+
+  const anos=[...new Set(fabDados.map(p=>Number(p.ano)))].sort((a,b)=>a-b);
+  const porAno={};
+  anos.forEach(a=>porAno[a]={total:Array(12).fill(0),gudang:Array(12).fill(0),cretec:Array(12).fill(0)});
+  fabDados.forEach(p=>{
+    const ano=Number(p.ano),mes=Number(p.mes);
+    if(!porAno[ano]||!(mes>=0&&mes<=11))return;
+    porAno[ano].total[mes]+=vdResumoPedido(p).pedidoCx;
+    (p.pedidos_vendas_itens||[]).forEach(i=>{
+      const q=Number(i.qty_caixas||0);
+      if(FAB_GUDANG_SKUS.includes(i.sku))porAno[ano].gudang[mes]+=q;
+      else if(FAB_CRETEC_SKUS.includes(i.sku))porAno[ano].cretec[mes]+=q;
+    });
+  });
+  fabAnos=anos;fabPorAno=porAno;
+
+  const somaAte=(arr,fim)=>fim<0?0:arr.slice(0,fim+1).reduce((s,v)=>s+v,0);
+  const mesRealizadoAte=ano=>ano===anoAtual?mesAtual-1:11;
+  const pctVar=(atual,ant)=>ant>0?(atual-ant)/ant*100:null;
+  const varHTML=(pct,detalhe)=>{
+    if(pct===null)return`<span style="color:var(--muted)">—</span>`;
+    const alta=pct>=0;
+    return`<span style="font-weight:700;color:${alta?'var(--success)':'var(--danger)'}">${alta?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span>${detalhe?` <span style="color:var(--muted);font-size:11px">${detalhe}</span>`:''}`;
+  };
+
+  // comparações ano a ano (período justo: só meses já fechados no ano mais recente do par)
+  const comparacoesAno={};
+  for(let i=1;i<anos.length;i++){
+    const antAno=anos[i-1],atualAno=anos[i];
+    const fim=mesRealizadoAte(atualAno);
+    if(fim<0)continue;
+    const antTotal=somaAte(porAno[antAno].total,fim);
+    const atualTotal=somaAte(porAno[atualAno].total,fim);
+    comparacoesAno[atualAno]={antAno,fim,antTotal,atualTotal,pct:pctVar(atualTotal,antTotal)};
+  }
+
+  const mesAnteriorIdx=mesAtual===0?11:mesAtual-1;
+  const anoDoMesAnterior=mesAtual===0?anoAtual-1:anoAtual;
+  const cxMesAtual=porAno[anoAtual]?porAno[anoAtual].total[mesAtual]:0;
+  const cxMesAnterior=porAno[anoDoMesAnterior]?porAno[anoDoMesAnterior].total[mesAnteriorIdx]:0;
+  const cxMesmoMesAnoPassado=porAno[anoAtual-1]?porAno[anoAtual-1].total[mesAtual]:0;
+  const pctVsMesAnterior=pctVar(cxMesAtual,cxMesAnterior);
+  const pctVsMesmoMesAnoPassado=pctVar(cxMesAtual,cxMesmoMesAnoPassado);
+  const cmpAtual=comparacoesAno[anoAtual];
+
+  const kpisHTML=`<div class="dash-kpis" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:14px">
+    <div class="dash-kpi info"><div class="dash-kpi-label">${MESES[mesAtual]}/${anoAtual}</div><div class="dash-kpi-value">${relFmt(cxMesAtual)} <small>cx</small></div><div class="dash-kpi-sub">pedido no mês</div></div>
+    <div class="dash-kpi ${pctVsMesAnterior===null?'':pctVsMesAnterior>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mês anterior</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctVsMesAnterior)}</div><div class="dash-kpi-sub">${MESES[mesAnteriorIdx]}/${anoDoMesAnterior}: ${relFmt(cxMesAnterior)} cx</div></div>
+    <div class="dash-kpi ${pctVsMesmoMesAnoPassado===null?'':pctVsMesmoMesAnoPassado>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mesmo mês ano passado</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctVsMesmoMesAnoPassado)}</div><div class="dash-kpi-sub">${MESES[mesAtual]}/${anoAtual-1}: ${relFmt(cxMesmoMesAnoPassado)} cx</div></div>
+    <div class="dash-kpi ${cmpAtual?(cmpAtual.pct>=0?'good':'danger'):''}"><div class="dash-kpi-label">${anoAtual} vs. ${anoAtual-1}</div><div class="dash-kpi-value" style="font-size:20px">${cmpAtual?varHTML(cmpAtual.pct):'<span style="color:var(--muted)">—</span>'}</div><div class="dash-kpi-sub">${cmpAtual?(cmpAtual.fim===11?'ano completo':'Jan-'+MESES[cmpAtual.fim].slice(0,3))+': '+relFmt(cmpAtual.atualTotal)+' vs '+relFmt(cmpAtual.antTotal)+' cx':'sem ano anterior pra comparar'}</div></div>
+  </div>`;
+
+  // gráfico único: mês a mês, cronológico, Gudang x Cretec
+  const primeiroAno=anos[0];
+  let labels=[],gud=[],cre=[];
+  for(let y=primeiroAno;y<=anoAtual;y++){
+    const fimMes=y===anoAtual?mesAtual:11;
+    for(let m=0;m<=fimMes;m++){
+      labels.push(MESES[m].slice(0,3)+'/'+String(y).slice(2));
+      gud.push(porAno[y]?.gudang[m]||0);
+      cre.push(porAno[y]?.cretec[m]||0);
+    }
+  }
+  const primeiroComDado=labels.findIndex((_,i)=>(gud[i]+cre[i])>0);
+  if(primeiroComDado>0){labels=labels.slice(primeiroComDado);gud=gud.slice(primeiroComDado);cre=cre.slice(primeiroComDado);}
+  const graficoHTML=`<section class="panel" style="margin-bottom:16px">
+    <div class="panel-title-row"><div class="panel-title">Volume mês a mês — Gudang x Cretec</div><div class="panel-note">${labels[0]||''} até ${labels[labels.length-1]||''}</div></div>
+    ${relSvgBarChartGrupos(labels,[{nome:'Gudang',valores:gud,cor:'var(--purple)'},{nome:'Cretec',valores:cre,cor:'var(--accent)'}])}
+  </section>`;
+
+  const linha=(rotulo,arr,tot,cor,negrito,extra)=>`<tr style="${negrito?'border-top:2px solid var(--line)':'border-top:1px solid var(--line)'}">
+    <td class="table-name" style="${cor?`color:${cor};`:''}padding-left:${negrito?'10px':'26px'};font-weight:${negrito?800:600}">${negrito?rotulo:rotulo}</td>
+    ${arr.map(v=>`<td>${v?relFmt(v):'—'}</td>`).join('')}
+    <td style="font-weight:${negrito?800:600}">${relFmt(tot)}</td>
+    <td>${extra||''}</td>
+  </tr>`;
+  const linhasTabela=anos.map(a=>{
+    const totalG=porAno[a].gudang.reduce((s,v)=>s+v,0);
+    const totalC=porAno[a].cretec.reduce((s,v)=>s+v,0);
+    const total=somaAte(porAno[a].total,11);
+    const cmp=comparacoesAno[a];
+    return`<tr style="background:var(--gray-bg)"><td colspan="15" class="table-name" style="padding-top:12px;font-weight:800">${a}</td></tr>`+
+      linha('Gudang',porAno[a].gudang,totalG,'var(--purple)',false)+
+      linha('Cretec',porAno[a].cretec,totalC,'var(--accent)',false)+
+      linha('Total',porAno[a].total,total,null,true,cmp?varHTML(cmp.pct,cmp.fim===11?'':'(até '+MESES[cmp.fim].slice(0,3)+')'):'<span style="color:var(--muted)">—</span>');
+  }).join('');
+
+  const tabelaHTML=`<section class="panel">
+    <div class="panel-title-row"><div class="panel-title">Fábrica por mês — Gudang, Cretec e Total</div><div class="panel-note">caixas pedidas · não conta distribuidoras</div>
+      <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="fabExportar()">⬇ Exportar Excel</button>
+    </div>
+    <div class="table-scroll"><table class="data-table" style="min-width:980px">
+      <thead><tr><th style="text-align:left">Ano / Linha</th>${MESES.map(m=>`<th>${vdEsc(m.slice(0,3))}</th>`).join('')}<th>Total</th><th>vs. ano anterior</th></tr></thead>
+      <tbody>${linhasTabela}</tbody>
+    </table></div>
+  </section>`;
+
+  g('fab-content').innerHTML=kpisHTML+graficoHTML+tabelaHTML;
+}
+function fabExportar(){
+  if(!fabAnos.length){toast('Nada para exportar','error');return;}
+  const linhas=[['Ano','Linha',...MESES,'Total']];
+  fabAnos.forEach(a=>{
+    const p=fabPorAno[a];
+    linhas.push([a,'Gudang',...p.gudang,p.gudang.reduce((s,v)=>s+v,0)]);
+    linhas.push([a,'Cretec',...p.cretec,p.cretec.reduce((s,v)=>s+v,0)]);
+    linhas.push([a,'Total',...p.total,p.total.reduce((s,v)=>s+v,0)]);
+  });
+  relBaixarCsv('fabrica-gudang-cretec.csv',linhas);
 }
 
 async function relCarregar(){
