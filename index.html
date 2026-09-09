@@ -6298,67 +6298,109 @@ function relRenderPedidos(lista){
   ${totSkuHtml}`}`;
 }
 let relTotMensalRows=[];
+let relTotMensalAnos=[];
 function relTotalizadorMensalHTML(){
   const GUDANG_SKUS=['GR','GM','GTWIN'];
   const CRETEC_SKUS=['CM','CC'];
   const lista=relListaFiltrada(true,true).filter(p=>!vdEhDistribuidora(p));
+  const anosPresentes=[...new Set(lista.map(p=>Number(p.ano)))].sort((a,b)=>a-b);
+  const anos=anosPresentes.length?anosPresentes:[anoAtual];
+  const multiAno=anos.length>1;
   const porCliente={};
   lista.forEach(p=>{
     const k=p.cliente_nome;
-    if(!porCliente[k])porCliente[k]={nome:k,meses:Array(12).fill(0),mesesGudang:Array(12).fill(0),mesesCretec:Array(12).fill(0),mesesClick:Array(12).fill(0),total:0};
+    if(!porCliente[k]){
+      porCliente[k]={nome:k,porAno:{},total:0};
+      anos.forEach(a=>porCliente[k].porAno[a]={meses:Array(12).fill(0),gudang:Array(12).fill(0),cretec:Array(12).fill(0),click:Array(12).fill(0),total:0});
+    }
     const x=vdResumoPedido(p);
-    const mes=Number(p.mes);
-    if(mes>=0&&mes<=11){
-      porCliente[k].meses[mes]+=x.pedidoCx;
+    const mes=Number(p.mes),ano=Number(p.ano);
+    if(mes>=0&&mes<=11&&porCliente[k].porAno[ano]){
+      porCliente[k].porAno[ano].meses[mes]+=x.pedidoCx;
+      porCliente[k].porAno[ano].total+=x.pedidoCx;
       (p.pedidos_vendas_itens||[]).forEach(i=>{
         const q=Number(i.qty_caixas||0);
-        if(GUDANG_SKUS.includes(i.sku))porCliente[k].mesesGudang[mes]+=q;
-        else if(CRETEC_SKUS.includes(i.sku))porCliente[k].mesesCretec[mes]+=q;
-        else if(i.sku==='CK')porCliente[k].mesesClick[mes]+=q;
+        if(GUDANG_SKUS.includes(i.sku))porCliente[k].porAno[ano].gudang[mes]+=q;
+        else if(CRETEC_SKUS.includes(i.sku))porCliente[k].porAno[ano].cretec[mes]+=q;
+        else if(i.sku==='CK')porCliente[k].porAno[ano].click[mes]+=q;
       });
     }
     porCliente[k].total+=x.pedidoCx;
   });
-  const rows=Object.values(porCliente).map(r=>({...r,media:r.total/12})).sort((a,b)=>b.total-a.total);
-  relTotMensalRows=rows;
+  const nMeses=anos.length*12;
+  const rows=Object.values(porCliente).map(r=>({...r,media:r.total/nMeses})).sort((a,b)=>b.total-a.total);
+  relTotMensalRows=rows;relTotMensalAnos=anos;
   if(!rows.length){relTotMensalRows=[];return'';}
-  const totMeses=Array(12).fill(0);
-  rows.forEach(r=>r.meses.forEach((v,i)=>totMeses[i]+=v));
+  const totPorAno={};
+  anos.forEach(a=>totPorAno[a]=Array(12).fill(0));
+  rows.forEach(r=>anos.forEach(a=>r.porAno[a].meses.forEach((v,i)=>totPorAno[a][i]+=v)));
   const totGeral=rows.reduce((s,r)=>s+r.total,0);
-  const totMedia=totGeral/12;
-  const grafico=rows.length===1?`
+  const totMedia=totGeral/nMeses;
+
+  let extra='';
+  if(rows.length===1){
+    const r=rows[0];
+    const graficos=anos.map(a=>`
+      <div style="flex:1;min-width:300px">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">${a} <span style="font-weight:400">— ${relFmt(r.porAno[a].total)} cx</span></div>
+        ${relSvgBarChartGrupos(MESES.map(m=>m.slice(0,3)),[
+          {nome:'Gudang',valores:r.porAno[a].gudang,cor:'var(--purple)'},
+          {nome:'Cretec',valores:r.porAno[a].cretec,cor:'var(--accent)'},
+          {nome:'Click',valores:r.porAno[a].click,cor:'var(--amber)'}
+        ])}
+      </div>`).join('');
+    let crescimentoHtml='';
+    if(anos.length>=2){
+      const comparacoes=[];
+      for(let i=1;i<anos.length;i++){
+        const antAno=anos[i-1],atualAno=anos[i];
+        const antTotal=r.porAno[antAno].total,atualTotal=r.porAno[atualAno].total;
+        if(antTotal>0){
+          const pct=(atualTotal-antTotal)/antTotal*100;
+          const alta=pct>=0;
+          comparacoes.push(`<span style="font-weight:700;color:${alta?'var(--success)':'var(--danger)'}">${alta?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span> <span style="color:var(--muted)">(${atualAno} vs ${antAno}: ${relFmt(atualTotal)} vs ${relFmt(antTotal)} cx)</span>`);
+        }
+      }
+      if(comparacoes.length)crescimentoHtml=`<div style="font-size:12px;margin-bottom:10px;display:flex;gap:16px;flex-wrap:wrap">${comparacoes.map(c=>`<span>${c}</span>`).join('')}</div>`;
+    }
+    extra=`
     <div style="margin-bottom:14px">
-      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">Evolução de ${vdEsc(rows[0].nome)} no ano — Gudang x Cretec</div>
-      ${relSvgBarChartGrupos(MESES.map(m=>m.slice(0,3)),[
-        {nome:'Gudang',valores:rows[0].mesesGudang,cor:'var(--purple)'},
-        {nome:'Cretec',valores:rows[0].mesesCretec,cor:'var(--accent)'},
-        {nome:'Click',valores:rows[0].mesesClick,cor:'var(--amber)'}
-      ])}
-    </div>`:'';
+      <div style="font-size:12px;font-weight:600;margin-bottom:4px">Evolução de ${vdEsc(r.nome)} — Gudang x Cretec x Click</div>
+      ${crescimentoHtml}
+      <div style="display:flex;gap:16px;flex-wrap:wrap">${graficos}</div>
+    </div>`;
+  }
+
+  const headerAnos=multiAno?`<tr style="background:var(--soft);color:var(--muted);font-size:10px">
+    <th style="position:sticky;left:0;background:var(--soft)"></th>
+    ${anos.map(a=>`<th colspan="12" style="text-align:center;padding:4px;border-left:2px solid var(--border)">${a}</th>`).join('')}
+    <th></th><th></th>
+  </tr>`:'';
+  const headerMeses=`<tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
+    <th style="text-align:left;padding:8px 10px;position:sticky;left:0;background:var(--soft)">Cliente</th>
+    ${anos.map(a=>MESES.map((m,i)=>`<th style="text-align:center;padding:8px 5px;${i===0&&multiAno?'border-left:2px solid var(--border)':''}">${vdEsc(m.slice(0,3))}</th>`).join('')).join('')}
+    <th style="text-align:center;padding:8px 10px">Média</th>
+    <th style="text-align:center;padding:8px 10px">Total</th>
+  </tr>`;
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:700">Totalizador mensal por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— evolução do ano inteiro (Fábrica), independente do filtro de mês acima; use a busca para ver um cliente só (e o gráfico dele)</span></div>
+      <div style="font-size:13px;font-weight:700">Totalizador mensal por cliente <span style="font-size:11px;color:var(--muted);font-weight:400">— evolução por mês${multiAno?' e por ano (colunas separadas por ano)':''}, independente do filtro de mês acima; use a busca para ver um cliente só (gráficos e crescimento)</span></div>
       <button class="secondary-btn" style="font-size:11px;padding:4px 10px" onclick="relExportarTotalizadorMensal()">⬇ Exportar Excel</button>
     </div>
-    ${grafico}
+    ${extra}
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px">
-        <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
-          <th style="text-align:left;padding:8px 10px;position:sticky;left:0;background:var(--soft)">Cliente</th>
-          ${MESES.map(m=>`<th style="text-align:center;padding:8px 5px">${vdEsc(m.slice(0,3))}</th>`).join('')}
-          <th style="text-align:center;padding:8px 10px">Média</th>
-          <th style="text-align:center;padding:8px 10px">Total</th>
-        </tr></thead>
+        <thead>${headerAnos}${headerMeses}</thead>
         <tbody>${rows.map((r,i)=>`<tr style="border-top:1px solid var(--border);${i%2===1?'background:var(--soft)':''}">
           <td style="padding:7px 10px;font-weight:600;position:sticky;left:0;background:${i%2===1?'var(--soft)':'var(--card)'}">${vdEsc(r.nome)}</td>
-          ${r.meses.map(v=>`<td style="text-align:center;padding:7px 5px">${v?relFmt(v):'—'}</td>`).join('')}
+          ${anos.map(a=>r.porAno[a].meses.map((v,mi)=>`<td style="text-align:center;padding:7px 5px;${mi===0&&multiAno?'border-left:2px solid var(--border)':''}">${v?relFmt(v):'—'}</td>`).join('')).join('')}
           <td style="text-align:center;padding:7px 10px;color:var(--muted)">${relFmt(r.media)}</td>
           <td style="text-align:center;padding:7px 10px;font-weight:700">${relFmt(r.total)}</td>
         </tr>`).join('')}
         <tr style="background:var(--border);font-weight:700;font-size:11px;border-top:2px solid var(--text)">
           <td style="padding:8px 10px;position:sticky;left:0;background:var(--border)">TOTAL — ${rows.length} cliente(s)</td>
-          ${totMeses.map(v=>`<td style="text-align:center;padding:8px 5px">${relFmt(v)}</td>`).join('')}
+          ${anos.map(a=>totPorAno[a].map((v,mi)=>`<td style="text-align:center;padding:8px 5px;${mi===0&&multiAno?'border-left:2px solid var(--border)':''}">${relFmt(v)}</td>`).join('')).join('')}
           <td style="text-align:center;padding:8px 10px">${relFmt(totMedia)}</td>
           <td style="text-align:center;padding:8px 10px">${relFmt(totGeral)}</td>
         </tr>
@@ -6391,12 +6433,14 @@ function relSvgBarChartGrupos(labels,series){
 }
 function relExportarTotalizadorMensal(){
   if(!relTotMensalRows.length){toast('Nada para exportar','error');return;}
-  const linhas=[['Cliente',...MESES,'Média','Total']];
-  relTotMensalRows.forEach(r=>linhas.push([r.nome,...r.meses,Math.round(r.media*10)/10,r.total]));
-  const totMeses=Array(12).fill(0);
-  relTotMensalRows.forEach(r=>r.meses.forEach((v,i)=>totMeses[i]+=v));
+  const anos=relTotMensalAnos.length?relTotMensalAnos:[anoAtual];
+  const nMeses=anos.length*12;
+  const linhas=[['Cliente',...anos.flatMap(a=>MESES.map(m=>m+'/'+a)),'Média','Total']];
+  relTotMensalRows.forEach(r=>linhas.push([r.nome,...anos.flatMap(a=>r.porAno[a].meses),Math.round(r.media*10)/10,r.total]));
+  const totMeses=anos.flatMap(()=>Array(12).fill(0));
+  relTotMensalRows.forEach(r=>anos.forEach((a,ai)=>r.porAno[a].meses.forEach((v,mi)=>{totMeses[ai*12+mi]+=v;})));
   const totGeral=relTotMensalRows.reduce((s,r)=>s+r.total,0);
-  linhas.push(['TOTAL',...totMeses,Math.round((totGeral/12)*10)/10,totGeral]);
+  linhas.push(['TOTAL',...totMeses,Math.round((totGeral/nMeses)*10)/10,totGeral]);
   relBaixarCsv('totalizador-mensal-clientes.csv',linhas);
 }
 let relTotSkuRows=[];
