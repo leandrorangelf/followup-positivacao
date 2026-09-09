@@ -5673,20 +5673,25 @@ function fabRender(){
   </div>`;
 
   // gráfico único: mês a mês, cronológico, só o total (Gudang+Cretec+Click somados — a quebra por linha fica na tabela abaixo)
+  // colorido por ano, com % de crescimento vs. o mesmo mês do ano anterior em cima de cada barra
   const primeiroAno=anos[0];
-  let labels=[],tot=[];
+  let labels=[],tot=[],anoDoPonto=[];
   for(let y=primeiroAno;y<=anoAtual;y++){
     const fimMes=y===anoAtual?mesAtual:11;
     for(let m=0;m<=fimMes;m++){
       labels.push(MESES[m].slice(0,3)+'/'+String(y).slice(2));
       tot.push(porAno[y]?.total[m]||0);
+      anoDoPonto.push(y);
     }
   }
   const primeiroComDado=labels.findIndex((_,i)=>tot[i]>0);
-  if(primeiroComDado>0){labels=labels.slice(primeiroComDado);tot=tot.slice(primeiroComDado);}
+  if(primeiroComDado>0){labels=labels.slice(primeiroComDado);tot=tot.slice(primeiroComDado);anoDoPonto=anoDoPonto.slice(primeiroComDado);}
+  const FAB_PALETA_ANOS=['#94a3b8','var(--purple)','var(--accent)','var(--amber)','#f87171'];
+  const coresPorAno={};
+  anos.forEach((a,i)=>coresPorAno[a]=FAB_PALETA_ANOS[i%FAB_PALETA_ANOS.length]);
   const graficoHTML=`<section class="panel" style="margin-bottom:16px">
-    <div class="panel-title-row"><div class="panel-title">Volume mês a mês — Total</div><div class="panel-note">${labels[0]||''} até ${labels[labels.length-1]||''}</div></div>
-    ${relSvgBarChartGrupos(labels,[{nome:'Total',valores:tot,cor:'var(--purple)'}])}
+    <div class="panel-title-row"><div class="panel-title">Volume mês a mês — Total</div><div class="panel-note">${labels[0]||''} até ${labels[labels.length-1]||''} · % em cima da barra é vs. o mesmo mês do ano anterior</div></div>
+    ${relSvgBarChartAnoColorido(labels,tot,anoDoPonto,coresPorAno)}
   </section>`;
 
   // gráficos ano a ano (comparando o mesmo intervalo Jan-fim em cada ano)
@@ -6655,6 +6660,34 @@ function relSvgBarChartGrupos(labels,series){
     }).join('')+`<text x="${(x0+grupoW/2).toFixed(1)}" y="${(padT+chartH+20).toFixed(1)}" font-size="13" text-anchor="middle" fill="var(--muted)">${vdEsc(lab)}</text>`;
   }).join('');
   const legenda=series.map(s=>`<span style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-size:14px;font-weight:600;color:var(--text)"><span style="width:12px;height:12px;border-radius:3px;background:${s.cor};display:inline-block"></span>${vdEsc(s.nome)}</span>`).join('');
+  return `<div style="margin-bottom:8px;display:flex;justify-content:center">${legenda}</div><div style="overflow-x:auto"><svg viewBox="0 0 ${width} ${height}" style="width:100%;max-width:${width}px;height:${height}px;display:block;margin:0 auto">${bars}</svg></div>`;
+}
+function relSvgBarChartAnoColorido(labels,valores,anos,coresPorAno){
+  const width=Math.max(560,labels.length*46),height=320,padL=8,padR=8,padT=40,padB=30;
+  const chartW=width-padL-padR,chartH=height-padT-padB;
+  const max=Math.max(1,...valores);
+  const gap=chartW/labels.length;
+  const barW=Math.min(34,gap*0.7);
+  const mesDoRotulo=lab=>lab.split('/')[0];
+  const bars=labels.map((lab,i)=>{
+    const v=valores[i]||0;
+    const h=v>0?Math.max(v/max*chartH,2):0;
+    const x=padL+i*gap+(gap-barW)/2;
+    const y=padT+chartH-h;
+    const cor=coresPorAno[anos[i]]||'var(--purple)';
+    let crescHTML='';
+    const idxAnt=labels.findIndex((l2,j)=>anos[j]===anos[i]-1&&mesDoRotulo(l2)===mesDoRotulo(lab));
+    if(idxAnt>=0&&valores[idxAnt]>0){
+      const pct=(v-valores[idxAnt])/valores[idxAnt]*100;
+      const alta=pct>=0;
+      crescHTML=`<text x="${(x+barW/2).toFixed(1)}" y="${(y-18).toFixed(1)}" font-size="9" font-weight="700" text-anchor="middle" fill="${alta?'var(--success)':'var(--danger)'}">${alta?'▲':'▼'}${Math.abs(pct).toFixed(0)}%</text>`;
+    }
+    const rotuloValor=v>0?`<text x="${(x+barW/2).toFixed(1)}" y="${(y-6).toFixed(1)}" font-size="11" font-weight="700" text-anchor="middle" fill="var(--text)">${relFmt1(v)}</text>`:'';
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${cor}"><title>${vdEsc(lab)}: ${relFmt(v)} cx</title></rect>${rotuloValor}${crescHTML}`+
+      `<text x="${(x+barW/2).toFixed(1)}" y="${(padT+chartH+18).toFixed(1)}" font-size="11" text-anchor="middle" fill="var(--muted)">${vdEsc(lab)}</text>`;
+  }).join('');
+  const anosUnicos=[...new Set(anos)];
+  const legenda=anosUnicos.map(a=>`<span style="display:inline-flex;align-items:center;gap:6px;margin-right:16px;font-size:14px;font-weight:600;color:var(--text)"><span style="width:12px;height:12px;border-radius:3px;background:${coresPorAno[a]||'var(--purple)'};display:inline-block"></span>${a}</span>`).join('');
   return `<div style="margin-bottom:8px;display:flex;justify-content:center">${legenda}</div><div style="overflow-x:auto"><svg viewBox="0 0 ${width} ${height}" style="width:100%;max-width:${width}px;height:${height}px;display:block;margin:0 auto">${bars}</svg></div>`;
 }
 function relExportarTotalizadorMensal(){
