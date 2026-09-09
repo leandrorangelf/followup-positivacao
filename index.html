@@ -5676,14 +5676,16 @@ function fabRender(){
   const totAnos=anos.map(a=>somaAte(porAno[a].total,mesRealizadoAte(a)));
   const gudAnos=anos.map(a=>somaAte(porAno[a].gudang,mesRealizadoAte(a)));
   const creAnos=anos.map(a=>somaAte(porAno[a].cretec,mesRealizadoAte(a)));
-  const graficoAnoTotalHTML=`<section class="panel" style="margin-bottom:16px">
-    <div class="panel-title-row"><div class="panel-title">Total por ano (Gudang + Cretec)</div><div class="panel-note">${notaPeriodo}</div></div>
-    ${relSvgBarChartGrupos(anos.map(String),[{nome:'Total',valores:totAnos,cor:'var(--purple)'}])}
-  </section>`;
-  const graficoAnoSepHTML=`<section class="panel" style="margin-bottom:16px">
-    <div class="panel-title-row"><div class="panel-title">Gudang x Cretec por ano</div><div class="panel-note">${notaPeriodo}</div></div>
-    ${relSvgBarChartGrupos(anos.map(String),[{nome:'Gudang',valores:gudAnos,cor:'var(--purple)'},{nome:'Cretec',valores:creAnos,cor:'var(--accent)'}])}
-  </section>`;
+  const graficosAnoHTML=`<div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px">
+    <section class="panel" style="flex:1 1 480px;min-width:420px;margin-bottom:0">
+      <div class="panel-title-row"><div class="panel-title">Total por ano (Gudang + Cretec)</div><div class="panel-note">${notaPeriodo}</div></div>
+      ${relSvgBarChartGrupos(anos.map(String),[{nome:'Total',valores:totAnos,cor:'var(--purple)'}])}
+    </section>
+    <section class="panel" style="flex:1 1 480px;min-width:420px;margin-bottom:0">
+      <div class="panel-title-row"><div class="panel-title">Gudang x Cretec por ano</div><div class="panel-note">${notaPeriodo}</div></div>
+      ${relSvgBarChartGrupos(anos.map(String),[{nome:'Gudang',valores:gudAnos,cor:'var(--purple)'},{nome:'Cretec',valores:creAnos,cor:'var(--accent)'}])}
+    </section>
+  </div>`;
 
   const linha=(rotulo,arr,tot,cor,negrito,extra)=>`<tr style="${negrito?'border-top:2px solid var(--line)':'border-top:1px solid var(--line)'}">
     <td class="table-name" style="${cor?`color:${cor};`:''}padding-left:${negrito?'10px':'26px'};font-weight:${negrito?800:600}">${negrito?rotulo:rotulo}</td>
@@ -5712,7 +5714,7 @@ function fabRender(){
     </table></div>
   </section>`;
 
-  g('fab-content').innerHTML=kpisHTML+graficoAnoTotalHTML+graficoAnoSepHTML+graficoHTML+tabelaHTML;
+  g('fab-content').innerHTML=kpisHTML+graficosAnoHTML+graficoHTML+tabelaHTML;
 }
 function fabExportar(){
   if(!fabAnos.length){toast('Nada para exportar','error');return;}
