@@ -1587,25 +1587,16 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="page-pad">
     <div class="section-head">
       <div><div class="section-title">🏭 Fábrica</div><div class="section-sub">Volume da fábrica por mês, Gudang x Cretec e crescimento ano a ano</div></div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <span style="font-size:12px;color:var(--muted)">Gráficos ano a ano até:</span>
-        <select id="fab-fim-mes" class="client-filter" onchange="fabFiltrarFim(this.value)" style="min-width:190px">
-          <option value="auto">Automático (último mês fechado)</option>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px;background:var(--bg-soft,#f4f4f5);border-radius:var(--r-md)">
+        <span style="font-size:12px;font-weight:600;color:var(--muted)">Comparar de Jan até:</span>
+        <select id="fab-fim-mes" class="client-filter" onchange="fabAplicarPeriodo()" style="min-width:150px">
+          <option value="auto">Automático</option>
         </select>
+        <span style="font-size:12px;color:var(--muted)">ano</span>
+        <select id="fab-ano-a" class="client-filter" onchange="fabAplicarPeriodo()" style="min-width:100px"></select>
+        <span style="font-size:12px;color:var(--muted)">vs. ano</span>
+        <select id="fab-ano-b" class="client-filter" onchange="fabAplicarPeriodo()" style="min-width:100px"></select>
         <button class="secondary-btn" onclick="irFabrica()">↺ Atualizar</button>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding:8px;background:var(--bg-soft,#f4f4f5);border-radius:var(--r-md)">
-        <span style="font-size:12px;font-weight:600;color:var(--muted)">Período dos cards:</span>
-        <button class="admin-tab" onclick="fabPeriodoRapido(3)">Últimos 3 meses</button>
-        <button class="admin-tab" onclick="fabPeriodoRapido(6)">Últimos 6 meses</button>
-        <button class="admin-tab" onclick="fabPeriodoRapido(12)">Últimos 12 meses</button>
-        <span style="font-size:12px;color:var(--muted)">De</span>
-        <select id="fab-periodo-de-mes" class="client-filter" style="min-width:110px"></select>
-        <select id="fab-periodo-de-ano" class="client-filter" style="min-width:90px"></select>
-        <span style="font-size:12px;color:var(--muted)">até</span>
-        <select id="fab-periodo-ate-mes" class="client-filter" style="min-width:110px"></select>
-        <select id="fab-periodo-ate-ano" class="client-filter" style="min-width:90px"></select>
-        <button class="primary-btn" onclick="fabAplicarPeriodo()">Aplicar</button>
       </div>
     </div>
     <div id="fab-content"><div class="loading">Carregando...</div></div>
@@ -5584,10 +5575,7 @@ async function irRelatorios(){
 // ── FÁBRICA (comparativo de crescimento, sem distribuidora) ──
 const FAB_GUDANG_SKUS=['GR','GM','GTWIN'];
 const FAB_CRETEC_SKUS=['CM','CC'];
-let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={},fabFimMesFiltro='auto';
-const fabUltimoMesFechadoIdx=mesAtual===0?11:mesAtual-1;
-const fabUltimoMesFechadoAno=mesAtual===0?anoAtual-1:anoAtual;
-let fabPeriodoDe={mes:fabUltimoMesFechadoIdx,ano:fabUltimoMesFechadoAno},fabPeriodoAte={mes:fabUltimoMesFechadoIdx,ano:fabUltimoMesFechadoAno};
+let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={},fabFimMesFiltro='auto',fabAnoA=null,fabAnoB=null;
 async function irFabrica(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
   show('s-fabrica');
@@ -5597,35 +5585,12 @@ async function irFabrica(){
     MESES.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent='até '+m;fimEl.appendChild(o);});
   }
   if(fimEl)fimEl.value=fabFimMesFiltro;
-  if(g('fab-periodo-de-mes')&&!g('fab-periodo-de-mes').options.length){
-    const anos=[];
-    for(let y=anoAtual+1;y>=2025;y--)anos.push(y);
-    ['fab-periodo-de-mes','fab-periodo-ate-mes'].forEach(id=>{g(id).innerHTML=MESES.map((m,i)=>'<option value="'+i+'">'+vdEsc(m)+'</option>').join('');});
-    ['fab-periodo-de-ano','fab-periodo-ate-ano'].forEach(id=>{g(id).innerHTML=anos.map(y=>'<option value="'+y+'">'+y+'</option>').join('');});
-    g('fab-periodo-de-mes').value=fabPeriodoDe.mes;g('fab-periodo-de-ano').value=fabPeriodoDe.ano;
-    g('fab-periodo-ate-mes').value=fabPeriodoAte.mes;g('fab-periodo-ate-ano').value=fabPeriodoAte.ano;
-  }
   await fabCarregar();
 }
-function fabPeriodoRapido(n){
-  const fimIdx=fabUltimoMesFechadoAno*12+fabUltimoMesFechadoIdx;
-  const iniIdx=fimIdx-(n-1);
-  fabPeriodoDe={ano:Math.floor(iniIdx/12),mes:((iniIdx%12)+12)%12};
-  fabPeriodoAte={ano:fabUltimoMesFechadoAno,mes:fabUltimoMesFechadoIdx};
-  g('fab-periodo-de-mes').value=fabPeriodoDe.mes;g('fab-periodo-de-ano').value=fabPeriodoDe.ano;
-  g('fab-periodo-ate-mes').value=fabPeriodoAte.mes;g('fab-periodo-ate-ano').value=fabPeriodoAte.ano;
-  fabRender();
-}
 function fabAplicarPeriodo(){
-  fabPeriodoDe={mes:parseInt(g('fab-periodo-de-mes').value),ano:parseInt(g('fab-periodo-de-ano').value)};
-  fabPeriodoAte={mes:parseInt(g('fab-periodo-ate-mes').value),ano:parseInt(g('fab-periodo-ate-ano').value)};
-  if(fabPeriodoDe.ano*12+fabPeriodoDe.mes>fabPeriodoAte.ano*12+fabPeriodoAte.mes){
-    toast('Período inválido: "De" é depois de "Até"','error');return;
-  }
-  fabRender();
-}
-function fabFiltrarFim(v){
-  fabFimMesFiltro=v;
+  fabFimMesFiltro=g('fab-fim-mes').value;
+  fabAnoA=parseInt(g('fab-ano-a').value);
+  fabAnoB=parseInt(g('fab-ano-b').value);
   fabRender();
 }
 async function fabCarregar(){
@@ -5678,28 +5643,30 @@ function fabRender(){
     comparacoesAno[atualAno]={antAno,fim,antTotal,atualTotal,pct:pctVar(atualTotal,antTotal)};
   }
 
-  // KPIs do período selecionado nos filtros ("Período dos cards")
-  const fabSomaPeriodo=(pegar,de,ate)=>{
-    let s=0;
-    for(let idx=de.ano*12+de.mes;idx<=ate.ano*12+ate.mes;idx++){
-      const ano=Math.floor(idx/12),mes=((idx%12)+12)%12;
-      if(porAno[ano])s+=pegar(porAno[ano])[mes]||0;
-    }
-    return s;
-  };
-  const periodoLabel=(de,ate)=>MESES[de.mes].slice(0,3)+'/'+String(de.ano).slice(2)+(de.mes===ate.mes&&de.ano===ate.ano?'':' - '+MESES[ate.mes].slice(0,3)+'/'+String(ate.ano).slice(2));
-  const totalPeriodo=fabSomaPeriodo(p=>p.total,fabPeriodoDe,fabPeriodoAte);
-  const gudangPeriodo=fabSomaPeriodo(p=>p.gudang,fabPeriodoDe,fabPeriodoAte);
-  const cretecPeriodo=fabSomaPeriodo(p=>p.cretec,fabPeriodoDe,fabPeriodoAte);
-  const deAnt={mes:fabPeriodoDe.mes,ano:fabPeriodoDe.ano-1},ateAnt={mes:fabPeriodoAte.mes,ano:fabPeriodoAte.ano-1};
-  const totalPeriodoAnt=fabSomaPeriodo(p=>p.total,deAnt,ateAnt);
-  const pctPeriodo=pctVar(totalPeriodo,totalPeriodoAnt);
+  // KPIs: compara Jan-até(fim) do "ano A" com Jan-até(fim) do "ano B", ambos escolhidos no filtro
+  if(fabAnoA===null||fabAnoB===null||!anos.includes(fabAnoA)||!anos.includes(fabAnoB)){
+    fabAnoB=anos[anos.length-1];
+    fabAnoA=anos.length>1?anos[anos.length-2]:anos[anos.length-1];
+  }
+  const anoAEl=g('fab-ano-a'),anoBEl=g('fab-ano-b');
+  if(anoAEl&&anoAEl.options.length!==anos.length){
+    anoAEl.innerHTML=anos.map(a=>'<option value="'+a+'">'+a+'</option>').join('');
+    anoBEl.innerHTML=anos.map(a=>'<option value="'+a+'">'+a+'</option>').join('');
+  }
+  if(anoAEl){anoAEl.value=fabAnoA;anoBEl.value=fabAnoB;}
+  const fimEscolhido=fimManual!==null?fimManual:mesRealizadoAte(Math.max(fabAnoA,fabAnoB));
+  const totalA=somaAte(porAno[fabAnoA]?.total||Array(12).fill(0),fimEscolhido);
+  const totalB=somaAte(porAno[fabAnoB]?.total||Array(12).fill(0),fimEscolhido);
+  const gudangB=somaAte(porAno[fabAnoB]?.gudang||Array(12).fill(0),fimEscolhido);
+  const cretecB=somaAte(porAno[fabAnoB]?.cretec||Array(12).fill(0),fimEscolhido);
+  const pctAB=pctVar(totalB,totalA);
+  const periodoLabel=ano=>'Jan-'+MESES[fimEscolhido].slice(0,3)+'/'+String(ano).slice(2);
 
   const kpisHTML=`<div class="dash-kpis" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:14px">
-    <div class="dash-kpi info"><div class="dash-kpi-label">Total no período</div><div class="dash-kpi-value">${relFmt(totalPeriodo)} <small>cx</small></div><div class="dash-kpi-sub">${periodoLabel(fabPeriodoDe,fabPeriodoAte)}</div></div>
-    <div class="dash-kpi info"><div class="dash-kpi-label">Gudang no período</div><div class="dash-kpi-value">${relFmt(gudangPeriodo)} <small>cx</small></div><div class="dash-kpi-sub">${totalPeriodo?Math.round(gudangPeriodo/totalPeriodo*100):0}% do total</div></div>
-    <div class="dash-kpi info"><div class="dash-kpi-label">Cretec no período</div><div class="dash-kpi-value">${relFmt(cretecPeriodo)} <small>cx</small></div><div class="dash-kpi-sub">${totalPeriodo?Math.round(cretecPeriodo/totalPeriodo*100):0}% do total</div></div>
-    <div class="dash-kpi ${pctPeriodo===null?'':pctPeriodo>=0?'good':'danger'}"><div class="dash-kpi-label">vs. mesmo período ano anterior</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctPeriodo)}</div><div class="dash-kpi-sub">${periodoLabel(deAnt,ateAnt)}: ${relFmt(totalPeriodoAnt)} cx</div></div>
+    <div class="dash-kpi info"><div class="dash-kpi-label">Total ${periodoLabel(fabAnoA)}</div><div class="dash-kpi-value">${relFmt(totalA)} <small>cx</small></div><div class="dash-kpi-sub">ano ${fabAnoA}</div></div>
+    <div class="dash-kpi info"><div class="dash-kpi-label">Total ${periodoLabel(fabAnoB)}</div><div class="dash-kpi-value">${relFmt(totalB)} <small>cx</small></div><div class="dash-kpi-sub">ano ${fabAnoB} — Gudang ${relFmt(gudangB)} · Cretec ${relFmt(cretecB)}</div></div>
+    <div class="dash-kpi ${pctAB===null?'':pctAB>=0?'good':'danger'}"><div class="dash-kpi-label">${fabAnoB} vs. ${fabAnoA}</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctAB)}</div><div class="dash-kpi-sub">${periodoLabel(fabAnoA)} → ${periodoLabel(fabAnoB)}</div></div>
+    <div class="dash-kpi"><div class="dash-kpi-label">Período comparado</div><div class="dash-kpi-value" style="font-size:20px">Jan–${MESES[fimEscolhido].slice(0,3)}</div><div class="dash-kpi-sub">${fimManual!==null?'fixado no filtro':'automático (até o último mês fechado)'}</div></div>
   </div>`;
 
   // gráfico único: mês a mês, cronológico, Gudang x Cretec
