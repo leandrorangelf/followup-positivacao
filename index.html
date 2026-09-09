@@ -6123,6 +6123,23 @@ function relRenderFabrica(){
     <div class="dash-kpi ${cmpAtual?(cmpAtual.pct>=0?'good':'danger'):''}"><div class="dash-kpi-label">${anoAtual} vs. ${anoAtual-1}</div><div class="dash-kpi-value" style="font-size:20px">${cmpAtual?varHTML(cmpAtual.pct):'<span style="color:var(--muted)">—</span>'}</div><div class="dash-kpi-sub">${cmpAtual?(cmpAtual.fim===11?'ano completo':'Jan-'+MESES[cmpAtual.fim].slice(0,3))+': '+relFmt(cmpAtual.atualTotal)+' vs '+relFmt(cmpAtual.antTotal)+' cx':'sem ano anterior pra comparar'}</div></div>
   </div>`;
 
+  // linha do tempo contínua mês a mês (cruzando os anos), do primeiro mês com dado até o mês atual
+  const primeiroAno=anos[0];
+  let timelineLabels=[],timelineValores=[];
+  for(let y=primeiroAno;y<=anoAtual;y++){
+    const fimMes=y===anoAtual?mesAtual:11;
+    for(let m=0;m<=fimMes;m++){
+      timelineLabels.push(MESES[m].slice(0,3)+'/'+String(y).slice(2));
+      timelineValores.push(porAno[y]?.meses[m]||0);
+    }
+  }
+  const primeiroComDado=timelineValores.findIndex(v=>v>0);
+  if(primeiroComDado>0){timelineLabels=timelineLabels.slice(primeiroComDado);timelineValores=timelineValores.slice(primeiroComDado);}
+  const timelineHTML=`<div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">Evolução mês a mês <span style="font-size:11px;color:var(--muted);font-weight:400">— linha do tempo, ${timelineLabels[0]||''} até ${timelineLabels[timelineLabels.length-1]||''}</span></div>
+    ${relSvgBarChartGrupos(timelineLabels,[{nome:'Caixas pedidas',valores:timelineValores,cor:'var(--purple)'}])}
+  </div>`;
+
   const graficoHTML=`<div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
     <div style="font-size:13px;font-weight:700;margin-bottom:10px">Caixas pedidas por mês, ano a ano</div>
     ${relSvgBarChartGrupos(MESES.map(m=>m.slice(0,3)),anos.map((a,i)=>({nome:String(a),valores:porAno[a].meses,cor:FABRICA_CORES[i%FABRICA_CORES.length]})))}
@@ -6168,7 +6185,7 @@ function relRenderFabrica(){
     </div>
   </div>`;
 
-  g('rel-content').innerHTML=kpisHTML+graficoHTML+tabelaHTML;
+  g('rel-content').innerHTML=kpisHTML+timelineHTML+graficoHTML+tabelaHTML;
 }
 function relExportarFabrica(){
   if(!relFabricaAnos.length){toast('Nada para exportar','error');return;}
