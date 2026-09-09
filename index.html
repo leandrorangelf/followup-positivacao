@@ -6350,14 +6350,20 @@ function relTotalizadorMensalHTML(){
       </div>`).join('');
     let crescimentoHtml='';
     if(anos.length>=2){
+      const mesRealizadoAte=(ano)=>ano===anoAtual?mesAtual-1:11;
+      const somaAte=(meses,fim)=>fim<0?0:meses.slice(0,fim+1).reduce((s,v)=>s+v,0);
       const comparacoes=[];
       for(let i=1;i<anos.length;i++){
         const antAno=anos[i-1],atualAno=anos[i];
-        const antTotal=r.porAno[antAno].total,atualTotal=r.porAno[atualAno].total;
+        const fim=mesRealizadoAte(atualAno);
+        if(fim<0)continue;
+        const antTotal=somaAte(r.porAno[antAno].meses,fim);
+        const atualTotal=somaAte(r.porAno[atualAno].meses,fim);
         if(antTotal>0){
           const pct=(atualTotal-antTotal)/antTotal*100;
           const alta=pct>=0;
-          comparacoes.push(`<span style="font-weight:700;color:${alta?'var(--success)':'var(--danger)'}">${alta?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span> <span style="color:var(--muted)">(${atualAno} vs ${antAno}: ${relFmt(atualTotal)} vs ${relFmt(antTotal)} cx)</span>`);
+          const periodoLabel=fim===11?'ano completo':MESES[0].slice(0,3)+'-'+MESES[fim].slice(0,3);
+          comparacoes.push(`<span style="font-weight:700;color:${alta?'var(--success)':'var(--danger)'}">${alta?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span> <span style="color:var(--muted)">(${periodoLabel} — ${atualAno} vs ${antAno}: ${relFmt(atualTotal)} vs ${relFmt(antTotal)} cx)</span>`);
         }
       }
       if(comparacoes.length)crescimentoHtml=`<div style="font-size:15px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center">${comparacoes.map(c=>`<span>${c}</span>`).join('')}</div>`;
