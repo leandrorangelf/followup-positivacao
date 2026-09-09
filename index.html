@@ -1587,7 +1587,13 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   <div class="page-pad">
     <div class="section-head">
       <div><div class="section-title">🏭 Fábrica</div><div class="section-sub">Volume da fábrica por mês, Gudang x Cretec e crescimento ano a ano</div></div>
-      <div><button class="secondary-btn" onclick="irFabrica()">↺ Atualizar</button></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--muted)">Comparar ano a ano até:</span>
+        <select id="fab-fim-mes" class="client-filter" onchange="fabFiltrarFim(this.value)" style="min-width:190px">
+          <option value="auto">Automático (último mês fechado)</option>
+        </select>
+        <button class="secondary-btn" onclick="irFabrica()">↺ Atualizar</button>
+      </div>
     </div>
     <div id="fab-content"><div class="loading">Carregando...</div></div>
   </div>
@@ -5565,12 +5571,21 @@ async function irRelatorios(){
 // ── FÁBRICA (comparativo de crescimento, sem distribuidora) ──
 const FAB_GUDANG_SKUS=['GR','GM','GTWIN'];
 const FAB_CRETEC_SKUS=['CM','CC'];
-let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={};
+let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={},fabFimMesFiltro='auto';
 async function irFabrica(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
   show('s-fabrica');
   updateSideNav('fabrica');
+  const fimEl=g('fab-fim-mes');
+  if(fimEl&&fimEl.options.length===1){
+    MESES.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent='até '+m;fimEl.appendChild(o);});
+  }
+  if(fimEl)fimEl.value=fabFimMesFiltro;
   await fabCarregar();
+}
+function fabFiltrarFim(v){
+  fabFimMesFiltro=v;
+  fabRender();
 }
 async function fabCarregar(){
   if(fabCarregando)return;
@@ -5602,7 +5617,8 @@ function fabRender(){
   fabAnos=anos;fabPorAno=porAno;
 
   const somaAte=(arr,fim)=>fim<0?0:arr.slice(0,fim+1).reduce((s,v)=>s+v,0);
-  const mesRealizadoAte=ano=>ano===anoAtual?mesAtual-1:11;
+  const fimManual=fabFimMesFiltro==='auto'?null:parseInt(fabFimMesFiltro);
+  const mesRealizadoAte=ano=>fimManual!==null?fimManual:(ano===anoAtual?mesAtual-1:11);
   const pctVar=(atual,ant)=>ant>0?(atual-ant)/ant*100:null;
   const varHTML=(pct,detalhe)=>{
     if(pct===null)return`<span style="color:var(--muted)">—</span>`;
@@ -5655,6 +5671,20 @@ function fabRender(){
     ${relSvgBarChartGrupos(labels,[{nome:'Gudang',valores:gud,cor:'var(--purple)'},{nome:'Cretec',valores:cre,cor:'var(--accent)'}])}
   </section>`;
 
+  // gráficos ano a ano (comparando o mesmo intervalo Jan-fim em cada ano)
+  const notaPeriodo=fimManual!==null?('considerando Jan-'+MESES[fimManual].slice(0,3)+' de cada ano'):'ano completo nos anos fechados; ano corrente até o último mês fechado';
+  const totAnos=anos.map(a=>somaAte(porAno[a].total,mesRealizadoAte(a)));
+  const gudAnos=anos.map(a=>somaAte(porAno[a].gudang,mesRealizadoAte(a)));
+  const creAnos=anos.map(a=>somaAte(porAno[a].cretec,mesRealizadoAte(a)));
+  const graficoAnoTotalHTML=`<section class="panel" style="margin-bottom:16px">
+    <div class="panel-title-row"><div class="panel-title">Total por ano (Gudang + Cretec)</div><div class="panel-note">${notaPeriodo}</div></div>
+    ${relSvgBarChartGrupos(anos.map(String),[{nome:'Total',valores:totAnos,cor:'var(--purple)'}])}
+  </section>`;
+  const graficoAnoSepHTML=`<section class="panel" style="margin-bottom:16px">
+    <div class="panel-title-row"><div class="panel-title">Gudang x Cretec por ano</div><div class="panel-note">${notaPeriodo}</div></div>
+    ${relSvgBarChartGrupos(anos.map(String),[{nome:'Gudang',valores:gudAnos,cor:'var(--purple)'},{nome:'Cretec',valores:creAnos,cor:'var(--accent)'}])}
+  </section>`;
+
   const linha=(rotulo,arr,tot,cor,negrito,extra)=>`<tr style="${negrito?'border-top:2px solid var(--line)':'border-top:1px solid var(--line)'}">
     <td class="table-name" style="${cor?`color:${cor};`:''}padding-left:${negrito?'10px':'26px'};font-weight:${negrito?800:600}">${negrito?rotulo:rotulo}</td>
     ${arr.map(v=>`<td>${v?relFmt(v):'—'}</td>`).join('')}
@@ -5682,7 +5712,7 @@ function fabRender(){
     </table></div>
   </section>`;
 
-  g('fab-content').innerHTML=kpisHTML+graficoHTML+tabelaHTML;
+  g('fab-content').innerHTML=kpisHTML+graficoAnoTotalHTML+graficoAnoSepHTML+graficoHTML+tabelaHTML;
 }
 function fabExportar(){
   if(!fabAnos.length){toast('Nada para exportar','error');return;}
