@@ -5672,23 +5672,21 @@ function fabRender(){
     <div class="dash-kpi"><div class="dash-kpi-label">Período comparado</div><div class="dash-kpi-value" style="font-size:20px">Jan–${MESES[fimEscolhido].slice(0,3)}</div><div class="dash-kpi-sub">${fimManual!==null?'fixado no filtro':'automático (até o último mês fechado)'}</div></div>
   </div>`;
 
-  // gráfico único: mês a mês, cronológico, Gudang x Cretec x Click
+  // gráfico único: mês a mês, cronológico, só o total (Gudang+Cretec+Click somados — a quebra por linha fica na tabela abaixo)
   const primeiroAno=anos[0];
-  let labels=[],gud=[],cre=[],cli=[];
+  let labels=[],tot=[];
   for(let y=primeiroAno;y<=anoAtual;y++){
     const fimMes=y===anoAtual?mesAtual:11;
     for(let m=0;m<=fimMes;m++){
       labels.push(MESES[m].slice(0,3)+'/'+String(y).slice(2));
-      gud.push(porAno[y]?.gudang[m]||0);
-      cre.push(porAno[y]?.cretec[m]||0);
-      cli.push(porAno[y]?.click[m]||0);
+      tot.push(porAno[y]?.total[m]||0);
     }
   }
-  const primeiroComDado=labels.findIndex((_,i)=>(gud[i]+cre[i]+cli[i])>0);
-  if(primeiroComDado>0){labels=labels.slice(primeiroComDado);gud=gud.slice(primeiroComDado);cre=cre.slice(primeiroComDado);cli=cli.slice(primeiroComDado);}
+  const primeiroComDado=labels.findIndex((_,i)=>tot[i]>0);
+  if(primeiroComDado>0){labels=labels.slice(primeiroComDado);tot=tot.slice(primeiroComDado);}
   const graficoHTML=`<section class="panel" style="margin-bottom:16px">
-    <div class="panel-title-row"><div class="panel-title">Volume mês a mês — Gudang x Cretec x Click</div><div class="panel-note">${labels[0]||''} até ${labels[labels.length-1]||''}</div></div>
-    ${relSvgBarChartGrupos(labels,[{nome:'Gudang',valores:gud,cor:'var(--purple)'},{nome:'Cretec',valores:cre,cor:'var(--accent)'},{nome:'Click',valores:cli,cor:'var(--amber)'}])}
+    <div class="panel-title-row"><div class="panel-title">Volume mês a mês — Total</div><div class="panel-note">${labels[0]||''} até ${labels[labels.length-1]||''}</div></div>
+    ${relSvgBarChartGrupos(labels,[{nome:'Total',valores:tot,cor:'var(--purple)'}])}
   </section>`;
 
   // gráficos ano a ano (comparando o mesmo intervalo Jan-fim em cada ano)
