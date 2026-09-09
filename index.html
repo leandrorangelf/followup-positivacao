@@ -6215,18 +6215,11 @@ function relRenderPedidos(lista){
     </tr>`;
   }).join('');
 
-  g('rel-content').innerHTML=`
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
-    <div class="dash-kpi info"><div class="dash-kpi-label">Pedidos filtrados</div><div class="dash-kpi-value">${lista.length}</div><div class="dash-kpi-sub">${clientesUnicos} cliente(s)</div></div>
-    <div class="dash-kpi good"><div class="dash-kpi-label">Total pedido</div><div class="dash-kpi-value">${relFmt(totalCx)} <small>cx</small></div></div>
-    <div class="dash-kpi good"><div class="dash-kpi-label">Já faturado</div><div class="dash-kpi-value">${relFmt(faturadoCx)} <small>cx</small></div><div class="dash-kpi-sub">confirmado/entregue</div></div>
-    <div class="dash-kpi ${saldoCx?'warn':'good'}"><div class="dash-kpi-label">Saldo pendente</div><div class="dash-kpi-value">${relFmt(saldoCx)} <small>cx</small></div><div class="dash-kpi-sub">${saldoCx?'ainda aberto':'sem pendência'}</div></div>
-  </div>
-  <div style="background:var(--card);border-radius:var(--r-md);padding:14px;margin-bottom:14px;box-shadow:var(--shadow-sm)">
-    <div style="font-size:13px;font-weight:700;margin-bottom:8px">Adicionar vendas ao relatório personalizado <span style="font-size:11px;color:var(--muted);font-weight:400">— busca em todo o ano, ignora os filtros acima</span></div>
-    <input id="rel-add-busca" class="client-search" placeholder="Buscar cliente, UF, coordenador..." oninput="relRenderAdicionar(this.value)" style="width:100%;max-width:420px">
-    <div id="rel-add-resultados" style="margin-top:8px"></div>
-  </div>
+  const buscaAtiva=relBuscaFiltro.trim().length>0;
+  const totClientesHtml=relTotalizadorClientesHTML(lista);
+  const totMensalHtml=relTotalizadorMensalHTML();
+  const totSkuHtml=relTotalizadorSkuHTML(lista);
+  const pedidosListHtml=`
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
     <div style="font-size:13px;font-weight:700">Relatório de Pedidos
       <span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:8px">${relFiltroResumo(lista)}</span>
@@ -6277,21 +6270,53 @@ function relRenderPedidos(lista){
         </tr>
       </tbody>
     </table>
+  </div>`;
+
+  g('rel-content').innerHTML=`
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px">
+    <div class="dash-kpi info"><div class="dash-kpi-label">Pedidos filtrados</div><div class="dash-kpi-value">${lista.length}</div><div class="dash-kpi-sub">${clientesUnicos} cliente(s)</div></div>
+    <div class="dash-kpi good"><div class="dash-kpi-label">Total pedido</div><div class="dash-kpi-value">${relFmt(totalCx)} <small>cx</small></div></div>
+    <div class="dash-kpi good"><div class="dash-kpi-label">Já faturado</div><div class="dash-kpi-value">${relFmt(faturadoCx)} <small>cx</small></div><div class="dash-kpi-sub">confirmado/entregue</div></div>
+    <div class="dash-kpi ${saldoCx?'warn':'good'}"><div class="dash-kpi-label">Saldo pendente</div><div class="dash-kpi-value">${relFmt(saldoCx)} <small>cx</small></div><div class="dash-kpi-sub">${saldoCx?'ainda aberto':'sem pendência'}</div></div>
   </div>
-  ${relTotalizadorClientesHTML(lista)}
-  ${relTotalizadorMensalHTML()}
-  ${relTotalizadorSkuHTML(lista)}`;
+  <div style="background:var(--card);border-radius:var(--r-md);padding:14px;margin-bottom:14px;box-shadow:var(--shadow-sm)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">Adicionar vendas ao relatório personalizado <span style="font-size:11px;color:var(--muted);font-weight:400">— busca em todo o ano, ignora os filtros acima</span></div>
+    <input id="rel-add-busca" class="client-search" placeholder="Buscar cliente, UF, coordenador..." oninput="relRenderAdicionar(this.value)" style="width:100%;max-width:420px">
+    <div id="rel-add-resultados" style="margin-top:8px"></div>
+  </div>
+  ${buscaAtiva?`
+  ${totMensalHtml}
+  ${totClientesHtml}
+  <details style="margin-top:16px">
+    <summary style="cursor:pointer;font-size:12px;color:var(--muted);padding:6px 0">Ver pedidos individuais (${lista.length}) que formam esses totais ▾</summary>
+    <div style="margin-top:10px">${pedidosListHtml}</div>
+  </details>
+  ${totSkuHtml}`:`
+  ${pedidosListHtml}
+  ${totClientesHtml}
+  ${totMensalHtml}
+  ${totSkuHtml}`}`;
 }
 let relTotMensalRows=[];
 function relTotalizadorMensalHTML(){
+  const GUDANG_SKUS=['GR','GM','GTWIN'];
+  const CRETEC_SKUS=['CM','CC'];
   const lista=relListaFiltrada(true,true).filter(p=>!vdEhDistribuidora(p));
   const porCliente={};
   lista.forEach(p=>{
     const k=p.cliente_nome;
-    if(!porCliente[k])porCliente[k]={nome:k,meses:Array(12).fill(0),total:0};
+    if(!porCliente[k])porCliente[k]={nome:k,meses:Array(12).fill(0),mesesGudang:Array(12).fill(0),mesesCretec:Array(12).fill(0),mesesClick:Array(12).fill(0),total:0};
     const x=vdResumoPedido(p);
     const mes=Number(p.mes);
-    if(mes>=0&&mes<=11)porCliente[k].meses[mes]+=x.pedidoCx;
+    if(mes>=0&&mes<=11){
+      porCliente[k].meses[mes]+=x.pedidoCx;
+      (p.pedidos_vendas_itens||[]).forEach(i=>{
+        const q=Number(i.qty_caixas||0);
+        if(GUDANG_SKUS.includes(i.sku))porCliente[k].mesesGudang[mes]+=q;
+        else if(CRETEC_SKUS.includes(i.sku))porCliente[k].mesesCretec[mes]+=q;
+        else if(i.sku==='CK')porCliente[k].mesesClick[mes]+=q;
+      });
+    }
     porCliente[k].total+=x.pedidoCx;
   });
   const rows=Object.values(porCliente).map(r=>({...r,media:r.total/12})).sort((a,b)=>b.total-a.total);
@@ -6303,8 +6328,12 @@ function relTotalizadorMensalHTML(){
   const totMedia=totGeral/12;
   const grafico=rows.length===1?`
     <div style="margin-bottom:14px">
-      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">Evolução de ${vdEsc(rows[0].nome)} no ano</div>
-      ${relSvgBarChart(MESES.map(m=>m.slice(0,3)),rows[0].meses)}
+      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">Evolução de ${vdEsc(rows[0].nome)} no ano — Gudang x Cretec</div>
+      ${relSvgBarChartGrupos(MESES.map(m=>m.slice(0,3)),[
+        {nome:'Gudang',valores:rows[0].mesesGudang,cor:'var(--purple)'},
+        {nome:'Cretec',valores:rows[0].mesesCretec,cor:'var(--accent)'},
+        {nome:'Click',valores:rows[0].mesesClick,cor:'var(--amber)'}
+      ])}
     </div>`:'';
   return`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-top:16px;box-shadow:var(--shadow-sm)">
@@ -6339,21 +6368,26 @@ function relTotalizadorMensalHTML(){
   </div>`;
 }
 function relFmt1(v){return(Math.round(v*10)/10).toLocaleString('pt-BR',{minimumFractionDigits:v%1?1:0,maximumFractionDigits:1});}
-function relSvgBarChart(labels,values){
-  const width=Math.max(360,labels.length*56),height=170,padL=6,padR=6,padT=18,padB=22;
+function relSvgBarChartGrupos(labels,series){
+  const n=series.length;
+  const width=Math.max(420,labels.length*(20*n+18)),height=190,padL=6,padR=6,padT=18,padB=22;
   const chartW=width-padL-padR,chartH=height-padT-padB;
-  const max=Math.max(1,...values);
-  const gap=chartW/values.length;
-  const barW=Math.min(34,gap*0.6);
-  const bars=values.map((v,i)=>{
-    const h=v>0?Math.max(v/max*chartH,2):0;
-    const x=padL+i*gap+(gap-barW)/2;
-    const y=padT+chartH-h;
-    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="var(--purple)"><title>${vdEsc(labels[i])}: ${relFmt(v)} cx</title></rect>`+
-      (v>0?`<text x="${(x+barW/2).toFixed(1)}" y="${(y-4).toFixed(1)}" font-size="10" text-anchor="middle" fill="var(--text)">${relFmt1(v)}</text>`:'')+
-      `<text x="${(x+barW/2).toFixed(1)}" y="${(padT+chartH+15).toFixed(1)}" font-size="10" text-anchor="middle" fill="var(--muted)">${vdEsc(labels[i])}</text>`;
+  const max=Math.max(1,...series.flatMap(s=>s.valores));
+  const gap=chartW/labels.length;
+  const barW=Math.min(18,(gap*0.78)/n);
+  const grupoW=barW*n;
+  const bars=labels.map((lab,i)=>{
+    const x0=padL+i*gap+(gap-grupoW)/2;
+    return series.map((s,si)=>{
+      const v=s.valores[i]||0;
+      const h=v>0?Math.max(v/max*chartH,2):0;
+      const x=x0+si*barW;
+      const y=padT+chartH-h;
+      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(barW-1.5).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${s.cor}"><title>${vdEsc(s.nome)} — ${vdEsc(lab)}: ${relFmt(v)} cx</title></rect>`;
+    }).join('')+`<text x="${(x0+grupoW/2).toFixed(1)}" y="${(padT+chartH+15).toFixed(1)}" font-size="10" text-anchor="middle" fill="var(--muted)">${vdEsc(lab)}</text>`;
   }).join('');
-  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${width} ${height}" style="width:100%;max-width:${width}px;height:${height}px;display:block">${bars}</svg></div>`;
+  const legenda=series.map(s=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:${s.cor};display:inline-block"></span>${vdEsc(s.nome)}</span>`).join('');
+  return `<div style="margin-bottom:4px">${legenda}</div><div style="overflow-x:auto"><svg viewBox="0 0 ${width} ${height}" style="width:100%;max-width:${width}px;height:${height}px;display:block">${bars}</svg></div>`;
 }
 function relExportarTotalizadorMensal(){
   if(!relTotMensalRows.length){toast('Nada para exportar','error');return;}
