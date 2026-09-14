@@ -1734,6 +1734,7 @@ function renderNav(navId,active){
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'forecast',icon:'forecast',label:'Forecast'},
     {id:'agenda',icon:'calendar',label:'Agenda'},
+    {id:'tv',icon:'tv',label:'TV externa'},
     {id:'gnre',icon:'document',label:'GNRE'},
   ]:[
     {id:'dash',icon:'dashboard',label:'Dashboard'},
@@ -1752,7 +1753,7 @@ function renderNav(navId,active){
 }
 
 function navTo(id){
-  if(isDiretoria && !['dash','vendas','forecast','relatorios','fabrica','gestao','planilha','gnre','agenda'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
+  if(isDiretoria && !['dash','vendas','forecast','relatorios','fabrica','gestao','planilha','gnre','agenda','tv'].includes(id)){toast('Perfil Diretoria é somente leitura','error');return;}
   if(isFabiano()&&!['vendas','registro','gnre'].includes(id)){toast('Fabiano acessa apenas Vendas e Registro','error');return;}
   if(user==='vagner'&&['log'].includes(id)){toast('Acesso não disponível para este perfil','error');return;}
   if(id==='dash'){irDash();}
