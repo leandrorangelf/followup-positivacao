@@ -1676,7 +1676,7 @@ let metasLocaisCarregadas=false;
 // ── UTILS ──
 const g=id=>document.getElementById(id);
 const isFabiano=()=>user==='fabiano';
-const pedSomenteLeitura=()=>user==='vagner'||isFabiano()||isDiretoria;
+const pedSomenteLeitura=()=>isFabiano()||isDiretoria;
 function corPct(p){return p>=80?'var(--green)':p>=50?'var(--amber)':'var(--red)';}
 
 function toast(msg,type='info',dur=2000){
