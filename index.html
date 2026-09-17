@@ -3507,9 +3507,8 @@ const vdFmt=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:
 const vdEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const vdTipoPedido=p=>String(p?.tipo||'in').toLowerCase();
 const vdEhDistribuidora=p=>{const o=p?.origem;return!(!o||o==='Fábrica');};
-const vdPodeEditar=()=>user==='admin';
-// Vagner pode editar pedido (qualquer coordenador), mas não excluir/reverter/mudar origem — isso continua só admin.
-const vdPodeEditarProprio=p=>vdPodeEditar()||user==='vagner'||(!!coordAtual&&p.coordenador===coordAtual);
+const vdPodeEditar=()=>user==='admin'||user==='vagner';
+const vdPodeEditarProprio=p=>vdPodeEditar()||(!!coordAtual&&p.coordenador===coordAtual);
 const vdPodeGerenciarGnre=()=>user==='admin'||isFabiano();
 const vdPodeFaturar=()=>user==='admin'||isFabiano();
 const vdPodeDecidirPrazo=()=>user==='admin'||user==='vagner'||isDiretoria;
