@@ -8,8 +8,8 @@ const isDiretoria = (s) => !!s.isDiretoria;
 const isCoordenador = (s) => COORD_KEYS.includes(s.user);
 const isAdminLiteral = (s) => s.user === 'admin';
 
-// vdPodeEditar() no client = user==='admin'. Continua controlando excluir/reverter-faturamento/origem.
-const podeEditarPedidoVenda = isAdminLiteral;
+// vdPodeEditar() no client = admin ou vagner. Continua controlando excluir/reverter-faturamento/origem.
+const podeEditarPedidoVenda = (s) => isAdminLiteral(s) || isVagner(s);
 // Editar pedido (ação "salvar" com id): admin sempre; Vagner ou coordenador só
 // enquanto nada foi faturado (mesma condição que trava o botão "Editar" no client:
 // faturadoCx===0). Vagner não é dono de coordenador, então pode editar qualquer um;
@@ -37,8 +37,8 @@ const podeAnexarGnre = (s) => !isDiretoria(s) && !isVagner(s);
 const podeComentarPedido = (s) => isVagner(s) || isFabiano(s);
 // forecastPodeEditar() = todos exceto diretoria, fabiano e vagner
 const forecastPodeEditar = (s) => !isDiretoria(s) && !isFabiano(s) && !isVagner(s);
-// pedSomenteLeitura() = vagner, fabiano ou diretoria
-const pedSomenteLeitura = (s) => isVagner(s) || isFabiano(s) || isDiretoria(s);
+// pedSomenteLeitura() = fabiano ou diretoria (vagner já tem edição liberada aqui)
+const pedSomenteLeitura = (s) => isFabiano(s) || isDiretoria(s);
 // Quem cria um pedido novo em Vendas: admin, Vagner e os 4 coordenadores.
 const podeCriarPedidoVenda = (s) => isAdminLiteral(s) || isVagner(s) || isCoordenador(s);
 
