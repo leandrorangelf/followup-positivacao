@@ -128,16 +128,34 @@ async function salvar(session, body, res) {
   return res.status(200).json({ ok: true, id: newId, forecastConvertido });
 }
 
+const FAT_SNAPSHOT_FIELDS = 'status,is_parcial,faturado_at,faturado_por,faturamento_observacao,origem,fat_gr,fat_gm,fat_cm,fat_cc,fat_gtwin,fat_ck,fat_click,faturamento_historico';
+const FAT_SNAPSHOT_KEYS = ['status', 'is_parcial', 'faturado_at', 'faturado_por', 'faturamento_observacao', 'origem', 'fat_gr', 'fat_gm', 'fat_cm', 'fat_cc', 'fat_gtwin', 'fat_ck', 'fat_click'];
+
 async function faturar(session, body, res) {
   if (!podeFaturar(session)) return res.status(403).json({ error: 'forbidden' });
   const { id, itensRows, pedidoPatch } = body;
   if (!id || !Array.isArray(itensRows) || !pedidoPatch) return res.status(400).json({ error: 'missing_fields' });
   if (!(await prazoLiberado(id))) return res.status(409).json({ error: 'prazo_pendente' });
 
+  // Snapshot do estado ANTES desta ação — empilhado em faturamento_historico pra dar pra
+  // reverter só esta etapa depois (não zerar tudo de uma vez), mesmo com faturamento parcial em várias etapas.
+  const [preR, preItensR] = await Promise.all([
+    sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=${FAT_SNAPSHOT_FIELDS}`, { method: 'GET', headers: JSON_HEADERS }),
+    sbJson(`/rest/v1/pedidos_vendas_itens?pedido_id=eq.${encodeURIComponent(id)}&select=id,qty_faturada`, { method: 'GET', headers: JSON_HEADERS }),
+  ]);
+  const pre = preR.ok && Array.isArray(preR.json) ? preR.json[0] : null;
+  const preItens = preItensR.ok && Array.isArray(preItensR.json) ? preItensR.json : [];
+
   const r = await sbJson('/rest/v1/pedidos_vendas_itens', { method: 'POST', headers: UPSERT_MINIMAL, body: JSON.stringify(itensRows) });
   if (!r.ok) return res.status(502).json({ error: 'itens_failed' });
 
   const patch = { ...pedidoPatch, faturado_por: session.user };
+  if (pre) {
+    const historicoAnterior = Array.isArray(pre.faturamento_historico) ? pre.faturamento_historico : [];
+    const snapshot = { ts: new Date().toISOString(), itens: preItens.map((i) => ({ id: i.id, qty_faturada: i.qty_faturada })) };
+    FAT_SNAPSHOT_KEYS.forEach((k) => { snapshot[k] = pre[k]; });
+    patch.faturamento_historico = [...historicoAnterior, snapshot];
+  }
   const r2 = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(patch) });
   if (r2.ok && (patch.status === 'faturado' || patch.status === 'entregue')) {
     const infoR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=coordenador,cliente_nome`, { method: 'GET', headers: JSON_HEADERS });
@@ -150,14 +168,38 @@ async function faturar(session, body, res) {
 
 async function reverterFaturamento(session, body, res) {
   if (!podeEditarPedidoVenda(session)) return res.status(403).json({ error: 'forbidden' });
-  const { id, itensRows, pedidoPatch } = body;
-  if (!id || !Array.isArray(itensRows) || !pedidoPatch) return res.status(400).json({ error: 'missing_fields' });
+  const { id } = body;
+  if (!id) return res.status(400).json({ error: 'missing_fields' });
 
-  const r = await sbJson('/rest/v1/pedidos_vendas_itens', { method: 'POST', headers: UPSERT_MINIMAL, body: JSON.stringify(itensRows) });
-  if (!r.ok) return res.status(502).json({ error: 'itens_failed' });
+  const pedR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=faturamento_historico`, { method: 'GET', headers: JSON_HEADERS });
+  if (!pedR.ok || !Array.isArray(pedR.json) || !pedR.json[0]) return res.status(404).json({ error: 'not_found' });
+  const historico = Array.isArray(pedR.json[0].faturamento_historico) ? pedR.json[0].faturamento_historico : [];
 
-  const r2 = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedidoPatch) });
-  return res.status(200).json({ ok: true, pedidoOk: r2.ok });
+  if (!historico.length) {
+    // Pedido faturado antes desse recurso existir (sem histórico) — não dá pra reverter etapa a
+    // etapa, então zera tudo (comportamento antigo) como último recurso.
+    const itensR = await sbJson(`/rest/v1/pedidos_vendas_itens?pedido_id=eq.${encodeURIComponent(id)}&select=id`, { method: 'GET', headers: JSON_HEADERS });
+    const itens = itensR.ok && Array.isArray(itensR.json) ? itensR.json : [];
+    const rItens = await Promise.all(itens.map((i) => sbJson(`/rest/v1/pedidos_vendas_itens?id=eq.${encodeURIComponent(i.id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify({ qty_faturada: 0 }) })));
+    if (rItens.some((x) => !x.ok)) return res.status(502).json({ error: 'itens_failed' });
+    const r2 = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, {
+      method: 'PATCH', headers: MINIMAL,
+      body: JSON.stringify({ status: 'pedido', faturado_at: null, is_parcial: false, fat_gr: 0, fat_gm: 0, fat_cm: 0, fat_cc: 0, fat_gtwin: 0, fat_ck: 0, fat_click: 0 }),
+    });
+    return res.status(200).json({ ok: true, pedidoOk: r2.ok, restante: 0, zerouTudo: true });
+  }
+
+  const ultimo = historico[historico.length - 1];
+  const novoHistorico = historico.slice(0, -1);
+  const rItens = await Promise.all((ultimo.itens || []).map((i) => sbJson(`/rest/v1/pedidos_vendas_itens?id=eq.${encodeURIComponent(i.id)}`, {
+    method: 'PATCH', headers: MINIMAL, body: JSON.stringify({ qty_faturada: i.qty_faturada }),
+  })));
+  if (rItens.some((x) => !x.ok)) return res.status(502).json({ error: 'itens_failed' });
+
+  const restorePatch = { faturamento_historico: novoHistorico };
+  FAT_SNAPSHOT_KEYS.forEach((k) => { restorePatch[k] = ultimo[k]; });
+  const r2 = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(restorePatch) });
+  return res.status(200).json({ ok: true, pedidoOk: r2.ok, restante: novoHistorico.length, zerouTudo: false });
 }
 
 async function comentar(session, body, res) {
