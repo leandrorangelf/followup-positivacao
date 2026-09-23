@@ -821,6 +821,10 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H5a3 3 0 0 0 3 4"/><path d="M16 5h3a3 3 0 0 1-3 4"/><path d="M10 15h4v3h-4z"/><path d="M8 21h8"/></svg>
       <span>Premiação</span>
     </button>
+    <button class="side-link" id="side-poteouro" onclick="navTo('poteouro')">
+      <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.3"/><circle cx="12" cy="12" r="1"/></svg>
+      <span>Pote de Ouro</span>
+    </button>
     <button class="side-link" id="side-forecast" onclick="navTo('forecast')">
       <svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
       <span>Forecast</span>
@@ -996,6 +1000,19 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   </div>
   <div id="prem-content" class="page-pad"><div class="loading">Carregando...</div></div>
   <div class="bottom-nav" id="nav-premiacao"></div>
+</div>
+
+<!-- POTE DE OURO -->
+<div id="s-pote-ouro" class="screen" style="display:none">
+  <div class="app-header">
+    <div class="hdr-row">
+      <div class="hdr-title">Pote de Ouro</div>
+      <div class="hdr-badge">Set/2026</div>
+    </div>
+    <div class="hdr-sub">Meta de caixas por cliente · Realizado conta assim que o pedido é lançado.</div>
+  </div>
+  <div id="pote-ouro-content" class="page-pad"><div class="loading">Carregando...</div></div>
+  <div class="bottom-nav" id="nav-pote-ouro"></div>
 </div>
 
 <!-- AGENDA SEMANAL -->
@@ -1707,7 +1724,7 @@ async function sb(path,opts={}){
 }
 
 function show(id){
-  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-agenda','s-vfn','s-vficha','s-log','s-registro','s-relatorios','s-fabrica','s-gnre'].forEach(screenId=>{
+  ['s-login','s-tv','s-gestao','s-planilha','s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-pote-ouro','s-forecast','s-agenda','s-vfn','s-vficha','s-log','s-registro','s-relatorios','s-fabrica','s-gnre'].forEach(screenId=>{
     const screen=g(screenId);
     if(screen)screen.style.display='none';
   });
@@ -1727,6 +1744,7 @@ function renderNav(navId,active){
     {id:'dash',icon:'dashboard',label:'Dashboard'},
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'premiacao',icon:'trophy',label:'Premiação'},
+    {id:'poteouro',icon:'target',label:'Pote de Ouro'},
     {id:'forecast',icon:'forecast',label:'Forecast'},
     {id:'cli',icon:'users',label:'Clientes'},
     {id:'metas',icon:'target',label:'Metas'},
@@ -1746,6 +1764,7 @@ function renderNav(navId,active){
     {id:'dash',icon:'dashboard',label:'Dashboard'},
     {id:'vendas',icon:'money',label:'Vendas'},
     {id:'premiacao',icon:'trophy',label:'Premiação'},
+    {id:'poteouro',icon:'target',label:'Pote de Ouro'},
     {id:'forecast',icon:'forecast',label:'Forecast'},
     {id:'agenda',icon:'calendar',label:'Agenda'},
     {id:'gnre',icon:'document',label:'GNRE'},
@@ -1767,6 +1786,7 @@ function navTo(id){
   else if(id==='cli'){irCli();}
   else if(id==='metas'){irMetas();}
   else if(id==='premiacao'){irPremiacao();}
+  else if(id==='poteouro'){irPoteOuro();}
   else if(id==='agenda'){irAgenda();}
   else if(id==='log'){irLog();}
   else if(id==='forecast'){irForecast();}
@@ -1900,6 +1920,91 @@ function renderPremiacaoContent(rows,isGestor,volumeDiretoria){
   const pendentesHTML=rows.map(premPendentesHTML).join('');
 
   g('prem-content').innerHTML=equipeHTML+cardsHTML+pendentesHTML;
+}
+
+// ── POTE DE OURO ──
+// Campanha fixa de set/2026 (mes=8, 0-indexed, igual ao resto do app) — não segue o
+// seletor global de mês/ano do topo. Realizado é somado ao vivo de pedidos_vendas
+// (por cliente_id, sem filtrar coordenador do pedido — evita perder venda avulsa
+// lançada pela Diretoria) e conta a partir do lançamento do pedido, não do faturamento.
+const POTE_OURO_CAMPANHA='pote_ouro_set26',POTE_OURO_MES=8,POTE_OURO_ANO=2026;
+
+async function irPoteOuro(){
+  show('s-pote-ouro');
+  renderNav('nav-pote-ouro','poteouro');
+  await carregarPoteOuro();
+}
+
+async function carregarPoteOuro(){
+  g('pote-ouro-content').innerHTML='<div class="loading">Carregando...</div>';
+  const [metas,vendas]=await Promise.all([
+    sb(`/rest/v1/campanha_metas?campanha=eq.${POTE_OURO_CAMPANHA}&select=*,clientes(nome,uf)`,{ret:true}),
+    carregarVendasMes(POTE_OURO_MES,POTE_OURO_ANO),
+  ]);
+  const realizadoPorCliente={};
+  vendas.forEach(p=>{
+    if(!p.cliente_id)return;
+    realizadoPorCliente[p.cliente_id]=(realizadoPorCliente[p.cliente_id]||0)+dashPedidoCx(p);
+  });
+  const rows=(Array.isArray(metas)?metas:[]).map(m=>({
+    id:m.id,clienteId:m.cliente_id,nome:m.clientes?.nome||'(cliente removido)',uf:m.clientes?.uf||'',
+    coordenador:m.coordenador,meta:Number(m.meta_caixas||0),
+    realizado:realizadoPorCliente[m.cliente_id]||0,
+  }));
+  renderPoteOuroContent(rows);
+}
+
+async function poteOuroSalvarMeta(id,valor,input){
+  const meta=Number(String(valor).replace(',','.'));
+  if(isNaN(meta)||meta<0){toast('Meta inválida','error');if(input)input.value=input.defaultValue;return;}
+  const r=await sb(`/rest/v1/campanha_metas?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({meta_caixas:meta,updated_at:new Date().toISOString()})});
+  if(r.ok){toast('Meta atualizada','success');await carregarPoteOuro();}
+  else toast('Erro ao salvar meta','error');
+}
+
+function renderPoteOuroContent(rows){
+  const podeEditar=isAdmin||user==='vagner';
+  const fmt=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
+  if(!rows.length){
+    g('pote-ouro-content').innerHTML='<div class="empty">Nenhuma meta da campanha encontrada para o seu perfil.</div>';
+    return;
+  }
+  const porCoord={};
+  rows.forEach(r=>{(porCoord[r.coordenador]=porCoord[r.coordenador]||[]).push(r);});
+  const coords=Object.keys(porCoord).sort();
+  let totalMeta=0,totalReal=0;
+  const gruposHTML=coords.map(coord=>{
+    const lista=porCoord[coord].slice().sort((a,b)=>b.meta-a.meta);
+    let metaCoord=0,realCoord=0;
+    const linhasHTML=lista.map(r=>{
+      metaCoord+=r.meta;realCoord+=r.realizado;
+      const pct=r.meta>0?Math.round(r.realizado/r.meta*100):(r.realizado>0?100:0);
+      const falta=Math.max(0,r.meta-r.realizado);
+      const metaCell=podeEditar
+        ?`<input type="number" min="0" step="0.1" value="${r.meta}" style="width:74px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-weight:700;text-align:right" onchange="poteOuroSalvarMeta('${r.id}',this.value,this)">`
+        :`<strong>${fmt(r.meta)}</strong>`;
+      return `<tr>
+        <td>${r.nome}${r.uf?` <span style="color:var(--muted);font-size:11px">(${r.uf})</span>`:''}</td>
+        <td style="text-align:right">${metaCell}</td>
+        <td style="text-align:right">${fmt(r.realizado)}</td>
+        <td style="text-align:right;color:${falta<=0?'var(--green)':'var(--muted)'}">${falta<=0?'Batida':fmt(falta)}</td>
+        <td style="text-align:right;font-weight:700;color:${corPct(pct)}">${pct}%</td>
+      </tr>`;
+    }).join('');
+    totalMeta+=metaCoord;totalReal+=realCoord;
+    const pctCoord=metaCoord>0?Math.round(realCoord/metaCoord*100):0;
+    return `<div class="panel" style="margin-bottom:18px">
+      <div class="panel-title-row"><div class="panel-title">${coord}</div><div class="panel-note">${fmt(realCoord)} / ${fmt(metaCoord)} cx · ${pctCoord}%</div></div>
+      <div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th style="text-align:right">Meta</th><th style="text-align:right">Realizado</th><th style="text-align:right">Falta</th><th style="text-align:right">%</th></tr></thead><tbody>${linhasHTML}</tbody></table></div>
+    </div>`;
+  }).join('');
+  const pctTotal=totalMeta>0?Math.round(totalReal/totalMeta*100):0;
+  const resumoHTML=`<div class="panel" style="margin-bottom:18px;background:linear-gradient(135deg,#6547d9,#8b6ce8);color:#fff">
+    <div style="font-size:13px;opacity:.85;font-weight:600;margin-bottom:4px">TOTAL DA CAMPANHA · Setembro/2026</div>
+    <div style="font-size:26px;font-weight:800">${fmt(totalReal)} <span style="font-size:15px;font-weight:600;opacity:.85">/ ${fmt(totalMeta)} cx</span></div>
+    <div style="font-size:13px;opacity:.9;margin-top:2px">${pctTotal}% da meta batida</div>
+  </div>`;
+  g('pote-ouro-content').innerHTML=resumoHTML+gruposHTML;
 }
 
 // ── LOGIN ──
@@ -2606,8 +2711,8 @@ function setupShell(){
 }
 
 function updateSideNav(active){
-  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',forecast:'Forecast comercial',agenda:'Agenda semanal',log:'Log de atividades',relatorios:'Relatórios inteligentes',fabrica:'Volume e crescimento da fábrica'};
-  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','forecast','agenda','log','relatorios','fabrica'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
+  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',poteouro:'Pote de Ouro',forecast:'Forecast comercial',agenda:'Agenda semanal',log:'Log de atividades',relatorios:'Relatórios inteligentes',fabrica:'Volume e crescimento da fábrica'};
+  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','poteouro','forecast','agenda','log','relatorios','fabrica'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
   if(g('topbar-title'))g('topbar-title').textContent=titles[active]||'Follow-up Positivação';
   if(g('shell-mes'))g('shell-mes').value=mesAtual;
 }

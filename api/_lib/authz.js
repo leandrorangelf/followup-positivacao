@@ -95,6 +95,14 @@ const GENERIC_TABLES = {
     POST: isAdminLiteral,
     PATCH: isAdminLiteral,
   },
+  // Metas da campanha "Pote de Ouro": admin e Vagner ajustam, todo mundo vê
+  // (coordenador só enxerga as suas — ver SCOPED_TABLES abaixo).
+  campanha_metas: {
+    GET: () => true,
+    POST: (s) => isAdminLiteral(s) || isVagner(s),
+    PATCH: (s) => isAdminLiteral(s) || isVagner(s),
+    DELETE: (s) => isAdminLiteral(s) || isVagner(s),
+  },
   pedidos_vendas: {
     GET: () => true,
   },
@@ -130,7 +138,7 @@ const GENERIC_TABLES = {
 
 // Tabelas cujas linhas pertencem a um coordenador e devem ser restritas para quem
 // não é "privilegiado" (só vê/edita o próprio coordenador).
-const SCOPED_TABLES = new Set(['pedidos', 'pedidos_vendas', 'forecast_pedidos', 'agenda_semanal']);
+const SCOPED_TABLES = new Set(['pedidos', 'pedidos_vendas', 'forecast_pedidos', 'agenda_semanal', 'campanha_metas']);
 
 function scopeQuery(table, session, params) {
   if (!SCOPED_TABLES.has(table) || vePrivilegiado(session)) return params;
