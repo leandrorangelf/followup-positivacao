@@ -1966,7 +1966,7 @@ async function carregarPoteOuro(){
   const rows=(Array.isArray(metas)?metas:[]).map(m=>({
     id:m.id,clienteId:m.cliente_id,nome:m.clientes?.nome||'(cliente removido)',uf:m.clientes?.uf||'',
     coordenador:m.coordenador,meta:Number(m.meta_caixas||0),incremento:Number(m.incremento_caixas||0),
-    realizado:realizadoPorCliente[m.cliente_id]||0,
+    isFabrica:m.is_fabrica!==false,realizado:realizadoPorCliente[m.cliente_id]||0,
   }));
   const config=(Array.isArray(configRows)&&configRows[0])||{meta_fabrica_minima:0,volume_fabrica_realizado:0,valor_premio_caixa:0};
   const participantes={};
@@ -2001,6 +2001,7 @@ function poteOuroRankingHTML(rows,config,participantes,podeEditar){
   const fmtR=v=>'R$ '+Number(v||0).toLocaleString('pt-BR');
   const metaFabrica=Number(config.meta_fabrica_minima||0);
   const volFabrica=Number(config.volume_fabrica_realizado||0);
+  const volFabricaAuto=rows.filter(r=>r.isFabrica).reduce((s,r)=>s+r.realizado,0);
   const gatilhoOk=metaFabrica>0&&volFabrica>=metaFabrica;
   const porCoord={};
   rows.forEach(r=>{(porCoord[r.coordenador]=porCoord[r.coordenador]||{meta:0,real:0}).meta+=r.meta,porCoord[r.coordenador].real+=r.realizado;});
@@ -2039,11 +2040,12 @@ function poteOuroRankingHTML(rows,config,participantes,podeEditar){
       <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Meta mínima da fábrica (cx)</label>
         <input type="number" min="0" value="${metaFabrica}" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-weight:700" onchange="poteOuroSalvarConfig('meta_fabrica_minima',this.value,this)"></div>
       <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Volume realizado pela fábrica (cx)</label>
-        <input type="number" min="0" value="${volFabrica}" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-weight:700" onchange="poteOuroSalvarConfig('volume_fabrica_realizado',this.value,this)"></div>
+        <input type="number" min="0" value="${volFabrica}" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-weight:700" onchange="poteOuroSalvarConfig('volume_fabrica_realizado',this.value,this)">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Referência automática (pedidos lançados): <strong>${fmt(volFabricaAuto)} cx</strong> · <a href="javascript:void(0)" onclick="poteOuroSalvarConfig('volume_fabrica_realizado','${volFabricaAuto}')" style="color:var(--purple)">usar este valor</a></div></div>
       <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Prêmio por caixa de incremento (R$)</label>
         <input type="number" min="0" value="${Number(config.valor_premio_caixa||0)}" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-weight:700" onchange="poteOuroSalvarConfig('valor_premio_caixa',this.value,this)"></div>
     </div>`
-    :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Meta mínima ${fmt(metaFabrica)} cx · Realizado ${fmt(volFabrica)} cx (lançado manualmente no fechamento)</div>`;
+    :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Meta mínima ${fmt(metaFabrica)} cx · Realizado ${fmt(volFabrica)} cx (lançado no fechamento · referência automática hoje: ${fmt(volFabricaAuto)} cx)</div>`;
   return `<div class="panel" style="margin-bottom:18px">
     <div class="panel-title-row"><div class="panel-title">Premiação dos representantes</div><div class="panel-note">${gatilhoOk?'Gatilho da fábrica liberado':'Campanha bloqueada — gatilho da fábrica não atingido'}</div></div>
     ${configHTML}

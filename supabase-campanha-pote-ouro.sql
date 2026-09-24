@@ -41,3 +41,8 @@ create table if not exists campanha_participantes (
   unique (campanha, coordenador)
 );
 alter table campanha_participantes enable row level security;
+
+alter table campanha_metas add column if not exists is_fabrica boolean not null default true;
+-- Marca os 39 clientes do bloco "Clientes da fábrica" da planilha (os outros 17 são
+-- sub-clientes de distribuidor). Usado pra calcular a referência automática do volume
+-- da fábrica (soma do Realizado desses 39), exibida ao lado do campo manual de fechamento.
