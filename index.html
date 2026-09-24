@@ -1935,11 +1935,28 @@ async function irPoteOuro(){
   await carregarPoteOuro();
 }
 
+// Prêmios de ranking fixos (posição 1/2/3) e vales fixos da equipe — espelham a aba
+// "Premiação Representantes" da planilha. Não vêm do banco por serem descrições de
+// prêmio físico (PS5, TV, Airfryer), não só valor.
+const POTE_OURO_RANKING_PREMIOS=[
+  {pos:1,label:'PS5 Slim',valor:4900},
+  {pos:2,label:'TV 60" Philco',valor:3400},
+  {pos:3,label:'Airfryer Electrolux',valor:900},
+];
+const POTE_OURO_VALES_FIXOS=[
+  {cargo:'Gerente de Vendas',nome:'Vagner',valor:1500},
+  {cargo:'Analista',nome:'Leandro',valor:1500},
+  {cargo:'Financeiro',nome:'Manu',valor:1500},
+];
+
 async function carregarPoteOuro(){
   g('pote-ouro-content').innerHTML='<div class="loading">Carregando...</div>';
-  const [metas,vendas]=await Promise.all([
+  const podeEditar=isAdmin||user==='vagner';
+  const [metas,vendas,configRows,participantesRows]=await Promise.all([
     sb(`/rest/v1/campanha_metas?campanha=eq.${POTE_OURO_CAMPANHA}&select=*,clientes(nome,uf)`,{ret:true}),
     carregarVendasMes(POTE_OURO_MES,POTE_OURO_ANO),
+    sb(`/rest/v1/campanha_config?campanha=eq.${POTE_OURO_CAMPANHA}`,{ret:true}),
+    sb(`/rest/v1/campanha_participantes?campanha=eq.${POTE_OURO_CAMPANHA}`,{ret:true}),
   ]);
   const realizadoPorCliente={};
   vendas.forEach(p=>{
@@ -1948,10 +1965,13 @@ async function carregarPoteOuro(){
   });
   const rows=(Array.isArray(metas)?metas:[]).map(m=>({
     id:m.id,clienteId:m.cliente_id,nome:m.clientes?.nome||'(cliente removido)',uf:m.clientes?.uf||'',
-    coordenador:m.coordenador,meta:Number(m.meta_caixas||0),
+    coordenador:m.coordenador,meta:Number(m.meta_caixas||0),incremento:Number(m.incremento_caixas||0),
     realizado:realizadoPorCliente[m.cliente_id]||0,
   }));
-  renderPoteOuroContent(rows);
+  const config=(Array.isArray(configRows)&&configRows[0])||{meta_fabrica_minima:0,volume_fabrica_realizado:0,valor_premio_caixa:0};
+  const participantes={};
+  (Array.isArray(participantesRows)?participantesRows:[]).forEach(p=>{participantes[p.coordenador]=p;});
+  renderPoteOuroContent(rows,config,participantes,podeEditar);
 }
 
 async function poteOuroSalvarMeta(id,valor,input){
@@ -1962,13 +1982,85 @@ async function poteOuroSalvarMeta(id,valor,input){
   else toast('Erro ao salvar meta','error');
 }
 
-function renderPoteOuroContent(rows){
-  const podeEditar=isAdmin||user==='vagner';
+async function poteOuroSalvarConfig(campo,valor,input){
+  const num=Number(String(valor).replace(',','.'));
+  if(isNaN(num)||num<0){toast('Valor inválido','error');if(input)input.value=input.defaultValue;return;}
+  const r=await sb(`/rest/v1/campanha_config?campanha=eq.${POTE_OURO_CAMPANHA}`,{method:'PATCH',body:JSON.stringify({[campo]:num,updated_at:new Date().toISOString()})});
+  if(r.ok){toast('Atualizado','success');await carregarPoteOuro();}
+  else toast('Erro ao salvar','error');
+}
+
+async function poteOuroSalvarMediacao(coordenador,checked){
+  const r=await sb(`/rest/v1/campanha_participantes?campanha=eq.${POTE_OURO_CAMPANHA}&coordenador=eq.${encodeURIComponent(coordenador)}`,{method:'PATCH',body:JSON.stringify({mediacao_vencida:checked,updated_at:new Date().toISOString()})});
+  if(r.ok){toast('Atualizado','success');await carregarPoteOuro();}
+  else toast('Erro ao salvar','error');
+}
+
+function poteOuroRankingHTML(rows,config,participantes,podeEditar){
   const fmt=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
+  const fmtR=v=>'R$ '+Number(v||0).toLocaleString('pt-BR');
+  const metaFabrica=Number(config.meta_fabrica_minima||0);
+  const volFabrica=Number(config.volume_fabrica_realizado||0);
+  const gatilhoOk=metaFabrica>0&&volFabrica>=metaFabrica;
+  const porCoord={};
+  rows.forEach(r=>{(porCoord[r.coordenador]=porCoord[r.coordenador]||{meta:0,real:0}).meta+=r.meta,porCoord[r.coordenador].real+=r.realizado;});
+  const reps=Object.keys(porCoord).map(coord=>{
+    const meta=porCoord[coord].meta,real=porCoord[coord].real;
+    const pct=meta>0?real/meta:0;
+    const mediacaoVencida=!!participantes[coord]?.mediacao_vencida;
+    const elegivel=gatilhoOk&&!mediacaoVencida;
+    return{coord,meta,real,pct,mediacaoVencida,elegivel,nota:pct+real*0.0000001};
+  }).sort((a,b)=>b.nota-a.nota);
+  let posicao=0;
+  const linhasHTML=reps.map(r=>{
+    let premioLabel='—',premioValor=0;
+    if(r.elegivel){
+      posicao++;
+      const p=POTE_OURO_RANKING_PREMIOS.find(x=>x.pos===posicao);
+      if(p){premioLabel=p.label;premioValor=p.valor;}
+    }
+    const mediacaoCell=podeEditar
+      ?`<label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" ${r.mediacaoVencida?'checked':''} onchange="poteOuroSalvarMediacao('${r.coord}',this.checked)"> Vencida</label>`
+      :(r.mediacaoVencida?'Sim':'Não');
+    return `<tr>
+      <td>${r.elegivel?posicao:'–'}</td>
+      <td>${r.coord}</td>
+      <td style="text-align:right">${fmt(r.meta)}</td>
+      <td style="text-align:right">${fmt(r.real)}</td>
+      <td style="text-align:right;font-weight:700;color:${corPct(Math.round(r.pct*100))}">${Math.round(r.pct*100)}%</td>
+      <td>${mediacaoCell}</td>
+      <td>${r.elegivel?'Sim':'Não'}</td>
+      <td>${premioLabel}</td>
+      <td style="text-align:right">${premioValor>0?fmtR(premioValor):'—'}</td>
+    </tr>`;
+  }).join('');
+  const valesHTML=POTE_OURO_VALES_FIXOS.map(v=>`<div class="vd-prod-row"><span class="vd-prod-name">${v.cargo} — ${v.nome}</span><span class="vd-prod-val" style="font-weight:700">${gatilhoOk?fmtR(v.valor):'Bloqueado'}</span></div>`).join('');
+  const configHTML=podeEditar?`<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px">
+      <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Meta mínima da fábrica (cx)</label>
+        <input type="number" min="0" value="${metaFabrica}" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-weight:700" onchange="poteOuroSalvarConfig('meta_fabrica_minima',this.value,this)"></div>
+      <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Volume realizado pela fábrica (cx)</label>
+        <input type="number" min="0" value="${volFabrica}" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-weight:700" onchange="poteOuroSalvarConfig('volume_fabrica_realizado',this.value,this)"></div>
+      <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px">Prêmio por caixa de incremento (R$)</label>
+        <input type="number" min="0" value="${Number(config.valor_premio_caixa||0)}" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-weight:700" onchange="poteOuroSalvarConfig('valor_premio_caixa',this.value,this)"></div>
+    </div>`
+    :`<div style="font-size:12px;color:var(--muted);margin-top:6px">Meta mínima ${fmt(metaFabrica)} cx · Realizado ${fmt(volFabrica)} cx (lançado manualmente no fechamento)</div>`;
+  return `<div class="panel" style="margin-bottom:18px">
+    <div class="panel-title-row"><div class="panel-title">Premiação dos representantes</div><div class="panel-note">${gatilhoOk?'Gatilho da fábrica liberado':'Campanha bloqueada — gatilho da fábrica não atingido'}</div></div>
+    ${configHTML}
+    <div class="table-scroll" style="margin-top:14px"><table class="data-table"><thead><tr><th>#</th><th>Representante</th><th style="text-align:right">Meta</th><th style="text-align:right">Realizado</th><th style="text-align:right">%</th><th>Mediação</th><th>Elegível</th><th>Prêmio</th><th style="text-align:right">Valor</th></tr></thead><tbody>${linhasHTML}</tbody></table></div>
+    <div class="section-sub" style="margin-top:14px;margin-bottom:6px">Vales fixos da equipe (liberados junto com o gatilho da fábrica)</div>
+    ${valesHTML}
+  </div>`;
+}
+
+function renderPoteOuroContent(rows,config,participantes,podeEditar){
+  const fmt=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
+  const fmtR=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:0});
   if(!rows.length){
     g('pote-ouro-content').innerHTML='<div class="empty">Nenhuma meta da campanha encontrada para o seu perfil.</div>';
     return;
   }
+  const valorPremioCx=Number(config.valor_premio_caixa||0);
   const porCoord={};
   rows.forEach(r=>{(porCoord[r.coordenador]=porCoord[r.coordenador]||[]).push(r);});
   const coords=Object.keys(porCoord).sort();
@@ -1980,6 +2072,8 @@ function renderPoteOuroContent(rows){
       metaCoord+=r.meta;realCoord+=r.realizado;
       const pct=r.meta>0?Math.round(r.realizado/r.meta*100):(r.realizado>0?100:0);
       const falta=Math.max(0,r.meta-r.realizado);
+      const premioPotencial=r.incremento*valorPremioCx;
+      const premioConquistado=r.realizado>=r.meta&&r.meta>0?premioPotencial:0;
       const metaCell=podeEditar
         ?`<input type="number" min="0" step="0.1" value="${r.meta}" style="width:74px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-weight:700;text-align:right" onchange="poteOuroSalvarMeta('${r.id}',this.value,this)">`
         :`<strong>${fmt(r.meta)}</strong>`;
@@ -1989,13 +2083,15 @@ function renderPoteOuroContent(rows){
         <td style="text-align:right">${fmt(r.realizado)}</td>
         <td style="text-align:right;color:${falta<=0?'var(--green)':'var(--muted)'}">${falta<=0?'Batida':fmt(falta)}</td>
         <td style="text-align:right;font-weight:700;color:${corPct(pct)}">${pct}%</td>
+        <td style="text-align:right;color:var(--muted)">${fmtR(premioPotencial)}</td>
+        <td style="text-align:right;font-weight:700;color:${premioConquistado>0?'var(--green)':'var(--muted)'}">${premioConquistado>0?fmtR(premioConquistado):'—'}</td>
       </tr>`;
     }).join('');
     totalMeta+=metaCoord;totalReal+=realCoord;
     const pctCoord=metaCoord>0?Math.round(realCoord/metaCoord*100):0;
     return `<div class="panel" style="margin-bottom:18px">
       <div class="panel-title-row"><div class="panel-title">${coord}</div><div class="panel-note">${fmt(realCoord)} / ${fmt(metaCoord)} cx · ${pctCoord}%</div></div>
-      <div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th style="text-align:right">Meta</th><th style="text-align:right">Realizado</th><th style="text-align:right">Falta</th><th style="text-align:right">%</th></tr></thead><tbody>${linhasHTML}</tbody></table></div>
+      <div class="table-scroll"><table class="data-table"><thead><tr><th>Cliente</th><th style="text-align:right">Meta</th><th style="text-align:right">Realizado</th><th style="text-align:right">Falta</th><th style="text-align:right">%</th><th style="text-align:right">Prêmio potencial</th><th style="text-align:right">Prêmio conquistado</th></tr></thead><tbody>${linhasHTML}</tbody></table></div>
     </div>`;
   }).join('');
   const pctTotal=totalMeta>0?Math.round(totalReal/totalMeta*100):0;
@@ -2004,7 +2100,8 @@ function renderPoteOuroContent(rows){
     <div style="font-size:26px;font-weight:800">${fmt(totalReal)} <span style="font-size:15px;font-weight:600;opacity:.85">/ ${fmt(totalMeta)} cx</span></div>
     <div style="font-size:13px;opacity:.9;margin-top:2px">${pctTotal}% da meta batida</div>
   </div>`;
-  g('pote-ouro-content').innerHTML=resumoHTML+gruposHTML;
+  const rankingHTML=poteOuroRankingHTML(rows,config,participantes,podeEditar);
+  g('pote-ouro-content').innerHTML=resumoHTML+rankingHTML+gruposHTML;
 }
 
 // ── LOGIN ──

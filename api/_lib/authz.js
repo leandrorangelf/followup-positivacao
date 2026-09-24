@@ -103,6 +103,16 @@ const GENERIC_TABLES = {
     PATCH: (s) => isAdminLiteral(s) || isVagner(s),
     DELETE: (s) => isAdminLiteral(s) || isVagner(s),
   },
+  // Config e elegibilidade (gatilho da fábrica, mediação vencida) da campanha —
+  // dados globais da campanha, não por coordenador, então não entram em SCOPED_TABLES.
+  campanha_config: {
+    GET: () => true,
+    PATCH: (s) => isAdminLiteral(s) || isVagner(s),
+  },
+  campanha_participantes: {
+    GET: () => true,
+    PATCH: (s) => isAdminLiteral(s) || isVagner(s),
+  },
   pedidos_vendas: {
     GET: () => true,
   },
