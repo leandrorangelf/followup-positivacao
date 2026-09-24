@@ -5588,12 +5588,17 @@ function gestaoRender(){
   const vendasMes=vdPedidos.filter(p=>p.mes===mesAtual&&p.ano===anoAtual);
   const rows=tvResumoRows(vendasMes);
   const metaGeral=rows.reduce((s,r)=>s+r.meta,0);
-  const realizadoGeral=rows.reduce((s,r)=>s+r.realizado,0);
+  // tvResumoRows só soma os 4 coordenadores — vendas avulsas lançadas direto pela
+  // Diretoria (coordenador='Diretoria') ficam fora dela, então somamos à parte aqui,
+  // igual o Dashboard já faz em renderAdminDash (senão o total "Realizado" fica menor
+  // que o Dashboard mesmo período, mesmo mês).
+  const volumeDiretoria=vendasMes.filter(p=>p.coordenador===COORD_DIRETORIA).reduce((s,p)=>s+vdVolumePedidoDash(p),0);
+  const realizadoGeral=rows.reduce((s,r)=>s+r.realizado,0)+volumeDiretoria;
   const pctGeral=tvPct(realizadoGeral,metaGeral);
   const pctTier=pct=>pct>=100?'good':pct>=70?'warn':'bad';
   const metaHTML='<div class="gestao-section"><h3>Meta geral · '+MESES[mesAtual]+'</h3>'+
     '<div class="gestao-hero"><div class="gestao-hero-top">'+
-      '<div><div class="gestao-hero-label">Realizado</div><div class="gestao-hero-value">'+realizadoGeral+'<small>cx</small></div><div class="gestao-hero-sub">Meta: '+metaGeral+' cx</div></div>'+
+      '<div><div class="gestao-hero-label">Realizado</div><div class="gestao-hero-value">'+realizadoGeral+'<small>cx</small></div><div class="gestao-hero-sub">Meta: '+metaGeral+' cx'+(volumeDiretoria>0?' · inclui '+volumeDiretoria+' cx lançados direto pela Diretoria (fora dos 4 coordenadores abaixo)':'')+'</div></div>'+
       '<div class="gestao-hero-pct '+pctTier(pctGeral)+'">'+pctGeral+'%</div>'+
     '</div><div class="gestao-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div></div>'+
     '<table class="gestao-table"><thead><tr><th>Coordenador</th><th>Meta</th><th>Realizado</th><th>%</th><th>Progresso</th></tr></thead><tbody>'+
