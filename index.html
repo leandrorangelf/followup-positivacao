@@ -5598,7 +5598,7 @@ function gestaoRender(){
   const pctTier=pct=>pct>=100?'good':pct>=70?'warn':'bad';
   const metaHTML='<div class="gestao-section"><h3>Meta geral · '+MESES[mesAtual]+'</h3>'+
     '<div class="gestao-hero"><div class="gestao-hero-top">'+
-      '<div><div class="gestao-hero-label">Realizado</div><div class="gestao-hero-value">'+realizadoGeral+'<small>cx</small></div><div class="gestao-hero-sub">Meta: '+metaGeral+' cx'+(volumeDiretoria>0?' · inclui '+volumeDiretoria+' cx lançados direto pela Diretoria (fora dos 4 coordenadores abaixo)':'')+'</div></div>'+
+      '<div><div class="gestao-hero-label">Realizado</div><div class="gestao-hero-value">'+realizadoGeral+'<small>cx</small></div><div class="gestao-hero-sub">Meta: '+metaGeral+' cx</div></div>'+
       '<div class="gestao-hero-pct '+pctTier(pctGeral)+'">'+pctGeral+'%</div>'+
     '</div><div class="gestao-progress"><span style="width:'+Math.min(100,pctGeral)+'%"></span></div></div>'+
     '<table class="gestao-table"><thead><tr><th>Coordenador</th><th>Meta</th><th>Realizado</th><th>%</th><th>Progresso</th></tr></thead><tbody>'+
@@ -5609,7 +5609,9 @@ function gestaoRender(){
       return '<tr><td>'+vdEsc(r.coord)+'</td><td class="num">'+r.meta+' cx</td><td class="num">'+r.realizado+' cx</td>'+
         '<td class="num gestao-coord-pct '+pctTier(r.pct)+'">'+r.pct+'%</td>'+
         '<td><div class="gestao-bar-track"><span class="gestao-bar-fill" style="width:'+realPos+'%"></span><span class="gestao-bar-meta-mark" style="left:'+metaPos+'%"></span></div></td></tr>';
-    }).join('')+'</tbody></table></div>';
+    }).join('')+
+    (volumeDiretoria>0?'<tr><td>Diretoria <small style="color:var(--muted);font-weight:400">(vendas avulsas)</small></td><td class="num">—</td><td class="num">'+volumeDiretoria+' cx</td><td class="num">—</td><td></td></tr>':'')+
+    '</tbody></table></div>';
   const vendasHTML='<div class="gestao-section"><h3>Vendas do mês ('+vendasMes.length+')</h3><div class="vd-cards-grid">'+
     (vendasMes.length?vendasMes.map(p=>vdCardHTML(p)).join(''):'<div class="gestao-empty">Nenhuma venda no mês</div>')+'</div></div>';
   const aguardandoGnre=vdPedidos.filter(vdPedidoPrecisaGnre);
