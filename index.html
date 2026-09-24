@@ -2005,6 +2005,23 @@ function poteOuroRankingHTML(rows,config,participantes,podeEditar){
   const gatilhoOk=metaFabrica>0&&volFabrica>=metaFabrica;
   const porCoord={};
   rows.forEach(r=>{(porCoord[r.coordenador]=porCoord[r.coordenador]||{meta:0,real:0}).meta+=r.meta,porCoord[r.coordenador].real+=r.realizado;});
+  // Coordenador só recebe (via SCOPED_TABLES no backend) as próprias metas/vendas — então
+  // `porCoord` aqui só teria a própria linha, o que faria o ranking abaixo mostrar ele
+  // "sozinho em 1º lugar" de forma enganosa. Pra esse perfil, mostra só o desempenho
+  // próprio + o status do gatilho geral da fábrica (isso sim é igual pra todo mundo).
+  if(!podeEditar){
+    const meu=porCoord[coordAtual]||{meta:0,real:0};
+    const pctMeu=meu.meta>0?Math.round(meu.real/meu.meta*100):0;
+    return `<div class="panel" style="margin-bottom:18px">
+      <div class="panel-title-row"><div class="panel-title">Sua premiação na campanha</div><div class="panel-note">${gatilhoOk?'Gatilho da fábrica liberado':'Campanha bloqueada — gatilho da fábrica não atingido'}</div></div>
+      <div style="display:flex;gap:28px;flex-wrap:wrap;margin-top:12px">
+        <div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase">Sua meta</div><div style="font-size:22px;font-weight:800">${fmt(meu.meta)} cx</div></div>
+        <div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase">Seu realizado</div><div style="font-size:22px;font-weight:800">${fmt(meu.real)} cx</div></div>
+        <div><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase">% da sua meta</div><div style="font-size:22px;font-weight:800;color:${corPct(pctMeu)}">${pctMeu}%</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:14px">Volume geral da fábrica no mês: <strong>${fmt(volFabrica)} / ${fmt(metaFabrica)} cx</strong> — o ranking só libera prêmio pra quem atingir mais % da própria meta depois que esse número bater a mínima.</div>
+    </div>`;
+  }
   const reps=Object.keys(porCoord).map(coord=>{
     const meta=porCoord[coord].meta,real=porCoord[coord].real;
     const pct=meta>0?real/meta:0;
