@@ -1902,21 +1902,34 @@ function renderPremiacaoContent(rows,isGestor,volumeDiretoria){
 
   let equipeHTML='';
   if(isGestor){
-    const metaEquipe=COORD_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
-    const pctEquipe=metaEquipe>0?Math.round(totalVolume/metaEquipe*100):0;
-    const valorGestor=premValorGestor(pctEquipe);
+    const gc=premGestorCalc(rows,totalVolume);
+    const metaEquipe=gc.metaEquipe,pctEquipe=gc.pct;
     const barEquipeW=Math.min(100,pctEquipe);
-    const faltaEquipe=Math.max(0,metaEquipe-totalVolume);
-    const proxEquipeHTML=pctEquipe>=100
-      ?`<strong style="color:#86efac;display:inline-flex;align-items:center;gap:5px">${icon('check',13)} Meta batida — segue proporcional</strong>`
-      :`Faltam <strong>${faltaEquipe.toLocaleString('pt-BR')} cx</strong> para 100% → ${fmtR(PREM_VALOR_GESTOR_100)} cada`;
+    let proxEquipeHTML,detalheHTML='';
+    if(gc.novo){
+      proxEquipeHTML=gc.proxFaixa
+        ?`Faltam <strong>${gc.faltaProx.toLocaleString('pt-BR')} cx</strong> para ${gc.proxFaixa.pct}% → ${fmtR(gc.proxFaixa.valor)} no volume`
+        :`<strong style="color:#86efac;display:inline-flex;align-items:center;gap:5px">${icon('check',13)} Faixa máxima de volume atingida</strong>`;
+      const linha=(rot,ok,val,info)=>`<div style="display:flex;justify-content:space-between;gap:10px;margin-top:3px"><span>${ok?'✓':'○'} ${rot} <span style="color:#a5b4fc">(${info})</span></span><strong>${fmtR(val)}</strong></div>`;
+      detalheHTML=`<div style="font-size:12px;color:#c7d2fe;margin-top:10px;border-top:1px solid rgba(165,180,252,.25);padding-top:8px">
+        ${linha('Volume total',gc.valorVolume>0,gc.valorVolume,pctEquipe+'% da meta · máx R$ 5.000')}
+        ${linha('Top SKU ('+PREM_GESTOR_TOP_SKU+')',gc.bonusTopSku>0,gc.bonusTopSku,Math.round(gc.pctTop)+'% dos clientes · meta '+PREM_GESTOR_MIN_PCT_CLIENTES+'%')}
+        ${linha('Positivação total',gc.bonusPos>0,gc.bonusPos,gc.positivados+'/'+gc.base+' clientes · '+Math.round(gc.pctPos)+'% · meta '+PREM_GESTOR_MIN_PCT_CLIENTES+'%')}
+      </div>`;
+    }else{
+      const faltaEquipe=Math.max(0,metaEquipe-totalVolume);
+      proxEquipeHTML=pctEquipe>=100
+        ?`<strong style="color:#86efac;display:inline-flex;align-items:center;gap:5px">${icon('check',13)} Meta batida — segue proporcional</strong>`
+        :`Faltam <strong>${faltaEquipe.toLocaleString('pt-BR')} cx</strong> para 100% → ${fmtR(PREM_VALOR_GESTOR_100)} cada`;
+    }
     equipeHTML=`<div class="prem-equipe-card" style="margin-bottom:14px">
       <div class="prem-equipe-title" style="display:flex;align-items:center;gap:6px">${icon('trophy',16)} Leandro &amp; Vagner — equipe total · meta ${metaEquipe.toLocaleString('pt-BR')} cx</div>
       <div class="prem-equipe-row">
-        <div><div class="prem-equipe-valor">${fmtR(valorGestor)} <span style="font-size:14px;color:#a5b4fc">cada</span></div><div class="prem-equipe-sub">${pctEquipe}% · ${totalVolume.toLocaleString('pt-BR')} cx realizadas</div></div>
+        <div><div class="prem-equipe-valor">${fmtR(gc.valor)} <span style="font-size:14px;color:#a5b4fc">cada</span></div><div class="prem-equipe-sub">${pctEquipe}% · ${totalVolume.toLocaleString('pt-BR')} cx realizadas</div></div>
         <div class="prem-equipe-bar-wrap"><div class="prem-equipe-bar" style="width:${barEquipeW}%"></div></div>
         <div style="font-size:12px;color:#c7d2fe;text-align:right">${proxEquipeHTML}</div>
       </div>
+      ${detalheHTML}
     </div>`;
   }
 
@@ -3402,6 +3415,37 @@ function premValorCoord(pct){for(const f of PREM_FAIXAS)if(pct>=f.pct)return f.v
 // Metas, sem faixas/gatilhos — 90% da meta = 90% de PREM_VALOR_GESTOR_100, sem teto.
 const PREM_VALOR_GESTOR_100=PREM_FAIXAS.find(f=>f.pct===100).valor;
 function premValorGestor(pct){return Math.max(0,Math.round(pct/100*PREM_VALOR_GESTOR_100));}
+// Leandro/Vagner a partir de out/2026: volume escalonado (meta base 1.500 cx) + Top SKU + positivação total
+// (50% da base de clientes comprando). Máximo R$ 6.000. Meses anteriores seguem o proporcional acima.
+const PREM_GESTOR_FAIXAS=[{pct:130,valor:5000},{pct:120,valor:4750},{pct:110,valor:4500},{pct:100,valor:4000},{pct:95,valor:2500},{pct:90,valor:2000},{pct:85,valor:1500},{pct:80,valor:1000}];
+const PREM_GESTOR_META_BASE=1500,PREM_GESTOR_BONUS_TOPSKU=500,PREM_GESTOR_BONUS_POSITIVACAO=500,PREM_GESTOR_MIN_PCT_CLIENTES=50;
+// TODO confirmar: SKU que vale como "TOP SKU" da campanha (chave de VD_SKUS).
+const PREM_GESTOR_TOP_SKU='GR';
+const premGestorNovoRegime=()=>anoAtual>2026||(anoAtual===2026&&mesAtual>=9);
+function premGestorCalc(rows,volumeTotal){
+  const novo=premGestorNovoRegime();
+  const metaEquipe=novo?PREM_GESTOR_META_BASE:COORD_KEYS.reduce((s,k)=>s+(METAS[k][mesAtual]||0),0);
+  const pctReal=metaEquipe>0?(volumeTotal||0)/metaEquipe*100:0;
+  const pct=Math.round(pctReal);
+  if(!novo)return{novo,metaEquipe,pct,valor:premValorGestor(pct),valorVolume:premValorGestor(pct),bonusTopSku:0,bonusPos:0};
+  const faixa=PREM_GESTOR_FAIXAS.find(f=>pctReal>=f.pct);
+  const valorVolume=faixa?faixa.valor:0;
+  const sk=PREM_GESTOR_TOP_SKU.toLowerCase();
+  let base=0,positivados=0,comTopSku=0;
+  (rows||[]).forEach(r=>{
+    r.ativos.forEach(c=>{
+      base++;
+      if(totCliD(r.d,c.nome)>0)positivados++;
+      if(((r.d[c.nome]||{})[sk]||0)>0)comTopSku++;
+    });
+  });
+  const pctPos=base?comPedidoPct(positivados,base):0,pctTop=base?comPedidoPct(comTopSku,base):0;
+  const bonusPos=pctPos>=PREM_GESTOR_MIN_PCT_CLIENTES?PREM_GESTOR_BONUS_POSITIVACAO:0;
+  const bonusTopSku=pctTop>=PREM_GESTOR_MIN_PCT_CLIENTES?PREM_GESTOR_BONUS_TOPSKU:0;
+  const proxFaixa=PREM_GESTOR_FAIXAS.slice().reverse().find(f=>pctReal<f.pct);
+  return{novo,metaEquipe,pct,pctReal,valor:valorVolume+bonusPos+bonusTopSku,valorVolume,bonusPos,bonusTopSku,base,positivados,comTopSku,pctPos,pctTop,proxFaixa,faltaProx:proxFaixa?Math.ceil(proxFaixa.pct/100*metaEquipe-(volumeTotal||0)):0};
+}
+function comPedidoPct(n,base){return n/base*100;}
 function premFaixaAtiva(pct){for(const f of PREM_FAIXAS)if(pct>=f.pct)return f.pct;return null;}
 function premProxFaixa(pct,meta){
   for(let i=PREM_FAIXAS.length-1;i>=0;i--){
