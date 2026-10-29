@@ -1178,6 +1178,10 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       <option value="New Bluetex MG">New Bluetex MG</option>
       <option value="New Bluetex AM">New Bluetex AM</option>
       <option value="New Bluetex SC">New Bluetex SC</option>
+      <option value="New Bluetex CE">New Bluetex CE</option>
+      <option value="New Bluetex MA">New Bluetex MA</option>
+      <option value="New Bluetex SP">New Bluetex SP</option>
+      <option value="New Bluetex GO">New Bluetex GO</option>
       <option value="GB SP">GB SP</option>
       <option value="GB CE">GB CE</option>
       <option value="GB MA">GB MA</option>
@@ -1275,6 +1279,18 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       </button>
       <button class="orig-btn" id="orig-opt-New Bluetex SC" onclick="vdEscolherOrigem('New Bluetex SC')">
         <span class="ob-label">New Bluetex SC</span><span class="ob-sub">Santa Catarina</span>
+      </button>
+      <button class="orig-btn" id="orig-opt-New Bluetex CE" onclick="vdEscolherOrigem('New Bluetex CE')">
+        <span class="ob-label">New Bluetex CE</span><span class="ob-sub">Ceará</span>
+      </button>
+      <button class="orig-btn" id="orig-opt-New Bluetex MA" onclick="vdEscolherOrigem('New Bluetex MA')">
+        <span class="ob-label">New Bluetex MA</span><span class="ob-sub">Maranhão</span>
+      </button>
+      <button class="orig-btn" id="orig-opt-New Bluetex SP" onclick="vdEscolherOrigem('New Bluetex SP')">
+        <span class="ob-label">New Bluetex SP</span><span class="ob-sub">São Paulo</span>
+      </button>
+      <button class="orig-btn" id="orig-opt-New Bluetex GO" onclick="vdEscolherOrigem('New Bluetex GO')">
+        <span class="ob-label">New Bluetex GO</span><span class="ob-sub">Goiás</span>
       </button>
     </div>
     <div class="orig-grupo-label">GB</div>
@@ -4099,6 +4115,10 @@ const VD_ORIGENS=[
   {id:'new_mg',label:'New Bluetex MG',grupo:'new',ativa:true},
   {id:'new_am',label:'New Bluetex AM',grupo:'new',ativa:true},
   {id:'new_sc',label:'New Bluetex SC',grupo:'new',ativa:true},
+  {id:'new_ce',label:'New Bluetex CE',grupo:'new',ativa:true},
+  {id:'new_ma',label:'New Bluetex MA',grupo:'new',ativa:true},
+  {id:'new_sp',label:'New Bluetex SP',grupo:'new',ativa:true},
+  {id:'new_go',label:'New Bluetex GO',grupo:'new',ativa:true},
   {id:'gb_sp',label:'GB SP',grupo:'gb',ativa:true},
   {id:'gb_ce',label:'GB CE',grupo:'gb',ativa:true},
   {id:'gb_ma',label:'GB MA',grupo:'gb',ativa:true},
@@ -4150,6 +4170,10 @@ function defOrigemAbrir(pedidoId, origemAtual){
     {label:'New Bluetex MG',sub:'Minas Gerais'},
     {label:'New Bluetex AM',sub:'Amazonas'},
     {label:'New Bluetex SC',sub:'Santa Catarina'},
+    {label:'New Bluetex CE',sub:'Ceará'},
+    {label:'New Bluetex MA',sub:'Maranhão'},
+    {label:'New Bluetex SP',sub:'São Paulo'},
+    {label:'New Bluetex GO',sub:'Goiás'},
     {label:'GB SP',sub:'São Paulo'},
     {label:'GB CE',sub:'Ceará'},
     {label:'GB MA',sub:'Maranhão'},
