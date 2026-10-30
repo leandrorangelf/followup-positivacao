@@ -1210,6 +1210,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   </div>
   <div class="vd-section" style="padding-top:18px">
     <div class="vd-form-card">
+      <div class="vd-field" id="vf-resp-wrap" style="display:none"><label>Responsável (coordenador)</label><select id="vf-resp"></select></div>
       <div class="vd-field"><label>Cliente</label><select id="vf-cli" onchange="vdAplicarFicha()"></select></div>
       <div class="vd-field" style="margin-bottom:0"><label>Tipo Fiscal</label>
         <div class="vd-toggle-grp io">
@@ -1353,6 +1354,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     </div>
     <div class="vd-btnrow" style="margin:0 0 10px">
       <button class="vd-btn vd-btn-out" id="vd-det-origem" onclick="vdAbrirOrigemPedido()" style="flex:1">Definir origem</button>
+      <button class="vd-btn vd-btn-out" id="vd-det-resp" onclick="vdAbrirResponsavel()" style="display:none;flex:1">Trocar responsável</button>
       <button class="vd-btn vd-btn-out vd-complementar-btn" id="vd-det-complementar" onclick="vdComplementarPedidoAtual()" style="display:none;flex:1">↩ Complementar</button>
       <button class="vd-btn vd-btn-out" id="vd-det-reverter" onclick="vdReverterFaturamentoAtual()" style="display:none;flex:1;color:var(--amber)">↺ Reverter faturamento</button>
     </div>
@@ -1364,6 +1366,21 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 </div>
 
 <!-- MODAL COMENTARIO VAGNER -->
+<div class="modal-bg" id="modal-vd-resp">
+  <div class="modal">
+    <div class="modal-title" id="vd-resp-title">Trocar responsável</div>
+    <div class="modal-sub">Move o pedido (volume, positivação, premiação e dashboards) para outro coordenador. Itens e faturamento não mudam.</div>
+    <div class="vd-field">
+      <label>Novo responsável</label>
+      <select id="vd-resp-sel"></select>
+    </div>
+    <div class="vd-btnrow" style="margin:0">
+      <button class="vd-btn vd-btn-out" onclick="vdFecharResponsavel()">Cancelar</button>
+      <button class="vd-btn vd-btn-pri" id="vd-resp-save" onclick="vdSalvarResponsavel()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="modal-vd-coment">
   <div class="modal">
     <div class="modal-title" id="vd-coment-title">Comentario no pedido</div>
@@ -4307,6 +4324,7 @@ function vdGoNovo(){
   vdEditPedidoId=null;
   vdForm={tipo:'in',prazo:'avista',origem:'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   g('vfn-title').textContent='Novo Pedido';
+  g('vf-resp-wrap').style.display='none';
   g('vf-btn-save').textContent='Salvar Pedido';
   const bar=g('vfn-origem-bar');if(bar)bar.style.display='none';
   vdPopCliSel();
@@ -4431,8 +4449,11 @@ async function vdSalvarPedido(){
   const cli_id=g('vf-cli').value;
   if(!cli_id){toast('Escolha o cliente','error');return}
   const at=coordAtual===COORD_DIRETORIA?CLI_OWNER_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
-  const cli=at.find(c=>c.id===cli_id);
+  // Na edição, o cliente pode estar inativo ou na carteira de outro coordenador
+  // (ex.: pedido lançado no responsável errado) — aceita qualquer cliente cadastrado.
+  const cli=at.find(c=>c.id===cli_id)||(vdEditPedidoId?CLI_OWNER_KEYS.flatMap(c=>clientesDB[c]||[]).find(c=>c.id===cli_id):null);
   if(!cli){toast('Cliente inválido','error');return}
+  const respNovo=(vdEditPedidoId&&vdPodeEditar()&&g('vf-resp-wrap').style.display!=='none')?g('vf-resp').value:null;
   const itens=VD_SKUS.filter(s=>(vdForm.skus[s].q||0)>0&&(vdForm.skus[s].v||0)>0).map(s=>({
     sku:s,qty_caixas:vdForm.skus[s].q,valor_pacote:vdForm.skus[s].v,packs_por_caixa:VD_PACKS[s],
     subtotal:vdForm.skus[s].q*VD_PACKS[s]*vdForm.skus[s].v
@@ -4443,8 +4464,9 @@ async function vdSalvarPedido(){
   if(vdForm.prazo==='solicitar'&&!g('vf-prazo-dias').value){toast('Informe os dias do prazo solicitado','error');return}
   const original=vdEditPedidoId?vdPedidos.find(p=>p.id===vdEditPedidoId):null;
   const prazoAprovado=vdForm.prazo==='aprovado';
+  const coordPedido=respNovo||(original?original.coordenador:coordAtual);
   const ped={
-    coordenador:coordAtual,cliente_id:cli.id,cliente_nome:cli.nome,cliente_uf:cli.uf||null,
+    coordenador:coordPedido,cliente_id:cli.id,cliente_nome:cli.nome,cliente_uf:cli.uf||null,
     tipo:vdForm.tipo,
     prazo_tipo:prazoAprovado?original.prazo_tipo:(vdForm.prazo==='2835'?'parcelado':'avista'),
     parcela_1_dias:prazoAprovado?original.parcela_1_dias:(vdForm.prazo==='2835'?28:null),
@@ -4495,7 +4517,7 @@ async function vdSalvarPedido(){
     const totalCxLog=itens.reduce((s,i)=>s+i.qty_caixas,0);
     auditLog(acao,
       (acao==='criar'?'Novo pedido criado':'Pedido editado')+' · '+cliNome,
-      'Coordenador: '+coordAtual+' · SKUs: '+itens.map(i=>vdSkuLabel(i.sku)+' '+i.qty_caixas+'cx').join(', ')+' · '+totalCxLog+' cx',
+      'Coordenador: '+coordPedido+(original&&original.coordenador!==coordPedido?' (antes: '+original.coordenador+')':'')+' · SKUs: '+itens.map(i=>vdSkuLabel(i.sku)+' '+i.qty_caixas+'cx').join(', ')+' · '+totalCxLog+' cx',
       pedidoId
     );
     if(forecastOrigemAtual&&forecastConvertidoOk){
@@ -4588,6 +4610,7 @@ function vdAbrirDet(id){
   g('vd-det-editar').style.display=(vdPodeEditarProprio(p)&&(vdPodeEditar()||x.faturadoCx===0))?'block':'none';
   g('vd-det-comentar').style.display=(user==='vagner'||isFabiano())?'block':'none';
   g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
+  g('vd-det-resp').style.display=vdPodeEditar()?'block':'none';
   const origemBtn=g('vd-det-origem');
   if(origemBtn)origemBtn.style.display=(vdPodeEditar()&&!isFabiano()&&user!=='vagner'&&!isDiretoria)?'block':'none';
   const compBtn=g('vd-det-complementar');
@@ -4709,6 +4732,31 @@ function vdAbrirComentario(id){
   g('vd-coment-text').value=p[campo]||'';
   g('modal-vd-coment').classList.add('open');
   setTimeout(()=>g('vd-coment-text').focus(),50);
+}
+let vdRespPedidoId=null;
+function vdAbrirResponsavel(){
+  if(!vdDetAtual)return;
+  if(!vdPodeEditar()){toast('Acesso restrito','error');return}
+  const p=vdDetAtual;vdRespPedidoId=p.id;
+  g('vd-resp-title').textContent='Trocar responsável · '+p.cliente_nome+(p.cliente_uf?' / '+p.cliente_uf:'');
+  g('vd-resp-sel').innerHTML=CLI_OWNER_KEYS.map(n=>'<option value="'+vdEsc(n)+'"'+(n===p.coordenador?' selected':'')+'>'+vdEsc(n)+(n===p.coordenador?' (atual)':'')+'</option>').join('');
+  g('modal-vd-resp').classList.add('open');
+}
+function vdFecharResponsavel(){g('modal-vd-resp').classList.remove('open');vdRespPedidoId=null}
+async function vdSalvarResponsavel(){
+  const id=vdRespPedidoId;const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  const novo=g('vd-resp-sel').value;
+  if(novo===p.coordenador){vdFecharResponsavel();return}
+  const btn=g('vd-resp-save');btn.disabled=true;
+  try{
+    const resp=await fetch('/api/pedidos-vendas/responsavel',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,coordenador:novo})});
+    const j=await resp.json().catch(()=>({}));
+    if(!resp.ok||!j.ok){toast('Erro ao trocar responsável','error');return}
+    auditLog('editar','Responsável alterado · '+p.cliente_nome,'Coordenador: '+novo+' (antes: '+p.coordenador+') · '+MESES[p.mes]+'/'+p.ano+' · '+(p.total_caixas||0)+' cx',id);
+    toast('Pedido movido para '+novo,'ok');
+    vdFecharResponsavel();vdFecharDet();
+    await vdCarregar();
+  }finally{btn.disabled=false}
 }
 function vdFecharComentario(){g('modal-vd-coment').classList.remove('open');vdComentPedidoId=null}
 async function vdSalvarComentario(){
@@ -4972,6 +5020,12 @@ function vdEditarPedido(){
   vdForm={tipo:p.tipo,...vdPrazoParaForm(p),origem:p.origem||'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   (p.pedidos_vendas_itens||[]).forEach(i=>{vdForm.skus[i.sku]={q:i.qty_caixas,v:i.valor_pacote}});
   g('vfn-title').textContent='Editar Pedido';
+  // Admin/Vagner podem trocar o dono do pedido (ex.: lançado no coordenador errado).
+  const respWrap=g('vf-resp-wrap');
+  if(vdPodeEditar()){
+    g('vf-resp').innerHTML=CLI_OWNER_KEYS.map(n=>'<option value="'+vdEsc(n)+'"'+(n===p.coordenador?' selected':'')+'>'+vdEsc(n)+'</option>').join('');
+    respWrap.style.display='block';
+  }else respWrap.style.display='none';
   // mostra barra de origem se houver
   const bar=g('vfn-origem-bar');const lbl=g('vfn-origem-label');
   if(bar&&lbl&&p.origem){bar.style.display='flex';lbl.innerHTML=vdOrigemBadgeHTML(p.origem);const gp=vdOrigemGrupo(p.origem);bar.style.background=gp==='fabrica'?'#F0FDF4':gp==='new'?'var(--purple-soft)':'#EDE9FE';bar.style.borderColor=gp==='fabrica'?'#86EFAC':gp==='new'?'#BFDBFE':'#C4B5FD';}

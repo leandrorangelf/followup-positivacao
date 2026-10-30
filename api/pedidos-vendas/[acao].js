@@ -6,6 +6,7 @@
 const { getSession } = require('../_lib/auth');
 const { sbJson } = require('../_lib/supabase');
 const { notificar } = require('../_lib/push');
+const { COORD_KEYS } = require('../_lib/senhas');
 const {
   isAdminLiteral,
   isFabiano,
@@ -26,6 +27,10 @@ const JSON_HEADERS = { 'Content-Type': 'application/json' };
 const MINIMAL = { ...JSON_HEADERS, Prefer: 'return=minimal' };
 const REPRESENTATION = { ...JSON_HEADERS, Prefer: 'return=representation' };
 const UPSERT_MINIMAL = { ...JSON_HEADERS, Prefer: 'resolution=merge-duplicates,return=minimal' };
+
+// Donos válidos de um pedido: os 4 coordenadores + o pseudo-coordenador 'Diretoria'
+// (vendas avulsas). Espelha CLI_OWNER_KEYS do client.
+const RESPONSAVEIS_VALIDOS = new Set([...COORD_KEYS, 'Diretoria']);
 
 const GNRE_MANAGE_FIELDS = new Set(['gnre_status', 'gnre_enviado_at', 'gnre_valor', 'gnre_retornado_at', 'gnre_pago_at']);
 
@@ -48,6 +53,7 @@ module.exports = async function handler(req, res) {
     case 'status': return status(session, body, res);
     case 'rename-cliente': return renameCliente(session, body, res);
     case 'prazo-decidir': return prazoDecidir(session, body, res);
+    case 'responsavel': return responsavel(session, body, res);
     default: return res.status(404).json({ error: 'unknown_acao' });
   }
 };
@@ -60,7 +66,11 @@ async function salvar(session, body, res) {
     // Editar pedido existente — admin sempre; coordenador só o próprio pedido
     // e só enquanto nada foi faturado (checagem contra o banco, não confia no client).
     if (!(await podeEditarPedidoVendaProprio(session, id))) return res.status(403).json({ error: 'forbidden' });
-    let pedPatch = isAdminLiteral(session) ? ped : { ...ped, editado_por: session.user, editado_em: new Date().toISOString() };
+    let pedPatch = isAdminLiteral(session) ? { ...ped } : { ...ped, editado_por: session.user, editado_em: new Date().toISOString() };
+    // Trocar o responsável (coordenador) do pedido: só admin/Vagner, e só para um dono válido.
+    // Coordenador editando o próprio pedido nunca consegue transferi-lo pra outro nome.
+    if (!podeEditarPedidoVenda(session)) pedPatch.coordenador = session.user;
+    else if ('coordenador' in pedPatch && !RESPONSAVEIS_VALIDOS.has(pedPatch.coordenador)) return res.status(400).json({ error: 'responsavel_invalido' });
     if (pedPatch.prazo_status === 'pendente') {
       pedPatch = { ...pedPatch, prazo_solicitado_por: session.user, prazo_solicitado_em: new Date().toISOString() };
     }
@@ -72,17 +82,24 @@ async function salvar(session, body, res) {
         `${ped.cliente_nome || 'Pedido'} · ${pedPatch.prazo_solicitado_dias || '?'} dias`, '/vendas').catch(() => {});
     }
 
+    // Os itens são apagados e reinseridos — sem isso, editar um pedido já (parcialmente)
+    // faturado zeraria o qty_faturada. Lê do banco (não confia no client) e reaplica por SKU.
+    const fatR = await sbJson(`/rest/v1/pedidos_vendas_itens?pedido_id=eq.${encodeURIComponent(id)}&select=sku,qty_faturada`, { method: 'GET', headers: JSON_HEADERS });
+    const fatPorSku = {};
+    (fatR.ok && Array.isArray(fatR.json) ? fatR.json : []).forEach((i) => { fatPorSku[i.sku] = (fatPorSku[i.sku] || 0) + Number(i.qty_faturada || 0); });
+
     const del = await sbJson(`/rest/v1/pedidos_vendas_itens?pedido_id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: JSON_HEADERS });
     if (!del.ok) {
       if (pedOriginal) await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedOriginal) });
       return res.status(502).json({ error: 'delete_itens_failed' });
     }
 
-    const itensIns = itens.map((i) => ({ ...i, pedido_id: id }));
+    const itensIns = itens.map((i) => ({ ...i, pedido_id: id, qty_faturada: Math.min(fatPorSku[i.sku] || 0, Number(i.qty_caixas || 0)) }));
     const insR = await sbJson('/rest/v1/pedidos_vendas_itens', { method: 'POST', headers: MINIMAL, body: JSON.stringify(itensIns) });
     if (!insR.ok) {
       if (Array.isArray(itensOriginais) && itensOriginais.length) {
-        await sbJson('/rest/v1/pedidos_vendas_itens', { method: 'POST', headers: MINIMAL, body: JSON.stringify(itensOriginais) });
+        const rollback = itensOriginais.map((i) => ({ ...i, pedido_id: id, qty_faturada: fatPorSku[i.sku] || 0 }));
+        await sbJson('/rest/v1/pedidos_vendas_itens', { method: 'POST', headers: MINIMAL, body: JSON.stringify(rollback) });
       }
       if (pedOriginal) await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedOriginal) });
       return res.status(502).json({ error: 'insert_itens_failed' });
@@ -316,4 +333,24 @@ async function renameCliente(session, body, res) {
     return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
   }
   return res.status(400).json({ error: 'missing_fields' });
+}
+
+// Troca só o responsável (coordenador) do pedido, sem mexer em itens/faturamento — serve
+// inclusive para pedido já faturado (o "salvar" reinsere os itens e perde o histórico de
+// reversão). Como volume, positivação e premiação são somados por pedidos_vendas.coordenador,
+// a troca já move o pedido de um coordenador pro outro em todas as telas totalizadoras.
+async function responsavel(session, body, res) {
+  if (!podeEditarPedidoVenda(session)) return res.status(403).json({ error: 'forbidden' });
+  const { id, coordenador } = body;
+  if (!id || !/^[0-9a-f-]{36}$/i.test(String(id))) return res.status(400).json({ error: 'invalid_id' });
+  if (!RESPONSAVEIS_VALIDOS.has(coordenador)) return res.status(400).json({ error: 'responsavel_invalido' });
+  const atualR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=coordenador`, { method: 'GET', headers: JSON_HEADERS });
+  if (!atualR.ok || !Array.isArray(atualR.json) || !atualR.json[0]) return res.status(404).json({ error: 'not_found' });
+  const anterior = atualR.json[0].coordenador;
+  const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH', headers: MINIMAL,
+    body: JSON.stringify(isAdminLiteral(session) ? { coordenador } : { coordenador, editado_por: session.user, editado_em: new Date().toISOString() }),
+  });
+  if (!r.ok) return res.status(502).json({ error: 'patch_failed' });
+  return res.status(200).json({ ok: true, anterior });
 }
