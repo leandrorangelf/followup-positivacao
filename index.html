@@ -4560,6 +4560,10 @@ function vdAbrirDet(id){
       _gnreBtns.push('<button class="vd-card-action" onclick="event.stopPropagation();vdMarcarGnreIsenta(\''+p.id+'\')">Isentar GNRE</button>');
     }
   }
+  if(vdPodeAnexarGnre()&&(_gnreSt!=='paga'||vdPodeGerenciarGnre())){
+    if(p.gnre_arquivo_url)_gnreBtns.push('<button class="vd-card-action" style="color:var(--red)" onclick="event.stopPropagation();vdRemoverAnexoGnre(\''+p.id+'\',\'gnre\')">✕ Remover guia GNRE</button>');
+    if(p.gnre_comprovante_url)_gnreBtns.push('<button class="vd-card-action" style="color:var(--red)" onclick="event.stopPropagation();vdRemoverAnexoGnre(\''+p.id+'\',\'comprovante\')">✕ Remover comprovante</button>');
+  }
   const _prazoBtns=[];
   if(vdPodeDecidirPrazo()&&p.prazo_status==='pendente'){
     _prazoBtns.push('<button class="vd-card-action invoice" onclick="event.stopPropagation();vdAprovarPrazo(\''+p.id+'\')">✅ Aprovar prazo ('+vdEsc(String(p.prazo_solicitado_dias||'?'))+'d)</button>');
@@ -4930,6 +4934,19 @@ async function vdAtualizarGnre(id,payload,msg){
   if(!respGnre.ok||!jGnre.ok){toast('Erro ao atualizar GNRE. Rode o SQL de GNRE no Supabase.','error');return}
   auditLog('editar','GNRE atualizada · '+p.cliente_nome,'Status: '+(payload.gnre_status||vdGnreStatus(p))+(payload.gnre_valor!=null?' · Valor: '+vdFmt(payload.gnre_valor):''),id);
   toast(msg||'GNRE atualizada','ok');
+  await vdCarregar();
+}
+async function vdRemoverAnexoGnre(id,tipo){
+  const p=vdPedidos.find(x=>x.id===id);if(!p)return;
+  const nome=tipo==='gnre'?'a guia GNRE':'o comprovante';
+  const arq=tipo==='gnre'?p.gnre_arquivo_nome:p.gnre_comprovante_nome;
+  if(!confirm('Remover '+nome+(arq?' ('+arq+')':'')+' de '+p.cliente_nome+'? O arquivo será apagado e você poderá anexar o correto em seguida.'))return;
+  const resp=await fetch('/api/pedidos-vendas/gnre-remover',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo})});
+  const j=await resp.json().catch(()=>({}));
+  if(!resp.ok||!j.ok){toast(j.error==='gnre_ja_paga'?'GNRE já paga — só Fabiano/admin podem remover':'Erro ao remover anexo','error');return}
+  auditLog('editar','Anexo removido · '+p.cliente_nome,(tipo==='gnre'?'Guia GNRE':'Comprovante')+' removido'+(arq?' · '+arq:'')+' · Coordenador: '+p.coordenador,id);
+  toast('Anexo removido','ok');
+  vdFecharDet();
   await vdCarregar();
 }
 async function vdMarcarGnreEnviada(id){

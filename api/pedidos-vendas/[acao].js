@@ -4,7 +4,7 @@
 // sequência de chamadas que o client já fazia direto no Supabase, só que agora
 // autenticada e autorizada no servidor, com a service_role key.
 const { getSession } = require('../_lib/auth');
-const { sbJson } = require('../_lib/supabase');
+const { sbJson, sbFetch } = require('../_lib/supabase');
 const { notificar } = require('../_lib/push');
 const { COORD_KEYS } = require('../_lib/senhas');
 const {
@@ -50,6 +50,7 @@ module.exports = async function handler(req, res) {
     case 'origem': return origem(session, body, res);
     case 'gnre-attach': return gnreAttach(session, body, res);
     case 'gnre-manage': return gnreManage(session, body, res);
+    case 'gnre-remover': return gnreRemover(session, body, res);
     case 'status': return status(session, body, res);
     case 'rename-cliente': return renameCliente(session, body, res);
     case 'prazo-decidir': return prazoDecidir(session, body, res);
@@ -264,6 +265,42 @@ async function gnreAttach(session, body, res) {
   }
   const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(payload) });
   return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
+}
+
+// Remove um anexo enviado por engano (guia GNRE ou comprovante). Mesma regra de quem
+// anexa (inclusive a checagem de dono contra IDOR); depois que a GNRE foi dada como paga,
+// só quem gerencia GNRE (admin/Fabiano) pode remover.
+async function gnreRemover(session, body, res) {
+  if (!podeAnexarGnre(session)) return res.status(403).json({ error: 'forbidden' });
+  const { id, tipo } = body;
+  if (!id || !['gnre', 'comprovante'].includes(tipo)) return res.status(400).json({ error: 'missing_fields' });
+  if (!(await pedidoPertenceASessao(session, id))) return res.status(403).json({ error: 'forbidden' });
+  const atualR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=gnre_status,gnre_arquivo_url,gnre_comprovante_url`, { method: 'GET', headers: JSON_HEADERS });
+  const atual = atualR.ok && Array.isArray(atualR.json) ? atualR.json[0] : null;
+  if (!atual) return res.status(404).json({ error: 'not_found' });
+  if (atual.gnre_status === 'paga' && !podeGerenciarGnre(session)) return res.status(403).json({ error: 'gnre_ja_paga' });
+
+  let payload, path;
+  if (tipo === 'gnre') {
+    path = atual.gnre_arquivo_url;
+    payload = { gnre_arquivo_url: null, gnre_arquivo_nome: null, gnre_arquivo_at: null, gnre_arquivo_por: null };
+    // gnre-attach marca 'enviada' ao anexar a guia — sem guia, volta pra pendente.
+    if (atual.gnre_status === 'enviada') payload.gnre_status = 'pendente';
+  } else {
+    path = atual.gnre_comprovante_url;
+    payload = {
+      gnre_comprovante_url: null, gnre_comprovante_nome: null, gnre_comprovante_at: null,
+      gnre_comprovante_por: null, gnre_pagamento_informado_at: null, gnre_pagamento_informado_por: null,
+    };
+  }
+  const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(payload) });
+  if (!r.ok) return res.status(502).json({ error: 'patch_failed' });
+  // Apaga o arquivo do bucket (best effort) — só dentro da pasta do próprio pedido.
+  if (path && String(path).startsWith(`pedidos/${id}/`)) {
+    const encodedPath = String(path).split('/').map(encodeURIComponent).join('/');
+    await sbFetch(`/storage/v1/object/gnre-comprovantes/${encodedPath}`, { method: 'DELETE' }).catch(() => {});
+  }
+  return res.status(200).json({ ok: true });
 }
 
 async function gnreManage(session, body, res) {
