@@ -551,28 +551,6 @@ body{background:var(--canvas);color:var(--ink)}
 .dot-in{background:var(--green)}
 .dot-off{background:var(--amber)}
 .vd-parc{background:var(--accent-light);border:1px solid #BFDBFE;border-radius:var(--r-sm);padding:11px;margin-top:8px}
-#s-vfn .vf-wiz-only{display:none}
-#s-vfn.vf-wiz .vf-wiz-only{display:block}
-#s-vfn.vf-wiz .vd-btnrow.vf-wiz-only,#s-vfn.vf-wiz .vf-stepper{display:flex}
-#s-vfn.vf-wiz .vf-form-only{display:none!important}
-.vf-stepper{gap:6px;max-width:760px;margin:0 auto 14px}
-.vf-step-pill{flex:1;border:none;background:var(--gray-bg);color:var(--muted);border-radius:var(--r-pill);padding:8px 6px;font:inherit;font-size:12px;font-weight:700;cursor:default;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vf-step-pill.done{background:var(--accent-light);color:var(--accent);cursor:pointer}
-.vf-step-pill.cur{background:var(--purple);color:#fff}
-.vf-wiz-ctx{max-width:760px;margin:0 auto 12px;font-size:12px;color:var(--muted)}
-.vf-wiz-ctx strong{color:var(--text)}
-.vf-alert{background:var(--amber-bg);color:var(--amber);border-radius:var(--r-sm);padding:8px 10px;font-size:12px;font-weight:600;margin:6px 0}
-.vf-alert.info{background:var(--gray-bg);color:var(--muted);font-weight:500}
-.vf-sku-ref{font-size:11px;color:var(--muted);margin:-2px 0 4px 54px}
-.vf-sku-ref .vf-alert{margin:4px 0 8px}
-.vf-rev-table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
-.vf-rev-table th{text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:6px 4px;border-bottom:1px solid var(--border)}
-.vf-rev-table td{padding:7px 4px;border-bottom:1px solid var(--border)}
-.vf-rev-table .r{text-align:right}
-.vf-rev-linha{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:5px 0}
-.vf-rev-linha span:first-child{color:var(--muted)}
-.vf-conferi{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700;margin-top:10px;cursor:pointer}
-.vf-conferi input{width:18px;height:18px}
 .vd-total-box{background:var(--navy);color:#fff;border-radius:var(--r-md);padding:16px;display:flex;justify-content:space-between;align-items:center;margin:12px auto;max-width:760px}
 .vd-total-box .l{font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em}
 .vd-total-box .v{font-size:24px;font-weight:700;margin-top:2px}
@@ -1231,21 +1209,9 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
     <button type="button" onclick="vdAbrirOrigem()" style="font-size:11px;color:#6457D9;background:none;border:none;cursor:pointer;font-weight:700;padding:0">Alterar</button>
   </div>
   <div class="vd-section" style="padding-top:18px">
-    <div class="vf-stepper vf-wiz-only" id="vf-stepper"></div>
-    <div class="vf-wiz-ctx vf-wiz-only" id="vf-wiz-ctx"></div>
-    <div class="vd-form-card" data-step="1">
-      <div class="vf-wiz-only" style="font-size:15px;font-weight:700;margin-bottom:10px">1. Para qual cliente?</div>
+    <div class="vd-form-card">
       <div class="vd-field" id="vf-resp-wrap" style="display:none"><label>Responsável (coordenador)</label><select id="vf-resp"></select></div>
-      <div class="vd-field vf-wiz-only"><label>Buscar cliente</label><input id="vf-cli-busca" placeholder="Digite parte do nome ou UF" oninput="vdRenderCliOpts(this.value)"></div>
-      <div class="vd-field" style="margin-bottom:0"><label>Cliente</label><select id="vf-cli" onchange="vdAplicarFicha()"></select></div>
-    </div>
-    <div class="vd-form-card vf-wiz-only" data-step="2">
-      <div style="font-size:15px;font-weight:700;margin-bottom:4px">2. De onde sai esse pedido?</div>
-      <div id="vf-origem-opts"></div>
-      <div id="vf-origem-alertas"></div>
-    </div>
-    <div class="vd-form-card" data-step="4">
-      <div class="vf-wiz-only" style="font-size:15px;font-weight:700;margin-bottom:10px">4. Prazo, tipo fiscal e revisão</div>
+      <div class="vd-field"><label>Cliente</label><select id="vf-cli" onchange="vdAplicarFicha()"></select></div>
       <div class="vd-field" style="margin-bottom:0"><label>Tipo Fiscal</label>
         <div class="vd-toggle-grp io">
           <button type="button" class="vd-toggle tg-in on" data-tv="in" onclick="vdSetTipo('in')"><span class="dot-status dot-in"></span></button>
@@ -1253,13 +1219,11 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         </div>
       </div>
     </div>
-    <div class="vd-form-card" data-step="3">
-      <div class="vf-wiz-only" style="font-size:15px;font-weight:700;margin-bottom:6px">3. Produtos, quantidades e preços</div>
+    <div class="vd-form-card">
       <div style="font-size:13px;font-weight:600;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;margin-bottom:10px">SKUs · Caixas × Valor Pacote</div>
       <div id="vf-skus"></div>
-      <div class="vf-wiz-only" id="vf-sku-subtotal" style="font-size:13px;font-weight:700;text-align:right;margin-top:8px"></div>
     </div>
-    <div class="vd-form-card" data-step="4">
+    <div class="vd-form-card">
       <div class="vd-field" style="margin-bottom:0"><label>Prazo</label>
         <div class="vd-toggle-grp">
           <button type="button" class="vd-toggle on" data-pv="avista" onclick="vdSetPrazo('avista')">À vista</button>
@@ -1268,22 +1232,17 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         </div>
         <div id="vf-prazo-aprovado-info" style="display:none;margin-top:10px;font-size:12px;color:var(--muted)"></div>
         <div class="vd-parc" id="vf-prazo-solicitar" style="display:none;margin-top:10px">
-          <div class="vd-field" style="margin-bottom:0"><label>Dias desejados</label><input type="number" id="vf-prazo-dias" min="1" placeholder="ex 45" oninput="vdWizRefreshRevisao()"></div>
+          <div class="vd-field" style="margin-bottom:0"><label>Dias desejados</label><input type="number" id="vf-prazo-dias" min="1" placeholder="ex 45"></div>
         </div>
       </div>
     </div>
-    <div class="vd-form-card" data-step="4"><div class="vd-field" style="margin-bottom:0"><label>Observação</label><textarea id="vf-obs" placeholder="opcional"></textarea></div></div>
-    <div class="vd-form-card vf-wiz-only" data-step="4" id="vf-revisao"></div>
-    <div class="vd-total-box vf-form-only">
+    <div class="vd-form-card"><div class="vd-field" style="margin-bottom:0"><label>Observação</label><textarea id="vf-obs" placeholder="opcional"></textarea></div></div>
+    <div class="vd-total-box">
       <div><div class="l">Total cx</div><div class="v" id="vf-totcx">0</div></div>
     </div>
-    <div class="vd-btnrow vf-form-only">
+    <div class="vd-btnrow">
       <button class="vd-btn vd-btn-out" onclick="navTo('vendas')">Cancelar</button>
       <button class="vd-btn vd-btn-pri" onclick="vdSalvarPedido()" id="vf-btn-save">Salvar Pedido</button>
-    </div>
-    <div class="vd-btnrow vf-wiz-only" style="max-width:760px;margin-left:auto;margin-right:auto">
-      <button class="vd-btn vd-btn-out" id="vf-wiz-back" onclick="vdWizVoltar()">Cancelar</button>
-      <button class="vd-btn vd-btn-pri" id="vf-wiz-next" onclick="vdWizAvancar()">Avançar →</button>
     </div>
   </div>
   <div class="bottom-nav" id="nav-vfn"></div>
@@ -4160,14 +4119,13 @@ function vdComplementarPedido(id){
   g('vf-btn-save').textContent='Salvar Pedido Complementar';
   vdPopCliSel(p.cliente_id);
   setTimeout(()=>{
-    const sel=g('vf-cli');if(sel)sel.value=p.cliente_id;
+    const sel=g('vf-cli');if(sel){sel.value=p.cliente_id;vdOnCliSel();}
     g('vf-obs').value='Remanescente de pedido parcial faturado em '+new Date(p.faturado_at||p.updated_at||'').toLocaleDateString('pt-BR');
   },50);
   vdRenderSkus();
   vdSetTipo(vdForm.tipo);vdSetPrazo(vdForm.prazo,vdForm.dias);
   vdRecalc();
   show('s-vfn');renderNav('nav-vfn','vendas');
-  vdWizIniciar();
   toast('Pedido pré-preenchido com o saldo remanescente · '+x.saldoCx+' cx','info',4000);
 }
 const VD_ORIGENS=[
@@ -4360,182 +4318,6 @@ function vdConfirmarOrigem(){
   }
 }
 
-// ── Wizard de novo pedido (1 Cliente · 2 Origem · 3 Produtos · 4 Revisão) ──
-// Só na criação (novo, forecast→pedido, complementar). Edição usa o formulário inteiro.
-// Mexe só em quais cards aparecem — o payload salvo por vdSalvarPedido é o mesmo de antes.
-const VD_WIZ_PASSOS=['Cliente','Origem','Produtos','Revisão'];
-let vdWiz={ativo:false,passo:1,max:1,hist:null,histCliId:null};
-function vdCliPorId(id){
-  if(!id)return null;
-  const at=coordAtual===COORD_DIRETORIA?CLI_OWNER_KEYS.flatMap(c=>clientesAtivos(c)):clientesAtivos(coordAtual);
-  return at.find(c=>c.id===id)||CLI_OWNER_KEYS.flatMap(c=>clientesDB[c]||[]).find(c=>c.id===id)||null;
-}
-function vdWizIniciar(){
-  vdWiz={ativo:true,passo:1,max:1,hist:null,histCliId:null};
-  g('s-vfn').classList.add('vf-wiz');
-  const bar=g('vfn-origem-bar');if(bar)bar.style.display='none';
-  vdWizIr(1);
-}
-function vdWizDesligar(){
-  vdWiz.ativo=false;
-  g('s-vfn').classList.remove('vf-wiz');
-  document.querySelectorAll('#s-vfn [data-step]').forEach(el=>{el.style.display='';});
-}
-async function vdWizCarregarHist(){
-  const id=g('vf-cli').value;
-  if(!id){vdWiz.hist=[];return}
-  if(vdWiz.hist&&vdWiz.histCliId===id)return;
-  const rows=await sb(`/rest/v1/pedidos_vendas?cliente_id=eq.${encodeURIComponent(id)}&deleted_at=is.null&select=origem,ano,mes,pedidos_vendas_itens(sku,qty_caixas,valor_pacote)&order=ano.desc,mes.desc&limit=15`,{ret:true});
-  vdWiz.hist=Array.isArray(rows)?rows:[];vdWiz.histCliId=id;
-}
-// Referência de preço/qtd por SKU: preço da ficha do cliente, último preço praticado e
-// maior quantidade já pedida (histórico do cliente).
-function vdWizRef(s){
-  const cli=vdCliPorId(g('vf-cli').value);
-  const ficha=parseFloat((cli&&cli.def_skus||{})[s])||0;
-  let ultimo=0,maxQ=0;
-  (vdWiz.hist||[]).forEach(p=>(p.pedidos_vendas_itens||[]).forEach(i=>{
-    if(i.sku!==s)return;
-    if(!ultimo&&Number(i.valor_pacote)>0)ultimo=Number(i.valor_pacote);
-    maxQ=Math.max(maxQ,Number(i.qty_caixas||0));
-  }));
-  return{ficha,ultimo,ref:ficha||ultimo,maxQ};
-}
-function vdWizAlertasSku(s){
-  const q=vdForm.skus[s].q||0,v=vdForm.skus[s].v||0,r=vdWizRef(s),out=[];
-  if(q>0&&!(v>0))out.push('Sem preço — informe o R$ por pacote');
-  if(q>0&&v>0&&r.ref>0){
-    if(v>=r.ref*5)out.push('Parece preço por CAIXA — a referência é '+vdFmt(r.ref)+' por pacote');
-    else if(Math.abs(v-r.ref)/r.ref>0.15)out.push('Preço '+Math.round((v/r.ref-1)*100)+'% '+(v>r.ref?'acima':'abaixo')+' da referência ('+vdFmt(r.ref)+'/pac)');
-  }
-  if(q>0&&r.maxQ>0&&q>r.maxQ*3)out.push('Quantidade mais de 3× o maior pedido deste cliente ('+r.maxQ+' cx)');
-  else if(q>500&&!r.maxQ)out.push('Quantidade alta ('+q+' cx) — confira');
-  return out;
-}
-function vdWizAlertas(){
-  const out=[];
-  VD_SKUS.forEach(s=>vdWizAlertasSku(s).forEach(a=>out.push(vdSkuLabel(s)+': '+a)));
-  vdWizAlertasOrigem().forEach(a=>out.push('Origem: '+a));
-  return out;
-}
-function vdWizAtualizarRefs(){
-  if(!vdWiz.ativo)return;
-  let totR=0;
-  VD_SKUS.forEach(s=>{
-    const el=g('vf-ref-'+s);if(!el)return;
-    const r=vdWizRef(s),q=vdForm.skus[s].q||0,v=vdForm.skus[s].v||0;
-    const sub=q*VD_PACKS[s]*v;totR+=sub;
-    const partes=[];
-    if(r.ficha)partes.push('Ficha: '+vdFmt(r.ficha));
-    if(r.ultimo)partes.push('Último: '+vdFmt(r.ultimo));
-    if(r.maxQ)partes.push('Maior pedido: '+r.maxQ+' cx');
-    if(sub>0)partes.push('<strong>Subtotal: '+vdFmt(sub)+'</strong>');
-    el.innerHTML=partes.join(' · ')+vdWizAlertasSku(s).map(a=>'<div class="vf-alert">⚠ '+vdEsc(a)+'</div>').join('');
-  });
-  const st=g('vf-sku-subtotal');
-  if(st){let cx=0;VD_SKUS.forEach(s=>{cx+=vdForm.skus[s].q||0});st.textContent='Total: '+cx+' cx · '+vdFmt(totR);}
-}
-function vdOrigemUf(origem){
-  const m=/^(New Bluetex|GB) ([A-Z]{2})$/.exec(String(origem||''));
-  return m?m[2]:null;
-}
-function vdWizOrigemSugerida(){
-  const cli=vdCliPorId(g('vf-cli').value);
-  const norm=v=>String(v||'').trim().toLowerCase();
-  const padrao=cli&&cli.origem_padrao&&VD_ORIGENS.find(o=>o.ativa&&norm(o.label)===norm(cli.origem_padrao));
-  if(padrao)return{label:padrao.label,motivo:'origem padrão da ficha do cliente'};
-  const ult=(vdWiz.hist||[])[0];
-  if(ult){
-    const lbl=ult.origem||'Fábrica';
-    if(VD_ORIGENS.some(o=>o.ativa&&o.label===lbl))return{label:lbl,motivo:'origem do último pedido deste cliente'};
-  }
-  return null;
-}
-function vdWizAlertasOrigem(){
-  const out=[],o=vdForm.origem;if(!o)return out;
-  const sug=vdWizOrigemSugerida();
-  if(sug&&sug.label!==o)out.push('Este cliente costuma sair por '+sug.label+' ('+sug.motivo+')');
-  const cli=vdCliPorId(g('vf-cli').value),ufO=vdOrigemUf(o),ufC=String(cli&&cli.uf||'').toUpperCase();
-  if(ufO&&ufC&&ufO!==ufC)out.push('Cliente é de '+ufC+' e a origem é '+o);
-  return out;
-}
-function vdWizRenderOrigem(){
-  const sug=vdWizOrigemSugerida();
-  const grupos=[['fabrica','Fábrica'],['new','New Bluetex'],['gb','GB']];
-  g('vf-origem-opts').innerHTML=(sug?'<div class="vf-alert info">★ Sugerida: <strong>'+vdEsc(sug.label)+'</strong> · '+vdEsc(sug.motivo)+'</div>':'<div class="vf-alert info">Sem histórico de origem para este cliente — escolha com atenção.</div>')+
-    grupos.map(([gid,gnome])=>{
-      const ops=VD_ORIGENS.filter(o=>o.ativa&&o.grupo===gid);
-      return '<div class="orig-grupo-label">'+gnome+'</div><div class="orig-btns"'+(ops.length===1?' style="grid-template-columns:1fr"':'')+'>'+ops.map(o=>{
-        const uf=vdOrigemUf(o.label);
-        return '<button type="button" class="orig-btn'+(gid==='fabrica'?' grupo-fabrica':'')+(vdForm.origem===o.label?' selected':'')+'" onclick="vdWizEscolherOrigem(\''+o.label+'\')">'+
-          '<span class="ob-label">'+vdEsc(o.label)+(sug&&sug.label===o.label?' ★':'')+'</span>'+
-          '<span class="ob-sub">'+(gid==='fabrica'?'Faturado pelo Fabiano':(uf||''))+(sug&&sug.label===o.label?' · Sugerida':'')+'</span></button>';
-      }).join('')+'</div>';
-    }).join('');
-  g('vf-origem-alertas').innerHTML=vdWizAlertasOrigem().map(a=>'<div class="vf-alert">⚠ '+vdEsc(a)+'</div>').join('');
-}
-function vdWizEscolherOrigem(label){vdForm.origem=label;vdWizRenderOrigem();}
-function vdWizCtx(){
-  const cli=vdCliPorId(g('vf-cli').value);
-  const partes=[];
-  if(cli)partes.push('Cliente: <strong>'+vdEsc(cli.nome)+(cli.uf?' ('+vdEsc(cli.uf)+')':'')+'</strong>');
-  if(vdWiz.passo>2&&vdForm.origem)partes.push('Origem: '+vdOrigemBadgeHTML(vdForm.origem));
-  return partes.join(' · ');
-}
-function vdWizRenderRevisao(){
-  const cli=vdCliPorId(g('vf-cli').value);
-  let totCx=0,totR=0;
-  const linhas=VD_SKUS.filter(s=>(vdForm.skus[s].q||0)>0).map(s=>{
-    const q=vdForm.skus[s].q,v=vdForm.skus[s].v||0,sub=q*VD_PACKS[s]*v;totCx+=q;totR+=sub;
-    const alerta=vdWizAlertasSku(s).length?' ⚠':'';
-    return '<tr><td><strong>'+vdEsc(vdSkuLabel(s))+'</strong>'+alerta+'</td><td class="r">'+q+'</td><td class="r">'+vdFmt(v)+'</td><td class="r">'+vdFmt(sub)+'</td></tr>';
-  }).join('');
-  const prazoTxt={avista:'À vista','2835':'28/35',solicitar:'Solicitar prazo maior'+(g('vf-prazo-dias').value?' ('+g('vf-prazo-dias').value+' dias)':''),aprovado:'Prazo aprovado'}[vdForm.prazo]||vdForm.prazo;
-  const alertas=vdWizAlertas();
-  g('vf-revisao').innerHTML=
-    '<div style="font-size:13px;font-weight:600;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;margin-bottom:8px">Confira antes de salvar</div>'+
-    '<div class="vf-rev-linha"><span>Cliente</span><strong>'+vdEsc(cli?cli.nome+(cli.uf?' ('+cli.uf+')':''):'—')+'</strong></div>'+
-    '<div class="vf-rev-linha"><span>Origem</span><span>'+vdOrigemBadgeHTML(vdForm.origem)+'</span></div>'+
-    '<div class="vf-rev-linha"><span>Tipo fiscal</span><strong>'+(vdForm.tipo==='off'?'OFF':'IN')+'</strong></div>'+
-    '<div class="vf-rev-linha"><span>Prazo</span><strong>'+vdEsc(prazoTxt)+'</strong></div>'+
-    '<table class="vf-rev-table"><thead><tr><th>SKU</th><th class="r">Caixas</th><th class="r">R$/pac</th><th class="r">Subtotal</th></tr></thead><tbody>'+linhas+
-    '<tr><td><strong>Total</strong></td><td class="r"><strong>'+totCx+'</strong></td><td></td><td class="r"><strong>'+vdFmt(totR)+'</strong></td></tr></tbody></table>'+
-    alertas.map(a=>'<div class="vf-alert">⚠ '+vdEsc(a)+'</div>').join('')+
-    (alertas.length?'<label class="vf-conferi"><input type="checkbox" id="vf-conferi"> Conferi os valores com o cliente</label>':'');
-}
-async function vdWizIr(n){
-  if(!vdWiz.ativo)return;
-  if(n>=2){await vdWizCarregarHist();if(!vdForm.origem){const sug=vdWizOrigemSugerida();if(sug)vdForm.origem=sug.label;}}
-  vdWiz.passo=n;vdWiz.max=Math.max(vdWiz.max,n);
-  document.querySelectorAll('#s-vfn [data-step]').forEach(el=>{el.style.display=Number(el.dataset.step)===n?'block':'none';});
-  g('vf-stepper').innerHTML=VD_WIZ_PASSOS.map((nome,i)=>{
-    const k=i+1,cls=k===n?'cur':(k<=vdWiz.max?'done':'');
-    return '<button type="button" class="vf-step-pill '+cls+'"'+(cls==='done'?' onclick="vdWizIr('+k+')"':'')+'>'+(k<n?'✓ ':k+'. ')+nome+'</button>';
-  }).join('');
-  g('vf-wiz-ctx').innerHTML=n>1?vdWizCtx():'';
-  if(n===2)vdWizRenderOrigem();
-  if(n===3)vdWizAtualizarRefs();
-  if(n===4)vdWizRenderRevisao();
-  g('vf-wiz-back').textContent=n===1?'Cancelar':'← Voltar';
-  g('vf-wiz-next').textContent=n===4?(g('vf-btn-save').textContent||'Salvar Pedido'):'Avançar →';
-  window.scrollTo(0,0);
-}
-function vdWizVoltar(){if(vdWiz.passo<=1)navTo('vendas');else vdWizIr(vdWiz.passo-1);}
-function vdWizAvancar(){
-  const n=vdWiz.passo;
-  if(n===1&&!g('vf-cli').value){toast('Escolha o cliente','error');return}
-  if(n===2&&!vdForm.origem){toast('Escolha a origem do pedido','error');return}
-  if(n===3){
-    const semPreco=VD_SKUS.filter(s=>(vdForm.skus[s].q||0)>0&&!((vdForm.skus[s].v||0)>0));
-    if(semPreco.length){toast('Informe o preço de '+semPreco.map(vdSkuLabel).join(', '),'error');return}
-    if(!VD_SKUS.some(s=>(vdForm.skus[s].q||0)>0)){toast('Adicione ao menos 1 SKU com caixas e preço','error');return}
-  }
-  if(n===4){vdSalvarPedido();return}
-  vdWizIr(n+1);
-}
-// Prazo/tipo mudam a revisão (mesma etapa 4)
-function vdWizRefreshRevisao(){if(vdWiz.ativo&&vdWiz.passo===4)vdWizRenderRevisao();}
-
 function vdGoNovo(){
   vdForecastOrigemId=null;vdForecastOrigemLabel='';
   if(isDiretoria){toast('Perfil somente leitura','error');return}
@@ -4553,7 +4335,8 @@ function vdGoNovo(){
   vdRecalc();
   show('s-vfn');
   renderNav('nav-vfn','vendas');
-  vdWizIniciar();
+  // Abre o modal de origem após a tela estar visível
+  setTimeout(vdAbrirOrigem,80);
 }
 
 function vdGoForecast(){
@@ -4599,7 +4382,6 @@ function forecastConverterPedido(id){
   g('vf-obs').value=p.observacao?(baseObs+' Obs forecast: '+p.observacao):baseObs;
   vdRecalc();
   show('s-vfn');renderNav('nav-vfn','vendas');updateSideNav('vendas');
-  vdWizIniciar();
 }
 
 function vdPopCliSel(forcarId){
@@ -4614,28 +4396,14 @@ function vdPopCliSel(forcarId){
     const extra=todos.find(c=>c.id===forcarId);
     if(extra)extraHTML='<option value="'+vdEsc(extra.id)+'">'+vdEsc(extra.nome)+(extra.uf?' ('+vdEsc(extra.uf)+')':'')+' · inativo</option>';
   }
-  vdCliOpcoes=at.map(c=>({id:c.id,label:c.nome+(c.uf?' ('+c.uf+')':'')}));
-  vdCliExtraHTML=extraHTML;
-  const busca=g('vf-cli-busca');if(busca)busca.value='';
-  vdRenderCliOpts('');
-}
-let vdCliOpcoes=[],vdCliExtraHTML='';
-// Filtro da busca da etapa 1 — reconstrói as <option> (esconder <option> não funciona no iOS).
-function vdRenderCliOpts(termo){
-  const sel=g('vf-cli'),atual=sel.value;
-  const t=String(termo||'').trim().toLocaleUpperCase('pt-BR');
-  const lista=t?vdCliOpcoes.filter(o=>o.label.toLocaleUpperCase('pt-BR').includes(t)):vdCliOpcoes;
-  sel.innerHTML='<option value="">'+(t?'— '+lista.length+' encontrado(s) —':'— Selecione —')+'</option>'+vdCliExtraHTML+
-    lista.map(o=>'<option value="'+vdEsc(o.id)+'">'+vdEsc(o.label)+'</option>').join('');
-  if(atual&&[...sel.options].some(o=>o.value===atual))sel.value=atual;
-  else if(t&&lista.length===1){sel.value=lista[0].id;vdAplicarFicha();}
+  g('vf-cli').innerHTML='<option value="">— Selecione —</option>'+extraHTML+
+    at.map(c=>'<option value="'+vdEsc(c.id)+'">'+vdEsc(c.nome)+(c.uf?' ('+vdEsc(c.uf)+')':'')+'</option>').join('');
 }
 
 function vdAplicarFicha(){
-  const id=g('vf-cli').value;
-  if(vdWiz.ativo){vdWiz.hist=null;vdForm.origem='';}
-  if(!id)return;
-  const c=vdCliPorId(id);if(!c)return;
+  const id=g('vf-cli').value;if(!id)return;
+  const at=clientesAtivos(coordAtual);
+  const c=at.find(x=>x.id===id);if(!c)return;
   if(c.def_tipo)vdSetTipo(c.def_tipo);
   if(c.def_prazo==='parcelado')vdSetPrazo('2835');
   const sk=c.def_skus||{};
@@ -4648,14 +4416,12 @@ function vdRenderSkus(){
     '<div class="vd-sku-line"><div class="vd-sku-lbl">'+vdSkuLabel(s)+'</div>'+
     '<input type="number" min="0" placeholder="cx" value="'+(vdForm.skus[s].q||'')+'" oninput="vdUpdSku(\''+s+'\',\'q\',this.value)">'+
     '<input type="number" min="0" step="0.01" placeholder="R$/pac" value="'+(vdForm.skus[s].v||'')+'" oninput="vdUpdSku(\''+s+'\',\'v\',this.value)"></div>'+
-    '<div class="vd-sku-info">'+VD_PACKS[s]+' pac/cx</div>'+
-    '<div class="vf-sku-ref vf-wiz-only" id="vf-ref-'+s+'"></div>'
+    '<div class="vd-sku-info">'+VD_PACKS[s]+' pac/cx</div>'
   ).join('');
-  vdWizAtualizarRefs();
 }
 
 function vdUpdSku(s,k,v){vdForm.skus[s][k]=parseFloat(v)||0;vdRecalc()}
-function vdSetTipo(t){vdForm.tipo=t;document.querySelectorAll('.vd-toggle[data-tv]').forEach(b=>b.classList.toggle('on',b.dataset.tv===t));vdWizRefreshRevisao()}
+function vdSetTipo(t){vdForm.tipo=t;document.querySelectorAll('.vd-toggle[data-tv]').forEach(b=>b.classList.toggle('on',b.dataset.tv===t))}
 function vdSetPrazo(p,dias){
   vdForm.prazo=p;
   document.querySelectorAll('.vd-toggle[data-pv]').forEach(b=>b.classList.toggle('on',b.dataset.pv===p));
@@ -4664,7 +4430,6 @@ function vdSetPrazo(p,dias){
   const info=g('vf-prazo-aprovado-info');
   if(p==='aprovado'){info.style.display='block';info.textContent='Prazo aprovado atualmente: '+(dias||'?')+' dias · clique em uma opção acima para alterar';}
   else info.style.display='none';
-  vdWizRefreshRevisao();
 }
 function vdPrazoParaForm(p){
   if(!p)return{prazo:'avista',dias:null};
@@ -4678,7 +4443,6 @@ function vdRecalc(){
   let totCx=0;
   VD_SKUS.forEach(s=>{totCx+=vdForm.skus[s].q||0;});
   g('vf-totcx').textContent=totCx;
-  vdWizAtualizarRefs();
 }
 
 async function vdSalvarPedido(){
@@ -4695,11 +4459,7 @@ async function vdSalvarPedido(){
     sku:s,qty_caixas:vdForm.skus[s].q,valor_pacote:vdForm.skus[s].v,packs_por_caixa:VD_PACKS[s],
     subtotal:vdForm.skus[s].q*VD_PACKS[s]*vdForm.skus[s].v
   }));
-  const semPreco=VD_SKUS.filter(s=>(vdForm.skus[s].q||0)>0&&!((vdForm.skus[s].v||0)>0));
-  if(semPreco.length){toast('Informe o preço de '+semPreco.map(vdSkuLabel).join(', ')+' (tem caixas sem valor)','error');return}
   if(!itens.length){toast('Adicione ao menos 1 SKU com qtd e valor','error');return}
-  if(vdWiz.ativo&&!vdForm.origem){toast('Escolha a origem do pedido','error');vdWizIr(2);return}
-  if(vdWiz.ativo&&vdWizAlertas().length&&!(g('vf-conferi')||{}).checked){toast('Marque "Conferi os valores" antes de salvar','error');return}
   const total=itens.reduce((s,i)=>s+i.subtotal,0);
   const totCx=itens.reduce((s,i)=>s+i.qty_caixas,0);
   if(vdForm.prazo==='solicitar'&&!g('vf-prazo-dias').value){toast('Informe os dias do prazo solicitado','error');return}
@@ -5277,7 +5037,6 @@ function vdEditarPedido(){
   vdEditPedidoId=p.id;
   vdForm={tipo:p.tipo,...vdPrazoParaForm(p),origem:p.origem||'',skus:{GR:{q:0,v:0},GM:{q:0,v:0},CM:{q:0,v:0},CC:{q:0,v:0},GTWIN:{q:0,v:0},CK:{q:0,v:0}}};
   (p.pedidos_vendas_itens||[]).forEach(i=>{vdForm.skus[i.sku]={q:i.qty_caixas,v:i.valor_pacote}});
-  vdWizDesligar();
   g('vfn-title').textContent='Editar Pedido';
   // Admin/Vagner podem trocar o dono do pedido (ex.: lançado no coordenador errado).
   const respWrap=g('vf-resp-wrap');
