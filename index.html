@@ -1975,11 +1975,13 @@ function renderPremiacaoContent(rows,isGestor,volumeDiretoria){
 }
 
 // ── POTE DE OURO ──
-// Campanha fixa de set/2026 (mes=8, 0-indexed, igual ao resto do app) — não segue o
+// Campanha fixa de out/2026 (mes=9, 0-indexed, igual ao resto do app) — não segue o
 // seletor global de mês/ano do topo. Realizado é somado ao vivo de pedidos_vendas
 // (por cliente_id, sem filtrar coordenador do pedido — evita perder venda avulsa
 // lançada pela Diretoria) e conta a partir do lançamento do pedido, não do faturamento.
-const POTE_OURO_CAMPANHA='pote_ouro_set26',POTE_OURO_MES=8,POTE_OURO_ANO=2026;
+// O id 'pote_ouro_set26' é só a chave das linhas já gravadas no banco (metas, config,
+// participantes) — não mudar, senão as metas cadastradas somem. O mês que vale é POTE_OURO_MES.
+const POTE_OURO_CAMPANHA='pote_ouro_set26',POTE_OURO_MES=9,POTE_OURO_ANO=2026;
 
 // Atualiza sozinho a cada 60s enquanto a tela estiver aberta (pula se alguém estiver
 // digitando uma meta, pra não perder a edição no meio).
@@ -2177,7 +2179,7 @@ function renderPoteOuroContent(rows,config,participantes,podeEditar){
   }).join('');
   const pctTotal=totalMeta>0?Math.round(totalReal/totalMeta*100):0;
   const resumoHTML=`<div class="panel" style="margin-bottom:18px;background:linear-gradient(135deg,#6547d9,#8b6ce8);color:#fff">
-    <div style="font-size:13px;opacity:.85;font-weight:600;margin-bottom:4px">TOTAL DA CAMPANHA · Setembro/2026</div>
+    <div style="font-size:13px;opacity:.85;font-weight:600;margin-bottom:4px">TOTAL DA CAMPANHA · ${MESES[POTE_OURO_MES]}/${POTE_OURO_ANO}</div>
     <div style="font-size:26px;font-weight:800">${fmt(totalReal)} <span style="font-size:15px;font-weight:600;opacity:.85">/ ${fmt(totalMeta)} cx</span></div>
     <div style="font-size:13px;opacity:.9;margin-top:2px">${pctTotal}% da meta batida</div>
   </div>`;
