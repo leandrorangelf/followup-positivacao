@@ -1981,10 +1981,20 @@ function renderPremiacaoContent(rows,isGestor,volumeDiretoria){
 // lançada pela Diretoria) e conta a partir do lançamento do pedido, não do faturamento.
 const POTE_OURO_CAMPANHA='pote_ouro_set26',POTE_OURO_MES=8,POTE_OURO_ANO=2026;
 
+// Atualiza sozinho a cada 60s enquanto a tela estiver aberta (pula se alguém estiver
+// digitando uma meta, pra não perder a edição no meio).
+let poteOuroTimer=null;
 async function irPoteOuro(){
   show('s-pote-ouro');
   renderNav('nav-pote-ouro','poteouro');
   await carregarPoteOuro();
+  if(poteOuroTimer)clearInterval(poteOuroTimer);
+  poteOuroTimer=setInterval(()=>{
+    const tela=g('s-pote-ouro');
+    if(!tela||tela.style.display==='none'){clearInterval(poteOuroTimer);poteOuroTimer=null;return;}
+    if(document.hidden||tela.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')return;
+    carregarPoteOuro(true);
+  },60000);
 }
 
 // Prêmios de ranking fixos (posição 1/2/3) e vales fixos da equipe — espelham a aba
@@ -2001,8 +2011,8 @@ const POTE_OURO_VALES_FIXOS=[
   {cargo:'Financeiro',nome:'Manu',valor:1500},
 ];
 
-async function carregarPoteOuro(){
-  g('pote-ouro-content').innerHTML='<div class="loading">Carregando...</div>';
+async function carregarPoteOuro(silencioso){
+  if(!silencioso)g('pote-ouro-content').innerHTML='<div class="loading">Carregando...</div>';
   const podeEditar=isAdmin||user==='vagner';
   const [metas,vendas,configRows,participantesRows]=await Promise.all([
     sb(`/rest/v1/campanha_metas?campanha=eq.${POTE_OURO_CAMPANHA}&select=*,clientes(nome,uf)`,{ret:true}),
