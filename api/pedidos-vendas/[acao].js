@@ -23,6 +23,8 @@ const {
   podeDecidirPrazo,
 } = require('../_lib/authz');
 
+const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 const MINIMAL = { ...JSON_HEADERS, Prefer: 'return=minimal' };
 const REPRESENTATION = { ...JSON_HEADERS, Prefer: 'return=representation' };
@@ -330,7 +332,30 @@ async function status(session, body, res) {
   else if (tipo === 'excluir') payload = { deleted_at: new Date().toISOString() };
   else if (tipo === 'restaurar') payload = { deleted_at: null };
   else return res.status(400).json({ error: 'unknown_tipo' });
+
+  // Exclusão/restauração: a linha de auditoria é gravada aqui no servidor (não depende
+  // do client chamar /api/audit), então toda exclusão — inclusive as do Vagner — fica
+  // registrada no Log com quem fez, mesmo que o navegador feche no meio.
+  const ehExclusao = tipo === 'excluir' || tipo === 'restaurar';
+  let info = null;
+  if (ehExclusao) {
+    const infoR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=cliente_nome,coordenador,mes,ano,total_caixas`, { method: 'GET', headers: JSON_HEADERS });
+    info = infoR.ok && Array.isArray(infoR.json) ? infoR.json[0] : null;
+    if (!info) return res.status(404).json({ error: 'not_found' });
+  }
+
   const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(payload) });
+  if (r.ok && ehExclusao) {
+    const competencia = (MESES[info.mes] || info.mes) + '/' + info.ano;
+    const row = {
+      acao: tipo === 'excluir' ? 'excluir' : 'editar',
+      descricao: (tipo === 'excluir' ? 'Pedido excluído · ' : 'Pedido restaurado · ') + (info.cliente_nome || 'Pedido'),
+      detalhes: 'id:' + id + ' · Coordenador: ' + info.coordenador + ' · ' + competencia + ' · ' + (info.total_caixas || 0) + ' cx',
+      pedido_id: id,
+      usuario: session.user,
+    };
+    await sbJson('/rest/v1/audit_log', { method: 'POST', headers: MINIMAL, body: JSON.stringify(row) }).catch(() => {});
+  }
   return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
 }
 

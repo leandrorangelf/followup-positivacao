@@ -593,19 +593,54 @@ body{background:var(--canvas);color:var(--ink)}
 @media(max-width:680px){.forecast-list{grid-template-columns:1fr}.forecast-note{padding:0 14px}.forecast-card-top{flex-direction:column}.forecast-card-cx{white-space:normal}}
 
 /* LOG */
-.log-item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.log-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.log-periodos{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:var(--r-pill);padding:3px;gap:2px}
+.log-periodos button{border:0;background:transparent;padding:6px 14px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer}
+.log-periodos button.on{background:var(--navy);color:#fff}
+.log-filtros{display:flex;flex-wrap:wrap;gap:8px}
+.log-filtros .client-filter{min-width:150px}
+.log-filtros input.client-filter{min-width:190px;padding:8px 10px}
+.log-resumo{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.log-stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);display:flex;align-items:center;gap:10px;transition:border-color .15s,box-shadow .15s}
+.log-stat:hover{border-color:var(--purple)}
+.log-stat.on{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy) inset}
+.log-stat-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0;background:var(--gray-bg)}
+.log-stat-n{font-size:20px;font-weight:800;line-height:1}
+.log-stat-l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
+.log-panel{padding:0;overflow:hidden}
+.log-dia{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center;padding:9px 18px;background:var(--soft);border-bottom:1px solid var(--line);border-top:1px solid var(--line);font-size:12px;font-weight:800;color:var(--ink)}
+.log-dia:first-child{border-top:0}
+.log-dia span{font-weight:700;color:var(--muted);text-transform:none}
+.log-item{display:grid;grid-template-columns:44px auto 1fr auto;gap:12px;align-items:start;padding:12px 18px;border-bottom:1px solid var(--line);border-left:3px solid transparent}
 .log-item:last-child{border-bottom:0}
-.log-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:16px;flex-shrink:0;margin-top:2px}
+.log-item:hover{background:#fafbfd}
+.log-item.excluir{border-left-color:var(--red);background:#FFFAFA}
+.log-hora{font-size:12px;font-weight:700;color:var(--muted);padding-top:8px;font-variant-numeric:tabular-nums}
+.log-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0}
 .log-icon.criar{background:#DCFCE7;color:#166534}
 .log-icon.editar{background:var(--purple-soft);color:var(--purple)}
 .log-icon.excluir{background:#FEE2E2;color:#991B1B}
 .log-icon.faturar{background:#FEF3C7;color:#92400E}
 .log-body{min-width:0}
-.log-title{font-size:13px;font-weight:700;margin-bottom:2px}
-.log-detail{font-size:11px;color:var(--muted);line-height:1.5}
+.log-title{font-size:13.5px;font-weight:700;line-height:1.35;color:var(--ink)}
+.log-title .log-acao-txt{color:var(--muted);font-weight:600}
+.log-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.log-chip{font-size:11px;font-weight:600;color:var(--muted);background:var(--gray-bg);border-radius:var(--r-pill);padding:2px 9px;line-height:1.6;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.log-chip.coord{background:#E0E7FF;color:#3730A3}
+.log-chip.cx{background:var(--green-bg);color:var(--green)}
+.log-detail{font-size:11.5px;color:var(--muted);line-height:1.5;margin-top:4px}
+.log-who{display:flex;align-items:center;gap:7px;white-space:nowrap;padding-top:4px}
+.log-avatar{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;background:var(--purple)}
+.log-user{font-size:12px;font-weight:700;color:var(--ink)}
 .log-meta{font-size:11px;color:var(--muted);white-space:nowrap;text-align:right}
-.log-user{font-weight:700;color:var(--purple)}
+.log-restore{margin-top:8px;padding:4px 11px;border-radius:var(--r-sm);background:#065F46;color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:700}
+.log-restaurado{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;color:var(--green);background:var(--green-bg);border-radius:var(--r-pill);padding:2px 9px}
 .log-empty{text-align:center;padding:48px;color:var(--muted);font-size:13px}
+.log-hist{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.log-hist .log-dia{position:static}
+.log-hist .log-item{padding:10px 12px;gap:10px}
+.log-mais{padding:12px 18px;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+@media(max-width:780px){.log-resumo{grid-template-columns:repeat(2,minmax(0,1fr))}.log-resumo .log-stat:first-child{grid-column:1/-1}.log-item{grid-template-columns:auto 1fr;padding:12px 14px}.log-hora{display:none}.log-who{grid-column:2;padding-top:0}.log-filtros,.log-filtros .client-filter{width:100%}}
 
 /* TV EXTERNA */
 #s-tv{display:none;min-height:100vh;background:#08111f;color:#f8fafc;overflow:hidden;margin-left:0!important;padding-top:0!important}
@@ -1543,37 +1578,41 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <div id="s-log" class="screen" style="display:none">
   <div class="page-pad">
     <div class="section-head">
-      <div><div class="section-title">Log de atividades</div><div class="section-sub">Feed geral de atividades do sistema.</div></div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <select id="log-filtro-usuario" class="client-filter" onchange="carregarLog()" style="min-width:160px">
-          <option value="">Todos os usuários</option>
+      <div><div class="section-title">Log de atividades</div><div class="section-sub">Quem fez o quê, e quando — agrupado por dia.</div></div>
+      <button class="secondary-btn" onclick="carregarLog()">↺ Atualizar</button>
+    </div>
+    <div class="log-toolbar">
+      <div class="log-periodos" id="log-periodos">
+        <button data-p="1" onclick="logSetPeriodo(1)">Hoje</button>
+        <button data-p="7" onclick="logSetPeriodo(7)">7 dias</button>
+        <button data-p="30" class="on" onclick="logSetPeriodo(30)">30 dias</button>
+        <button data-p="0" onclick="logSetPeriodo(0)">Tudo</button>
+      </div>
+      <div class="log-filtros">
+        <input id="log-filtro-cliente" class="client-filter" type="text" placeholder="🔎 Buscar cliente..." oninput="logFiltrarClienteDebounce()">
+        <select id="log-filtro-usuario" class="client-filter" onchange="carregarLog()">
+          <option value="">Quem fez: todos</option>
           <option value="admin">Leandro</option>
           <option value="vagner">Vagner</option>
+          <option value="fabiano">Fabiano</option>
           <option value="Igor Cater">Igor Cater</option>
           <option value="Junior">Junior</option>
           <option value="Vitor Valle">Vitor Valle</option>
           <option value="Rosana">Rosana</option>
         </select>
-        <select id="log-filtro-coord" class="client-filter" onchange="carregarLog()" style="min-width:160px">
-          <option value="">Todos os coordenadores</option>
+        <select id="log-filtro-coord" class="client-filter" onchange="carregarLog()">
+          <option value="">Coordenador: todos</option>
           <option value="Igor Cater">Igor Cater</option>
           <option value="Junior">Junior</option>
           <option value="Vitor Valle">Vitor Valle</option>
           <option value="Rosana">Rosana</option>
           <option value="Diretoria">Diretoria</option>
         </select>
-        <select id="log-filtro-acao" class="client-filter" onchange="carregarLog()" style="min-width:140px">
-          <option value="">Todas as ações</option>
-          <option value="criar">Criação</option>
-          <option value="editar">Edição</option>
-          <option value="excluir">Exclusão</option>
-          <option value="faturar">Faturamento</option>
-        </select>
-        <input id="log-filtro-cliente" class="client-filter" type="text" placeholder="Buscar cliente..." oninput="logFiltrarClienteDebounce()" style="min-width:180px;padding:8px 10px">
-        <button class="secondary-btn" onclick="carregarLog()">↺ Atualizar</button>
+        <input type="hidden" id="log-filtro-acao" value="">
       </div>
     </div>
-    <div class="panel">
+    <div class="log-resumo" id="log-resumo"></div>
+    <div class="panel log-panel">
       <div id="log-content"><div class="loading">Carregando...</div></div>
     </div>
   </div>
@@ -4659,14 +4698,7 @@ async function vdCarregarHistoricoPedido(id){
     el.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Histórico</div><div class="log-empty" style="padding:16px 0">Nenhum evento registrado.</div>';
     return;
   }
-  const iconMap={criar:'➕',editar:'✏️',excluir:'🗑️',faturar:'💰'};
-  el.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Histórico</div>'+
-    lista.map(r=>{
-      const dt=new Date(r.criado_em);
-      const dataFmt=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      const icon=iconMap[r.acao]||'📝';
-      return '<div class="log-item"><div class="log-icon '+r.acao+'">'+icon+'</div><div class="log-body"><div class="log-title">'+vdEsc(r.descricao||'—')+'</div>'+(r.detalhes?'<div class="log-detail">'+vdEsc(r.detalhes)+'</div>':'')+'</div><div class="log-meta"><span class="log-user">'+vdEsc(nomeUsuarioLog(r.usuario))+'</span><br>'+dataFmt+'</div></div>';
-    }).join('');
+  el.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Histórico</div><div class="log-hist">'+logItensPorDia(lista)+'</div>';
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
 function vdComplementarPedidoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdComplementarPedido(id)}}
@@ -5013,14 +5045,12 @@ async function vdMoverFinal(){
   await vdMoverStatus(vdDetAtual.tipo==='in'?'faturado':'entregue');
 }
 async function vdExcluirPedido(){
-  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
-  if(user==='vagner'){toast('Vagner não pode excluir pedidos','error');return}
+  if(!vdPodeEditar()){toast('Acesso restrito ao gestor','error');return}
   if(!vdDetAtual)return;
-  if(!confirm('Excluir este pedido?\n\nO pedido ficará oculto mas poderá ser restaurado pelo Log de auditoria.'))return;
+  if(!confirm('Excluir este pedido?\n\nA exclusão fica registrada no Log de atividades (com o seu nome) e o pedido pode ser restaurado por lá.'))return;
   const respExc=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:vdDetAtual.id,tipo:'excluir'})});
   const jExc=await respExc.json().catch(()=>({}));
   if(!respExc.ok||!jExc.ok){toast('Erro ao excluir','error');return}
-  auditLog('excluir','Pedido excluído · '+vdDetAtual.cliente_nome,'id:'+vdDetAtual.id+' · Coordenador: '+vdDetAtual.coordenador+' · '+MESES[vdDetAtual.mes]+'/'+vdDetAtual.ano+' · '+(vdDetAtual.total_caixas||0)+' cx',vdDetAtual.id);
   toast('Excluído','ok');
   vdFecharDet();await vdCarregar();
 }
@@ -5031,14 +5061,12 @@ function vdEditarPedidoPorId(id){
   vdEditarPedido();
 }
 async function vdExcluirPedidoPorId(id){
-  if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
-  if(user==='vagner'){toast('Vagner não pode excluir pedidos','error');return}
+  if(!vdPodeEditar()){toast('Acesso restrito ao gestor','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
-  if(!confirm('Excluir o pedido de '+p.cliente_nome+'?\n\nO pedido ficará oculto mas poderá ser restaurado pelo Log de auditoria.'))return;
+  if(!confirm('Excluir o pedido de '+p.cliente_nome+'?\n\nA exclusão fica registrada no Log de atividades (com o seu nome) e o pedido pode ser restaurado por lá.'))return;
   const respExc2=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo:'excluir'})});
   const jExc2=await respExc2.json().catch(()=>({}));
   if(!respExc2.ok||!jExc2.ok){toast('Erro ao excluir pedido','error');return}
-  auditLog('excluir','Pedido excluído · '+p.cliente_nome,'id:'+id+' · Coordenador: '+p.coordenador+' · '+MESES[p.mes]+'/'+p.ano+' · '+(p.total_caixas||0)+' cx',id);
   toast('Pedido excluído','ok');
   await vdCarregar();
 }
@@ -5513,50 +5541,125 @@ function logFiltrarClienteDebounce(){
   clearTimeout(logFiltrarClienteTimer);
   logFiltrarClienteTimer=setTimeout(carregarLog,350);
 }
+let logPeriodo=30,logDados=[],logRestaurados=new Set(),logLimite=500;
+const LOG_ACOES={criar:{ic:'➕',l:'Criações'},editar:{ic:'✏️',l:'Edições'},faturar:{ic:'💰',l:'Faturamentos'},excluir:{ic:'🗑️',l:'Exclusões'}};
+const LOG_CORES={admin:'#10213f',vagner:'#5b4bd6',fabiano:'#b45309',diretoria:'#64748b','Igor Cater':'#0f9fa8','Junior':'#15803d','Vitor Valle':'#be185d','Rosana':'#7c3aed'};
+function logSetPeriodo(d){
+  logPeriodo=d;
+  document.querySelectorAll('#log-periodos button').forEach(b=>b.classList.toggle('on',Number(b.dataset.p)===d));
+  carregarLog();
+}
+function logSetAcao(a){
+  const el=g('log-filtro-acao');
+  el.value=el.value===a?'':a;
+  logRender();
+}
+// Transforma "Pedido excluído · Cliente" + "id:.. · Coordenador: X · Mês/ano · 10 cx"
+// em título (ação + cliente) e chips legíveis. O id fica escondido (só serve pro Restaurar).
+function logItemHTML(r,opts){
+  opts=opts||{};
+  const dt=new Date(r.criado_em);
+  const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const acao=LOG_ACOES[r.acao]?r.acao:'editar';
+  const desc=String(r.descricao||'—');
+  const cut=desc.indexOf(' · ');
+  const titulo=cut>0?'<span class="log-acao-txt">'+vdEsc(desc.slice(0,cut))+' ·</span> '+vdEsc(desc.slice(cut+3)):vdEsc(desc);
+  const partes=String(r.detalhes||'').split(' · ').map(x=>x.trim()).filter(Boolean);
+  const chips=[],textos=[];
+  let pedidoId=null;
+  partes.forEach(x=>{
+    const mId=x.match(/^id:([a-zA-Z0-9_-]+)$/);
+    if(mId){pedidoId=mId[1];return}
+    const mCoord=x.match(/^Coordenador:\s*(.+)$/);
+    if(mCoord){chips.push('<span class="log-chip coord">👤 '+vdEsc(mCoord[1])+'</span>');return}
+    if(/^[\d.,]+\s*cx$/i.test(x)){chips.push('<span class="log-chip cx">📦 '+vdEsc(x)+'</span>');return}
+    if(x.length>48){textos.push(vdEsc(x));return}
+    chips.push('<span class="log-chip">'+vdEsc(x)+'</span>');
+  });
+  let extra='';
+  if(opts.restaurar&&r.acao==='excluir'&&pedidoId){
+    extra=logRestaurados.has(pedidoId)?'<span class="log-restaurado">✓ Já restaurado</span>':'<button class="log-restore" onclick="logRestaurarPedido(\''+pedidoId+'\')">↩ Restaurar pedido</button>';
+  }
+  const nome=nomeUsuarioLog(r.usuario);
+  const cor=LOG_CORES[r.usuario]||'var(--purple)';
+  return '<div class="log-item '+acao+'">'+
+    '<div class="log-hora">'+hora+'</div>'+
+    '<div class="log-icon '+acao+'" title="'+LOG_ACOES[acao].l+'">'+LOG_ACOES[acao].ic+'</div>'+
+    '<div class="log-body"><div class="log-title">'+titulo+'</div>'+
+      (chips.length?'<div class="log-chips">'+chips.join('')+'</div>':'')+
+      (textos.length?'<div class="log-detail">'+textos.join('<br>')+'</div>':'')+extra+
+    '</div>'+
+    '<div class="log-who"><span class="log-avatar" style="background:'+cor+'">'+vdEsc(nome.charAt(0).toUpperCase())+'</span><span class="log-user">'+vdEsc(nome)+'</span></div>'+
+  '</div>';
+}
+function logDiaLabel(d){
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const x=new Date(d);x.setHours(0,0,0,0);
+  const diff=Math.round((hoje-x)/86400000);
+  if(diff===0)return 'Hoje';
+  if(diff===1)return 'Ontem';
+  const t=x.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+  return t.charAt(0).toUpperCase()+t.slice(1);
+}
+function logItensPorDia(lista,opts){
+  let html='',diaAtual='',buf=[];
+  const flush=()=>{if(buf.length)html+='<div class="log-dia">'+diaAtual+'<span>'+buf.length+' '+(buf.length===1?'atividade':'atividades')+'</span></div>'+buf.join('');buf=[]};
+  lista.forEach(r=>{
+    const dia=logDiaLabel(r.criado_em);
+    if(dia!==diaAtual){flush();diaAtual=dia}
+    buf.push(logItemHTML(r,opts));
+  });
+  flush();
+  return html;
+}
 async function carregarLog(){
   if(!g('log-content'))return;
   g('log-content').innerHTML='<div class="loading">Carregando...</div>';
   const filtroUser=g('log-filtro-usuario')?.value||'';
   const filtroCoord=g('log-filtro-coord')?.value||'';
-  const filtroAcao=g('log-filtro-acao')?.value||'';
   const filtroCliente=(g('log-filtro-cliente')?.value||'').trim();
-  let url='/api/audit?order=criado_em.desc&limit=200';
+  // Ação é filtrada no client (cards de resumo), pra os totais continuarem visíveis.
+  let url='/api/audit?order=criado_em.desc&limit='+logLimite;
+  if(logPeriodo){
+    const ini=new Date();ini.setHours(0,0,0,0);ini.setDate(ini.getDate()-(logPeriodo-1));
+    url+='&criado_em=gte.'+encodeURIComponent(ini.toISOString());
+  }
   if(filtroUser)url+='&usuario=eq.'+encodeURIComponent(filtroUser);
-  if(filtroAcao)url+='&acao=eq.'+encodeURIComponent(filtroAcao);
   // Não existe coluna de coordenador na tabela — todo auditLog() grava "Coordenador: X"
-  // em `detalhes` (ver index.html, chamadas de auditLog), então filtramos por texto ali.
+  // em `detalhes`, então filtramos por texto ali.
   if(filtroCoord)url+='&detalhes=ilike.*'+encodeURIComponent('Coordenador: '+filtroCoord)+'*';
   // Cliente também não tem coluna própria — `descricao` sempre traz "... · <Cliente>".
   if(filtroCliente)url+='&descricao=ilike.*'+encodeURIComponent(filtroCliente)+'*';
   const data=await sb(url,{ret:true});
-  if(!Array.isArray(data)||!data.length){
-    g('log-content').innerHTML='<div class="log-empty">📋 Nenhum registro encontrado.</div>';
+  logDados=Array.isArray(data)?data:[];
+  // Descobre quais pedidos excluídos já foram restaurados (deleted_at voltou a null).
+  logRestaurados=new Set();
+  const ids=[...new Set(logDados.filter(r=>r.acao==='excluir').map(r=>(String(r.detalhes||'').match(/id:([a-zA-Z0-9_-]+)/)||[])[1]).filter(Boolean))];
+  if(ids.length){
+    const ped=await sb('/rest/v1/pedidos_vendas?id=in.('+ids.map(encodeURIComponent).join(',')+')&select=id,deleted_at',{ret:true});
+    if(Array.isArray(ped))ped.forEach(p=>{if(!p.deleted_at)logRestaurados.add(p.id)});
+  }
+  logRender();
+}
+function logRender(){
+  const acaoSel=g('log-filtro-acao')?.value||'';
+  const cont={criar:0,editar:0,faturar:0,excluir:0};
+  logDados.forEach(r=>{cont[LOG_ACOES[r.acao]?r.acao:'editar']++});
+  const stat=(k,ic,l,n)=>'<button class="log-stat'+(acaoSel===k?' on':'')+'" onclick="logSetAcao(\''+k+'\')"><span class="log-stat-ic">'+ic+'</span><span><div class="log-stat-n">'+n.toLocaleString('pt-BR')+'</div><div class="log-stat-l">'+l+'</div></span></button>';
+  g('log-resumo').innerHTML=stat('','📋','Total',logDados.length)+Object.keys(LOG_ACOES).map(k=>stat(k,LOG_ACOES[k].ic,LOG_ACOES[k].l,cont[k])).join('');
+  const lista=acaoSel?logDados.filter(r=>(LOG_ACOES[r.acao]?r.acao:'editar')===acaoSel):logDados;
+  if(!lista.length){
+    g('log-content').innerHTML='<div class="log-empty">📋 Nenhuma atividade encontrada neste período.</div>';
     return;
   }
-  const iconMap={criar:'➕',editar:'✏️',excluir:'🗑️',faturar:'💰'};
-  g('log-content').innerHTML=data.map(r=>{
-    const dt=new Date(r.criado_em);
-    const dataFmt=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const icon=iconMap[r.acao]||'📝';
-    const idMatch=r.acao==='excluir'&&r.detalhes?r.detalhes.match(/id:([a-zA-Z0-9_-]+)/):null;
-    const restoreBtn=idMatch?`<button onclick="logRestaurarPedido('${idMatch[1]}')" style="margin-top:6px;padding:3px 10px;border-radius:var(--r-sm);background:#065F46;color:#fff;border:none;cursor:pointer;font-size:12px">↩ Restaurar</button>`:'';
-    return `<div class="log-item">
-      <div class="log-icon ${r.acao}">${icon}</div>
-      <div class="log-body">
-        <div class="log-title">${vdEsc(r.descricao||'—')}</div>
-        ${r.detalhes?`<div class="log-detail">${vdEsc(r.detalhes)}</div>`:''}
-        ${restoreBtn}
-      </div>
-      <div class="log-meta"><span class="log-user">${vdEsc(nomeUsuarioLog(r.usuario))}</span><br>${dataFmt}</div>
-    </div>`;
-  }).join('');
+  g('log-content').innerHTML=logItensPorDia(lista,{restaurar:true})+
+    (logDados.length>=logLimite?'<div class="log-mais">Mostrando as '+logLimite+' atividades mais recentes — use os filtros ou um período menor para ver as anteriores.</div>':'');
 }
 async function logRestaurarPedido(id){
   if(!confirm('Restaurar este pedido? Ele voltará a aparecer no sistema.'))return;
   const respRest=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo:'restaurar'})});
   const jRest=await respRest.json().catch(()=>({}));
   if(!respRest.ok||!jRest.ok){toast('Erro ao restaurar pedido','error');return;}
-  auditLog('editar','Pedido restaurado','id:'+id,id);
   toast('Pedido restaurado com sucesso!','success');
   carregarLog();
 }
