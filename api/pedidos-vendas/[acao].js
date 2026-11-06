@@ -36,6 +36,53 @@ const RESPONSAVEIS_VALIDOS = new Set([...COORD_KEYS, 'Diretoria']);
 
 const GNRE_MANAGE_FIELDS = new Set(['gnre_status', 'gnre_enviado_at', 'gnre_valor', 'gnre_retornado_at', 'gnre_pago_at']);
 
+// ---------- Histórico detalhado do pedido (audit_log) ----------
+// `detalhes` continua começando com o texto legível de sempre ("Coordenador: X · ...",
+// usado pelo filtro do Log) e, depois de "\n##", leva um JSON com o que mudou de fato
+// (quantidade, preço, item incluído/removido, campos do pedido) para o Log desenhar a
+// linha do tempo. Registros antigos sem o JSON continuam funcionando.
+const PED_AUDIT_FIELDS = 'cliente_nome,cliente_uf,coordenador,tipo,prazo_tipo,parcela_1_dias,parcela_2_dias,prazo_status,prazo_solicitado_dias,observacao,origem,total,total_caixas,mes,ano';
+
+function prazoLabel(p) {
+  if (!p) return '—';
+  if (p.prazo_status === 'pendente') return `Solicitado ${p.prazo_solicitado_dias || '?'} dias`;
+  if (p.prazo_tipo === 'parcelado') return [p.parcela_1_dias, p.parcela_2_dias].filter(Boolean).join('/') + ' dias';
+  return 'À vista';
+}
+function itensResumo(itens) {
+  return (itens || []).map((i) => ({ s: i.sku, q: Number(i.qty_caixas || 0), v: Number(i.valor_pacote || 0) }));
+}
+function diffPedido(antes, antesItens, depois, depoisItens) {
+  const mud = [];
+  const campo = (label, de, para) => {
+    const a = de == null || de === '' ? '—' : String(de);
+    const b = para == null || para === '' ? '—' : String(para);
+    if (a !== b) mud.push({ t: 'campo', label, de: a, para: b });
+  };
+  campo('Cliente', antes.cliente_nome, depois.cliente_nome);
+  campo('Responsável', antes.coordenador, depois.coordenador);
+  campo('Tipo', String(antes.tipo || '').toUpperCase(), String(depois.tipo || '').toUpperCase());
+  campo('Prazo', prazoLabel(antes), prazoLabel(depois));
+  campo('Origem', antes.origem, depois.origem);
+  campo('Observação', antes.observacao, depois.observacao);
+  const mapA = {}; itensResumo(antesItens).forEach((i) => { mapA[i.s] = i; });
+  const mapD = {}; itensResumo(depoisItens).forEach((i) => { mapD[i.s] = i; });
+  Object.keys(mapA).forEach((sku) => {
+    const a = mapA[sku], d = mapD[sku];
+    if (!d) { mud.push({ t: 'rem', sku, q: a.q, v: a.v }); return; }
+    if (a.q !== d.q) mud.push({ t: 'qtd', sku, de: a.q, para: d.q });
+    if (Math.abs(a.v - d.v) > 0.0001) mud.push({ t: 'preco', sku, de: a.v, para: d.v });
+  });
+  Object.keys(mapD).forEach((sku) => { if (!mapA[sku]) mud.push({ t: 'add', sku, q: mapD[sku].q, v: mapD[sku].v }); });
+  return mud;
+}
+async function gravarAuditPedido(session, acao, descricao, coordenador, totalCx, payload, pedidoId) {
+  const n = payload.mud ? payload.mud.length : 0;
+  const resumo = 'Coordenador: ' + coordenador + (acao === 'editar' ? ' · ' + (n ? n + (n === 1 ? ' alteração' : ' alterações') : 'sem alterações') : '') + ' · ' + totalCx + ' cx';
+  const row = { acao, descricao, detalhes: resumo + '\n##' + JSON.stringify({ v: 1, ...payload }), pedido_id: pedidoId, usuario: session.user };
+  await sbJson('/rest/v1/audit_log', { method: 'POST', headers: MINIMAL, body: JSON.stringify(row) }).catch(() => {});
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
   const session = getSession(req);
@@ -78,6 +125,10 @@ async function salvar(session, body, res) {
       pedPatch = { ...pedPatch, prazo_solicitado_por: session.user, prazo_solicitado_em: new Date().toISOString() };
     }
 
+    // Foto do pedido ANTES da edição (lida do banco) — base do "o que mudou" no Log.
+    const antesR = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}&select=${PED_AUDIT_FIELDS},pedidos_vendas_itens(sku,qty_caixas,valor_pacote)`, { method: 'GET', headers: JSON_HEADERS });
+    const antes = antesR.ok && Array.isArray(antesR.json) ? antesR.json[0] : null;
+
     const r = await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedPatch) });
     if (!r.ok) return res.status(502).json({ error: 'patch_pedido_failed' });
     if (pedPatch.prazo_status === 'pendente') {
@@ -107,6 +158,12 @@ async function salvar(session, body, res) {
       if (pedOriginal) await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: MINIMAL, body: JSON.stringify(pedOriginal) });
       return res.status(502).json({ error: 'insert_itens_failed' });
     }
+    if (antes) {
+      const depois = { ...antes, ...pedPatch };
+      const mud = diffPedido(antes, antes.pedidos_vendas_itens, depois, itens);
+      await gravarAuditPedido(session, 'editar', 'Pedido editado · ' + (depois.cliente_nome || 'Pedido'), depois.coordenador,
+        Number(depois.total_caixas || 0), { mud, itens: itensResumo(itens), cx_de: Number(antes.total_caixas || 0), cx_para: Number(depois.total_caixas || 0), tot_de: Number(antes.total || 0), tot_para: Number(depois.total || 0) }, id);
+    }
     return res.status(200).json({ ok: true, id });
   }
 
@@ -130,6 +187,9 @@ async function salvar(session, body, res) {
     await sbJson(`/rest/v1/pedidos_vendas?id=eq.${encodeURIComponent(newId)}`, { method: 'DELETE', headers: JSON_HEADERS });
     return res.status(502).json({ error: 'insert_itens_failed' });
   }
+
+  await gravarAuditPedido(session, 'criar', 'Novo pedido criado · ' + (pedBody.cliente_nome || 'Pedido'), pedBody.coordenador,
+    Number(pedBody.total_caixas || 0), { itens: itensResumo(itens), tot_para: Number(pedBody.total || 0), prazo: prazoLabel(pedBody), tipo: String(pedBody.tipo || '').toUpperCase(), origem: pedBody.origem || null }, newId);
 
   await notificar(['fabiano', 'admin'], 'pedido_criado', 'Novo pedido criado',
     `${pedBody.cliente_nome || 'Cliente'} · ${pedBody.coordenador || session.user}`, '/vendas').catch(() => {});

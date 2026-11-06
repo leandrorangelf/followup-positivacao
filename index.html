@@ -607,7 +607,7 @@ body{background:var(--canvas);color:var(--ink)}
 .log-stat-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0;background:var(--gray-bg)}
 .log-stat-n{font-size:20px;font-weight:800;line-height:1}
 .log-stat-l{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
-.log-panel{padding:0;overflow:hidden}
+.log-panel{padding:0;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md)}
 .log-dia{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center;padding:9px 18px;background:var(--soft);border-bottom:1px solid var(--line);border-top:1px solid var(--line);font-size:12px;font-weight:800;color:var(--ink)}
 .log-dia:first-child{border-top:0}
 .log-dia span{font-weight:700;color:var(--muted);text-transform:none}
@@ -636,6 +636,66 @@ body{background:var(--canvas);color:var(--ink)}
 .log-restore{margin-top:8px;padding:4px 11px;border-radius:var(--r-sm);background:#065F46;color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:700}
 .log-restaurado{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;color:var(--green);background:var(--green-bg);border-radius:var(--r-pill);padding:2px 9px}
 .log-empty{text-align:center;padding:48px;color:var(--muted);font-size:13px}
+/* LOG POR PEDIDO */
+.lg-tabs{display:inline-flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:4px;margin-bottom:12px}
+.lg-tabs button{border:0;background:transparent;padding:8px 16px;border-radius:9px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.lg-tabs button.on{background:var(--purple-soft);color:var(--purple)}
+.lg-list{display:flex;flex-direction:column;gap:10px}
+.lg-card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--purple);border-radius:var(--r-md);box-shadow:var(--shadow-sm);overflow:hidden}
+.lg-card.st-excluido{border-left-color:var(--red)}.lg-card.st-faturado{border-left-color:var(--green)}.lg-card.st-parcial{border-left-color:var(--warning)}
+.lg-head{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:14px 16px;cursor:pointer}
+.lg-head:hover{background:#fafbfd}
+.lg-cli{font-size:15px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lg-st{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-radius:var(--r-pill);padding:2px 9px}
+.lg-st.aberto{background:var(--purple-soft);color:var(--purple)}.lg-st.excluido{background:var(--red-bg);color:var(--red)}.lg-st.faturado{background:var(--green-bg);color:var(--green)}.lg-st.parcial{background:var(--amber-bg);color:var(--amber)}
+.lg-sub{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.lg-trilha{display:flex;align-items:center;gap:3px;margin-top:9px;flex-wrap:wrap}
+.lg-trilha i{font-style:normal;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12px}
+.lg-trilha b{width:8px;height:2px;background:var(--line);border-radius:2px}
+.lg-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.lg-n{font-size:12px;font-weight:700;color:var(--muted)}
+.lg-n strong{color:var(--ink);font-size:13px}
+.lg-avs{display:flex}
+.lg-avs .log-avatar{border:2px solid var(--card);margin-left:-6px}
+.lg-avs .log-avatar:first-child{margin-left:0}
+.lg-chev{font-size:12px;color:var(--muted);transition:transform .2s}
+.lg-card.open .lg-chev{transform:rotate(180deg)}
+.lg-body{display:none;border-top:1px solid var(--line);padding:16px 16px 6px;background:linear-gradient(#fbfcfe,#fff)}
+.lg-card.open .lg-body{display:block}
+.lg-tl{position:relative;padding-left:46px}
+.lg-tl:before{content:"";position:absolute;left:17px;top:6px;bottom:18px;width:2px;background:var(--line);border-radius:2px}
+.lg-ev{position:relative;padding-bottom:16px}
+.lg-dot{position:absolute;left:-46px;top:0;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:15px;box-shadow:0 0 0 4px #fff}
+.k-criado{background:#DCFCE7;color:#166534}.k-editado{background:var(--purple-soft);color:var(--purple)}.k-faturado{background:#FEF3C7;color:#92400E}.k-revertido{background:#FFEDD5;color:#9A3412}.k-excluido{background:#FEE2E2;color:#991B1B}.k-restaurado{background:#CCFBF1;color:#115E59}.k-gnre{background:#DBEAFE;color:#1E40AF}.k-comentario{background:#F1F5F9;color:#334155}.k-prazo{background:#FEF9C3;color:#854D0E}.k-responsavel{background:#E0E7FF;color:#3730A3}.k-outro{background:var(--gray-bg);color:var(--gray)}
+.lg-ev-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;min-height:36px}
+.lg-ev-title{font-size:13.5px;font-weight:800;color:var(--ink);padding-top:2px}
+.lg-ev-when{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px}
+.lg-ev-who{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:12px;font-weight:700;color:var(--ink)}
+.lg-ev-box{margin-top:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.lg-diff{display:grid;grid-template-columns:118px 1fr;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:12.5px}
+.lg-diff:last-child{border-bottom:0}
+.lg-tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;border-radius:6px;padding:3px 7px;text-align:center;white-space:nowrap}
+.lg-tag.qtd{background:#E0E7FF;color:#3730A3}.lg-tag.preco{background:#FEF3C7;color:#92400E}.lg-tag.add{background:#DCFCE7;color:#166534}.lg-tag.rem{background:#FEE2E2;color:#991B1B}.lg-tag.campo{background:var(--gray-bg);color:var(--gray)}
+.lg-what{font-weight:700;color:var(--ink);margin-right:6px}
+.lg-de{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(185,28,28,.5)}
+.lg-arrow{color:var(--muted);margin:0 6px}
+.lg-para{font-weight:800;color:var(--ink)}
+.lg-delta{display:inline-block;margin-left:6px;font-size:11px;font-weight:800;border-radius:var(--r-pill);padding:1px 7px}
+.lg-delta.up{background:var(--green-bg);color:var(--green)}.lg-delta.down{background:var(--red-bg);color:var(--red)}
+.lg-riscado{text-decoration:line-through;color:var(--muted)}
+.lg-tot{display:flex;flex-wrap:wrap;gap:14px;padding:8px 12px;background:var(--soft);font-size:12px;color:var(--muted);font-weight:600}
+.lg-tot strong{color:var(--ink)}
+.lg-itens{width:100%;border-collapse:collapse;font-size:12.5px}
+.lg-itens th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:7px 12px;background:var(--soft);font-weight:800}
+.lg-itens td{padding:7px 12px;border-top:1px solid var(--line);font-weight:600;color:var(--ink)}
+.lg-itens th:not(:first-child),.lg-itens td:not(:first-child){text-align:right}
+.lg-itens tfoot td{font-weight:800;background:var(--soft)}
+.lg-nota{font-size:11.5px;color:var(--muted);padding:8px 12px;font-style:italic}
+.lg-quote{margin-top:8px;padding:9px 12px;border-left:3px solid var(--purple);background:var(--purple-soft);border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink);line-height:1.45}
+.lg-ev.fantasma .lg-ev-title{color:var(--muted)}
+.lg-foot{display:flex;justify-content:flex-end;gap:8px;padding:0 0 12px}
+.lg-vazio{background:var(--card);border:1px dashed var(--line);border-radius:var(--r-md)}
+@media(max-width:780px){.lg-head{grid-template-columns:1fr}.lg-right{flex-direction:row;align-items:center;justify-content:space-between}.lg-diff{grid-template-columns:1fr;gap:4px}.lg-tag{justify-self:start}.lg-tl{padding-left:40px}.lg-dot{left:-40px;width:30px;height:30px;font-size:13px}.lg-tl:before{left:14px}.lg-ev-head{flex-direction:column;gap:4px}.lg-tabs{display:flex}.lg-tabs button{flex:1}.lg-ev-box{overflow-x:auto}.lg-itens{font-size:11.5px}.lg-itens th,.lg-itens td{padding:6px 7px;white-space:nowrap}}
 .log-hist{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
 .log-hist .log-dia{position:static}
 .log-hist .log-item{padding:10px 12px;gap:10px}
@@ -1578,19 +1638,24 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
 <div id="s-log" class="screen" style="display:none">
   <div class="page-pad">
     <div class="section-head">
-      <div><div class="section-title">Log de atividades</div><div class="section-sub">Quem fez o quê, e quando — agrupado por dia.</div></div>
+      <div><div class="section-title">Log de atividades</div><div class="section-sub">Histórico de cada pedido: quem criou, quem alterou, o que mudou e quando.</div></div>
       <button class="secondary-btn" onclick="carregarLog()">↺ Atualizar</button>
+    </div>
+    <div class="lg-tabs" id="lg-tabs">
+      <button data-m="pedidos" class="on" onclick="logSetModo('pedidos')">📦 Por pedido</button>
+      <button data-m="outras" onclick="logSetModo('outras')">🗂️ Outras atividades</button>
     </div>
     <div class="log-toolbar">
       <div class="log-periodos" id="log-periodos">
         <button data-p="1" onclick="logSetPeriodo(1)">Hoje</button>
         <button data-p="7" onclick="logSetPeriodo(7)">7 dias</button>
         <button data-p="30" class="on" onclick="logSetPeriodo(30)">30 dias</button>
+        <button data-p="90" onclick="logSetPeriodo(90)">90 dias</button>
         <button data-p="0" onclick="logSetPeriodo(0)">Tudo</button>
       </div>
       <div class="log-filtros">
         <input id="log-filtro-cliente" class="client-filter" type="text" placeholder="🔎 Buscar cliente..." oninput="logFiltrarClienteDebounce()">
-        <select id="log-filtro-usuario" class="client-filter" onchange="carregarLog()">
+        <select id="log-filtro-usuario" class="client-filter" onchange="logRender()">
           <option value="">Quem fez: todos</option>
           <option value="admin">Leandro</option>
           <option value="vagner">Vagner</option>
@@ -1600,7 +1665,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
           <option value="Vitor Valle">Vitor Valle</option>
           <option value="Rosana">Rosana</option>
         </select>
-        <select id="log-filtro-coord" class="client-filter" onchange="carregarLog()">
+        <select id="log-filtro-coord" class="client-filter" onchange="logRender()">
           <option value="">Coordenador: todos</option>
           <option value="Igor Cater">Igor Cater</option>
           <option value="Junior">Junior</option>
@@ -1612,9 +1677,7 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
       </div>
     </div>
     <div class="log-resumo" id="log-resumo"></div>
-    <div class="panel log-panel">
-      <div id="log-content"><div class="loading">Carregando...</div></div>
-    </div>
+    <div id="log-content"><div class="loading">Carregando...</div></div>
   </div>
 </div>
 
@@ -4564,15 +4627,10 @@ async function vdSalvarPedido(){
       toast('Pedido salvo, mas o Forecast não foi arquivado. Exclua ou marque convertido manualmente.','error',7000);
     }
     toast('Pedido salvo!','ok');
-    // LOG
-    const acao=vdEditPedidoId?'editar':'criar';
+    // LOG: criação/edição do pedido é registrada no servidor (api/pedidos-vendas/salvar),
+    // com o que mudou item a item — não duplicar aqui.
     const cliNome=cli.nome+(cli.uf?' ('+cli.uf+')':'');
     const totalCxLog=itens.reduce((s,i)=>s+i.qty_caixas,0);
-    auditLog(acao,
-      (acao==='criar'?'Novo pedido criado':'Pedido editado')+' · '+cliNome,
-      'Coordenador: '+coordPedido+(original&&original.coordenador!==coordPedido?' (antes: '+original.coordenador+')':'')+' · SKUs: '+itens.map(i=>vdSkuLabel(i.sku)+' '+i.qty_caixas+'cx').join(', ')+' · '+totalCxLog+' cx',
-      pedidoId
-    );
     if(forecastOrigemAtual&&forecastConvertidoOk){
       auditLog('editar','Forecast convertido em pedido · '+(forecastOrigemLabelAtual||cliNome),'Coordenador: '+coordAtual+' · Pedido real criado · '+totalCxLog+' cx');
       vdForecastOrigemId=null;vdForecastOrigemLabel='';
@@ -4698,7 +4756,7 @@ async function vdCarregarHistoricoPedido(id){
     el.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Histórico</div><div class="log-empty" style="padding:16px 0">Nenhum evento registrado.</div>';
     return;
   }
-  el.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">Histórico</div><div class="log-hist">'+logItensPorDia(lista)+'</div>';
+  el.innerHTML='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:4px 0 12px">Histórico do pedido</div>'+logTimelineHTML(lista.slice().reverse(),vdDetAtual);
 }
 function vdFecharDet(){g('modal-vd-det').classList.remove('open');vdDetAtual=null}
 function vdComplementarPedidoAtual(){if(vdDetAtual){const id=vdDetAtual.id;vdFecharDet();vdComplementarPedido(id)}}
@@ -5450,7 +5508,7 @@ function nomeUsuarioLog(u){
 async function auditLog(acao, descricao, detalhes, pedidoId){
   // Log é paralelo: nunca pode impedir a ação principal do sistema.
   if(!user||isDiretoria)return;
-  const acaoSegura=['criar','editar','excluir','faturar'].includes(acao)?acao:'criar';
+  const acaoSegura=['criar','editar','excluir','faturar'].includes(acao)?acao:(acao==='reverter_faturamento'?'faturar':'editar');
   try{
     await fetch('/api/audit',{
       method:'POST',credentials:'same-origin',
@@ -5539,9 +5597,9 @@ async function irLog(){
 let logFiltrarClienteTimer=null;
 function logFiltrarClienteDebounce(){
   clearTimeout(logFiltrarClienteTimer);
-  logFiltrarClienteTimer=setTimeout(carregarLog,350);
+  logFiltrarClienteTimer=setTimeout(logRender,250);
 }
-let logPeriodo=30,logDados=[],logRestaurados=new Set(),logLimite=500;
+let logPeriodo=30,logDados=[],logRestaurados=new Set(),logLimite=1000,logModo='pedidos',logPedidosInfo={},logAbertos=new Set();
 const LOG_ACOES={criar:{ic:'➕',l:'Criações'},editar:{ic:'✏️',l:'Edições'},faturar:{ic:'💰',l:'Faturamentos'},excluir:{ic:'🗑️',l:'Exclusões'}};
 const LOG_CORES={admin:'#10213f',vagner:'#5b4bd6',fabiano:'#b45309',diretoria:'#64748b','Igor Cater':'#0f9fa8','Junior':'#15803d','Vitor Valle':'#be185d','Rosana':'#7c3aed'};
 function logSetPeriodo(d){
@@ -5612,48 +5670,220 @@ function logItensPorDia(lista,opts){
   flush();
   return html;
 }
+// ---------- Log por pedido: linha do tempo ----------
+const LG_KIND={
+  criado:{ic:'✨',l:'Criados'},editado:{ic:'✏️',l:'Editados'},faturado:{ic:'💰',l:'Faturados'},
+  revertido:{ic:'↩️'},excluido:{ic:'🗑️',l:'Excluídos'},restaurado:{ic:'♻️'},gnre:{ic:'📄'},
+  comentario:{ic:'💬'},prazo:{ic:'⏳'},responsavel:{ic:'👤'},outro:{ic:'📝'}
+};
+function logKind(r){
+  const d=String(r.descricao||'');
+  if(r.acao==='excluir'&&/exclu/i.test(d))return 'excluido';
+  if(/restaurado/i.test(d))return 'restaurado';
+  if(/Revers/i.test(d))return 'revertido';
+  if(/criado/i.test(d)&&r.acao==='criar')return 'criado';
+  if(/^Pedido editado/i.test(d))return 'editado';
+  if(r.acao==='faturar'||/Faturamento/i.test(d))return 'faturado';
+  if(/GNRE|Comprovante|Anexo/i.test(d))return 'gnre';
+  if(/Coment/i.test(d))return 'comentario';
+  if(/Prazo/i.test(d))return 'prazo';
+  if(/Responsável/i.test(d))return 'responsavel';
+  return 'outro';
+}
+function logPayload(r){
+  const t=String(r.detalhes||'');const i=t.indexOf('\n##');
+  if(i<0)return {texto:t,dados:null};
+  let dados=null;try{dados=JSON.parse(t.slice(i+3))}catch(e){}
+  return {texto:t.slice(0,i),dados};
+}
+// Registros antigos (antes do diff no servidor) só têm "SKUs: Gudang Red 10cx, ..." — dá pra comparar quantidades.
+function logSkusLegado(texto){
+  const m=String(texto||'').match(/SKUs:\s*([^·]+)/);if(!m)return null;
+  const o={};m[1].split(',').forEach(x=>{const mm=x.trim().match(/^(.+?)\s+([\d.,]+)\s*cx$/i);if(mm)o[mm[1].trim()]=Number(mm[2].replace(/\./g,'').replace(',','.'))});
+  return o;
+}
+function logRel(d){
+  const min=Math.round((Date.now()-new Date(d))/60000);
+  if(min<1)return 'agora';if(min<60)return 'há '+min+' min';
+  const h=Math.round(min/60);if(h<24)return 'há '+h+'h';
+  const dd=Math.round(h/24);if(dd<30)return 'há '+dd+(dd===1?' dia':' dias');
+  return new Date(d).toLocaleDateString('pt-BR');
+}
+function logAvatar(u){const n=nomeUsuarioLog(u);return '<span class="log-avatar" title="'+vdEsc(n)+'" style="background:'+(LOG_CORES[u]||'var(--purple)')+'">'+vdEsc(n.charAt(0).toUpperCase())+'</span>'}
+function logDelta(de,para,fmt){
+  const d=Number(para)-Number(de);if(!d)return '';
+  const pct=Number(de)?' ('+(d>0?'+':'')+Math.round(d/Number(de)*100)+'%)':'';
+  return '<span class="lg-delta '+(d>0?'up':'down')+'">'+(d>0?'+':'−')+fmt(Math.abs(d))+pct+'</span>';
+}
+function logDiffRow(m){
+  const sku=m.sku?vdEsc(vdSkuLabel(m.sku)):'';
+  const cx=v=>vdFmtQtd(v)+' cx';
+  if(m.t==='qtd')return '<div class="lg-diff"><span class="lg-tag qtd">Quantidade</span><div><span class="lg-what">'+sku+'</span><span class="lg-de">'+cx(m.de)+'</span><span class="lg-arrow">→</span><span class="lg-para">'+cx(m.para)+'</span>'+logDelta(m.de,m.para,cx)+'</div></div>';
+  if(m.t==='preco')return '<div class="lg-diff"><span class="lg-tag preco">Preço</span><div><span class="lg-what">'+sku+'</span><span class="lg-de">'+vdFmt(m.de)+'/pct</span><span class="lg-arrow">→</span><span class="lg-para">'+vdFmt(m.para)+'/pct</span>'+logDelta(m.de,m.para,vdFmt)+'</div></div>';
+  if(m.t==='add')return '<div class="lg-diff"><span class="lg-tag add">+ Item incluído</span><div><span class="lg-what">'+sku+'</span>'+cx(m.q)+(m.v?' × '+vdFmt(m.v)+'/pct':'')+'</div></div>';
+  if(m.t==='rem')return '<div class="lg-diff"><span class="lg-tag rem">− Item removido</span><div><span class="lg-what lg-riscado">'+sku+'</span><span class="lg-riscado">'+cx(m.q)+(m.v?' × '+vdFmt(m.v)+'/pct':'')+'</span></div></div>';
+  return '<div class="lg-diff"><span class="lg-tag campo">'+vdEsc(m.label||'Campo')+'</span><div><span class="lg-de">'+vdEsc(m.de)+'</span><span class="lg-arrow">→</span><span class="lg-para">'+vdEsc(m.para)+'</span></div></div>';
+}
+function logItensTabela(itens,total){
+  const linhas=(itens||[]).map(i=>{const sub=i.q*(VD_PACKS[i.s]||0)*i.v;return '<tr><td>'+vdEsc(vdSkuLabel(i.s))+'</td><td>'+vdFmtQtd(i.q)+' cx</td><td>'+vdFmt(i.v)+'</td><td>'+vdFmt(sub)+'</td></tr>'}).join('');
+  const cx=(itens||[]).reduce((a,i)=>a+i.q,0);
+  return '<table class="lg-itens"><thead><tr><th>Produto</th><th>Caixas</th><th>Preço/pct</th><th>Subtotal</th></tr></thead><tbody>'+linhas+'</tbody><tfoot><tr><td>Total</td><td>'+vdFmtQtd(cx)+' cx</td><td></td><td>'+(total!=null?vdFmt(total):'')+'</td></tr></tfoot></table>';
+}
+function logChipsTexto(texto,semCoord){
+  const chips=[],textos=[];
+  String(texto||'').split(' · ').map(x=>x.trim()).filter(Boolean).forEach(x=>{
+    if(/^id:/.test(x)||/^SKUs:/.test(x))return;
+    const mC=x.match(/^Coordenador:\s*(.+)$/);
+    if(mC){if(!semCoord)chips.push('<span class="log-chip coord">👤 '+vdEsc(mC[1])+'</span>');return}
+    if(/^[\d.,]+\s*cx$/i.test(x)){chips.push('<span class="log-chip cx">📦 '+vdEsc(x)+'</span>');return}
+    if(x.length>48){textos.push(vdEsc(x));return}
+    chips.push('<span class="log-chip">'+vdEsc(x)+'</span>');
+  });
+  return (chips.length?'<div class="log-chips">'+chips.join('')+'</div>':'')+(textos.length?'<div class="lg-quote">'+textos.join('<br>')+'</div>':'');
+}
+// evs em ordem cronológica (mais antigo primeiro).
+function logTimelineHTML(evs,ped){
+  let ultimoLegado=null,html='';
+  const primeiro=evs[0];
+  if(ped&&ped.created_at&&(!primeiro||logKind(primeiro)!=='criado')&&(!primeiro||new Date(ped.created_at)<new Date(primeiro.criado_em))){
+    html+='<div class="lg-ev fantasma"><div class="lg-dot k-criado">✨</div><div class="lg-ev-head"><div><div class="lg-ev-title">Pedido criado</div><div class="lg-ev-when">'+new Date(ped.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})+' · data de criação do pedido</div></div>'+(ped.criado_por?'<div class="lg-ev-who">'+logAvatar(ped.criado_por)+vdEsc(nomeUsuarioLog(ped.criado_por))+'</div>':'')+'</div></div>';
+  }
+  evs.forEach(r=>{
+    const k=logKind(r);const {texto,dados}=logPayload(r);
+    const desc=String(r.descricao||'—');const cut=desc.indexOf(' · ');
+    const titulo=cut>0?desc.slice(0,cut):desc;
+    const quando=new Date(r.criado_em).toLocaleString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    let corpo='';
+    if(k==='editado'&&dados){
+      const rows=(dados.mud||[]).map(logDiffRow).join('');
+      const tot=[];
+      if(dados.cx_de!=null&&dados.cx_de!==dados.cx_para)tot.push('Caixas: <strong>'+vdFmtQtd(dados.cx_de)+' → '+vdFmtQtd(dados.cx_para)+'</strong>');
+      if(dados.tot_de!=null&&Math.abs(dados.tot_de-dados.tot_para)>0.009)tot.push('Valor: <strong>'+vdFmt(dados.tot_de)+' → '+vdFmt(dados.tot_para)+'</strong>');
+      corpo='<div class="lg-ev-box">'+(rows||'<div class="lg-nota">Salvo sem nenhuma alteração.</div>')+(tot.length?'<div class="lg-tot">'+tot.join('<span>·</span>')+'</div>':'')+'</div>';
+      ultimoLegado=null;
+    }else if(k==='criado'&&dados){
+      const extra=[dados.tipo,dados.prazo&&('Prazo: '+dados.prazo),dados.origem&&('Origem: '+dados.origem)].filter(Boolean).map(x=>'<span class="log-chip">'+vdEsc(x)+'</span>').join('');
+      corpo=(extra?'<div class="log-chips">'+extra+'</div>':'')+'<div class="lg-ev-box">'+logItensTabela(dados.itens,dados.tot_para)+'</div>';
+    }else if(k==='criado'||k==='editado'){
+      const snap=logSkusLegado(texto);
+      if(k==='editado'&&snap&&ultimoLegado){
+        const mud=[];
+        Object.keys(ultimoLegado).forEach(n=>{if(!(n in snap))mud.push({t:'rem',sku:n,q:ultimoLegado[n]});else if(snap[n]!==ultimoLegado[n])mud.push({t:'qtd',sku:n,de:ultimoLegado[n],para:snap[n]})});
+        Object.keys(snap).forEach(n=>{if(!(n in ultimoLegado))mud.push({t:'add',sku:n,q:snap[n]})});
+        corpo='<div class="lg-ev-box">'+(mud.map(logDiffRow).join('')||'<div class="lg-nota">Quantidades iguais — a alteração foi em preço, prazo ou outro campo (registro antigo, sem esse detalhe).</div>')+'</div>';
+      }else{
+        corpo=(snap?'<div class="log-chips">'+Object.keys(snap).map(n=>'<span class="log-chip cx">📦 '+vdEsc(n)+' · '+vdFmtQtd(snap[n])+' cx</span>').join('')+'</div>':'')+logChipsTexto(texto,!!ped)+(k==='editado'?'<div class="lg-nota" style="padding:6px 0 0">Registro antigo: sem o detalhe do que mudou.</div>':'');
+      }
+      if(snap)ultimoLegado=snap;
+    }else{
+      corpo=logChipsTexto(texto,!!ped);
+    }
+    html+='<div class="lg-ev"><div class="lg-dot k-'+k+'">'+LG_KIND[k].ic+'</div><div class="lg-ev-head"><div><div class="lg-ev-title">'+vdEsc(titulo)+'</div><div class="lg-ev-when">'+quando+'</div></div><div class="lg-ev-who">'+logAvatar(r.usuario)+vdEsc(nomeUsuarioLog(r.usuario))+'</div></div>'+corpo+'</div>';
+  });
+  return '<div class="lg-tl">'+html+'</div>';
+}
+function logStatusPedido(ped){
+  if(!ped)return {c:'aberto',l:'Pedido'};
+  if(ped.deleted_at)return {c:'excluido',l:'Excluído'};
+  const st=String(ped.status||'');
+  if(st==='faturado'||st==='entregue')return {c:'faturado',l:st==='entregue'?'Entregue':'Faturado'};
+  if(st==='parcial')return {c:'parcial',l:'Parcial'};
+  return {c:'aberto',l:'Em aberto'};
+}
+function logGrupos(){
+  const map={};
+  logDados.filter(r=>r.pedido_id).forEach(r=>{(map[r.pedido_id]=map[r.pedido_id]||{id:r.pedido_id,evs:[]}).evs.push(r)});
+  return Object.values(map).map(gp=>{
+    gp.evs.sort((a,b)=>new Date(a.criado_em)-new Date(b.criado_em));
+    gp.ped=logPedidosInfo[gp.id]||null;
+    gp.ultimo=gp.evs[gp.evs.length-1].criado_em;
+    gp.kinds=new Set(gp.evs.map(logKind));
+    const d=String(gp.evs[gp.evs.length-1].descricao||'');
+    gp.cliente=gp.ped?gp.ped.cliente_nome:(d.indexOf(' · ')>0?d.slice(d.indexOf(' · ')+3):'Pedido');
+    const mc=gp.evs.map(r=>String(r.detalhes||'').match(/Coordenador:\s*([^·(\n]+)/)).filter(Boolean).pop();
+    gp.coord=gp.ped?gp.ped.coordenador:(mc?mc[1].trim():'');
+    return gp;
+  }).sort((a,b)=>new Date(b.ultimo)-new Date(a.ultimo));
+}
+function logCardHTML(gp){
+  const ped=gp.ped,st=logStatusPedido(ped);
+  const sub=[];
+  if(gp.coord)sub.push('<span class="log-chip coord">👤 '+vdEsc(gp.coord)+'</span>');
+  if(ped){
+    sub.push('<span class="log-chip">'+vdEsc(MESES[ped.mes]||'')+'/'+vdEsc(String(ped.ano||''))+'</span>');
+    if(ped.tipo)sub.push('<span class="log-chip">'+vdEsc(String(ped.tipo).toUpperCase())+'</span>');
+    sub.push('<span class="log-chip cx">📦 '+vdFmtQtd(ped.total_caixas)+' cx</span>');
+    if(ped.total)sub.push('<span class="log-chip">'+vdFmt(ped.total)+'</span>');
+  }
+  const trilha=gp.evs.slice(-14).map(r=>{const k=logKind(r);return '<i class="k-'+k+'" title="'+vdEsc(String(r.descricao||'').split(' · ')[0])+' · '+vdEsc(nomeUsuarioLog(r.usuario))+'">'+LG_KIND[k].ic+'</i>'}).join('<b></b>');
+  const users=[...new Set(gp.evs.map(r=>r.usuario))];
+  const nEd=gp.evs.filter(r=>logKind(r)==='editado').length;
+  const aberto=logAbertos.has(gp.id);
+  const restaurar=ped&&ped.deleted_at?'<div class="lg-foot"><button class="log-restore" onclick="logRestaurarPedido(\''+gp.id+'\')">↩ Restaurar pedido</button></div>':'';
+  return '<div class="lg-card st-'+st.c+(aberto?' open':'')+'" id="lg-'+gp.id+'">'+
+    '<div class="lg-head" onclick="logToggle(\''+gp.id+'\')">'+
+      '<div><div class="lg-cli">'+vdEsc(gp.cliente||'Pedido')+(ped&&ped.cliente_uf?' <span style="color:var(--muted);font-weight:700;font-size:13px">'+vdEsc(ped.cliente_uf)+'</span>':'')+'<span class="lg-st '+st.c+'">'+st.l+'</span>'+(nEd?'<span class="lg-st aberto" style="background:#FEF3C7;color:#92400E">✏️ '+nEd+(nEd===1?' edição':' edições')+'</span>':'')+'</div>'+
+      '<div class="lg-sub">'+sub.join('')+'</div><div class="lg-trilha">'+trilha+'</div></div>'+
+      '<div class="lg-right"><div class="lg-n"><strong>'+gp.evs.length+'</strong> '+(gp.evs.length===1?'evento':'eventos')+' · '+logRel(gp.ultimo)+'</div><div class="lg-avs">'+users.map(logAvatar).join('')+'</div><span class="lg-chev">▼</span></div>'+
+    '</div>'+
+    '<div class="lg-body">'+(aberto?logTimelineHTML(gp.evs,ped)+restaurar:'')+'</div>'+
+  '</div>';
+}
+function logToggle(id){
+  if(logAbertos.has(id))logAbertos.delete(id);else logAbertos.add(id);
+  const gp=logGrupos().find(x=>x.id===id);const el=g('lg-'+id);
+  if(gp&&el)el.outerHTML=logCardHTML(gp);
+}
+function logSetModo(m){
+  logModo=m;g('log-filtro-acao').value='';
+  document.querySelectorAll('#lg-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  logRender();
+}
 async function carregarLog(){
   if(!g('log-content'))return;
   g('log-content').innerHTML='<div class="loading">Carregando...</div>';
-  const filtroUser=g('log-filtro-usuario')?.value||'';
-  const filtroCoord=g('log-filtro-coord')?.value||'';
-  const filtroCliente=(g('log-filtro-cliente')?.value||'').trim();
-  // Ação é filtrada no client (cards de resumo), pra os totais continuarem visíveis.
   let url='/api/audit?order=criado_em.desc&limit='+logLimite;
   if(logPeriodo){
     const ini=new Date();ini.setHours(0,0,0,0);ini.setDate(ini.getDate()-(logPeriodo-1));
     url+='&criado_em=gte.'+encodeURIComponent(ini.toISOString());
   }
-  if(filtroUser)url+='&usuario=eq.'+encodeURIComponent(filtroUser);
-  // Não existe coluna de coordenador na tabela — todo auditLog() grava "Coordenador: X"
-  // em `detalhes`, então filtramos por texto ali.
-  if(filtroCoord)url+='&detalhes=ilike.*'+encodeURIComponent('Coordenador: '+filtroCoord)+'*';
-  // Cliente também não tem coluna própria — `descricao` sempre traz "... · <Cliente>".
-  if(filtroCliente)url+='&descricao=ilike.*'+encodeURIComponent(filtroCliente)+'*';
   const data=await sb(url,{ret:true});
   logDados=Array.isArray(data)?data:[];
-  // Descobre quais pedidos excluídos já foram restaurados (deleted_at voltou a null).
-  logRestaurados=new Set();
-  const ids=[...new Set(logDados.filter(r=>r.acao==='excluir').map(r=>(String(r.detalhes||'').match(/id:([a-zA-Z0-9_-]+)/)||[])[1]).filter(Boolean))];
-  if(ids.length){
-    const ped=await sb('/rest/v1/pedidos_vendas?id=in.('+ids.map(encodeURIComponent).join(',')+')&select=id,deleted_at',{ret:true});
-    if(Array.isArray(ped))ped.forEach(p=>{if(!p.deleted_at)logRestaurados.add(p.id)});
+  // Dados atuais de cada pedido (inclui excluídos) — status, cliente, coordenador, totais.
+  logPedidosInfo={};logRestaurados=new Set();
+  const ids=[...new Set(logDados.map(r=>r.pedido_id).filter(x=>x&&/^[0-9a-f-]{36}$/i.test(x)))];
+  for(let i=0;i<ids.length;i+=60){
+    const ped=await sb('/rest/v1/pedidos_vendas?id=in.('+ids.slice(i,i+60).join(',')+')&select=id,cliente_nome,cliente_uf,coordenador,mes,ano,tipo,total,total_caixas,status,deleted_at,created_at,criado_por',{ret:true});
+    if(Array.isArray(ped))ped.forEach(p=>{logPedidosInfo[p.id]=p;if(!p.deleted_at)logRestaurados.add(p.id)});
   }
   logRender();
 }
 function logRender(){
+  if(!g('log-content'))return;
   const acaoSel=g('log-filtro-acao')?.value||'';
-  const cont={criar:0,editar:0,faturar:0,excluir:0};
-  logDados.forEach(r=>{cont[LOG_ACOES[r.acao]?r.acao:'editar']++});
+  const fUser=g('log-filtro-usuario')?.value||'';
+  const fCoord=g('log-filtro-coord')?.value||'';
+  const fCli=(g('log-filtro-cliente')?.value||'').trim().toLowerCase();
   const stat=(k,ic,l,n)=>'<button class="log-stat'+(acaoSel===k?' on':'')+'" onclick="logSetAcao(\''+k+'\')"><span class="log-stat-ic">'+ic+'</span><span><div class="log-stat-n">'+n.toLocaleString('pt-BR')+'</div><div class="log-stat-l">'+l+'</div></span></button>';
-  g('log-resumo').innerHTML=stat('','📋','Total',logDados.length)+Object.keys(LOG_ACOES).map(k=>stat(k,LOG_ACOES[k].ic,LOG_ACOES[k].l,cont[k])).join('');
-  const lista=acaoSel?logDados.filter(r=>(LOG_ACOES[r.acao]?r.acao:'editar')===acaoSel):logDados;
-  if(!lista.length){
-    g('log-content').innerHTML='<div class="log-empty">📋 Nenhuma atividade encontrada neste período.</div>';
+  const aviso=logDados.length>=logLimite?'<div class="log-mais">Mostrando as '+logLimite+' atividades mais recentes — escolha um período menor para ver as anteriores.</div>':'';
+  if(logModo==='pedidos'){
+    let grupos=logGrupos().filter(gp=>
+      (!fUser||gp.evs.some(r=>r.usuario===fUser))&&
+      (!fCoord||gp.coord===fCoord)&&
+      (!fCli||String(gp.cliente||'').toLowerCase().includes(fCli)));
+    const cnt=k=>grupos.filter(gp=>gp.kinds.has(k)).length;
+    g('log-resumo').innerHTML=stat('','📦','Pedidos movimentados',grupos.length)+['criado','editado','faturado','excluido'].map(k=>stat(k,LG_KIND[k].ic,LG_KIND[k].l,cnt(k))).join('');
+    if(acaoSel)grupos=grupos.filter(gp=>gp.kinds.has(acaoSel));
+    if(grupos.length===1)logAbertos.add(grupos[0].id);
+    g('log-content').innerHTML=grupos.length?'<div class="lg-list">'+grupos.map(logCardHTML).join('')+'</div>'+aviso:'<div class="log-empty lg-vazio">📦 Nenhum pedido movimentado neste período.</div>';
     return;
   }
-  g('log-content').innerHTML=logItensPorDia(lista,{restaurar:true})+
-    (logDados.length>=logLimite?'<div class="log-mais">Mostrando as '+logLimite+' atividades mais recentes — use os filtros ou um período menor para ver as anteriores.</div>':'');
+  let lista=logDados.filter(r=>!r.pedido_id&&(!fUser||r.usuario===fUser)&&(!fCoord||String(r.detalhes||'').includes('Coordenador: '+fCoord))&&(!fCli||String(r.descricao||'').toLowerCase().includes(fCli)));
+  const cont={criar:0,editar:0,faturar:0,excluir:0};
+  lista.forEach(r=>{cont[LOG_ACOES[r.acao]?r.acao:'editar']++});
+  g('log-resumo').innerHTML=stat('','📋','Total',lista.length)+Object.keys(LOG_ACOES).map(k=>stat(k,LOG_ACOES[k].ic,LOG_ACOES[k].l,cont[k])).join('');
+  if(acaoSel)lista=lista.filter(r=>(LOG_ACOES[r.acao]?r.acao:'editar')===acaoSel);
+  g('log-content').innerHTML=lista.length?'<div class="panel log-panel">'+logItensPorDia(lista,{restaurar:true})+'</div>'+aviso:'<div class="log-empty lg-vazio">📋 Nenhuma atividade encontrada neste período.</div>';
 }
 async function logRestaurarPedido(id){
   if(!confirm('Restaurar este pedido? Ele voltará a aparecer no sistema.'))return;
