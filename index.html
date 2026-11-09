@@ -1656,6 +1656,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <select id="fab-ano-a" class="client-filter" onchange="fabAplicarPeriodo()" style="min-width:100px"></select>
         <span style="font-size:12px;color:var(--muted)">vs. ano</span>
         <select id="fab-ano-b" class="client-filter" onchange="fabAplicarPeriodo()" style="min-width:100px"></select>
+        <span style="font-size:12px;color:var(--muted)">coord.</span>
+        <select id="fab-coord" class="client-filter" onchange="fabAplicarPeriodo()" style="min-width:150px"><option value="todos">Todos (geral)</option></select>
         <button class="secondary-btn" onclick="irFabrica()">↺ Atualizar</button>
       </div>
     </div>
@@ -5965,7 +5967,7 @@ async function irRelatorios(){
 const FAB_GUDANG_SKUS=['GR','GM','GTWIN'];
 const FAB_CRETEC_SKUS=['CM','CC'];
 const FAB_CLICK_SKUS=['CK'];
-let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={},fabFimMesFiltro='auto',fabAnoA=null,fabAnoB=null;
+let fabDados=[],fabCarregando=false,fabAnos=[],fabPorAno={},fabFimMesFiltro='auto',fabAnoA=null,fabAnoB=null,fabCoordFiltro='todos';
 async function irFabrica(){
   if(isFabiano()){toast('Acesso não disponível','error');return;}
   show('s-fabrica');
@@ -5981,6 +5983,12 @@ function fabAplicarPeriodo(){
   fabFimMesFiltro=g('fab-fim-mes').value;
   fabAnoA=parseInt(g('fab-ano-a').value);
   fabAnoB=parseInt(g('fab-ano-b').value);
+  fabCoordFiltro=g('fab-coord')?.value||'todos';
+  fabRender();
+}
+function fabFiltrarCoord(c){
+  fabCoordFiltro=c;
+  const el=g('fab-coord');if(el)el.value=c;
   fabRender();
 }
 async function fabCarregar(){
@@ -5998,9 +6006,19 @@ function fabRender(){
   if(!fabDados.length){g('fab-content').innerHTML='<div class="empty">Nenhum pedido de fábrica encontrado.</div>';fabAnos=[];return;}
 
   const anos=[...new Set(fabDados.map(p=>Number(p.ano)))].sort((a,b)=>a-b);
+  // filtro de coordenador: lista = ordem fixa dos conhecidos + qualquer outro nome que aparecer nos pedidos
+  const coordsDados=[...new Set(fabDados.map(p=>p.coordenador).filter(Boolean))];
+  const coordsLista=[...CLI_OWNER_KEYS.filter(c=>coordsDados.includes(c)),...coordsDados.filter(c=>!CLI_OWNER_KEYS.includes(c)).sort()];
+  if(fabCoordFiltro!=='todos'&&!coordsLista.includes(fabCoordFiltro))fabCoordFiltro='todos';
+  const coordEl=g('fab-coord');
+  if(coordEl){
+    coordEl.innerHTML='<option value="todos">Todos (geral)</option>'+coordsLista.map(c=>'<option value="'+vdEsc(c)+'">'+vdEsc(c)+'</option>').join('');
+    coordEl.value=fabCoordFiltro;
+  }
+  const dadosFiltro=fabCoordFiltro==='todos'?fabDados:fabDados.filter(p=>p.coordenador===fabCoordFiltro);
   const porAno={};
   anos.forEach(a=>porAno[a]={total:Array(12).fill(0),gudang:Array(12).fill(0),cretec:Array(12).fill(0),click:Array(12).fill(0)});
-  fabDados.forEach(p=>{
+  dadosFiltro.forEach(p=>{
     const ano=Number(p.ano),mes=Number(p.mes);
     if(!porAno[ano]||!(mes>=0&&mes<=11))return;
     porAno[ano].total[mes]+=vdResumoPedido(p).pedidoCx;
@@ -6060,6 +6078,40 @@ function fabRender(){
     <div class="dash-kpi ${pctAB===null?'':pctAB>=0?'good':'danger'}"><div class="dash-kpi-label">${fabAnoB} vs. ${fabAnoA}</div><div class="dash-kpi-value" style="font-size:20px">${varHTML(pctAB)}</div><div class="dash-kpi-sub">${periodoLabel(fabAnoA)} → ${periodoLabel(fabAnoB)}</div></div>
     <div class="dash-kpi"><div class="dash-kpi-label">Período comparado</div><div class="dash-kpi-value" style="font-size:20px">Jan–${MESES[fimEscolhido].slice(0,3)}</div><div class="dash-kpi-sub">${fimManual!==null?'fixado no filtro':'automático (até o último mês fechado)'}</div></div>
   </div>`;
+
+  // crescimento/queda por coordenador: mesmo período e mesmos anos dos KPIs, sempre com todos + totalizador geral
+  const coordTot={};
+  coordsLista.forEach(c=>coordTot[c]={a:0,b:0});
+  fabDados.forEach(p=>{
+    const c=p.coordenador,ano=Number(p.ano),mes=Number(p.mes);
+    if(!coordTot[c]||!(mes>=0&&mes<=fimEscolhido))return;
+    const cx=vdResumoPedido(p).pedidoCx;
+    if(ano===fabAnoA)coordTot[c].a+=cx;
+    if(ano===fabAnoB)coordTot[c].b+=cx;
+  });
+  const geralA=coordsLista.reduce((s,c)=>s+coordTot[c].a,0);
+  const geralB=coordsLista.reduce((s,c)=>s+coordTot[c].b,0);
+  const difHTML=d=>`<span style="font-weight:700;color:${d>0?'var(--success)':d<0?'var(--danger)':'var(--muted)'}">${d>0?'+':''}${relFmt(d)}</span>`;
+  const linhasCoord=coordsLista.slice().sort((x,y)=>(coordTot[y].b-coordTot[y].a)-(coordTot[x].b-coordTot[x].a)).map(c=>{
+    const t=coordTot[c],sel=fabCoordFiltro===c;
+    return`<tr style="border-top:1px solid var(--line);cursor:pointer;${sel?'background:var(--purple-soft)':''}" onclick="fabFiltrarCoord(${sel?"'todos'":vdEsc(JSON.stringify(c))})" title="${sel?'Voltar para todos':'Filtrar a tela por este coordenador'}">
+      <td class="table-name" style="text-align:left;font-weight:${sel?800:600}">${vdEsc(c)}</td>
+      <td>${relFmt(t.a)}</td><td>${relFmt(t.b)}</td><td>${difHTML(t.b-t.a)}</td><td>${varHTML(pctVar(t.b,t.a))}</td>
+      <td>${geralB>0?(t.b/geralB*100).toFixed(1)+'%':'—'}</td>
+    </tr>`;
+  }).join('');
+  const coordHTML=`<section class="panel" style="margin-bottom:16px">
+    <div class="panel-title-row"><div class="panel-title">Crescimento por coordenador — ${fabAnoB} vs. ${fabAnoA}</div><div class="panel-note">${periodoLabel(fabAnoA)} → ${periodoLabel(fabAnoB)} · clique numa linha pra filtrar a tela</div></div>
+    <div class="table-scroll"><table class="data-table" style="min-width:640px">
+      <thead><tr><th style="text-align:left">Coordenador</th><th>${periodoLabel(fabAnoA)}</th><th>${periodoLabel(fabAnoB)}</th><th>Diferença (cx)</th><th>Variação</th><th>Part. ${fabAnoB}</th></tr></thead>
+      <tbody>${linhasCoord}
+        <tr style="border-top:2px solid var(--line);background:var(--gray-bg)">
+          <td class="table-name" style="text-align:left;font-weight:800">Total geral</td>
+          <td style="font-weight:800">${relFmt(geralA)}</td><td style="font-weight:800">${relFmt(geralB)}</td><td>${difHTML(geralB-geralA)}</td><td>${varHTML(pctVar(geralB,geralA))}</td><td style="font-weight:800">${geralB>0?'100%':'—'}</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </section>`;
 
   // gráfico único: mês a mês, cronológico, só o total (Gudang+Cretec+Click somados — a quebra por linha fica na tabela abaixo)
   // colorido por ano, com % de crescimento vs. o mesmo mês do ano anterior em cima de cada barra
@@ -6129,7 +6181,8 @@ function fabRender(){
     </table></div>
   </section>`;
 
-  g('fab-content').innerHTML=kpisHTML+graficosAnoHTML+graficoHTML+tabelaHTML;
+  const avisoCoord=fabCoordFiltro==='todos'?'':`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 12px;background:var(--purple-soft);border-radius:var(--r-md);font-size:13px">Mostrando só <strong>${vdEsc(fabCoordFiltro)}</strong> nos totais, gráficos e tabela abaixo <button class="secondary-btn" style="font-size:11px;padding:3px 10px" onclick="fabFiltrarCoord('todos')">Ver geral</button></div>`;
+  g('fab-content').innerHTML=avisoCoord+kpisHTML+coordHTML+graficosAnoHTML+graficoHTML+tabelaHTML;
 }
 function fabExportar(){
   if(!fabAnos.length){toast('Nada para exportar','error');return;}
@@ -6141,7 +6194,7 @@ function fabExportar(){
     linhas.push([a,'Click',...p.click,p.click.reduce((s,v)=>s+v,0)]);
     linhas.push([a,'Total',...p.total,p.total.reduce((s,v)=>s+v,0)]);
   });
-  relBaixarCsv('fabrica-gudang-cretec.csv',linhas);
+  relBaixarCsv(fabCoordFiltro==='todos'?'fabrica-gudang-cretec.csv':'fabrica-gudang-cretec-'+fabCoordFiltro.replace(/\s+/g,'-').toLowerCase()+'.csv',linhas);
 }
 
 async function relCarregar(){
