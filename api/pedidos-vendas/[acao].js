@@ -322,8 +322,9 @@ async function gnreManage(session, body, res) {
 }
 
 async function status(session, body, res) {
-  if (!podeEditarPedidoVenda(session)) return res.status(403).json({ error: 'forbidden' });
   const { id, tipo, novoStatus } = body;
+  // Vagner pode excluir (soft delete, auditado no client); mover/restaurar seguem só admin.
+  if (!podeEditarPedidoVenda(session) && !(tipo === 'excluir' && session.user === 'vagner')) return res.status(403).json({ error: 'forbidden' });
   if (!id || !tipo) return res.status(400).json({ error: 'missing_fields' });
   let payload;
   if (tipo === 'mover-status') payload = { status: novoStatus };
