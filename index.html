@@ -4629,7 +4629,7 @@ function vdAbrirDet(id){
   g('vd-det-fim').style.display=(vdPodeFaturar()&&x.saldoCx>0&&vdGnreLiberada(p))?'block':'none';
   g('vd-det-editar').style.display=(vdPodeEditarProprio(p)&&(vdPodeEditar()||x.faturadoCx===0))?'block':'none';
   g('vd-det-comentar').style.display=(user==='vagner'||isFabiano())?'block':'none';
-  g('vd-det-excluir').style.display=vdPodeEditar()?'block':'none';
+  g('vd-det-excluir').style.display=(vdPodeEditar()||user==='vagner')?'block':'none';
   g('vd-det-resp').style.display=vdPodeEditar()?'block':'none';
   const origemBtn=g('vd-det-origem');
   if(origemBtn)origemBtn.style.display=(vdPodeEditar()&&!isFabiano()&&user!=='vagner'&&!isDiretoria)?'block':'none';
