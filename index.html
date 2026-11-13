@@ -5033,7 +5033,6 @@ function vdEditarPedidoPorId(id){
 }
 async function vdExcluirPedidoPorId(id){
   if(!isAdmin){toast('Acesso restrito ao gestor','error');return}
-  if(user==='vagner'){toast('Vagner não pode excluir pedidos','error');return}
   const p=vdPedidos.find(x=>x.id===id);if(!p)return;
   if(!confirm('Excluir o pedido de '+p.cliente_nome+'?\n\nO pedido ficará oculto mas poderá ser restaurado pelo Log de auditoria.'))return;
   const respExc2=await fetch('/api/pedidos-vendas/status',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,tipo:'excluir'})});
