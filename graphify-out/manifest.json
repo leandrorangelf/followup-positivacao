@@ -5,9 +5,9 @@
     "semantic_hash": "a222fedeb3cff2596556a7508e782922"
   },
   ".claude/settings.local.json": {
-    "mtime": 1785329047.4472978,
-    "ast_hash": "b238ef592d28c168b7eded93769461af",
-    "semantic_hash": "b238ef592d28c168b7eded93769461af"
+    "mtime": 1786629636.2014883,
+    "ast_hash": "d9ba147eb5ab89a7226633b19ce069ac",
+    "semantic_hash": "d9ba147eb5ab89a7226633b19ce069ac"
   },
   "api/_lib/auth.js": {
     "mtime": 1783086943.9541347,
@@ -30,9 +30,9 @@
     "semantic_hash": "3a98d0e6f2a5b038d4d607addc05021e"
   },
   "api/audit.js": {
-    "mtime": 1783088344.4658241,
-    "ast_hash": "73817dbaeeced152a70cd83b23f93fd3",
-    "semantic_hash": "73817dbaeeced152a70cd83b23f93fd3"
+    "mtime": 1786467353.3378932,
+    "ast_hash": "497968eb890697370dc985215784a1f4",
+    "semantic_hash": "497968eb890697370dc985215784a1f4"
   },
   "api/auth/login.js": {
     "mtime": 1783086993.1727087,
@@ -65,9 +65,9 @@
     "semantic_hash": "6845267615d4032b97e9b4e7fa94446b"
   },
   "api/pedidos-vendas/[acao].js": {
-    "mtime": 1785327524.3565817,
-    "ast_hash": "392715afb9e62132861c7667fb4bfb80",
-    "semantic_hash": "392715afb9e62132861c7667fb4bfb80"
+    "mtime": 1785331540.545746,
+    "ast_hash": "af6505ae53a5d7e9e41d3f94da31f538",
+    "semantic_hash": "af6505ae53a5d7e9e41d3f94da31f538"
   },
   "api/tv-data.js": {
     "mtime": 1783088588.3418276,
@@ -215,9 +215,9 @@
     "semantic_hash": "d3f9b14c8f60bf726b496b7876468673"
   },
   "index.html": {
-    "mtime": 1785327550.2695086,
-    "ast_hash": "a90a776457bd5b32d787e1c61f8796c6",
-    "semantic_hash": "a90a776457bd5b32d787e1c61f8796c6"
+    "mtime": 1786467482.8285453,
+    "ast_hash": "7c5a13186c8592cb692c7fb1d730bfba",
+    "semantic_hash": "7c5a13186c8592cb692c7fb1d730bfba"
   },
   "skill-observations/cross-cutting-principles.md": {
     "mtime": 1784653233.366842,
@@ -233,5 +233,110 @@
     "mtime": 1784653232.139534,
     "ast_hash": "4c37c69f172b34ecbbc5dd482f37eba2",
     "semantic_hash": "4c37c69f172b34ecbbc5dd482f37eba2"
+  },
+  "api/_lib/push.js": {
+    "mtime": 1785331370.943227,
+    "ast_hash": "48286432489d75dce75b04de011e5919",
+    "semantic_hash": "48286432489d75dce75b04de011e5919"
+  },
+  "api/notificacoes.js": {
+    "mtime": 1785331443.208207,
+    "ast_hash": "77cb14813913eb182711cf67a9f5cfac",
+    "semantic_hash": "77cb14813913eb182711cf67a9f5cfac"
+  },
+  "api/push/[acao].js": {
+    "mtime": 1785331409.4486122,
+    "ast_hash": "0a31cc9c4d728008007706993ad4e79f",
+    "semantic_hash": "0a31cc9c4d728008007706993ad4e79f"
+  },
+  "package.json": {
+    "mtime": 1785331305.113167,
+    "ast_hash": "cb9fa73146844fc019d1836506242524",
+    "semantic_hash": "cb9fa73146844fc019d1836506242524"
+  },
+  "supabase-audit-pedido-id.sql": {
+    "mtime": 1786467326.9073353,
+    "ast_hash": "b1537680db1922826a4afbf61d6f58b8",
+    "semantic_hash": "b1537680db1922826a4afbf61d6f58b8"
+  },
+  "supabase-notificacoes-push.sql": {
+    "mtime": 1785331269.2619386,
+    "ast_hash": "12bf3312673ebaf163304f2a47dd4c0b",
+    "semantic_hash": "12bf3312673ebaf163304f2a47dd4c0b"
+  },
+  "sw.js": {
+    "mtime": 1785331572.989683,
+    "ast_hash": "af7ae96f0f97404463acce5ba7c992df",
+    "semantic_hash": "af7ae96f0f97404463acce5ba7c992df"
+  },
+  "tests/audit-pedido-id-frontend.test.js": {
+    "mtime": 1786467452.0408425,
+    "ast_hash": "47c4a9170f8d7e5010cb557d4fb2343b",
+    "semantic_hash": "47c4a9170f8d7e5010cb557d4fb2343b"
+  },
+  "tests/audit-pedido-id.test.js": {
+    "mtime": 1786467370.361371,
+    "ast_hash": "11d67558437bf279b242fcb87fb1d6b4",
+    "semantic_hash": "11d67558437bf279b242fcb87fb1d6b4"
+  },
+  "tests/historico-pedido-ui.test.js": {
+    "mtime": 1786467463.2369473,
+    "ast_hash": "b773800f27d1bf28c9f29ccdafedce9d",
+    "semantic_hash": "b773800f27d1bf28c9f29ccdafedce9d"
+  },
+  "tests/notificacoes-endpoint.test.js": {
+    "mtime": 1785331430.5656252,
+    "ast_hash": "38b3359654475e907ea843521617d3f4",
+    "semantic_hash": "38b3359654475e907ea843521617d3f4"
+  },
+  "tests/pedidos-vendas-notificacoes.test.js": {
+    "mtime": 1785331485.6942258,
+    "ast_hash": "b6bbe0001df3a55c189f7b07c52b6770",
+    "semantic_hash": "b6bbe0001df3a55c189f7b07c52b6770"
+  },
+  "tests/push-endpoint.test.js": {
+    "mtime": 1785331394.1635847,
+    "ast_hash": "9208e1017689e783921f8d581f025848",
+    "semantic_hash": "9208e1017689e783921f8d581f025848"
+  },
+  "tests/push-frontend.test.js": {
+    "mtime": 1785331587.934351,
+    "ast_hash": "77f6064a647c9c5a8591ed49511fac06",
+    "semantic_hash": "77f6064a647c9c5a8591ed49511fac06"
+  },
+  "tests/push.test.js": {
+    "mtime": 1785331357.100736,
+    "ast_hash": "c3a7b58df08b9e1c0ea36064a51a6dd1",
+    "semantic_hash": "c3a7b58df08b9e1c0ea36064a51a6dd1"
+  },
+  "tests/sino-notificacoes.test.js": {
+    "mtime": 1785331621.6907227,
+    "ast_hash": "786f48b633bb909ebfd6f77f975411e8",
+    "semantic_hash": "786f48b633bb909ebfd6f77f975411e8"
+  },
+  "tests/sw.test.js": {
+    "mtime": 1785331557.5639281,
+    "ast_hash": "2d620c3a2c6eaf60a6e5a98975c09e19",
+    "semantic_hash": "2d620c3a2c6eaf60a6e5a98975c09e19"
+  },
+  "docs/superpowers/plans/2026-07-29-notificacoes-web-push.md": {
+    "mtime": 1785330171.6870062,
+    "ast_hash": "a7d7f4f00ad29d6dbc71f1aa2ebed617",
+    "semantic_hash": "a7d7f4f00ad29d6dbc71f1aa2ebed617"
+  },
+  "docs/superpowers/plans/2026-08-11-historico-pedido.md": {
+    "mtime": 1786467283.037511,
+    "ast_hash": "becfb0b45390b42dbaf29b54a06db84e",
+    "semantic_hash": "becfb0b45390b42dbaf29b54a06db84e"
+  },
+  "docs/superpowers/specs/2026-07-29-notificacoes-web-push-design.md": {
+    "mtime": 1785329304.2105074,
+    "ast_hash": "f2c905b703f557e5effb5c61bf6455d8",
+    "semantic_hash": "f2c905b703f557e5effb5c61bf6455d8"
+  },
+  "docs/superpowers/specs/2026-08-11-historico-pedido-design.md": {
+    "mtime": 1786466147.343638,
+    "ast_hash": "40fef8600c87a44b5601e6bc7514d111",
+    "semantic_hash": "40fef8600c87a44b5601e6bc7514d111"
   }
 }
