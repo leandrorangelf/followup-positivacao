@@ -6435,7 +6435,7 @@ function evcRenderRanking(dados,nomes){
         <th style="text-align:left;padding:8px 10px">Cliente</th><th style="text-align:left;padding:8px">Coord</th>
         <th style="text-align:center;padding:8px">Gráfico por ano</th>
         ${anos.map(a=>`<th style="text-align:center;padding:8px">${per} ${a}</th>`).join('')}
-        <th style="text-align:center;padding:8px">Média/mês ${ult||''}</th><th style="text-align:center;padding:8px">Cresc. ${ult||''} vs ${(ult||0)-1}</th>${metaOn?EVC_META_TH.map(t=>`<th style="text-align:center;padding:8px;background:var(--purple-soft)">${t}</th>`).join(''):''}
+        <th style="text-align:center;padding:8px">Média/mês ${ult||''}</th><th style="text-align:center;padding:8px">Cresc. ${ult||''} vs ${(ult||0)-1}</th>${metaOn?evcMetaHeads(jm).map(t=>`<th style="text-align:center;padding:8px;background:var(--purple-soft)">${t}</th>`).join(''):''}
       </tr></thead>
       <tbody>${linhas.map((r,i)=>`<tr style="border-top:1px solid var(--border);cursor:pointer;${i%2?'background:var(--soft)':''}" onclick="evcSet('cliente',${vdEsc(JSON.stringify(r.nome))})">
         <td style="padding:7px 10px;font-weight:600">${vdEsc(r.nome)}</td>
