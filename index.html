@@ -6432,7 +6432,7 @@ function evcRenderCliente(pedidos){
   g('evc-content').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
       <div style="font-size:18px;font-weight:800">${vdEsc(evcCliente)}</div>
-      <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="evcSet('cliente','')">← Ranking</button><button class="secondary-btn" onclick="evcExportar()">⬇ Exportar Excel</button></div>
+      <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="evcSet('cliente','')">← Ranking</button><button class="secondary-btn" onclick="evcExportarExcel()">⬇ Excel (editável)</button><button class="secondary-btn" onclick="evcExportarPdf()">⬇ PDF (visual)</button></div>
     </div>${comparativo}${periodoAPeriodo}${blocos||'<div class="empty">Sem pedidos para este cliente.</div>'}`;
 }
 function evcExportar(){
