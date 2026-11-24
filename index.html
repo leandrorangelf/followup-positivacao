@@ -6235,6 +6235,7 @@ function evcSet(chave,valor){
   if(chave==='cliente')evcCliente=(valor||'').trim();
   else if(chave==='coord')evcCoord=valor;
   else if(chave==='origem')evcOrigem=valor;
+  else if(chave==='fim')evcFimMes=valor;
   evcRender();
 }
 async function evcCarregar(){
