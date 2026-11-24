@@ -6774,6 +6774,9 @@ async function evcPdfRanking(d){
   let y=doc.primeiro;
   y=doc.img(await evcGraficoPng(abrev,anos.map((a,i)=>({nome:String(a),valores:agTodos[a]?agTodos[a].total:Array(12).fill(0),cor:EVC_CORES_ANO[i%EVC_CORES_ANO.length]}))),y);
   const tot=anos.map((a,k)=>linhas.reduce((s,l)=>s+l.tots[k],0));
+  const mOn=evcMeta.ativa&&nA>1;
+  const mCels=m=>!mOn?[]:m?[relFmt1(m.base),relFmt1(m.inc),evcRS(m.premio),relFmt1(m.real),m.falta>0?relFmt1(m.falta):'ok',m.pct===null?'–':m.pct.toFixed(1).replace('.',',')+'%']:Array(6).fill('–');
+  const mTot=mCels(mOn?evcMetaSoma(linhas.map(l=>l.meta)):null);
   const pctT=nA>1&&tot[nA-2]>0?(tot[nA-1]-tot[nA-2])/tot[nA-2]*100:null;
   const body=[...linhas.map(l=>[l.nome,l.coord||'',...l.tots.map(v=>v?relFmt(v):'–'),l.media?relFmt1(l.media):'–',evcPctTxt(l.pct)]),[`TOTAL (${linhas.length})`,'',...tot.map(relFmt),relFmt1(tot[nA-1]/(fimC+1)),evcPctTxt(pctT)]];
   const colCresc=2+nA+1;
