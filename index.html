@@ -6648,6 +6648,8 @@ async function evcExcelRanking(d){
   ws.getCell('A1').value='Evolutivo de clientes — ranking';ws.getCell('A1').font={bold:true,size:16};
   ws.getCell('A2').value=`Mesmo período (${per}) em todos os anos. Média e crescimento são fórmulas; use os filtros do cabeçalho para ordenar e filtrar.`;
   ws.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
+  const metaOn=evcMeta.ativa&&nA>1;
+  if(metaOn)evcXlParams(ws);
   const hdr=ws.getRow(4);
   hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.'];
   evcXlHeader(hdr);
