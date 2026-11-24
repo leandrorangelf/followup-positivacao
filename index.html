@@ -6445,6 +6445,242 @@ function evcExportar(){
   relBaixarCsv('evolutivo-'+evcUltimo.nome.replace(/\s+/g,'-').toLowerCase()+'.csv',linhas);
 }
 
+// ── EXPORTAÇÃO DO EVOLUTIVO: Excel editável (fórmulas, gráficos, heatmap) + PDF visual ──
+let evcRank=null;
+const EVC_COL=n=>{let s='';while(n>0){const r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26);}return s;};
+const evcPctTxt=p=>p===null||p===undefined?'—':(p>=0?'+':'')+p.toFixed(1).replace('.',',')+'%';
+function evcCorHex(c){ // resolve var(--x) para uma cor real (o gráfico vira imagem fora da página)
+  const fixo={'var(--text)':'#111827','var(--muted)':'#6b7280','var(--success)':'#16a34a','var(--danger)':'#dc2626'};
+  if(fixo[c])return fixo[c];
+  const m=/^var\((--[\w-]+)\)$/.exec(c);
+  if(m)return getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim()||'#6547d9';
+  return c;
+}
+async function evcGraficoPng(labels,series){ // SVG do gráfico + legenda → PNG com fundo branco
+  const m=/<svg[\s\S]*<\/svg>/.exec(relSvgBarChartGrupos(labels,series));
+  if(!m)return null;
+  let svg=m[0].replace(/var\(--[\w-]+\)/g,evcCorHex);
+  const vb=/viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(svg);
+  const w=Math.round(+vb[1]),h=Math.round(+vb[2]);
+  svg=svg.replace('<svg ',`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" font-family="Arial,sans-serif" `).replace(/style="[^"]*"/,'');
+  const img=await new Promise((ok,err)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>err(new Error('falha ao gerar o gráfico'));i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);});
+  const esc=2,legH=34,cv=document.createElement('canvas');
+  cv.width=w*esc;cv.height=(h+legH)*esc;
+  const cx=cv.getContext('2d');
+  cx.scale(esc,esc);cx.fillStyle='#fff';cx.fillRect(0,0,w,h+legH);
+  cx.font='bold 14px Arial';cx.textBaseline='middle';
+  let x=12;
+  series.forEach(s=>{cx.fillStyle=evcCorHex(s.cor);cx.fillRect(x,10,12,12);cx.fillStyle='#111827';cx.fillText(s.nome,x+18,16);x+=18+cx.measureText(s.nome).width+22;});
+  cx.drawImage(img,0,legH,w,h);
+  return{dataUrl:cv.toDataURL('image/png'),w,h:h+legH};
+}
+function evcCarregarExcelJS(){
+  if(window.ExcelJS)return Promise.resolve();
+  return new Promise((ok,err)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';s.onload=ok;s.onerror=()=>err(new Error('não consegui carregar a biblioteca de Excel'));document.head.appendChild(s);});
+}
+function evcBaixarBlob(blob,nome){
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=nome;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function evcDadosExport(){
+  if(evcUltimo){const fimC=evcFimComum(evcUltimo.anos);return{tipo:'cliente',...evcUltimo,fimC,per:'Jan–'+MESES[fimC].slice(0,3)};}
+  if(evcRank)return{tipo:'ranking',...evcRank};
+  return null;
+}
+const evcSlug=t=>relNorm(t).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function evcXlHeader(row){
+  row.eachCell(c=>{c.font={bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F2A44'}};c.alignment={horizontal:'center',vertical:'middle'};});
+  row.height=20;
+}
+function evcXlImg(wb,ws,png,linha){
+  if(!png)return;
+  const id=wb.addImage({base64:png.dataUrl,extension:'png'}),w=900;
+  ws.addImage(id,{tl:{col:0,row:linha},ext:{width:w,height:Math.round(w*png.h/png.w)}});
+}
+const EVC_FMT_VAR='[Color10]+0.0%;[Red]-0.0%;0.0%';
+async function evcExcelCliente(d){
+  const {nome,ag,anos,fimC,per}=d,abrev=MESES.map(m=>m.slice(0,3));
+  const skus=[...VD_SKUS,'OUTROS'].filter(s=>anos.some(a=>ag[a].skus[s]&&evcSoma(ag[a].skus[s],11)>0));
+  const n=skus.length,trY=4+n; // trY = linha TOTAL nas abas de cada ano
+  const wb=new ExcelJS.Workbook();wb.creator='Follow-up Positivação';
+  const wsR=wb.addWorksheet('Período a período',{views:[{showGridLines:false}]});
+  const aba=a=>`'Ano ${a}'`,yc=i=>i===0?2:1+2*i;
+  wsR.getCell('A1').value='Evolutivo — '+nome;wsR.getCell('A1').font={bold:true,size:16};
+  wsR.getCell('A2').value=`Comparativo ${per} em cada ano. Os valores vêm das abas de cada ano: altere os meses lá e tudo recalcula.`;
+  wsR.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
+  const hr=wsR.getRow(4);hr.getCell(1).value='Produto';
+  anos.forEach((a,i)=>{hr.getCell(yc(i)).value=`${per} ${a}`;if(i>0)hr.getCell(yc(i)+1).value=`vs ${anos[i-1]}`;});
+  evcXlHeader(hr);
+  for(let k=0;k<=n;k++){
+    const r=5+k,rowAno=4+k,tot=k===n,row=wsR.getRow(r);
+    row.getCell(1).value=tot?'TOTAL':skus[k];
+    anos.forEach((a,i)=>{
+      const c=row.getCell(yc(i));
+      c.value={formula:`SUM(${aba(a)}!B${rowAno}:${EVC_COL(2+fimC)}${rowAno})`};c.numFmt='#,##0';
+      if(i>0){
+        const cur=EVC_COL(yc(i))+r,prev=EVC_COL(yc(i-1))+r,v=row.getCell(yc(i)+1);
+        v.value={formula:`IF(${prev}>0,${cur}/${prev}-1,"")`};v.numFmt=EVC_FMT_VAR;
+      }
+    });
+    if(tot)row.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
+  }
+  wsR.getColumn(1).width=18;
+  for(let c=2;c<=yc(anos.length-1)+1;c++)wsR.getColumn(c).width=16;
+  if(anos.length>1)evcXlImg(wb,wsR,await evcGraficoPng(abrev,anos.map((a,i)=>({nome:String(a),valores:ag[a].total,cor:EVC_CORES_ANO[i%EVC_CORES_ANO.length]}))),5+n+2);
+  for(const a of anos){
+    const d2=ag[a],fimA=evcFim(a);
+    const ws=wb.addWorksheet('Ano '+a,{views:[{state:'frozen',xSplit:1,ySplit:3,showGridLines:false}]});
+    ws.getCell('A1').value=`${nome} — ${a}`;ws.getCell('A1').font={bold:true,size:16};
+    ws.getCell('A2').value='Os meses são editáveis; Média, Total e Período são fórmulas.';ws.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
+    const h=ws.getRow(3);h.values=['Produto',...abrev,'Média/mês','Total '+a,per];evcXlHeader(h);
+    for(let k=0;k<=n;k++){
+      const r=4+k,row=ws.getRow(r),tot=k===n;
+      row.getCell(1).value=tot?'TOTAL':skus[k];
+      for(let m=0;m<12;m++){
+        const c=row.getCell(2+m),col=EVC_COL(2+m);
+        c.value=tot?{formula:`SUM(${col}4:${col}${3+n})`}:((d2.skus[skus[k]]||[])[m]||0);
+        c.numFmt='#,##0;-#,##0;"–"';
+      }
+      row.getCell(14).value={formula:`SUM(B${r}:${EVC_COL(2+fimA)}${r})/${fimA+1}`};row.getCell(14).numFmt='#,##0.0';
+      row.getCell(15).value={formula:`SUM(B${r}:M${r})`};row.getCell(15).numFmt='#,##0';
+      row.getCell(16).value={formula:`SUM(B${r}:${EVC_COL(2+fimC)}${r})`};row.getCell(16).numFmt='#,##0';
+      if(tot)row.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
+    }
+    ws.getColumn(1).width=14;
+    for(let c=2;c<=16;c++)ws.getColumn(c).width=c>13?13:8;
+    ws.addConditionalFormatting({ref:`B4:M${3+n}`,rules:[{type:'colorScale',cfvo:[{type:'min'},{type:'max'}],color:[{argb:'FFFFFFFF'},{argb:'FF8B7CF6'}]}]});
+    const mm=ws.getRow(trY+2);mm.getCell(1).value='Melhor mês';mm.getCell(1).font={bold:true};
+    mm.getCell(2).value={formula:`INDEX($B$3:$M$3,MATCH(MAX(B${trY}:M${trY}),B${trY}:M${trY},0))`};
+    evcXlImg(wb,ws,await evcGraficoPng(abrev,skus.map(s=>({nome:s,valores:d2.skus[s]||Array(12).fill(0),cor:EVC_CORES[s]}))),trY+3);
+  }
+  evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'evolutivo-'+evcSlug(nome)+'.xlsx');
+}
+async function evcExcelRanking(d){
+  const {anos,fimC,per,linhas,agTodos}=d,abrev=MESES.map(m=>m.slice(0,3)),nA=anos.length;
+  const ult=anos[nA-1],ant=anos[nA-2];
+  const wb=new ExcelJS.Workbook();wb.creator='Follow-up Positivação';
+  const ws=wb.addWorksheet('Ranking',{views:[{state:'frozen',ySplit:4,showGridLines:false}]});
+  ws.getCell('A1').value='Evolutivo de clientes — ranking';ws.getCell('A1').font={bold:true,size:16};
+  ws.getCell('A2').value=`Mesmo período (${per}) em todos os anos. Média e crescimento são fórmulas; use os filtros do cabeçalho para ordenar e filtrar.`;
+  ws.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
+  const hdr=ws.getRow(4);
+  hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.'];
+  evcXlHeader(hdr);
+  const cMedia=3+nA,cCresc=4+nA,cUlt=EVC_COL(2+nA),cAnt=EVC_COL(1+nA),fRow=r=>{
+    ws.getCell(cMedia===0?1:EVC_COL(cMedia)+r).value={formula:`${cUlt}${r}/${fimC+1}`};ws.getCell(EVC_COL(cMedia)+r).numFmt='#,##0.0';
+    if(nA>1){const c=ws.getCell(EVC_COL(cCresc)+r);c.value={formula:`IF(${cAnt}${r}>0,${cUlt}${r}/${cAnt}${r}-1,"")`};c.numFmt=EVC_FMT_VAR;}
+  };
+  linhas.forEach((l,i)=>{
+    const r=5+i,row=ws.getRow(r);
+    row.getCell(1).value=l.nome;row.getCell(2).value=l.coord||'';
+    l.tots.forEach((v,k)=>{const c=row.getCell(3+k);c.value=v;c.numFmt='#,##0;-#,##0;"–"';});
+    fRow(r);
+  });
+  const rt=5+linhas.length,tr=ws.getRow(rt);
+  tr.getCell(1).value=`TOTAL — ${linhas.length} cliente(s)`;
+  for(let k=0;k<nA;k++){const col=EVC_COL(3+k);tr.getCell(3+k).value={formula:`SUM(${col}5:${col}${rt-1})`};tr.getCell(3+k).numFmt='#,##0';}
+  fRow(rt);
+  tr.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
+  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc}};
+  ws.getColumn(1).width=36;ws.getColumn(2).width=14;
+  for(let c=3;c<=cCresc;c++)ws.getColumn(c).width=16;
+  // aba mensal: total geral mês a mês por ano + variação
+  const wm=wb.addWorksheet('Total por mês',{views:[{showGridLines:false}]});
+  wm.getCell('A1').value='Total por mês — todos os clientes do filtro';wm.getCell('A1').font={bold:true,size:16};
+  const hm=wm.getRow(3);hm.values=['Mês',...anos,nA>1?`Var. ${ult} vs ${ant}`:'Var.'];evcXlHeader(hm);
+  for(let m=0;m<12;m++){
+    const r=4+m,row=wm.getRow(r);
+    row.getCell(1).value=abrev[m];
+    anos.forEach((a,k)=>{const c=row.getCell(2+k);c.value=agTodos[a]?agTodos[a].total[m]:0;c.numFmt='#,##0;-#,##0;"–"';});
+    if(nA>1){const v=row.getCell(2+nA);v.value={formula:`IF(${EVC_COL(nA)}${r}>0,${EVC_COL(1+nA)}${r}/${EVC_COL(nA)}${r}-1,"")`};v.numFmt=EVC_FMT_VAR;}
+  }
+  const rp=wm.getRow(17),rtot=wm.getRow(16);
+  rtot.getCell(1).value='Total ano';rp.getCell(1).value=`Total ${per}`;
+  anos.forEach((a,k)=>{const col=EVC_COL(2+k);rtot.getCell(2+k).value={formula:`SUM(${col}4:${col}15)`};rp.getCell(2+k).value={formula:`SUM(${col}4:${col}${4+fimC})`};rtot.getCell(2+k).numFmt=rp.getCell(2+k).numFmt='#,##0';});
+  if(nA>1){const v=rp.getCell(2+nA);v.value={formula:`IF(${EVC_COL(nA)}17>0,${EVC_COL(1+nA)}17/${EVC_COL(nA)}17-1,"")`};v.numFmt=EVC_FMT_VAR;}
+  [rtot,rp].forEach(r=>r.eachCell(c=>{c.font={bold:true};}));
+  wm.getColumn(1).width=14;for(let c=2;c<=2+nA;c++)wm.getColumn(c).width=16;
+  evcXlImg(wb,wm,await evcGraficoPng(abrev,anos.map((a,i)=>({nome:String(a),valores:agTodos[a]?agTodos[a].total:Array(12).fill(0),cor:EVC_CORES_ANO[i%EVC_CORES_ANO.length]}))),19);
+  evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'evolutivo-clientes-ranking.xlsx');
+}
+function evcPdfNovo(titulo,sub){
+  const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+  doc.cab=(t,s)=>{doc.setFillColor(31,42,68);doc.rect(0,0,842,48,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text(t,30,24);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(s,30,39);doc.setTextColor(0);return 62;};
+  doc.img=(png,y)=>{
+    if(!png)return y;
+    let w=782,h=w*png.h/png.w;
+    if(h>230){h=230;w=h*png.w/png.h;}
+    if(y+h>565){doc.addPage();y=40;}
+    doc.addImage(png.dataUrl,'PNG',30+(782-w)/2,y,w,h);
+    return y+h+10;
+  };
+  doc.rodape=()=>{const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(120);doc.text(`Página ${i}/${n}`,812,582,{align:'right'});}};
+  doc.primeiro=doc.cab(titulo,sub);
+  return doc;
+}
+function evcPdfCorVar(colsVar){ // pinta de verde/vermelho as colunas de variação
+  return d=>{if(d.section==='body'&&colsVar.includes(d.column.index)){const t=String(d.cell.raw||'');if(t.startsWith('+'))d.cell.styles.textColor=[22,163,74];else if(t.startsWith('-'))d.cell.styles.textColor=[220,38,38];d.cell.styles.fontStyle='bold';}};
+}
+async function evcPdfCliente(d){
+  const {nome,ag,anos,fimC,per}=d,abrev=MESES.map(m=>m.slice(0,3));
+  const skus=[...VD_SKUS,'OUTROS'].filter(s=>anos.some(a=>ag[a].skus[s]&&evcSoma(ag[a].skus[s],11)>0));
+  const sub=`Gerado em ${new Date().toLocaleDateString('pt-BR')} · período comparável ${per} · ${evcOrigem==='todas'?'todas as origens':'fábrica (sem distribuidoras)'}`;
+  const doc=evcPdfNovo('Evolutivo — '+nome,sub);
+  let y=doc.primeiro;
+  const pct=(x,v)=>x>0?(v-x)/x*100:null;
+  if(anos.length>1){
+    y=doc.img(await evcGraficoPng(abrev,anos.map((a,i)=>({nome:String(a),valores:ag[a].total,cor:EVC_CORES_ANO[i%EVC_CORES_ANO.length]}))),y);
+    const head=['Produto'],colsVar=[];
+    anos.forEach((a,i)=>{head.push(`${per} ${a}`);if(i>0){head.push(`vs ${anos[i-1]}`);colsVar.push(head.length-1);}});
+    const linhaPer=(rot,get)=>{const r=[rot];anos.forEach((a,i)=>{const v=evcSoma(get(a),fimC);r.push(relFmt(v));if(i>0)r.push(evcPctTxt(pct(evcSoma(get(anos[i-1]),fimC),v)));});return r;};
+    const body=[...skus.map(s=>linhaPer(s,a=>ag[a].skus[s]||Array(12).fill(0))),linhaPer('TOTAL',a=>ag[a].total)];
+    doc.autoTable({startY:y,head:[head],body,styles:{fontSize:9},headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar(colsVar)(x);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+  }
+  for(const a of anos){
+    const d2=ag[a],fimA=evcFim(a),totAno=evcSoma(d2.total,11),media=evcSoma(d2.total,fimA)/(fimA+1);
+    const melhor=d2.total.reduce((m,v,i)=>v>d2.total[m]?i:m,0);
+    doc.addPage();
+    let yy=doc.cab(`${nome} — ${a}`,sub);
+    let linha=`Consolidado do ano: ${relFmt(totAno)} cx   |   Média/mês: ${relFmt1(media)} cx   |   Melhor mês: ${d2.total[melhor]?abrev[melhor]+' ('+relFmt(d2.total[melhor])+' cx)':'—'}`;
+    if(ag[a-1]){const x=evcSoma(ag[a-1].total,fimC),v=evcSoma(d2.total,fimC);if(x>0)linha+=`   |   ${per} vs ${a-1}: ${evcPctTxt(pct(x,v))}`;}
+    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.text(linha,30,yy);doc.setFont('helvetica','normal');yy+=14;
+    const sk=skus.filter(s=>d2.skus[s]&&evcSoma(d2.skus[s],11)>0);
+    yy=doc.img(await evcGraficoPng(abrev,sk.map(s=>({nome:s,valores:d2.skus[s],cor:EVC_CORES[s]}))),yy);
+    const f=v=>v?relFmt(v):'–';
+    const body=[...sk.map(s=>[s,...d2.skus[s].map(f),relFmt1(evcSoma(d2.skus[s],fimA)/(fimA+1)),relFmt(evcSoma(d2.skus[s],11))]),['TOTAL',...d2.total.map(f),relFmt1(media),relFmt(totAno)]];
+    doc.autoTable({startY:yy,head:[['Produto',...abrev,'Média','Total '+a]],body,styles:{fontSize:8,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[31,42,68]},didParseCell:x=>{if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+  }
+  doc.rodape();
+  doc.save('evolutivo-'+evcSlug(nome)+'.pdf');
+}
+async function evcPdfRanking(d){
+  const {anos,fimC,per,linhas,agTodos,nomes,coord}=d,abrev=MESES.map(m=>m.slice(0,3)),nA=anos.length,ult=anos[nA-1];
+  const sub=`Gerado em ${new Date().toLocaleDateString('pt-BR')} · mesmo período (${per}) em todos os anos · ${coord==='todos'?'todos os coordenadores':coord} · ${nomes} clientes`;
+  const doc=evcPdfNovo('Evolutivo de clientes',sub);
+  let y=doc.primeiro;
+  y=doc.img(await evcGraficoPng(abrev,anos.map((a,i)=>({nome:String(a),valores:agTodos[a]?agTodos[a].total:Array(12).fill(0),cor:EVC_CORES_ANO[i%EVC_CORES_ANO.length]}))),y);
+  const tot=anos.map((a,k)=>linhas.reduce((s,l)=>s+l.tots[k],0));
+  const pctT=nA>1&&tot[nA-2]>0?(tot[nA-1]-tot[nA-2])/tot[nA-2]*100:null;
+  const body=[...linhas.map(l=>[l.nome,l.coord||'',...l.tots.map(v=>v?relFmt(v):'–'),l.media?relFmt1(l.media):'–',evcPctTxt(l.pct)]),[`TOTAL (${linhas.length})`,'',...tot.map(relFmt),relFmt1(tot[nA-1]/(fimC+1)),evcPctTxt(pctT)]];
+  const colCresc=2+nA+1;
+  doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.']],body,styles:{fontSize:8},columnStyles:Object.fromEntries(Array.from({length:nA+2},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+  doc.rodape();
+  doc.save('evolutivo-clientes-ranking.pdf');
+}
+async function evcExportarExcel(){
+  const d=evcDadosExport();
+  if(!d){toast('Nada para exportar','error');return;}
+  try{toast('Gerando Excel...');await evcCarregarExcelJS();await(d.tipo==='cliente'?evcExcelCliente(d):evcExcelRanking(d));}
+  catch(e){console.error(e);toast('Erro ao gerar Excel: '+e.message,'error');}
+}
+async function evcExportarPdf(){
+  const d=evcDadosExport();
+  if(!d){toast('Nada para exportar','error');return;}
+  try{toast('Gerando PDF...');await(d.tipo==='cliente'?evcPdfCliente(d):evcPdfRanking(d));}
+  catch(e){console.error(e);toast('Erro ao gerar PDF: '+e.message,'error');}
+}
+
 async function relCarregar(){
   if(relCarregando)return;
   relCarregando=true;
