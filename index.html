@@ -6195,6 +6195,188 @@ function fabExportar(){
   relBaixarCsv(fabCoordFiltro==='todos'?'fabrica-gudang-cretec.csv':'fabrica-gudang-cretec-'+fabCoordFiltro.replace(/\s+/g,'-').toLowerCase()+'.csv',linhas);
 }
 
+// ── EVOLUTIVO CLIENTES (por cliente: produto x mês, média e consolidado anual) ──
+const EVC_CORES={GR:'var(--purple)',GM:'#0ea5e9',GTWIN:'#6366f1',CM:'var(--accent)',CC:'#f59e0b',CK:'#16a34a',OUTROS:'#94a3b8'};
+const EVC_CORES_ANO=['#94a3b8','#0ea5e9','var(--purple)','#16a34a','#f59e0b'];
+let evcDados=[],evcCarregando=false,evcCliente='',evcCoord='todos',evcOrigem='fabrica',evcUltimo=null;
+async function irEvolutivoCli(){
+  if(isFabiano()){toast('Acesso não disponível','error');return;}
+  show('s-evocli');
+  updateSideNav('evocli');
+  await evcCarregar();
+}
+function evcSet(chave,valor){
+  if(chave==='cliente')evcCliente=(valor||'').trim();
+  else if(chave==='coord')evcCoord=valor;
+  else if(chave==='origem')evcOrigem=valor;
+  evcRender();
+}
+async function evcCarregar(){
+  if(evcCarregando)return;
+  evcCarregando=true;
+  g('evc-content').innerHTML='<div class="loading">Carregando...</div>';
+  try{
+    const d=await sb('/rest/v1/pedidos_vendas?deleted_at=is.null&select=*,pedidos_vendas_itens(*)&limit=20000',{ret:true});
+    evcDados=(Array.isArray(d)?d:[]).filter(dashPedidoValido);
+    evcRender();
+  }catch(e){g('evc-content').innerHTML='<div class="empty">Erro ao carregar dados.</div>';}
+  finally{evcCarregando=false;}
+}
+// agrega pedidos de um cliente: {ano:{skus:{sku:[12]},total:[12]}}
+function evcAgregar(pedidos){
+  const porAno={};
+  pedidos.forEach(p=>{
+    const ano=Number(p.ano),mes=Number(p.mes);
+    if(!(mes>=0&&mes<=11)||!ano)return;
+    if(!porAno[ano])porAno[ano]={skus:{},total:Array(12).fill(0)};
+    const tot=vdResumoPedido(p).pedidoCx;
+    let somaItens=0;
+    (p.pedidos_vendas_itens||[]).forEach(i=>{
+      const q=Number(i.qty_caixas||0);
+      if(!q)return;
+      const sk=VD_SKUS.includes(i.sku)?i.sku:'OUTROS';
+      if(!porAno[ano].skus[sk])porAno[ano].skus[sk]=Array(12).fill(0);
+      porAno[ano].skus[sk][mes]+=q;
+      somaItens+=q;
+    });
+    porAno[ano].total[mes]+=tot;
+    if(tot>somaItens){ // pedido sem detalhe por SKU
+      if(!porAno[ano].skus.OUTROS)porAno[ano].skus.OUTROS=Array(12).fill(0);
+      porAno[ano].skus.OUTROS[mes]+=tot-somaItens;
+    }
+  });
+  return porAno;
+}
+function evcSoma(arr,fim){return arr.slice(0,fim+1).reduce((s,v)=>s+v,0);}
+function evcFim(ano){ // último mês fechado do ano (ano corrente não conta o mês em andamento)
+  const hoje=new Date();
+  return ano===hoje.getFullYear()?Math.max(0,hoje.getMonth()-1):11;
+}
+function evcRender(){
+  if(!evcDados.length){g('evc-content').innerHTML='<div class="empty">Nenhum pedido encontrado.</div>';return;}
+  const base=evcDados.filter(p=>evcOrigem==='todas'||!vdEhDistribuidora(p));
+  const coords=[...new Set(base.map(p=>p.coordenador).filter(Boolean))];
+  const coordsLista=[...CLI_OWNER_KEYS.filter(c=>coords.includes(c)),...coords.filter(c=>!CLI_OWNER_KEYS.includes(c)).sort()];
+  if(evcCoord!=='todos'&&!coordsLista.includes(evcCoord))evcCoord='todos';
+  const coordEl=g('evc-coord');
+  if(coordEl){coordEl.innerHTML='<option value="todos">Todos</option>'+coordsLista.map(c=>'<option value="'+vdEsc(c)+'">'+vdEsc(c)+'</option>').join('');coordEl.value=evcCoord;}
+  if(g('evc-origem'))g('evc-origem').value=evcOrigem;
+  const dados=evcCoord==='todos'?base:base.filter(p=>p.coordenador===evcCoord);
+  const nomes=[...new Set(dados.map(p=>p.cliente_nome).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  const dl=g('evc-clientes');if(dl)dl.innerHTML=nomes.map(n=>'<option value="'+vdEsc(n)+'"></option>').join('');
+  const inp=g('evc-cliente');if(inp&&inp.value!==evcCliente)inp.value=evcCliente;
+  if(evcCliente&&nomes.includes(evcCliente))evcRenderCliente(dados.filter(p=>p.cliente_nome===evcCliente));
+  else evcRenderRanking(dados,nomes);
+}
+function evcRenderRanking(dados,nomes){
+  const anos=[...new Set(dados.map(p=>Number(p.ano)))].filter(Boolean).sort((a,b)=>a-b);
+  const porCli={};
+  dados.forEach(p=>{(porCli[p.cliente_nome]=porCli[p.cliente_nome]||[]).push(p);});
+  const aviso=evcCliente?`<div class="empty" style="padding:8px">Cliente "${vdEsc(evcCliente)}" não encontrado neste filtro — mostrando o ranking.</div>`:'';
+  const linhas=nomes.map(n=>{
+    const ag=evcAgregar(porCli[n]);
+    const tots=anos.map(a=>ag[a]?evcSoma(ag[a].total,11):0);
+    const ult=anos[anos.length-1],ant=anos[anos.length-2];
+    let pct=null;
+    if(ant!==undefined&&ag[ant]&&ag[ult]){
+      const fim=evcFim(ult),a=evcSoma(ag[ant].total,fim),b=evcSoma(ag[ult].total,fim);
+      if(a>0)pct=(b-a)/a*100;
+    }
+    const media=ag[ult]?evcSoma(ag[ult].total,evcFim(ult))/(evcFim(ult)+1):0;
+    return{nome:n,coord:porCli[n][0].coordenador,tots,media,pct};
+  }).sort((a,b)=>(b.tots[b.tots.length-1]||0)-(a.tots[a.tots.length-1]||0));
+  const ult=anos[anos.length-1];
+  g('evc-content').innerHTML=aviso+`
+  <div style="background:var(--card);border-radius:var(--r-md);padding:16px;box-shadow:var(--shadow-sm)">
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">Ranking de clientes <span style="font-size:11px;color:var(--muted);font-weight:400">— clique no cliente para ver a evolução por produto, mês, média e consolidado do ano</span></div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">
+        <th style="text-align:left;padding:8px 10px">Cliente</th><th style="text-align:left;padding:8px">Coord</th>
+        ${anos.map(a=>`<th style="text-align:center;padding:8px">${a} cx</th>`).join('')}
+        <th style="text-align:center;padding:8px">Média/mês ${ult||''}</th><th style="text-align:center;padding:8px">Cresc. ${ult||''}</th>
+      </tr></thead>
+      <tbody>${linhas.map((r,i)=>`<tr style="border-top:1px solid var(--border);cursor:pointer;${i%2?'background:var(--soft)':''}" onclick="evcSet('cliente',${vdEsc(JSON.stringify(r.nome))})">
+        <td style="padding:7px 10px;font-weight:600">${vdEsc(r.nome)}</td>
+        <td style="padding:7px 8px;font-size:11px;color:var(--muted)">${vdEsc(r.coord||'')}</td>
+        ${r.tots.map(v=>`<td style="text-align:center;padding:7px 8px">${v?relFmt(v):'—'}</td>`).join('')}
+        <td style="text-align:center;padding:7px 8px;color:var(--muted)">${r.media?relFmt1(r.media):'—'}</td>
+        <td style="text-align:center;padding:7px 8px;font-weight:700;color:${r.pct===null?'var(--muted)':r.pct>=0?'var(--success)':'var(--danger)'}">${r.pct===null?'—':(r.pct>=0?'▲ ':'▼ ')+Math.abs(r.pct).toFixed(1)+'%'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
+  evcUltimo=null;
+}
+function evcRenderCliente(pedidos){
+  const ag=evcAgregar(pedidos);
+  const anos=Object.keys(ag).map(Number).sort((a,b)=>a-b);
+  evcUltimo={nome:evcCliente,ag,anos};
+  const corAno=Object.fromEntries(anos.map((a,i)=>[a,EVC_CORES_ANO[i%EVC_CORES_ANO.length]]));
+  const abrev=MESES.map(m=>m.slice(0,3));
+  const comparativo=anos.length>1?`
+    <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+      <div style="font-size:15px;font-weight:700;text-align:center;margin-bottom:8px">Total por mês — comparativo entre anos</div>
+      ${relSvgBarChartGrupos(abrev,anos.map(a=>({nome:String(a),valores:ag[a].total,cor:corAno[a]})))}
+    </div>`:'';
+  const blocos=anos.map(a=>{
+    const d=ag[a],fim=evcFim(a);
+    const totAno=evcSoma(d.total,11),media=evcSoma(d.total,fim)/(fim+1);
+    const melhor=d.total.reduce((m,v,i)=>v>d.total[m]?i:m,0);
+    let cresc='';
+    const ant=ag[a-1];
+    if(ant){
+      const x=evcSoma(ant.total,fim),y=evcSoma(d.total,fim);
+      if(x>0){const pct=(y-x)/x*100;cresc=`<span style="font-weight:700;color:${pct>=0?'var(--success)':'var(--danger)'}">${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span> <span style="color:var(--muted)">(Jan-${abrev[fim]} ${a} vs ${a-1}: ${relFmt(y)} vs ${relFmt(x)} cx)</span>`;}
+    }
+    const skus=[...VD_SKUS,'OUTROS'].filter(s=>d.skus[s]&&evcSoma(d.skus[s],11)>0);
+    const kpi=(rot,val)=>`<div style="border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;text-align:center"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">${rot}</div><div style="font-size:22px;font-weight:800">${val}</div></div>`;
+    const celulas=arr=>arr.map(v=>`<td style="text-align:center;padding:6px 5px">${v?relFmt(v):'—'}</td>`).join('');
+    return`
+    <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+      <div style="font-size:20px;font-weight:800;margin-bottom:10px">${a}</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+        ${kpi('Consolidado do ano',relFmt(totAno)+' cx')}
+        ${kpi('Média mensal'+(a===new Date().getFullYear()?' (meses fechados)':''),relFmt1(media)+' cx')}
+        ${kpi('Melhor mês',d.total[melhor]?vdEsc(abrev[melhor])+' · '+relFmt(d.total[melhor]):'—')}
+      </div>
+      ${cresc?`<div style="font-size:14px;margin-bottom:12px">${cresc}</div>`:''}
+      ${relSvgBarChartGrupos(abrev,skus.map(s=>({nome:s,valores:d.skus[s],cor:EVC_CORES[s]})))}
+      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase">
+          <th style="text-align:left;padding:8px 10px">Produto</th>${abrev.map(m=>`<th style="text-align:center;padding:8px 5px">${m}</th>`).join('')}
+          <th style="text-align:center;padding:8px 10px">Média</th><th style="text-align:center;padding:8px 10px">Total ${a}</th>
+        </tr></thead>
+        <tbody>${skus.map((s,i)=>`<tr style="border-top:1px solid var(--border);${i%2?'background:var(--soft)':''}">
+          <td style="padding:6px 10px;font-weight:600"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${EVC_CORES[s]};margin-right:6px"></span>${vdEsc(s)}</td>
+          ${celulas(d.skus[s])}
+          <td style="text-align:center;padding:6px 10px;color:var(--muted)">${relFmt1(evcSoma(d.skus[s],fim)/(fim+1))}</td>
+          <td style="text-align:center;padding:6px 10px;font-weight:700">${relFmt(evcSoma(d.skus[s],11))}</td>
+        </tr>`).join('')}
+        <tr style="background:var(--border);font-weight:700;border-top:2px solid var(--text)">
+          <td style="padding:7px 10px">TOTAL</td>${celulas(d.total)}
+          <td style="text-align:center;padding:7px 10px">${relFmt1(media)}</td>
+          <td style="text-align:center;padding:7px 10px">${relFmt(totAno)}</td>
+        </tr></tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+  g('evc-content').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <div style="font-size:18px;font-weight:800">${vdEsc(evcCliente)}</div>
+      <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="evcSet('cliente','')">← Ranking</button><button class="secondary-btn" onclick="evcExportar()">⬇ Exportar Excel</button></div>
+    </div>${comparativo}${blocos||'<div class="empty">Sem pedidos para este cliente.</div>'}`;
+}
+function evcExportar(){
+  if(!evcUltimo){toast('Escolha um cliente para exportar','error');return;}
+  const abrev=MESES.map(m=>m.slice(0,3));
+  const linhas=[['Cliente','Ano','Produto',...abrev,'Média','Total']];
+  evcUltimo.anos.forEach(a=>{
+    const d=evcUltimo.ag[a],fim=evcFim(a);
+    [...VD_SKUS,'OUTROS'].filter(s=>d.skus[s]).forEach(s=>linhas.push([evcUltimo.nome,a,s,...d.skus[s],Math.round(evcSoma(d.skus[s],fim)/(fim+1)*10)/10,evcSoma(d.skus[s],11)]));
+    linhas.push([evcUltimo.nome,a,'TOTAL',...d.total,Math.round(evcSoma(d.total,fim)/(fim+1)*10)/10,evcSoma(d.total,11)]);
+  });
+  relBaixarCsv('evolutivo-'+evcUltimo.nome.replace(/\s+/g,'-').toLowerCase()+'.csv',linhas);
+}
+
 async function relCarregar(){
   if(relCarregando)return;
   relCarregando=true;
