@@ -6568,7 +6568,7 @@ async function evcExcelRanking(d){
   hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.'];
   evcXlHeader(hdr);
   const cMedia=3+nA,cCresc=4+nA,cUlt=EVC_COL(2+nA),cAnt=EVC_COL(1+nA),fRow=r=>{
-    ws.getCell(cMedia===0?1:EVC_COL(cMedia)+r).value={formula:`${cUlt}${r}/${fimC+1}`};ws.getCell(EVC_COL(cMedia)+r).numFmt='#,##0.0';
+    const cm=ws.getCell(EVC_COL(cMedia)+r);cm.value={formula:`${cUlt}${r}/${fimC+1}`};cm.numFmt='#,##0.0';
     if(nA>1){const c=ws.getCell(EVC_COL(cCresc)+r);c.value={formula:`IF(${cAnt}${r}>0,${cUlt}${r}/${cAnt}${r}-1,"")`};c.numFmt=EVC_FMT_VAR;}
   };
   linhas.forEach((l,i)=>{
