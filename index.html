@@ -6390,6 +6390,8 @@ function evcRenderRanking(dados,nomes){
   }).sort((a,b)=>(b.tots[b.tots.length-1]||0)-(a.tots[a.tots.length-1]||0));
   const ult=anos[anos.length-1];
   const agTodos=evcAgregar(dados);
+  const metaOn=evcMeta.ativa&&anos.length>1;
+  const metaTotalRow=metaOn?`<tr style="background:var(--border);font-weight:700;border-top:2px solid var(--text)"><td colspan="${anos.length+5}" style="padding:8px 10px">TOTAL — ${linhas.length} cliente(s)</td>${evcMetaTd(evcMetaSoma(linhas.map(l=>l.meta)),8)}</tr>`:'';
   const abrev=MESES.map(m=>m.slice(0,3));
   const graficoGeral=anos.length?`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
