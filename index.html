@@ -6233,6 +6233,64 @@ async function irEvolutivoCli(){
   updateSideNav('evocli');
   await evcCarregar();
 }
+// ── META DE CRESCIMENTO: incremento sobre a média, prêmio por caixa, realizado, faltante e % ──
+// Base = média do ano anterior (mesmo período, ou média mensal do ano completo × meses do período).
+// Incremento = base × % de crescimento · Prêmio = incremento × R$/caixa · Faltante = (base + incremento) − realizado
+let evcMeta={ativa:false,pct:10,base:'periodo',valor:500};
+try{Object.assign(evcMeta,JSON.parse(localStorage.getItem('evcMeta')||'{}'));}catch(e){}
+const evcRS=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const EVC_META_TH=['Base (média)','Incremento','Prêmio','Realizado','Faltante','% da meta'];
+function evcMetaSet(k,v){
+  if(k==='ativa')evcMeta.ativa=!!v;
+  else if(k==='base')evcMeta.base=v;
+  else evcMeta[k]=Math.max(0,Number(v)||0);
+  try{localStorage.setItem('evcMeta',JSON.stringify(evcMeta));}catch(e){}
+  evcRender();
+}
+function evcBase(totAnt,fimC){ // totAnt = 12 meses do ano anterior
+  if(!totAnt)return null;
+  return evcMeta.base==='ano'?evcSoma(totAnt,11)/12*(fimC+1):evcSoma(totAnt,fimC);
+}
+function evcMetaCalc(base,real){
+  if(base===null||base===undefined)return null;
+  const inc=base*evcMeta.pct/100,meta=base+inc;
+  return{base,inc,premio:inc*evcMeta.valor,real,falta:Math.max(0,meta-real),pct:meta>0?real/meta*100:null};
+}
+function evcMetaSoma(ms){
+  const s=ms.filter(Boolean).reduce((a,m)=>({base:a.base+m.base,inc:a.inc+m.inc,premio:a.premio+m.premio,real:a.real+m.real,falta:a.falta+m.falta}),{base:0,inc:0,premio:0,real:0,falta:0});
+  s.pct=s.base+s.inc>0?s.real/(s.base+s.inc)*100:null;
+  return s;
+}
+function evcMetaTd(m,pad){ // 6 células: base, incremento, prêmio, realizado, faltante, %
+  const td=(t,x='')=>`<td style="text-align:center;padding:${pad||7}px 8px;${x}">${t}</td>`;
+  if(!m)return Array(6).fill(td('—','color:var(--muted)')).join('');
+  return td(relFmt1(m.base))+td(relFmt1(m.inc),'font-weight:700')+td(evcRS(m.premio),'font-weight:700;color:var(--purple)')+td(relFmt1(m.real))
+    +td(m.falta>0?relFmt1(m.falta):'✔','font-weight:700;color:'+(m.falta>0?'var(--danger)':'var(--success)'))
+    +td(m.pct===null?'—':m.pct.toFixed(1).replace('.',',')+'%','font-weight:800;color:'+(m.pct!==null&&m.pct>=100?'var(--success)':'var(--text)'));
+}
+function evcMetaLinhasCliente(ag,anos,fimC){ // último ano vs anterior, por produto + total
+  const n=anos.length;if(n<2)return[];
+  const ult=anos[n-1],ant=anos[n-2],z=Array(12).fill(0);
+  const skus=[...VD_SKUS,'OUTROS'].filter(s=>[ant,ult].some(a=>ag[a].skus[s]&&evcSoma(ag[a].skus[s],fimC)>0));
+  const lin=(rot,get,total)=>({rot,total,m:evcMetaCalc(evcBase(get(ant),fimC),evcSoma(get(ult),fimC))});
+  return[...skus.map(s=>lin(s,a=>ag[a].skus[s]||z,false)),lin('TOTAL',a=>ag[a].total,true)];
+}
+function evcMetaPainel(){
+  const el=g('evc-meta-painel');if(!el)return;
+  const chip=v=>`<button class="secondary-btn" style="font-size:11px;padding:3px 10px;${evcMeta.pct===v?'background:var(--purple);color:#fff;border-color:var(--purple)':''}" onclick="evcMetaSet('pct',${v})">${v}%</button>`;
+  el.innerHTML=`<div style="background:var(--card);border-radius:var(--r-md);padding:12px 16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="secondary-btn" style="font-weight:700;${evcMeta.ativa?'background:var(--purple);color:#fff;border-color:var(--purple)':''}" onclick="evcMetaSet('ativa',${!evcMeta.ativa})">🎯 Meta de crescimento ${evcMeta.ativa?'· ligada':''}</button>
+      ${evcMeta.ativa?`<span style="font-size:12px;color:var(--muted)">crescer</span>${[5,10,15,20,25].map(chip).join('')}
+      <input type="number" min="0" step="0.5" value="${evcMeta.pct}" onchange="evcMetaSet('pct',this.value)" class="client-filter" style="width:70px"><span style="font-size:12px">%</span>
+      <span style="font-size:12px;color:var(--muted)">sobre a</span>
+      <select class="client-filter" onchange="evcMetaSet('base',this.value)"><option value="periodo" ${evcMeta.base==='periodo'?'selected':''}>média do mesmo período do ano anterior</option><option value="ano" ${evcMeta.base==='ano'?'selected':''}>média mensal do ano anterior completo</option></select>
+      <span style="font-size:12px;color:var(--muted)">prêmio R$/caixa</span>
+      <input type="number" min="0" step="1" value="${evcMeta.valor}" onchange="evcMetaSet('valor',this.value)" class="client-filter" style="width:90px">`:''}
+    </div>
+    ${evcMeta.ativa?`<div style="font-size:11px;color:var(--muted);margin-top:8px">Incremento = base × ${evcMeta.pct}% · Prêmio = incremento × ${evcRS(evcMeta.valor)} por caixa · Faltante = (base + incremento) − realizado · % = realizado ÷ (base + incremento)</div>`:''}
+  </div>`;
+}
 function evcSet(chave,valor){
   if(chave==='cliente')evcCliente=(valor||'').trim();
   else if(chave==='coord')evcCoord=valor;
