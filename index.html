@@ -6281,7 +6281,19 @@ function evcFim(ano){ // último mês fechado do ano (ano corrente não conta o 
   const hoje=new Date();
   return ano===hoje.getFullYear()?Math.max(0,hoje.getMonth()-1):11;
 }
+// período comparável: mesmo intervalo Jan→mês em todos os anos (auto = último mês fechado do ano corrente)
+let evcFimMes='auto';
+function evcFimComum(anos){
+  if(evcFimMes!=='auto')return Number(evcFimMes);
+  const h=new Date();
+  return anos.includes(h.getFullYear())?Math.max(0,h.getMonth()-1):11;
+}
 function evcRender(){
+  const fimEl=g('evc-fim-mes');
+  if(fimEl){
+    if(fimEl.options.length<2)fimEl.innerHTML='<option value="auto">Automático (meses fechados)</option>'+MESES.map((m,i)=>`<option value="${i}">até ${m}</option>`).join('');
+    fimEl.value=evcFimMes;
+  }
   if(!evcDados.length){g('evc-content').innerHTML='<div class="empty">Nenhum pedido encontrado.</div>';return;}
   const base=evcDados.filter(p=>evcOrigem==='todas'||!vdEhDistribuidora(p));
   const coords=[...new Set(base.map(p=>p.coordenador).filter(Boolean))];
