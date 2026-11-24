@@ -2938,7 +2938,7 @@ async function setMesGlobal(value){
   pedidosCarregados=false;
   if(sel)sel.disabled=true;
   try{
-    const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-log','s-relatorios','s-fabrica'].find(id=>g(id).style.display!=='none');
+    const visible=['s-dash','s-ped','s-cli','s-metas','s-vendas','s-premiacao','s-forecast','s-log','s-relatorios','s-fabrica','s-evocli'].find(id=>g(id).style.display!=='none');
     if(visible==='s-dash')await carregarDashboard();
     else if(visible==='s-ped')await carregarPedidos();
     else if(visible==='s-cli')await renderCliList();
