@@ -6312,7 +6312,18 @@ function evcRenderRanking(dados,nomes){
     return{nome:n,coord:porCli[n][0].coordenador,tots,media,pct};
   }).sort((a,b)=>(b.tots[b.tots.length-1]||0)-(a.tots[a.tots.length-1]||0));
   const ult=anos[anos.length-1];
-  g('evc-content').innerHTML=aviso+`
+  const agTodos=evcAgregar(dados);
+  const abrev=MESES.map(m=>m.slice(0,3));
+  const graficoGeral=anos.length?`
+  <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+    <div style="font-size:15px;font-weight:700;text-align:center;margin-bottom:8px">Total por mês, por ano — ${evcCoord==='todos'?'todos os clientes':vdEsc(evcCoord)} (${nomes.length} clientes)</div>
+    ${relSvgBarChartGrupos(abrev,anos.map((a,i)=>({nome:String(a),valores:agTodos[a]?agTodos[a].total:Array(12).fill(0),cor:EVC_CORES_ANO[i%EVC_CORES_ANO.length]})))}
+  </div>`:'';
+  const miniBarras=tots=>{
+    const mx=Math.max(1,...tots);
+    return`<div style="display:flex;align-items:flex-end;justify-content:center;gap:3px;height:26px">${tots.map((v,i)=>`<div title="${anos[i]}: ${relFmt(v)} cx" style="width:14px;height:${v?Math.max(3,Math.round(v/mx*26)):1}px;background:${EVC_CORES_ANO[i%EVC_CORES_ANO.length]};border-radius:2px"></div>`).join('')}</div>`;
+  };
+  g('evc-content').innerHTML=aviso+graficoGeral+`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;box-shadow:var(--shadow-sm)">
     <div style="font-size:13px;font-weight:700;margin-bottom:10px">Ranking de clientes <span style="font-size:11px;color:var(--muted);font-weight:400">— clique no cliente para ver a evolução por produto, mês, média e consolidado do ano</span></div>
     <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
