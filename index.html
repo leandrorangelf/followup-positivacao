@@ -6757,6 +6757,13 @@ async function evcPdfCliente(d){
     const body=[...sk.map(s=>[s,...d2.skus[s].map(f),relFmt1(evcSoma(d2.skus[s],fimA)/(fimA+1)),relFmt(evcSoma(d2.skus[s],11))]),['TOTAL',...d2.total.map(f),relFmt1(media),relFmt(totAno)]];
     doc.autoTable({startY:yy,head:[['Produto',...abrev,'Média','Total '+a]],body,styles:{fontSize:8,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[31,42,68]},didParseCell:x=>{if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
   }
+  if(anos.length>1&&evcMeta.ativa){
+    const mLin=evcMetaLinhasCliente(ag,anos,fimC),f1=v=>relFmt1(v);
+    doc.addPage();
+    const ym=doc.cab(`Meta de crescimento — ${nome}`,`${anos[anos.length-1]} vs média ${anos[anos.length-2]} (${per}) · +${evcMeta.pct}% · ${evcRS(evcMeta.valor)} por caixa de incremento`);
+    const corpo=mLin.map(l=>[l.rot,...(l.m?[f1(l.m.base),f1(l.m.inc),evcRS(l.m.premio),f1(l.m.real),l.m.falta>0?f1(l.m.falta):'ok',l.m.pct===null?'–':l.m.pct.toFixed(1).replace('.',',')+'%']:Array(6).fill('–'))]);
+    doc.autoTable({startY:ym,head:[['Produto',...EVC_META_TH]],body:corpo,styles:{fontSize:10,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[101,71,217]},didParseCell:x=>{if(x.section==='body'&&x.row.index===corpo.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+  }
   doc.rodape();
   doc.save('evolutivo-'+evcSlug(nome)+'.pdf');
 }
