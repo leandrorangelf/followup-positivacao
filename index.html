@@ -6360,6 +6360,19 @@ function evcRenderCliente(pedidos){
       <div style="font-size:15px;font-weight:700;text-align:center;margin-bottom:8px">Total por mês — comparativo entre anos</div>
       ${relSvgBarChartGrupos(abrev,anos.map(a=>({nome:String(a),valores:ag[a].total,cor:corAno[a]})))}
     </div>`:'';
+  const fimC=evcFimComum(anos),per='Jan–'+abrev[fimC];
+  // período a período: cada produto, mesmo intervalo em todos os anos, com variação entre anos consecutivos
+  const todosSkus=[...VD_SKUS,'OUTROS'].filter(s=>anos.some(a=>ag[a].skus[s]&&evcSoma(ag[a].skus[s],fimC)>0));
+  const varCel=(x,y)=>{if(!(x>0))return'<td style="text-align:center;padding:6px 8px;color:var(--muted)">—</td>';const p=(y-x)/x*100;return`<td style="text-align:center;padding:6px 8px;font-weight:700;color:${p>=0?'var(--success)':'var(--danger)'}">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}%</td>`;};
+  const linhaPer=(rot,arrPorAno,negrito)=>`<tr style="border-top:1px solid var(--border);${negrito?'background:var(--border);font-weight:700':''}"><td style="padding:6px 10px;font-weight:${negrito?700:600}">${rot}</td>${anos.map((a,i)=>`<td style="text-align:center;padding:6px 8px">${relFmt(evcSoma(arrPorAno(a),fimC))}</td>`+(i>0?varCel(evcSoma(arrPorAno(anos[i-1]),fimC),evcSoma(arrPorAno(a),fimC)):'')).join('')}</tr>`;
+  const periodoAPeriodo=anos.length>1?`
+    <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm)">
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">Período a período — ${per} em cada ano <span style="font-size:11px;color:var(--muted);font-weight:400">(mesmo intervalo nos dois lados; ajuste o mês no filtro acima)</span></div>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase"><th style="text-align:left;padding:8px 10px">Produto</th>${anos.map((a,i)=>`<th style="text-align:center;padding:8px">${a}</th>`+(i>0?`<th style="text-align:center;padding:8px">vs ${anos[i-1]}</th>`:'')).join('')}</tr></thead>
+        <tbody>${todosSkus.map(s=>linhaPer(vdEsc(s),a=>ag[a].skus[s]||Array(12).fill(0),false)).join('')}${linhaPer('TOTAL',a=>ag[a].total,true)}</tbody>
+      </table></div>
+    </div>`:'';
   const blocos=anos.map(a=>{
     const d=ag[a],fim=evcFim(a);
     const totAno=evcSoma(d.total,11),media=evcSoma(d.total,fim)/(fim+1);
