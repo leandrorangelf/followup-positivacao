@@ -6778,7 +6778,7 @@ async function evcPdfRanking(d){
   const mCels=m=>!mOn?[]:m?[relFmt1(m.base),relFmt1(m.inc),evcRS(m.premio),relFmt1(m.real),m.falta>0?relFmt1(m.falta):'ok',m.pct===null?'–':m.pct.toFixed(1).replace('.',',')+'%']:Array(6).fill('–');
   const mTot=mCels(mOn?evcMetaSoma(linhas.map(l=>l.meta)):null);
   const pctT=nA>1&&tot[nA-2]>0?(tot[nA-1]-tot[nA-2])/tot[nA-2]*100:null;
-  const body=[...linhas.map(l=>[l.nome,l.coord||'',...l.tots.map(v=>v?relFmt(v):'–'),l.media?relFmt1(l.media):'–',evcPctTxt(l.pct),...mCels(l.meta)]),[`TOTAL (${linhas.length})`,'',...tot.map(relFmt),relFmt1(tot[nA-1]/(fimC+1)),evcPctTxt(pctT)]];
+  const body=[...linhas.map(l=>[l.nome,l.coord||'',...l.tots.map(v=>v?relFmt(v):'–'),l.media?relFmt1(l.media):'–',evcPctTxt(l.pct),...mCels(l.meta)]),[`TOTAL (${linhas.length})`,'',...tot.map(relFmt),relFmt1(tot[nA-1]/(fimC+1)),evcPctTxt(pctT),...mTot]];
   const colCresc=2+nA+1;
   doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.']],body,styles:{fontSize:8},columnStyles:Object.fromEntries(Array.from({length:nA+2},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
   doc.rodape();
