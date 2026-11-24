@@ -6366,7 +6366,7 @@ function evcRenderRanking(dados,nomes){
 function evcRenderCliente(pedidos){
   const ag=evcAgregar(pedidos);
   const anos=Object.keys(ag).map(Number).sort((a,b)=>a-b);
-  evcUltimo={nome:evcCliente,ag,anos};
+  evcUltimo={nome:evcCliente,ag,anos};evcRank=null;
   const corAno=Object.fromEntries(anos.map((a,i)=>[a,EVC_CORES_ANO[i%EVC_CORES_ANO.length]]));
   const abrev=MESES.map(m=>m.slice(0,3));
   const comparativo=anos.length>1?`
