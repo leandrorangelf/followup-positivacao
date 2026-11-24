@@ -6619,6 +6619,27 @@ async function evcExcelCliente(d){
   }
   evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'evolutivo-'+evcSlug(nome)+'.xlsx');
 }
+function evcXlParams(ws){ // células amarelas editáveis: B3 = % de crescimento, D3 = R$ por caixa
+  ws.getCell('A3').value='Meta de crescimento (%)';ws.getCell('B3').value=evcMeta.pct/100;ws.getCell('B3').numFmt='0.0%';
+  ws.getCell('C3').value='Prêmio por caixa (R$)';ws.getCell('D3').value=evcMeta.valor;ws.getCell('D3').numFmt='#,##0.00';
+  ['A3','C3'].forEach(a=>{ws.getCell(a).font={bold:true};});
+  ['B3','D3'].forEach(a=>{ws.getCell(a).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFEF3C7'}};ws.getCell(a).font={bold:true};});
+}
+function evcXlMeta(ws,r,l,c){ // colunas Base, Incremento, Prêmio, Realizado, Faltante, % (fórmulas ligadas a B3 e D3)
+  if(!l.meta)return;
+  const col=k=>EVC_COL(c.cCresc+1+k),set=(k,v,f)=>{const x=ws.getCell(col(k)+r);x.value=v;x.numFmt=f;};
+  set(0,evcMeta.base==='periodo'?{formula:`${c.cAnt}${r}`}:l.meta.base,'#,##0.0');
+  set(1,{formula:`${col(0)}${r}*$B$3`},'#,##0.0');
+  set(2,{formula:`${col(1)}${r}*$D$3`},'"R$" #,##0.00');
+  set(3,{formula:`${c.cUlt}${r}`},'#,##0');
+  set(4,{formula:`MAX(0,${col(0)}${r}+${col(1)}${r}-${col(3)}${r})`},'#,##0.0');
+  set(5,{formula:`IF(${col(0)}${r}+${col(1)}${r}>0,${col(3)}${r}/(${col(0)}${r}+${col(1)}${r}),"")`},'0.0%');
+}
+function evcXlMetaTot(ws,rt,r1,r2,c){
+  const col=k=>EVC_COL(c.cCresc+1+k);
+  [0,1,2,3,4].forEach(k=>{const x=ws.getCell(col(k)+rt);x.value={formula:`SUM(${col(k)}${r1}:${col(k)}${r2})`};x.numFmt=k===2?'"R$" #,##0.00':'#,##0.0';});
+  const x=ws.getCell(col(5)+rt);x.value={formula:`IF(${col(0)}${rt}+${col(1)}${rt}>0,${col(3)}${rt}/(${col(0)}${rt}+${col(1)}${rt}),"")`};x.numFmt='0.0%';
+}
 async function evcExcelRanking(d){
   const {anos,fimC,per,linhas,agTodos}=d,abrev=MESES.map(m=>m.slice(0,3)),nA=anos.length;
   const ult=anos[nA-1],ant=anos[nA-2];
