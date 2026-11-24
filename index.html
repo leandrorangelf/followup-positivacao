@@ -6435,17 +6435,6 @@ function evcRenderCliente(pedidos){
       <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="evcSet('cliente','')">← Ranking</button><button class="secondary-btn" onclick="evcExportarExcel()">⬇ Excel (editável)</button><button class="secondary-btn" onclick="evcExportarPdf()">⬇ PDF (visual)</button></div>
     </div>${comparativo}${periodoAPeriodo}${blocos||'<div class="empty">Sem pedidos para este cliente.</div>'}`;
 }
-function evcExportar(){
-  if(!evcUltimo){toast('Escolha um cliente para exportar','error');return;}
-  const abrev=MESES.map(m=>m.slice(0,3));
-  const linhas=[['Cliente','Ano','Produto',...abrev,'Média','Total']];
-  evcUltimo.anos.forEach(a=>{
-    const d=evcUltimo.ag[a],fim=evcFim(a);
-    [...VD_SKUS,'OUTROS'].filter(s=>d.skus[s]).forEach(s=>linhas.push([evcUltimo.nome,a,s,...d.skus[s],Math.round(evcSoma(d.skus[s],fim)/(fim+1)*10)/10,evcSoma(d.skus[s],11)]));
-    linhas.push([evcUltimo.nome,a,'TOTAL',...d.total,Math.round(evcSoma(d.total,fim)/(fim+1)*10)/10,evcSoma(d.total,11)]);
-  });
-  relBaixarCsv('evolutivo-'+evcUltimo.nome.replace(/\s+/g,'-').toLowerCase()+'.csv',linhas);
-}
 
 // ── EXPORTAÇÃO DO EVOLUTIVO: Excel editável (fórmulas, gráficos, heatmap) + PDF visual ──
 let evcRank=null;
