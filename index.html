@@ -6670,7 +6670,7 @@ async function evcExcelRanking(d){
   fRow(rt);
   if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,{cCresc,cAnt,cUlt});
   tr.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
-  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc}};
+  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?6:0)}};
   ws.getColumn(1).width=36;ws.getColumn(2).width=14;
   for(let c=3;c<=cCresc;c++)ws.getColumn(c).width=16;
   // aba mensal: total geral mês a mês por ano + variação
