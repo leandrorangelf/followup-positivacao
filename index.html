@@ -6380,8 +6380,8 @@ function evcRenderCliente(pedidos){
     let cresc='';
     const ant=ag[a-1];
     if(ant){
-      const x=evcSoma(ant.total,fim),y=evcSoma(d.total,fim);
-      if(x>0){const pct=(y-x)/x*100;cresc=`<span style="font-weight:700;color:${pct>=0?'var(--success)':'var(--danger)'}">${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span> <span style="color:var(--muted)">(Jan-${abrev[fim]} ${a} vs ${a-1}: ${relFmt(y)} vs ${relFmt(x)} cx)</span>`;}
+      const x=evcSoma(ant.total,fimC),y=evcSoma(d.total,fimC);
+      if(x>0){const pct=(y-x)/x*100;cresc=`<span style="font-weight:700;color:${pct>=0?'var(--success)':'var(--danger)'}">${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%</span> <span style="color:var(--muted)">(${per} ${a} vs ${a-1}: ${relFmt(y)} vs ${relFmt(x)} cx)</span>`;}
     }
     const skus=[...VD_SKUS,'OUTROS'].filter(s=>d.skus[s]&&evcSoma(d.skus[s],11)>0);
     const kpi=(rot,val)=>`<div style="border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;text-align:center"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">${rot}</div><div style="font-size:22px;font-weight:800">${val}</div></div>`;
