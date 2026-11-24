@@ -6617,6 +6617,24 @@ async function evcExcelCliente(d){
     mm.getCell(2).value={formula:`INDEX($B$3:$M$3,MATCH(MAX(B${trY}:M${trY}),B${trY}:M${trY},0))`};
     evcXlImg(wb,ws,await evcGraficoPng(abrev,skus.map(s=>({nome:s,valores:d2.skus[s]||Array(12).fill(0),cor:EVC_CORES[s]}))),trY+3);
   }
+  if(anos.length>1&&evcMeta.ativa){ // aba da meta por produto: base e realizado ligados às abas dos anos
+    const ult=anos[anos.length-1],ant=anos[anos.length-2];
+    const wm=wb.addWorksheet('Meta de crescimento',{views:[{showGridLines:false}]});
+    wm.getCell('A1').value=`Meta de crescimento — ${nome}`;wm.getCell('A1').font={bold:true,size:16};
+    wm.getCell('A2').value=`${ult} vs média ${ant} (${per}). Altere as células amarelas (B3 e D3) e tudo recalcula.`;wm.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
+    evcXlParams(wm);
+    const hm=wm.getRow(5);hm.values=['Produto',...EVC_META_TH];evcXlHeader(hm);
+    for(let k=0;k<=n;k++){
+      const r=6+k,ry=4+k,tot=k===n,row=wm.getRow(r);
+      row.getCell(1).value=tot?'TOTAL':skus[k];
+      const base=evcMeta.base==='periodo'?`'Ano ${ant}'!P${ry}`:`'Ano ${ant}'!O${ry}/12*${fimC+1}`;
+      const cel=(c,f,fmt)=>{const x=row.getCell(c);x.value={formula:f};x.numFmt=fmt;};
+      cel(2,base,'#,##0.0');cel(3,`B${r}*$B$3`,'#,##0.0');cel(4,`C${r}*$D$3`,'"R$" #,##0.00');
+      cel(5,`'Ano ${ult}'!P${ry}`,'#,##0');cel(6,`MAX(0,B${r}+C${r}-E${r})`,'#,##0.0');cel(7,`IF(B${r}+C${r}>0,E${r}/(B${r}+C${r}),"")`,'0.0%');
+      if(tot)row.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
+    }
+    wm.getColumn(1).width=22;for(let c=2;c<=7;c++)wm.getColumn(c).width=16;
+  }
   evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'evolutivo-'+evcSlug(nome)+'.xlsx');
 }
 function evcXlParams(ws){ // células amarelas editáveis: B3 = % de crescimento, D3 = R$ por caixa
