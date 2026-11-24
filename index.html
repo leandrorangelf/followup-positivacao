@@ -1680,6 +1680,8 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
         <datalist id="evc-clientes"></datalist>
         <span style="font-size:12px;color:var(--muted)">coord.</span>
         <select id="evc-coord" class="client-filter" onchange="evcSet('coord',this.value)" style="min-width:140px"><option value="todos">Todos</option></select>
+        <span style="font-size:12px;color:var(--muted)">comparar de Jan</span>
+        <select id="evc-fim-mes" class="client-filter" onchange="evcSet('fim',this.value)" style="min-width:170px"><option value="auto">Automático (meses fechados)</option></select>
         <span style="font-size:12px;color:var(--muted)">origem</span>
         <select id="evc-origem" class="client-filter" onchange="evcSet('origem',this.value)" style="min-width:130px"><option value="fabrica">🏭 Fábrica</option><option value="todas">Todas (com distrib.)</option></select>
         <button class="secondary-btn" onclick="evcCarregar()">↺ Atualizar</button>
