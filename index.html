@@ -6651,7 +6651,7 @@ async function evcExcelRanking(d){
   const metaOn=evcMeta.ativa&&nA>1;
   if(metaOn)evcXlParams(ws);
   const hdr=ws.getRow(4);
-  hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.'];
+  hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.',...(metaOn?EVC_META_TH:[])];
   evcXlHeader(hdr);
   const cMedia=3+nA,cCresc=4+nA,cUlt=EVC_COL(2+nA),cAnt=EVC_COL(1+nA),fRow=r=>{
     const cm=ws.getCell(EVC_COL(cMedia)+r);cm.value={formula:`${cUlt}${r}/${fimC+1}`};cm.numFmt='#,##0.0';
