@@ -6339,7 +6339,9 @@ function evcRenderRanking(dados,nomes){
     const mx=Math.max(1,...tots);
     return`<div style="display:flex;align-items:flex-end;justify-content:center;gap:3px;height:26px">${tots.map((v,i)=>`<div title="${anos[i]}: ${relFmt(v)} cx" style="width:14px;height:${v?Math.max(3,Math.round(v/mx*26)):1}px;background:${EVC_CORES_ANO[i%EVC_CORES_ANO.length]};border-radius:2px"></div>`).join('')}</div>`;
   };
-  g('evc-content').innerHTML=aviso+graficoGeral+`
+  evcRank={anos,fimC,per,linhas,agTodos,nomes:nomes.length,coord:evcCoord};
+  const barraExp=`<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:12px"><button class="secondary-btn" onclick="evcExportarExcel()">⬇ Excel (editável)</button><button class="secondary-btn" onclick="evcExportarPdf()">⬇ PDF (visual)</button></div>`;
+  g('evc-content').innerHTML=aviso+barraExp+graficoGeral+`
   <div style="background:var(--card);border-radius:var(--r-md);padding:16px;box-shadow:var(--shadow-sm)">
     <div style="font-size:13px;font-weight:700;margin-bottom:10px">Ranking de clientes — mesmo período (${per}) em todos os anos <span style="font-size:11px;color:var(--muted);font-weight:400">— clique no cliente para ver a evolução por produto, mês, média e consolidado do ano</span></div>
     <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
