@@ -6640,46 +6640,62 @@ async function evcExcelCliente(d){
     mm.getCell(2).value={formula:`INDEX($B$3:$M$3,MATCH(MAX(B${trY}:M${trY}),B${trY}:M${trY},0))`};
     evcXlImg(wb,ws,await evcGraficoPng(abrev,skus.map(s=>({nome:s,valores:d2.skus[s]||Array(12).fill(0),cor:EVC_CORES[s]}))),trY+3);
   }
-  if(anos.length>1&&evcMeta.ativa){ // aba da meta por produto: base e realizado ligados às abas dos anos
-    const ult=anos[anos.length-1],ant=anos[anos.length-2];
+  if(evcMeta.ativa){ // aba da meta por produto: média e realizado ligados às abas de cada ano
+    const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j);
     const wm=wb.addWorksheet('Meta de crescimento',{views:[{showGridLines:false}]});
     wm.getCell('A1').value=`Meta de crescimento — ${nome}`;wm.getCell('A1').font={bold:true,size:16};
-    wm.getCell('A2').value=`${ult} vs média ${ant} (${per}). Altere as células amarelas (B3 e D3) e tudo recalcula.`;wm.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
+    wm.getCell('A2').value=`Real ${j.realLabel} vs média ${j.refLabel}. Altere as células amarelas (linha 3) e tudo recalcula; para uma meta específica, digite direto no Incremento.`;wm.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
     evcXlParams(wm);
-    const hm=wm.getRow(5);hm.values=['Produto',...EVC_META_TH];evcXlHeader(hm);
-    for(let k=0;k<=n;k++){
-      const r=6+k,ry=4+k,tot=k===n,row=wm.getRow(r);
-      row.getCell(1).value=tot?'TOTAL':skus[k];
-      const base=evcMeta.base==='periodo'?`'Ano ${ant}'!P${ry}`:`'Ano ${ant}'!O${ry}/12*${fimC+1}`;
-      const cel=(c,f,fmt)=>{const x=row.getCell(c);x.value={formula:f};x.numFmt=fmt;};
-      cel(2,base,'#,##0.0');cel(3,`B${r}*$B$3`,'#,##0.0');cel(4,`C${r}*$D$3`,'"R$" #,##0.00');
-      cel(5,`'Ano ${ult}'!P${ry}`,'#,##0');cel(6,`MAX(0,B${r}+C${r}-E${r})`,'#,##0.0');cel(7,`IF(B${r}+C${r}>0,E${r}/(B${r}+C${r}),"")`,'0.0%');
-      if(tot)row.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
-    }
-    wm.getColumn(1).width=22;for(let c=2;c<=7;c++)wm.getColumn(c).width=16;
+    const hm=wm.getRow(5);hm.getCell(1).value='Produto';evcXlHeader(hm);evcXlMetaHeader(hm,2,j);hm.height=32;
+    const rng=(ano,ry,i,fim)=>anos.includes(ano)?`'Ano ${ano}'!${EVC_COL(2+i)}${ry}:${EVC_COL(2+fim)}${ry}`:null;
+    mLin.forEach((l,k)=>{
+      const r=6+k,ry=l.total?trY:4+skus.indexOf(l.rot);
+      wm.getCell('A'+r).value=l.rot;wm.getCell('A'+r).font={bold:true};
+      const rr=rng(j.refAno,ry,j.refIni,j.refFim),rl=rng(j.realAno,ry,j.realIni,j.realFim);
+      evcXlMeta(wm,r,l.m,2,j,l.total,rr?`AVERAGE(${rr})`:null,rl?`SUM(${rl})`:null);
+      if(l.total)wm.getRow(r).eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
+    });
+    evcXlMetaVisual(wm,2,6,5+mLin.length);
+    wm.getColumn(1).width=22;for(let c=2;c<=9;c++)wm.getColumn(c).width=15;
   }
   evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'evolutivo-'+evcSlug(nome)+'.xlsx');
 }
-function evcXlParams(ws){ // células amarelas editáveis: B3 = % de crescimento, D3 = R$ por caixa
-  ws.getCell('A3').value='Meta de crescimento (%)';ws.getCell('B3').value=evcMeta.pct/100;ws.getCell('B3').numFmt='0.0%';
-  ws.getCell('C3').value='Prêmio por caixa (R$)';ws.getCell('D3').value=evcMeta.valor;ws.getCell('D3').numFmt='#,##0.00';
-  ['A3','C3'].forEach(a=>{ws.getCell(a).font={bold:true};});
-  ['B3','D3'].forEach(a=>{ws.getCell(a).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFEF3C7'}};ws.getCell(a).font={bold:true};});
+function evcXlParams(ws){ // células amarelas editáveis (linha 3): B3 = %, D3 = R$/caixa, F3 = meta mínima
+  const put=(a,v,fmt)=>{const c=ws.getCell(a);c.value=v;if(fmt)c.numFmt=fmt;};
+  put('A3','Crescimento (%)');put('B3',evcMeta.pct/100,'0.0%');
+  put('C3','Prêmio por caixa (R$)');put('D3',evcMeta.valor,'#,##0.00');
+  put('E3','Meta mínima (cx/mês)');put('F3',evcMeta.minimo,'0');
+  ['A3','C3','E3'].forEach(a=>{ws.getCell(a).font={bold:true};});
+  ['B3','D3','F3'].forEach(a=>{const c=ws.getCell(a);c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFEF3C7'}};c.font={bold:true};});
 }
-function evcXlMeta(ws,r,l,c){ // colunas Base, Incremento, Prêmio, Realizado, Faltante, % (fórmulas ligadas a B3 e D3)
-  if(!l.meta)return;
-  const col=k=>EVC_COL(c.cCresc+1+k),set=(k,v,f)=>{const x=ws.getCell(col(k)+r);x.value=v;x.numFmt=f;};
-  set(0,evcMeta.base==='periodo'?{formula:`${c.cAnt}${r}`}:l.meta.base,'#,##0.0');
-  set(1,{formula:`${col(0)}${r}*$B$3`},'#,##0.0');
-  set(2,{formula:`${col(1)}${r}*$D$3`},'"R$" #,##0.00');
-  set(3,{formula:`${c.cUlt}${r}`},'#,##0');
-  set(4,{formula:`MAX(0,${col(0)}${r}+${col(1)}${r}-${col(3)}${r})`},'#,##0.0');
-  set(5,{formula:`IF(${col(0)}${r}+${col(1)}${r}>0,${col(3)}${r}/(${col(0)}${r}+${col(1)}${r}),"")`},'0.0%');
+const EVC_OURO='FFC9961A';
+function evcXlMetaHeader(row,c0,j){ // 8 cabeçalhos dourados, como na planilha de referência
+  evcMetaHeads(j).forEach((t,k)=>{const c=row.getCell(c0+k);c.value=t;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:EVC_OURO}};c.alignment={horizontal:'center',vertical:'middle',wrapText:true};});
 }
-function evcXlMetaTot(ws,rt,r1,r2,c){
-  const col=k=>EVC_COL(c.cCresc+1+k);
-  [0,1,2,3,4].forEach(k=>{const x=ws.getCell(col(k)+rt);x.value={formula:`SUM(${col(k)}${r1}:${col(k)}${r2})`};x.numFmt=k===2?'"R$" #,##0.00':'#,##0.0';});
-  const x=ws.getCell(col(5)+rt);x.value={formula:`IF(${col(0)}${rt}+${col(1)}${rt}>0,${col(3)}${rt}/(${col(0)}${rt}+${col(1)}${rt}),"")`};x.numFmt='0.0%';
+function evcXlMeta(ws,r,m,c0,j,aplicaMin,fm,fr){ // 8 colunas com fórmulas; fm/fr = fórmulas opcionais de média e realizado
+  if(!m)return;
+  const nM=j.realFim-j.realIni+1,L=k=>EVC_COL(c0+k)+r;
+  const set=(k,v,fmt,fill)=>{const x=ws.getCell(L(k));x.value=v;x.numFmt=fmt;x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill||'FFFFF8E7'}};x.alignment={horizontal:'right'};};
+  set(0,fm?{formula:fm}:m.media,'#,##0.0');
+  set(1,{formula:aplicaMin?`MAX(${L(0)}*${nM}*$B$3,$F$3*${nM}-${L(0)}*${nM})`:`${L(0)}*${nM}*$B$3`},'#,##0.0');
+  set(2,{formula:`${L(0)}*${nM}+${L(1)}`},'#,##0');
+  set(3,fr?{formula:fr}:m.real,'#,##0');
+  set(4,{formula:`${L(3)}-${L(2)}`},'#,##0.0;[Red]-#,##0.0');
+  set(5,{formula:`IF(${L(2)}>0,${L(3)}/${L(2)},"")`},'0.0%');
+  set(6,{formula:`${L(1)}*$D$3`},'"R$" #,##0.00');
+  set(7,{formula:`IF(AND(${L(2)}>0,${L(3)}>=${L(2)}),${L(6)},0)`},'"R$" #,##0.00','FFFDEBA0');
+}
+function evcXlMetaTot(ws,rt,r1,r2,c0){
+  const L=(k,r)=>EVC_COL(c0+k)+r;
+  [0,1,2,3,4,6,7].forEach(k=>{const x=ws.getCell(L(k,rt));x.value={formula:`SUM(${L(k,r1)}:${L(k,r2)})`};x.numFmt=k>=6?'"R$" #,##0.00':'#,##0.0';});
+  const x=ws.getCell(L(5,rt));x.value={formula:`IF(${L(2,rt)}>0,${L(3,rt)}/${L(2,rt)},"")`};x.numFmt='0.0%';
+}
+function evcXlMetaVisual(ws,c0,r1,r2){ // barra de dados no realizado + cor no % Meta
+  const pc=EVC_COL(c0+5),rl=EVC_COL(c0+3);
+  ws.addConditionalFormatting({ref:`${pc}${r1}:${pc}${r2}`,rules:[
+    {type:'cellIs',operator:'lessThan',formulae:[1],style:{font:{bold:true,color:{argb:'FF9B1C1C'}},fill:{type:'pattern',pattern:'solid',bgColor:{argb:'FFFAD4D4'}}}},
+    {type:'cellIs',operator:'greaterThanOrEqual',formulae:[1],style:{font:{bold:true,color:{argb:'FF065F46'}},fill:{type:'pattern',pattern:'solid',bgColor:{argb:'FFD1FAE5'}}}}]});
+  ws.addConditionalFormatting({ref:`${rl}${r1}:${rl}${r2}`,rules:[{type:'dataBar',minLength:0,maxLength:100,gradient:true,showValue:true,border:false,cfvo:[{type:'min'},{type:'max'}],color:{argb:EVC_OURO}}]});
 }
 async function evcExcelRanking(d){
   const {anos,fimC,per,linhas,agTodos}=d,abrev=MESES.map(m=>m.slice(0,3)),nA=anos.length;
@@ -6689,11 +6705,11 @@ async function evcExcelRanking(d){
   ws.getCell('A1').value='Evolutivo de clientes — ranking';ws.getCell('A1').font={bold:true,size:16};
   ws.getCell('A2').value=`Mesmo período (${per}) em todos os anos. Média e crescimento são fórmulas; use os filtros do cabeçalho para ordenar e filtrar.`;
   ws.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
-  const metaOn=evcMeta.ativa&&nA>1;
+  const metaOn=evcMeta.ativa,jm=evcMetaJanelas(anos);
   if(metaOn)evcXlParams(ws);
   const hdr=ws.getRow(4);
-  hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.',...(metaOn?EVC_META_TH:[])];
-  evcXlHeader(hdr);
+  hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.',...(metaOn?evcMetaHeads(jm):[])];
+  evcXlHeader(hdr);if(metaOn){evcXlMetaHeader(hdr,5+nA,jm);hdr.height=32;}
   const cMedia=3+nA,cCresc=4+nA,cUlt=EVC_COL(2+nA),cAnt=EVC_COL(1+nA),fRow=r=>{
     const cm=ws.getCell(EVC_COL(cMedia)+r);cm.value={formula:`${cUlt}${r}/${fimC+1}`};cm.numFmt='#,##0.0';
     if(nA>1){const c=ws.getCell(EVC_COL(cCresc)+r);c.value={formula:`IF(${cAnt}${r}>0,${cUlt}${r}/${cAnt}${r}-1,"")`};c.numFmt=EVC_FMT_VAR;}
@@ -6703,17 +6719,17 @@ async function evcExcelRanking(d){
     row.getCell(1).value=l.nome;row.getCell(2).value=l.coord||'';
     l.tots.forEach((v,k)=>{const c=row.getCell(3+k);c.value=v;c.numFmt='#,##0;-#,##0;"–"';});
     fRow(r);
-    if(metaOn)evcXlMeta(ws,r,l,{cCresc,cAnt,cUlt});
+    if(metaOn)evcXlMeta(ws,r,l.meta,cCresc+1,jm,true);
   });
   const rt=5+linhas.length,tr=ws.getRow(rt);
   tr.getCell(1).value=`TOTAL — ${linhas.length} cliente(s)`;
   for(let k=0;k<nA;k++){const col=EVC_COL(3+k);tr.getCell(3+k).value={formula:`SUM(${col}5:${col}${rt-1})`};tr.getCell(3+k).numFmt='#,##0';}
   fRow(rt);
-  if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,{cCresc,cAnt,cUlt});
+  if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,cCresc+1);
   tr.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
-  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?6:0)}};
+  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?8:0)}};
   ws.getColumn(1).width=36;ws.getColumn(2).width=14;
-  for(let c=3;c<=cCresc+(metaOn?6:0);c++)ws.getColumn(c).width=16;
+  for(let c=3;c<=cCresc+(metaOn?8:0);c++)ws.getColumn(c).width=16;if(metaOn)evcXlMetaVisual(ws,cCresc+1,5,rt-1);
   // aba mensal: total geral mês a mês por ano + variação
   const wm=wb.addWorksheet('Total por mês',{views:[{showGridLines:false}]});
   wm.getCell('A1').value='Total por mês — todos os clientes do filtro';wm.getCell('A1').font={bold:true,size:16};
@@ -6751,6 +6767,14 @@ function evcPdfNovo(titulo,sub){
 function evcPdfCorVar(colsVar){ // pinta de verde/vermelho as colunas de variação
   return d=>{if(d.section==='body'&&colsVar.includes(d.column.index)){const t=String(d.cell.raw||'');if(t.startsWith('+'))d.cell.styles.textColor=[22,163,74];else if(t.startsWith('-'))d.cell.styles.textColor=[220,38,38];d.cell.styles.fontStyle='bold';}};
 }
+const evcPdfMetaCels=m=>m?[relFmt1(m.media),relFmt1(m.inc),evcN0(m.meta),m.real?evcN0(m.real):'–',relFmt1(m.falta),evcPct1(m.pct),evcRS(m.pot),evcRS(m.conq)]:Array(8).fill('–');
+function evcPdfMetaCor(x,c0){ // c0 = índice da 1ª coluna da meta; pinta falta negativa, % Meta e prêmio conquistado
+  if(x.section!=='body')return;
+  const i=x.column.index-c0,t=String(x.cell.raw||'');
+  if(i===4&&t.startsWith('-'))x.cell.styles.textColor=[185,28,28];
+  if(i===5&&t!=='—'&&t!=='–'){const p=parseFloat(t.replace('.','').replace(',','.'));x.cell.styles.fillColor=p>=100?[209,250,229]:[250,212,212];x.cell.styles.fontStyle='bold';}
+  if(i===7){x.cell.styles.fillColor=[253,235,160];x.cell.styles.fontStyle='bold';}
+}
 async function evcPdfCliente(d){
   const {nome,ag,anos,fimC,per}=d,abrev=MESES.map(m=>m.slice(0,3));
   const skus=[...VD_SKUS,'OUTROS'].filter(s=>anos.some(a=>ag[a].skus[s]&&evcSoma(ag[a].skus[s],11)>0));
@@ -6780,12 +6804,12 @@ async function evcPdfCliente(d){
     const body=[...sk.map(s=>[s,...d2.skus[s].map(f),relFmt1(evcSoma(d2.skus[s],fimA)/(fimA+1)),relFmt(evcSoma(d2.skus[s],11))]),['TOTAL',...d2.total.map(f),relFmt1(media),relFmt(totAno)]];
     doc.autoTable({startY:yy,head:[['Produto',...abrev,'Média','Total '+a]],body,styles:{fontSize:8,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[31,42,68]},didParseCell:x=>{if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
   }
-  if(anos.length>1&&evcMeta.ativa){
-    const mLin=evcMetaLinhasCliente(ag,anos,fimC),f1=v=>relFmt1(v);
+  if(evcMeta.ativa){
+    const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j);
     doc.addPage();
-    const ym=doc.cab(`Meta de crescimento — ${nome}`,`${anos[anos.length-1]} vs média ${anos[anos.length-2]} (${per}) · +${evcMeta.pct}% · ${evcRS(evcMeta.valor)} por caixa de incremento`);
-    const corpo=mLin.map(l=>[l.rot,...(l.m?[f1(l.m.base),f1(l.m.inc),evcRS(l.m.premio),f1(l.m.real),l.m.falta>0?f1(l.m.falta):'ok',l.m.pct===null?'–':l.m.pct.toFixed(1).replace('.',',')+'%']:Array(6).fill('–'))]);
-    doc.autoTable({startY:ym,head:[['Produto',...EVC_META_TH]],body:corpo,styles:{fontSize:10,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[101,71,217]},didParseCell:x=>{if(x.section==='body'&&x.row.index===corpo.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+    const ym=doc.cab(`Meta de crescimento — ${nome}`,`Real ${j.realLabel} vs média ${j.refLabel} · +${evcMeta.pct}% · ${evcRS(evcMeta.valor)} por caixa · meta mínima ${evcMeta.minimo} cx/mês no total`);
+    const corpo=mLin.map(l=>[l.rot,...evcPdfMetaCels(l.m)]);
+    doc.autoTable({startY:ym,head:[['Produto',...evcMetaHeads(j)]],body:corpo,styles:{fontSize:9,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[201,150,26]},didParseCell:x=>{evcPdfMetaCor(x,1);if(x.section==='body'&&x.row.index===corpo.length-1)x.cell.styles.fontStyle='bold';}});
   }
   doc.rodape();
   doc.save('evolutivo-'+evcSlug(nome)+'.pdf');
@@ -6797,13 +6821,13 @@ async function evcPdfRanking(d){
   let y=doc.primeiro;
   y=doc.img(await evcGraficoPng(abrev,anos.map((a,i)=>({nome:String(a),valores:agTodos[a]?agTodos[a].total:Array(12).fill(0),cor:EVC_CORES_ANO[i%EVC_CORES_ANO.length]}))),y);
   const tot=anos.map((a,k)=>linhas.reduce((s,l)=>s+l.tots[k],0));
-  const mOn=evcMeta.ativa&&nA>1;
-  const mCels=m=>!mOn?[]:m?[relFmt1(m.base),relFmt1(m.inc),evcRS(m.premio),relFmt1(m.real),m.falta>0?relFmt1(m.falta):'ok',m.pct===null?'–':m.pct.toFixed(1).replace('.',',')+'%']:Array(6).fill('–');
+  const mOn=evcMeta.ativa,jm=evcMetaJanelas(anos);
+  const mCels=m=>!mOn?[]:evcPdfMetaCels(m);
   const mTot=mCels(mOn?evcMetaSoma(linhas.map(l=>l.meta)):null);
   const pctT=nA>1&&tot[nA-2]>0?(tot[nA-1]-tot[nA-2])/tot[nA-2]*100:null;
   const body=[...linhas.map(l=>[l.nome,l.coord||'',...l.tots.map(v=>v?relFmt(v):'–'),l.media?relFmt1(l.media):'–',evcPctTxt(l.pct),...mCels(l.meta)]),[`TOTAL (${linhas.length})`,'',...tot.map(relFmt),relFmt1(tot[nA-1]/(fimC+1)),evcPctTxt(pctT),...mTot]];
   const colCresc=2+nA+1;
-  doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.',...(mOn?EVC_META_TH:[])]],body,styles:{fontSize:8},columnStyles:Object.fromEntries(Array.from({length:nA+2+(mOn?6:0)},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+  doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.',...(mOn?evcMetaHeads(jm):[])]],body,styles:{fontSize:mOn?7:8},columnStyles:Object.fromEntries(Array.from({length:nA+2+(mOn?8:0)},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(mOn)evcPdfMetaCor(x,colCresc+1);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
   doc.rodape();
   doc.save('evolutivo-clientes-ranking.pdf');
 }
