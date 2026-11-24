@@ -6662,6 +6662,7 @@ async function evcExcelRanking(d){
     row.getCell(1).value=l.nome;row.getCell(2).value=l.coord||'';
     l.tots.forEach((v,k)=>{const c=row.getCell(3+k);c.value=v;c.numFmt='#,##0;-#,##0;"–"';});
     fRow(r);
+    if(metaOn)evcXlMeta(ws,r,l,{cCresc,cAnt,cUlt});
   });
   const rt=5+linhas.length,tr=ws.getRow(rt);
   tr.getCell(1).value=`TOTAL — ${linhas.length} cliente(s)`;
