@@ -1665,6 +1665,26 @@ body.tv-mode #app-shell,body.tv-mode .screen:not(#s-tv),body.tv-mode #toast{disp
   </div>
 </div>
 
+<!-- EVOLUTIVO CLIENTES (por cliente: produto, mês, média, consolidado anual) -->
+<div id="s-evocli" class="screen" style="display:none">
+  <div class="page-pad">
+    <div class="section-head">
+      <div><div class="section-title">📈 Evolutivo Clientes</div><div class="section-sub">Evolução de cada cliente por produto, mês, média mensal e consolidado do ano</div></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px;background:var(--bg-soft,#f4f4f5);border-radius:var(--r-md)">
+        <span style="font-size:12px;font-weight:600;color:var(--muted)">Cliente</span>
+        <input id="evc-cliente" class="client-filter" list="evc-clientes" placeholder="Digite o nome (vazio = ranking)" onchange="evcSet('cliente',this.value)" style="min-width:240px">
+        <datalist id="evc-clientes"></datalist>
+        <span style="font-size:12px;color:var(--muted)">coord.</span>
+        <select id="evc-coord" class="client-filter" onchange="evcSet('coord',this.value)" style="min-width:140px"><option value="todos">Todos</option></select>
+        <span style="font-size:12px;color:var(--muted)">origem</span>
+        <select id="evc-origem" class="client-filter" onchange="evcSet('origem',this.value)" style="min-width:130px"><option value="fabrica">🏭 Fábrica</option><option value="todas">Todas (com distrib.)</option></select>
+        <button class="secondary-btn" onclick="evcCarregar()">↺ Atualizar</button>
+      </div>
+    </div>
+    <div id="evc-content"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
