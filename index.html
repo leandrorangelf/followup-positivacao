@@ -2907,7 +2907,7 @@ function setupShell(){
   document.querySelectorAll('.no-diretoria').forEach(el=>el.style.display=isDiretoria?'none':'');
   document.querySelectorAll('.no-vagner').forEach(el=>el.style.display=(user==='vagner')?'none':'');
   document.querySelectorAll('.no-fabiano').forEach(el=>el.style.display=isFabiano()?'none':'');
-  ['side-dash','side-forecast','side-tv','side-relatorios','side-fabrica','side-agenda'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
+  ['side-dash','side-forecast','side-tv','side-relatorios','side-fabrica','side-evocli','side-agenda'].forEach(id=>{const el=g(id);if(el)el.style.display=isFabiano()?'none':'';});
   if(g('side-premiacao'))g('side-premiacao').style.display=(isDiretoria||isFabiano())?'none':'';
   if(g('side-gestao'))g('side-gestao').style.display=(isDiretoria||user==='admin')?'':'none';
   if(g('side-planilha'))g('side-planilha').style.display=isDiretoria?'':'none';
