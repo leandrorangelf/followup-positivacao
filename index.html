@@ -2948,6 +2948,7 @@ async function setMesGlobal(value){
     else if(visible==='s-forecast')await forecastCarregar();
     else if(visible==='s-relatorios')await irRelatorios();
     else if(visible==='s-fabrica')await irFabrica();
+    else if(visible==='s-evocli')await irEvolutivoCli();
   }finally{
     if(sel)sel.disabled=false;
   }
