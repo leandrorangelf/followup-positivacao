@@ -6302,16 +6302,17 @@ function evcRenderRanking(dados,nomes){
   const porCli={};
   dados.forEach(p=>{(porCli[p.cliente_nome]=porCli[p.cliente_nome]||[]).push(p);});
   const aviso=evcCliente?`<div class="empty" style="padding:8px">Cliente "${vdEsc(evcCliente)}" não encontrado neste filtro — mostrando o ranking.</div>`:'';
+  const fimC=evcFimComum(anos),per='Jan–'+MESES[fimC].slice(0,3);
   const linhas=nomes.map(n=>{
     const ag=evcAgregar(porCli[n]);
-    const tots=anos.map(a=>ag[a]?evcSoma(ag[a].total,11):0);
+    const tots=anos.map(a=>ag[a]?evcSoma(ag[a].total,fimC):0); // mesmo período em todos os anos
     const ult=anos[anos.length-1],ant=anos[anos.length-2];
     let pct=null;
     if(ant!==undefined&&ag[ant]&&ag[ult]){
-      const fim=evcFim(ult),a=evcSoma(ag[ant].total,fim),b=evcSoma(ag[ult].total,fim);
+      const a=evcSoma(ag[ant].total,fimC),b=evcSoma(ag[ult].total,fimC);
       if(a>0)pct=(b-a)/a*100;
     }
-    const media=ag[ult]?evcSoma(ag[ult].total,evcFim(ult))/(evcFim(ult)+1):0;
+    const media=ag[ult]?evcSoma(ag[ult].total,fimC)/(fimC+1):0;
     return{nome:n,coord:porCli[n][0].coordenador,tots,media,pct};
   }).sort((a,b)=>(b.tots[b.tots.length-1]||0)-(a.tots[a.tots.length-1]||0));
   const ult=anos[anos.length-1];
