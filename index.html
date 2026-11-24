@@ -6234,19 +6234,20 @@ async function irEvolutivoCli(){
   updateSideNav('evocli');
   await evcCarregar();
 }
-// ── META DE CRESCIMENTO: crescimento desejado (%) sobre a média ──
-// Média = média mensal de um período de referência (ex.: Abr–Jun) · Incremento = média × % (× nº de meses do realizado)
-// Prêmio = incremento × R$/caixa · Realizado = volume do período · Faltante = (média + incremento) − realizado (mínimo 0)
-// % Meta = realizado ÷ (média + incremento)
-let evcMeta={ativa:false,pct:10,valor:500,refAno:0,refIni:3,refFim:5,realAno:0,realIni:-1,realFim:-1}; // 0 / -1 = automático
-try{Object.assign(evcMeta,JSON.parse(localStorage.getItem('evcMeta3')||'{}'));}catch(e){}
+// ── META DE CRESCIMENTO (modelo planilha): média mensal de um período de referência + % de crescimento ──
+// Média = média mensal do período de referência (ex.: Abr–Jun) · Incremento = média × % × nº de meses do realizado
+// Meta = média + incremento · Falta = realizado − meta (negativo = ainda falta) · % Meta = realizado ÷ meta
+// Prêmio potencial = incremento × R$/caixa · Prêmio conquistado = potencial, só quando realizado ≥ meta
+// Meta mínima (cx/mês) é opcional (0 = desligada): vale só para o total do cliente, para cliente muito pequeno não ficar com meta ridícula.
+let evcMeta={ativa:false,pct:10,valor:500,minimo:0,refAno:0,refIni:3,refFim:5,realAno:0,realIni:-1,realFim:-1}; // 0 / -1 = automático
+try{Object.assign(evcMeta,JSON.parse(localStorage.getItem('evcMeta4')||'{}'));}catch(e){}
 const evcRS=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const evcN0=v=>Math.round(v).toLocaleString('pt-BR');
 function evcMetaSet(k,v){
   if(k==='ativa')evcMeta.ativa=!!v;
-  else if(['pct','valor'].includes(k))evcMeta[k]=Math.max(0,Number(v)||0);
+  else if(['pct','valor','minimo'].includes(k))evcMeta[k]=Math.max(0,Number(v)||0);
   else evcMeta[k]=Number(v);
-  try{localStorage.setItem('evcMeta3',JSON.stringify(evcMeta));}catch(e){}
+  try{localStorage.setItem('evcMeta2',JSON.stringify(evcMeta));}catch(e){}
   evcRender();
 }
 function evcSomaJ(arr,i,f){return(arr||[]).slice(i,f+1).reduce((s,v)=>s+v,0);}
@@ -6260,30 +6261,34 @@ function evcMetaJanelas(anos){ // resolve "automático": ano mais recente e últ
     refLabel:(c===d?ab[c]:ab[c]+'–'+ab[d])+(refAno!==realAno?'/'+yy(refAno):''),
     realLabel:(a===b?ab[a]:ab[a]+'–'+ab[b])+'/'+yy(realAno)};
 }
-const evcMetaHeads=j=>[`Média ${j.refLabel}`,'Incremento','Prêmio',`Realizado ${j.realLabel}`,'Faltante','% Meta'];
-function evcMetaCalc(arrRef,arrReal,j){
+const evcMetaHeads=j=>[`Média ${j.refLabel}`,'Incremento','Meta',`Real ${j.realLabel}`,'Falta','% Meta','Prêmio Potencial','Prêmio Conquistado'];
+function evcMetaCalc(arrRef,arrReal,j,aplicaMin){
   const nR=j.refFim-j.refIni+1,nM=j.realFim-j.realIni+1;
-  const media=evcSomaJ(arrRef,j.refIni,j.refFim)/nR,inc=media*nM*evcMeta.pct/100,meta=media*nM+inc,real=evcSomaJ(arrReal,j.realIni,j.realFim);
-  return{media,inc,meta,premio:inc*evcMeta.valor,real,falta:Math.max(0,meta-real),pct:meta>0?real/meta*100:null};
+  const media=evcSomaJ(arrRef,j.refIni,j.refFim)/nR,base=media*nM;
+  let inc=base*evcMeta.pct/100;
+  if(aplicaMin)inc=Math.max(inc,evcMeta.minimo*nM-base);
+  const meta=base+inc,real=evcSomaJ(arrReal,j.realIni,j.realFim),pot=inc*evcMeta.valor;
+  return{media,inc,meta,real,falta:real-meta,pct:meta>0?real/meta*100:null,pot,conq:meta>0&&real>=meta?pot:0};
 }
 function evcMetaSoma(ms){
-  const s=ms.filter(Boolean).reduce((a,m)=>({media:a.media+m.media,inc:a.inc+m.inc,meta:a.meta+m.meta,premio:a.premio+m.premio,real:a.real+m.real,falta:a.falta+m.falta}),{media:0,inc:0,meta:0,premio:0,real:0,falta:0});
+  const s=ms.filter(Boolean).reduce((a,m)=>({media:a.media+m.media,inc:a.inc+m.inc,meta:a.meta+m.meta,real:a.real+m.real,falta:a.falta+m.falta,pot:a.pot+m.pot,conq:a.conq+m.conq}),{media:0,inc:0,meta:0,real:0,falta:0,pot:0,conq:0});
   s.pct=s.meta>0?s.real/s.meta*100:null;
   return s;
 }
 const evcPct1=p=>p===null?'—':p.toFixed(1).replace('.',',')+'%';
-function evcMetaTd(m,pad){ // 6 células: média, incremento, prêmio, realizado, faltante, %
+function evcMetaTd(m,pad){ // 8 células, igual à planilha de referência
   const td=(t,x='')=>`<td style="text-align:center;padding:${pad||7}px 8px;${x}">${t}</td>`;
-  if(!m)return Array(6).fill(td('—','color:var(--muted)')).join('');
+  if(!m)return Array(8).fill(td('—','color:var(--muted)')).join('');
   const bom=m.pct!==null&&m.pct>=100;
-  return td(relFmt1(m.media))+td(relFmt1(m.inc),'font-weight:700')+td(evcRS(m.premio),'font-weight:800;background:rgba(245,158,11,.18)')+td(m.real?evcN0(m.real):'–')
-    +td(m.falta>0?relFmt1(m.falta):'✔','font-weight:700;color:'+(m.falta>0?'var(--danger)':'var(--success)'))
-    +td(evcPct1(m.pct),'font-weight:800;background:'+(bom?'rgba(22,163,74,.16)':'rgba(220,38,38,.12)'));
+  return td(relFmt1(m.media))+td(relFmt1(m.inc),'font-weight:700')+td(evcN0(m.meta),'font-weight:700')+td(m.real?evcN0(m.real):'–')
+    +td(relFmt1(m.falta),'font-weight:700;color:'+(m.falta<0?'var(--danger)':'var(--success)'))
+    +td(evcPct1(m.pct),'font-weight:800;background:'+(bom?'rgba(22,163,74,.16)':'rgba(220,38,38,.12)'))
+    +td(evcRS(m.pot),'background:rgba(245,158,11,.10)')+td(evcRS(m.conq),'font-weight:800;background:rgba(245,158,11,.22)');
 }
-function evcMetaLinhasCliente(ag,j){ // por produto + TOTAL
+function evcMetaLinhasCliente(ag,j){ // por produto + TOTAL (a meta mínima só vale no TOTAL)
   const R=ag[j.refAno],L=ag[j.realAno];
   const skus=[...VD_SKUS,'OUTROS'].filter(s=>(R&&R.skus[s]&&evcSomaJ(R.skus[s],j.refIni,j.refFim)>0)||(L&&L.skus[s]&&evcSomaJ(L.skus[s],j.realIni,j.realFim)>0));
-  const lin=(rot,ar,al,total)=>({rot,total,m:evcMetaCalc(ar,al,j)});
+  const lin=(rot,ar,al,total)=>({rot,total,m:evcMetaCalc(ar,al,j,total)});
   return[...skus.map(s=>lin(s,R&&R.skus[s],L&&L.skus[s],false)),lin('TOTAL',R&&R.total,L&&L.total,true)];
 }
 function evcMetaPainel(){
@@ -6303,10 +6308,11 @@ function evcMetaPainel(){
       ${lb('· Realizado em')}${sl('realAno',opA(evcMeta.realAno))}${sl('realIni',opM(evcMeta.realIni,true))}${lb('a')}${sl('realFim',opM(evcMeta.realFim,true))}`:''}
     </div>
     ${on?`<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px">
-      ${lb('Crescer')}${[5,10,15,20,25].map(chip).join('')}${num('pct',evcMeta.pct,70,0.5)}${lb('%')}
+      ${lb('Crescer')}${[10,15,20,25,30].map(chip).join('')}${num('pct',evcMeta.pct,70,0.5)}${lb('%')}
       ${lb('· Prêmio R$/caixa')}${num('valor',evcMeta.valor,90)}
+      ${lb('· Meta mínima (cx/mês, 0 = sem mínimo)')}${num('minimo',evcMeta.minimo,70)}
     </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:8px">Incremento = média × ${evcMeta.pct}% · Prêmio = incremento × ${evcRS(evcMeta.valor)} por caixa · Faltante = (média + incremento) − realizado · % Meta = realizado ÷ (média + incremento)</div>`:''}
+    <div style="font-size:11px;color:var(--muted);margin-top:8px">Incremento = média × ${evcMeta.pct}% · Meta = média + incremento · Falta = real − meta · % Meta = real ÷ meta · Prêmio potencial = incremento × ${evcRS(evcMeta.valor)} · Prêmio conquistado = potencial, só se bater a meta</div>`:''}
   </div>`;
 }
 function evcSet(chave,valor){
@@ -6403,7 +6409,7 @@ function evcRenderRanking(dados,nomes){
       if(a>0)pct=(b-a)/a*100;
     }
     const media=ag[ult]?evcSoma(ag[ult].total,fimC)/(fimC+1):0;
-    const meta=metaOn?evcMetaCalc(ag[jm.refAno]&&ag[jm.refAno].total,ag[jm.realAno]&&ag[jm.realAno].total,jm):null;
+    const meta=metaOn?evcMetaCalc(ag[jm.refAno]&&ag[jm.refAno].total,ag[jm.realAno]&&ag[jm.realAno].total,jm,true):null;
     return{nome:n,coord:porCli[n][0].coordenador,tots,media,pct,meta};
   }).sort((a,b)=>(b.tots[b.tots.length-1]||0)-(a.tots[a.tots.length-1]||0));
   const ult=anos[anos.length-1];
@@ -6646,41 +6652,43 @@ async function evcExcelCliente(d){
       const r=6+k,ry=l.total?trY:4+skus.indexOf(l.rot);
       wm.getCell('A'+r).value=l.rot;wm.getCell('A'+r).font={bold:true};
       const rr=rng(j.refAno,ry,j.refIni,j.refFim),rl=rng(j.realAno,ry,j.realIni,j.realFim);
-      evcXlMeta(wm,r,l.m,2,j,rr?`AVERAGE(${rr})`:null,rl?`SUM(${rl})`:null);
+      evcXlMeta(wm,r,l.m,2,j,l.total,rr?`AVERAGE(${rr})`:null,rl?`SUM(${rl})`:null);
       if(l.total)wm.getRow(r).eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
     });
     evcXlMetaVisual(wm,2,6,5+mLin.length);
-    wm.getColumn(1).width=22;for(let c=2;c<=7;c++)wm.getColumn(c).width=15;
+    wm.getColumn(1).width=22;for(let c=2;c<=9;c++)wm.getColumn(c).width=15;
   }
   evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'evolutivo-'+evcSlug(nome)+'.xlsx');
 }
-function evcXlParams(ws){ // células amarelas editáveis (linha 3): B3 = % de crescimento, D3 = R$ por caixa
+function evcXlParams(ws){ // células amarelas editáveis (linha 3): B3 = %, D3 = R$/caixa, F3 = meta mínima
   const put=(a,v,fmt)=>{const c=ws.getCell(a);c.value=v;if(fmt)c.numFmt=fmt;};
   put('A3','Crescimento (%)');put('B3',evcMeta.pct/100,'0.0%');
   put('C3','Prêmio por caixa (R$)');put('D3',evcMeta.valor,'#,##0.00');
-  ['A3','C3'].forEach(a=>{ws.getCell(a).font={bold:true};});
-  ['B3','D3'].forEach(a=>{const c=ws.getCell(a);c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFEF3C7'}};c.font={bold:true};});
+  put('E3','Meta mínima (cx/mês)');put('F3',evcMeta.minimo,'0');
+  ['A3','C3','E3'].forEach(a=>{ws.getCell(a).font={bold:true};});
+  ['B3','D3','F3'].forEach(a=>{const c=ws.getCell(a);c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFEF3C7'}};c.font={bold:true};});
 }
 const EVC_OURO='FFC9961A';
-function evcXlMetaHeader(row,c0,j){ // 6 cabeçalhos dourados
+function evcXlMetaHeader(row,c0,j){ // 8 cabeçalhos dourados, como na planilha de referência
   evcMetaHeads(j).forEach((t,k)=>{const c=row.getCell(c0+k);c.value=t;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:EVC_OURO}};c.alignment={horizontal:'center',vertical:'middle',wrapText:true};});
 }
-function evcXlMeta(ws,r,m,c0,j,fm,fr){ // média | incremento | prêmio | realizado | faltante | %  (fórmulas ligadas a B3 e D3)
+function evcXlMeta(ws,r,m,c0,j,aplicaMin,fm,fr){ // 8 colunas com fórmulas; fm/fr = fórmulas opcionais de média e realizado
   if(!m)return;
-  const nM=j.realFim-j.realIni+1,L=k=>EVC_COL(c0+k)+r,meta=`${L(0)}*${nM}+${L(1)}`;
+  const nM=j.realFim-j.realIni+1,L=k=>EVC_COL(c0+k)+r;
   const set=(k,v,fmt,fill)=>{const x=ws.getCell(L(k));x.value=v;x.numFmt=fmt;x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill||'FFFFF8E7'}};x.alignment={horizontal:'right'};};
   set(0,fm?{formula:fm}:m.media,'#,##0.0');
-  set(1,{formula:`${L(0)}*${nM}*$B$3`},'#,##0.0');
-  set(2,{formula:`${L(1)}*$D$3`},'"R$" #,##0.00','FFFDEBA0');
+  set(1,{formula:aplicaMin?`MAX(${L(0)}*${nM}*$B$3,$F$3*${nM}-${L(0)}*${nM})`:`${L(0)}*${nM}*$B$3`},'#,##0.0');
+  set(2,{formula:`${L(0)}*${nM}+${L(1)}`},'#,##0');
   set(3,fr?{formula:fr}:m.real,'#,##0');
-  set(4,{formula:`MAX(0,${meta}-${L(3)})`},'#,##0.0');
-  set(5,{formula:`IF(${meta}>0,${L(3)}/(${meta}),"")`},'0.0%');
+  set(4,{formula:`${L(3)}-${L(2)}`},'#,##0.0;[Red]-#,##0.0');
+  set(5,{formula:`IF(${L(2)}>0,${L(3)}/${L(2)},"")`},'0.0%');
+  set(6,{formula:`${L(1)}*$D$3`},'"R$" #,##0.00');
+  set(7,{formula:`IF(AND(${L(2)}>0,${L(3)}>=${L(2)}),${L(6)},0)`},'"R$" #,##0.00','FFFDEBA0');
 }
-function evcXlMetaTot(ws,rt,r1,r2,c0,nM){
+function evcXlMetaTot(ws,rt,r1,r2,c0){
   const L=(k,r)=>EVC_COL(c0+k)+r;
-  [0,1,2,3,4].forEach(k=>{const x=ws.getCell(L(k,rt));x.value={formula:`SUM(${L(k,r1)}:${L(k,r2)})`};x.numFmt=k===2?'"R$" #,##0.00':'#,##0.0';});
-  const meta=`${L(0,rt)}*${nM}+${L(1,rt)}`,x=ws.getCell(L(5,rt));
-  x.value={formula:`IF(${meta}>0,${L(3,rt)}/(${meta}),"")`};x.numFmt='0.0%';
+  [0,1,2,3,4,6,7].forEach(k=>{const x=ws.getCell(L(k,rt));x.value={formula:`SUM(${L(k,r1)}:${L(k,r2)})`};x.numFmt=k>=6?'"R$" #,##0.00':'#,##0.0';});
+  const x=ws.getCell(L(5,rt));x.value={formula:`IF(${L(2,rt)}>0,${L(3,rt)}/${L(2,rt)},"")`};x.numFmt='0.0%';
 }
 function evcXlMetaVisual(ws,c0,r1,r2){ // barra de dados no realizado + cor no % Meta
   const pc=EVC_COL(c0+5),rl=EVC_COL(c0+3);
@@ -6711,17 +6719,17 @@ async function evcExcelRanking(d){
     row.getCell(1).value=l.nome;row.getCell(2).value=l.coord||'';
     l.tots.forEach((v,k)=>{const c=row.getCell(3+k);c.value=v;c.numFmt='#,##0;-#,##0;"–"';});
     fRow(r);
-    if(metaOn)evcXlMeta(ws,r,l.meta,cCresc+1,jm);
+    if(metaOn)evcXlMeta(ws,r,l.meta,cCresc+1,jm,true);
   });
   const rt=5+linhas.length,tr=ws.getRow(rt);
   tr.getCell(1).value=`TOTAL — ${linhas.length} cliente(s)`;
   for(let k=0;k<nA;k++){const col=EVC_COL(3+k);tr.getCell(3+k).value={formula:`SUM(${col}5:${col}${rt-1})`};tr.getCell(3+k).numFmt='#,##0';}
   fRow(rt);
-  if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,cCresc+1,jm.realFim-jm.realIni+1);
+  if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,cCresc+1);
   tr.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
-  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?6:0)}};
+  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?8:0)}};
   ws.getColumn(1).width=36;ws.getColumn(2).width=14;
-  for(let c=3;c<=cCresc+(metaOn?6:0);c++)ws.getColumn(c).width=16;if(metaOn)evcXlMetaVisual(ws,cCresc+1,5,rt-1);
+  for(let c=3;c<=cCresc+(metaOn?8:0);c++)ws.getColumn(c).width=16;if(metaOn)evcXlMetaVisual(ws,cCresc+1,5,rt-1);
   // aba mensal: total geral mês a mês por ano + variação
   const wm=wb.addWorksheet('Total por mês',{views:[{showGridLines:false}]});
   wm.getCell('A1').value='Total por mês — todos os clientes do filtro';wm.getCell('A1').font={bold:true,size:16};
@@ -6759,13 +6767,13 @@ function evcPdfNovo(titulo,sub){
 function evcPdfCorVar(colsVar){ // pinta de verde/vermelho as colunas de variação
   return d=>{if(d.section==='body'&&colsVar.includes(d.column.index)){const t=String(d.cell.raw||'');if(t.startsWith('+'))d.cell.styles.textColor=[22,163,74];else if(t.startsWith('-'))d.cell.styles.textColor=[220,38,38];d.cell.styles.fontStyle='bold';}};
 }
-const evcPdfMetaCels=m=>m?[relFmt1(m.media),relFmt1(m.inc),evcRS(m.premio),m.real?evcN0(m.real):'–',m.falta>0?relFmt1(m.falta):'ok',evcPct1(m.pct)]:Array(6).fill('–');
-function evcPdfMetaCor(x,c0){ // c0 = índice da 1ª coluna da meta; pinta prêmio, faltante e % Meta
+const evcPdfMetaCels=m=>m?[relFmt1(m.media),relFmt1(m.inc),evcN0(m.meta),m.real?evcN0(m.real):'–',relFmt1(m.falta),evcPct1(m.pct),evcRS(m.pot),evcRS(m.conq)]:Array(8).fill('–');
+function evcPdfMetaCor(x,c0){ // c0 = índice da 1ª coluna da meta; pinta falta negativa, % Meta e prêmio conquistado
   if(x.section!=='body')return;
   const i=x.column.index-c0,t=String(x.cell.raw||'');
-  if(i===2){x.cell.styles.fillColor=[253,235,160];x.cell.styles.fontStyle='bold';}
-  if(i===4&&t!=='ok'&&t!=='–')x.cell.styles.textColor=[185,28,28];
+  if(i===4&&t.startsWith('-'))x.cell.styles.textColor=[185,28,28];
   if(i===5&&t!=='—'&&t!=='–'){const p=parseFloat(t.replace('.','').replace(',','.'));x.cell.styles.fillColor=p>=100?[209,250,229]:[250,212,212];x.cell.styles.fontStyle='bold';}
+  if(i===7){x.cell.styles.fillColor=[253,235,160];x.cell.styles.fontStyle='bold';}
 }
 async function evcPdfCliente(d){
   const {nome,ag,anos,fimC,per}=d,abrev=MESES.map(m=>m.slice(0,3));
@@ -6819,7 +6827,7 @@ async function evcPdfRanking(d){
   const pctT=nA>1&&tot[nA-2]>0?(tot[nA-1]-tot[nA-2])/tot[nA-2]*100:null;
   const body=[...linhas.map(l=>[l.nome,l.coord||'',...l.tots.map(v=>v?relFmt(v):'–'),l.media?relFmt1(l.media):'–',evcPctTxt(l.pct),...mCels(l.meta)]),[`TOTAL (${linhas.length})`,'',...tot.map(relFmt),relFmt1(tot[nA-1]/(fimC+1)),evcPctTxt(pctT),...mTot]];
   const colCresc=2+nA+1;
-  doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.',...(mOn?evcMetaHeads(jm):[])]],body,styles:{fontSize:mOn?7:8},columnStyles:Object.fromEntries(Array.from({length:nA+2+(mOn?6:0)},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(mOn)evcPdfMetaCor(x,colCresc+1);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+  doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.',...(mOn?evcMetaHeads(jm):[])]],body,styles:{fontSize:mOn?7:8},columnStyles:Object.fromEntries(Array.from({length:nA+2+(mOn?8:0)},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(mOn)evcPdfMetaCor(x,colCresc+1);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
   doc.rodape();
   doc.save('evolutivo-clientes-ranking.pdf');
 }
