@@ -6668,6 +6668,7 @@ async function evcExcelRanking(d){
   tr.getCell(1).value=`TOTAL — ${linhas.length} cliente(s)`;
   for(let k=0;k<nA;k++){const col=EVC_COL(3+k);tr.getCell(3+k).value={formula:`SUM(${col}5:${col}${rt-1})`};tr.getCell(3+k).numFmt='#,##0';}
   fRow(rt);
+  if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,{cCresc,cAnt,cUlt});
   tr.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
   ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc}};
   ws.getColumn(1).width=36;ws.getColumn(2).width=14;
