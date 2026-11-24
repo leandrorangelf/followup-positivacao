@@ -2914,8 +2914,8 @@ function setupShell(){
 }
 
 function updateSideNav(active){
-  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',poteouro:'Pote de Ouro',forecast:'Forecast comercial',agenda:'Agenda semanal',log:'Log de atividades',relatorios:'Relatórios inteligentes',fabrica:'Volume e crescimento da fábrica'};
-  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','poteouro','forecast','agenda','log','relatorios','fabrica'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
+  const titles={gestao:'Meta, vendas e pendências',planilha:'Planilha de pedidos',dash:'Visão geral',ped:'Pedidos e positivação',cli:'Gestão de clientes',metas:'Gestão de metas',vendas:'Vendas e faturamento',premiacao:'Premiação',poteouro:'Pote de Ouro',forecast:'Forecast comercial',agenda:'Agenda semanal',log:'Log de atividades',relatorios:'Relatórios inteligentes',fabrica:'Volume e crescimento da fábrica',evocli:'Evolutivo de clientes'};
+  ['gestao','planilha','dash','ped','cli','metas','vendas','premiacao','poteouro','forecast','agenda','log','relatorios','fabrica','evocli'].forEach(id=>{const el=g('side-'+id);if(el)el.classList.toggle('active',id===active);});
   if(g('topbar-title'))g('topbar-title').textContent=titles[active]||'Follow-up Positivação';
   if(g('shell-mes'))g('shell-mes').value=mesAtual;
 }
