@@ -6476,7 +6476,7 @@ function evcRenderCliente(pedidos){
   const jm=evcMetaJanelas(anos),mLin=evcMeta.ativa?evcMetaLinhasCliente(ag,jm):[];
   const metaCliente=mLin.length?`
     <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm);border-left:4px solid var(--purple)">
-      <div style="font-size:15px;font-weight:700;margin-bottom:8px">🎯 Meta de crescimento — ${anos[anos.length-1]} vs média ${anos[anos.length-2]} (${per}) <span style="font-size:11px;color:var(--muted);font-weight:400">· +${evcMeta.pct}% · ${evcRS(evcMeta.valor)} por caixa de incremento</span></div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">🎯 Meta de crescimento — real ${jm.realLabel} vs média ${jm.refLabel} <span style="font-size:11px;color:var(--muted);font-weight:400">· +${evcMeta.pct}% · ${evcRS(evcMeta.valor)} por caixa de incremento · meta mínima ${evcMeta.minimo} cx/mês só no TOTAL</span></div>
       <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
         <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase"><th style="text-align:left;padding:8px 10px">Produto</th>${EVC_META_TH.map(t=>`<th style="text-align:center;padding:8px">${t}</th>`).join('')}</tr></thead>
         <tbody>${mLin.map(l=>`<tr style="border-top:1px solid var(--border);${l.total?'background:var(--border);font-weight:700':''}"><td style="padding:6px 10px;font-weight:700">${vdEsc(l.rot)}</td>${evcMetaTd(l.m,6)}</tr>`).join('')}</tbody>
