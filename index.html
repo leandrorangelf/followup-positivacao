@@ -6240,6 +6240,15 @@ async function irEvolutivoCli(){
 // Meta mínima (cx/mês) é opcional (0 = desligada): vale só para o total do cliente, para cliente muito pequeno não ficar com meta ridícula.
 let evcMeta={ativa:true,pct:10,valor:500,minimo:0,refAno:0,refIni:3,refFim:5,realAno:0,realIni:-1,realFim:-1}; // 0 / -1 = automático
 try{Object.assign(evcMeta,JSON.parse(localStorage.getItem('evcMeta4')||'{}'));}catch(e){}
+if(!evcMeta.pcts||typeof evcMeta.pcts!=='object')evcMeta.pcts={}; // % próprio por cliente (vazio = usa o % geral)
+const evcPctDe=nome=>(nome&&evcMeta.pcts[nome]!=null)?evcMeta.pcts[nome]:evcMeta.pct;
+const evcMetaSalvar=()=>{try{localStorage.setItem('evcMeta4',JSON.stringify(evcMeta));}catch(e){}};
+function evcMetaPctCli(nome,v){
+  v=String(v).trim();
+  if(v==='')delete evcMeta.pcts[nome];else evcMeta.pcts[nome]=Math.max(0,Number(v)||0);
+  evcMetaSalvar();evcRender();
+}
+function evcMetaLimparPcts(){evcMeta.pcts={};evcMetaSalvar();evcRender();}
 const evcRS=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const evcN0=v=>Math.round(v).toLocaleString('pt-BR');
 function evcMetaSet(k,v){
