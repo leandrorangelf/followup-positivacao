@@ -6261,7 +6261,7 @@ function evcMetaSet(k,v){
   evcRender();
 }
 function evcSomaJ(arr,i,f){return(arr||[]).slice(i,f+1).reduce((s,v)=>s+v,0);}
-function evcMetaJanelas(anos){ // resolve "automático": ano mais recente e último mês fechado
+function evcMetaJanelas(anos){ // resolve "automático": ano mais recente e mês em andamento (Real = acumulado até hoje; o % de crescimento usa mês fechado, ver evcFimComum)
   const ult=anos[anos.length-1],h=new Date(),ab=MESES.map(m=>m.slice(0,3)),yy=y=>String(y).slice(2);
   const refAno=evcMeta.refAno||ult,realAno=evcMeta.realAno||ult;
   const auto=realAno===h.getFullYear()?h.getMonth():11; // a meta é lançada no mês em andamento
