@@ -57,7 +57,7 @@ with raw(nome, coord, gud, cre, clk) as (values
   ('PORTO SEGURO MG','igor',205,165,102),
   ('REGIONAL DISTRIBUIDORA','igor',205,165,102),
   ('RJ FORTALEZA',null,198,155,102),
-  ('RJ JUAZEIRO',null,198,155,102),
+  ('RJ CARIRI',null,198,155,102),       -- planilha: RJ JUAZEIRO
   ('RJ QUIXADA',null,198,155,102),
   ('RJ SAO LUIS',null,198,155,102),
   ('RJ SOBRAL',null,198,155,102),
