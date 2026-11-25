@@ -6537,7 +6537,7 @@ function evcRenderCliente(pedidos){
       <div style="font-size:15px;font-weight:700;margin-bottom:8px">Período a período — ${per} em cada ano <span style="font-size:11px;color:var(--muted);font-weight:400">(mesmo intervalo nos dois lados; ajuste o mês no filtro acima)</span></div>
       <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
         <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase"><th style="text-align:left;padding:8px 10px">Produto</th>${anos.map((a,i)=>`<th style="text-align:center;padding:8px">${a}</th>`+(i>0?`<th style="text-align:center;padding:8px">vs ${anos[i-1]}</th>`:'')).join('')}</tr></thead>
-        <tbody>${todosSkus.map(s=>linhaPer(vdEsc(s),a=>ag[a].skus[s]||Array(12).fill(0),false)).join('')}${linhaPer('TOTAL',a=>ag[a].total,true)}${pr?linhaPer('VALOR (R$, preço aprovado)',a=>evcValorMeses(ag[a].skus,pr),true):''}</tbody>
+        <tbody>${todosSkus.map(s=>linhaPer(vdEsc(s),a=>ag[a].skus[s]||Array(12).fill(0),false)).join('')}${linhaPer('TOTAL',a=>ag[a].total,true)}</tbody>
       </table></div>
     </div>`:'';
   const jm=evcMetaJanelas(anos),mLin=evcMeta.ativa?evcMetaLinhasCliente(ag,jm,evcPctDe(evcCliente)):[];
