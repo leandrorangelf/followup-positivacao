@@ -4478,7 +4478,7 @@ function vdPrazoParaForm(p){
   if(!p)return{prazo:'avista',dias:null};
   if(p.prazo_status==='pendente')return{prazo:'solicitar',dias:p.prazo_solicitado_dias};
   if(p.prazo_status==='aprovado')return{prazo:'aprovado',dias:p.parcela_1_dias};
-  if((p.prazo_tipo||'avista')==='parcelado')return{prazo:'2835',dias:null};
+  if((p.prazo_tipo||'avista')==='parcelado')return{prazo:Number(p.parcela_3_dias)===42?'283542':'2835',dias:null};
   return{prazo:'avista',dias:null};
 }
 
