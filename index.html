@@ -6441,7 +6441,7 @@ function evcRenderRanking(dados,nomes){
         <td style="padding:5px 8px">${miniBarras(r.tots)}</td>
         ${r.tots.map(v=>`<td style="text-align:center;padding:7px 8px">${v?relFmt(v):'—'}</td>`).join('')}
         <td style="text-align:center;padding:7px 8px;color:var(--muted)">${r.media?relFmt1(r.media):'—'}</td>
-        <td style="text-align:center;padding:7px 8px;font-weight:700;color:${r.pct===null?'var(--muted)':r.pct>=0?'var(--success)':'var(--danger)'}">${r.pct===null?'—':(r.pct>=0?'▲ ':'▼ ')+Math.abs(r.pct).toFixed(1)+'%'}</td>${metaOn?evcMetaTd(r.meta):''}
+        <td style="text-align:center;padding:7px 8px;font-weight:700;color:${r.pct===null?'var(--muted)':r.pct>=0?'var(--success)':'var(--danger)'}">${r.pct===null?'—':(r.pct>=0?'▲ ':'▼ ')+Math.abs(r.pct).toFixed(1)+'%'}</td>
       </tr>`).join('')}${metaTotalRow}</tbody>
     </table></div>
   </div>`;
