@@ -116,6 +116,11 @@ const GENERIC_TABLES = {
   pedidos_vendas: {
     GET: () => true,
   },
+  // Fechamento mensal do Evolutivo (meta × realizado congelados): admin e Vagner gravam; diretoria só lê.
+  evolutivo_fechamentos: {
+    GET: (s) => isAdminLiteral(s) || isVagner(s) || isDiretoria(s),
+    POST: (s) => isAdminLiteral(s) || isVagner(s),
+  },
   forecast_pedidos: {
     GET: () => true,
     POST: forecastPodeEditar,
