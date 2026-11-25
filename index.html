@@ -6284,7 +6284,7 @@ function evcMetaTd(m,pad){ // 8 células, igual à planilha de referência
     +td(evcPct1(m.pct),'font-weight:800;background:'+(bom?'rgba(22,163,74,.16)':'rgba(220,38,38,.12)'))
     +td(evcRS(m.pot),'background:rgba(245,158,11,.10)')+td(evcRS(m.conq),'font-weight:800;background:rgba(245,158,11,.22)');
 }
-function evcMetaLinhasCliente(ag,j){ // por produto + TOTAL (a meta mínima só vale no TOTAL)
+function evcMetaLinhasCliente(ag,j,pct){ // por produto + TOTAL (a meta mínima só vale no TOTAL); pct = % do cliente
   const R=ag[j.refAno],L=ag[j.realAno];
   const skus=[...VD_SKUS,'OUTROS'].filter(s=>(R&&R.skus[s]&&evcSomaJ(R.skus[s],j.refIni,j.refFim)>0)||(L&&L.skus[s]&&evcSomaJ(L.skus[s],j.realIni,j.realFim)>0));
   const lin=(rot,ar,al,total)=>({rot,total,m:evcMetaCalc(ar,al,j,total)});
