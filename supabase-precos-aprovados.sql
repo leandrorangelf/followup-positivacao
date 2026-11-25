@@ -50,7 +50,7 @@ with raw(nome, coord, gud, cre, clk) as (values
   ('MG PRESENTES - 25 DE MARCO - MARIA','igor',200,155,102),
   ('MP COMERCIO','rosana',220,165,102),
   ('MUCCI DISTRIBUIDORA','vitor',205,155,102),
-  ('NEW BLUETEX AM',null,130,155,102),   -- planilha traz Cretec 155 (os outros New Bluetex são 110) — conferir
+  ('NEW BLUETEX AM',null,130,110,102),   -- planilha trazia Cretec 155; corrigido: todos os New Bluetex têm o mesmo preço (130/110/102)
   ('NEW BLUETEX MG',null,130,110,102),
   ('NOVA IDEAL','igor',205,165,102),
   ('PANTELAO -PB',null,200,165,102),
