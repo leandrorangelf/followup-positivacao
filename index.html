@@ -6305,7 +6305,7 @@ function evcMetaLinhasCliente(ag,j,pct){ // por produto + TOTAL (a meta mínima 
 }
 function evcMetaPainel(){
   const anos=[...new Set(evcDados.map(p=>Number(p.ano)).filter(Boolean))].sort((a,b)=>a-b);
-  const opM=(sel,auto)=>(auto?`<option value="-1" ${sel<0?'selected':''}>último fechado</option>`:'')+MESES.map((m,i)=>`<option value="${i}" ${sel===i?'selected':''}>${m.slice(0,3)}</option>`).join('');
+  const opM=(sel,auto)=>(auto?`<option value="-1" ${sel<0?'selected':''}>mês atual</option>`:'')+MESES.map((m,i)=>`<option value="${i}" ${sel===i?'selected':''}>${m.slice(0,3)}</option>`).join('');
   const opA=sel=>`<option value="0" ${!sel?'selected':''}>ano mais recente</option>`+anos.map(a=>`<option value="${a}" ${sel===a?'selected':''}>${a}</option>`).join('');
   const sl=(k,html)=>`<select class="client-filter" onchange="evcMetaSet('${k}',this.value)">${html}</select>`;
   const num=(k,v,w,step)=>`<input type="number" min="0" step="${step||1}" value="${v}" onchange="evcMetaSet('${k}',this.value)" class="client-filter" style="width:${w}px">`;
