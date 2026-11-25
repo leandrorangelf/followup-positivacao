@@ -59,7 +59,7 @@ with raw(nome, coord, gud, cre, clk) as (values
   ('RJ FORTALEZA',null,198,155,102),
   ('RJ JUAZEIRO',null,198,155,102),
   ('RJ QUIXADA',null,198,155,102),
-  ('RJ SÃO LUIZ',null,198,155,102),
+  ('RJ SAO LUIS',null,198,155,102),
   ('RJ SOBRAL',null,198,155,102),
   ('SOUSA & SOUSA','vitor',205,170,102),
   ('TAB LM - PORTO VELHO','vitor',203,155,102),
