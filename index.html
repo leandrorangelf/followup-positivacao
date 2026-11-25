@@ -6292,7 +6292,6 @@ function evcMetaLinhasCliente(ag,j){ // por produto + TOTAL (a meta mínima só 
   return[...skus.map(s=>lin(s,R&&R.skus[s],L&&L.skus[s],false)),lin('TOTAL',R&&R.total,L&&L.total,true)];
 }
 function evcMetaPainel(){
-  const el=g('evc-meta-painel');if(!el)return;
   const anos=[...new Set(evcDados.map(p=>Number(p.ano)).filter(Boolean))].sort((a,b)=>a-b);
   const opM=(sel,auto)=>(auto?`<option value="-1" ${sel<0?'selected':''}>último fechado</option>`:'')+MESES.map((m,i)=>`<option value="${i}" ${sel===i?'selected':''}>${m.slice(0,3)}</option>`).join('');
   const opA=sel=>`<option value="0" ${!sel?'selected':''}>ano mais recente</option>`+anos.map(a=>`<option value="${a}" ${sel===a?'selected':''}>${a}</option>`).join('');
