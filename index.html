@@ -6445,7 +6445,7 @@ function evcRenderRanking(dados,nomes){
       </tr></thead>
       <tbody>${linhas.map((r,i)=>`<tr style="border-top:1px solid var(--border);cursor:pointer;${i%2?'background:var(--soft)':''}" onclick="evcSet('cliente',${vdEsc(JSON.stringify(r.nome))})">
         <td style="padding:7px 10px;font-weight:600">${vdEsc(r.nome)}</td>
-        <td style="padding:7px 8px;font-size:11px;color:var(--muted)">${vdEsc(r.coord||'')}</td>${metaOn?evcMetaTd(r.meta):''}
+        <td style="padding:7px 8px;font-size:11px;color:var(--muted)">${vdEsc(r.coord||'')}</td>${metaOn?`<td style="padding:4px 6px;text-align:center" onclick="event.stopPropagation()"><input type="number" min="0" step="0.5" value="${r.pctProprio===null?'':r.pctProprio}" placeholder="${evcMeta.pct}" onchange="evcMetaPctCli(${vdEsc(JSON.stringify(r.nome))},this.value)" class="client-filter" style="width:58px;text-align:center;${r.pctProprio!==null?'border-color:var(--purple);font-weight:700':''}"></td>`+evcMetaTd(r.meta):''}
         <td style="padding:5px 8px">${miniBarras(r.tots)}</td>
         ${r.tots.map(v=>`<td style="text-align:center;padding:7px 8px">${v?relFmt(v):'—'}</td>`).join('')}
         <td style="text-align:center;padding:7px 8px;color:var(--muted)">${r.media?relFmt1(r.media):'—'}</td>
