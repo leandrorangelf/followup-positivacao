@@ -6526,7 +6526,7 @@ function evcRenderCliente(pedidos){
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
       <div style="font-size:18px;font-weight:800">${vdEsc(evcCliente)}</div>
       <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="evcSet('cliente','')">← Ranking</button><button class="secondary-btn" onclick="evcExportarExcel()">⬇ Excel (editável)</button><button class="secondary-btn" onclick="evcExportarPdf()">⬇ PDF (visual)</button></div>
-    </div>${comparativo}${periodoAPeriodo}${metaCliente}${blocos||'<div class="empty">Sem pedidos para este cliente.</div>'}`;
+    </div>${comparativo}${periodoAPeriodo}${evcMetaPainel()}${metaCliente}${blocos||'<div class="empty">Sem pedidos para este cliente.</div>'}`;
 }
 
 // ── EXPORTAÇÃO DO EVOLUTIVO: Excel editável (fórmulas, gráficos, heatmap) + PDF visual ──
