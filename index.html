@@ -6336,6 +6336,7 @@ function evcSet(chave,valor){
   evcRender();
 }
 async function evcCarregar(){
+  evcVerFech=false;
   if(evcCarregando)return;
   evcCarregando=true;
   g('evc-content').innerHTML='<div class="loading">Carregando...</div>';
