@@ -6686,7 +6686,7 @@ function evcXlMeta(ws,r,m,c0,j,aplicaMin,fm,fr,pctProprio){ // 8 colunas com fó
   const nM=j.realFim-j.realIni+1,L=k=>EVC_COL(c0+k)+r,P=pctProprio==null?'$B$3':String(pctProprio/100);
   const set=(k,v,fmt,fill)=>{const x=ws.getCell(L(k));x.value=v;x.numFmt=fmt;x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill||'FFFFF8E7'}};x.alignment={horizontal:'right'};};
   set(0,fm?{formula:fm}:m.media,'#,##0.0');
-  set(1,{formula:aplicaMin?`MAX(${L(0)}*${nM}*$B$3,$F$3*${nM}-${L(0)}*${nM})`:`${L(0)}*${nM}*$B$3`},'#,##0.0');
+  set(1,{formula:aplicaMin?`MAX(${L(0)}*${nM}*${P},$F$3*${nM}-${L(0)}*${nM})`:`${L(0)}*${nM}*${P}`},'#,##0.0');
   set(2,{formula:`${L(0)}*${nM}+${L(1)}`},'#,##0');
   set(3,fr?{formula:fr}:m.real,'#,##0');
   set(4,{formula:`${L(3)}-${L(2)}`},'#,##0.0;[Red]-#,##0.0');
