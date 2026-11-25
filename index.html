@@ -6692,7 +6692,7 @@ function evcXlMeta(ws,r,m,c0,j,aplicaMin,fm,fr,pctProprio){ // 8 colunas com fó
   set(4,{formula:`${L(3)}-${L(2)}`},'#,##0.0;[Red]-#,##0.0');
   set(5,{formula:`IF(${L(2)}>0,${L(3)}/${L(2)},"")`},'0.0%');
   set(6,{formula:`${L(1)}*$D$3`},'"R$" #,##0.00');
-  set(7,{formula:`IF(AND(${L(2)}>0,${L(3)}>=${L(2)}),${L(6)},0)`},'"R$" #,##0.00','FFFDEBA0');
+  set(7,{formula:`MAX(${L(3)}-${L(0)}*${nM},0)*$D$3`},'"R$" #,##0.00','FFFDEBA0');
 }
 function evcXlMetaTot(ws,rt,r1,r2,c0){
   const L=(k,r)=>EVC_COL(c0+k)+r;
