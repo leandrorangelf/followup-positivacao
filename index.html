@@ -6276,7 +6276,7 @@ function evcMetaCalc(arrRef,arrReal,j,aplicaMin,pctProprio){ // pctProprio: % do
   let inc=base*(pctProprio==null?evcMeta.pct:pctProprio)/100;
   if(aplicaMin)inc=Math.max(inc,evcMeta.minimo*nM-base);
   const meta=base+inc,real=evcSomaJ(arrReal,j.realIni,j.realFim),pot=inc*evcMeta.valor;
-  return{media,inc,meta,real,falta:real-meta,pct:meta>0?real/meta*100:null,pot,conq:meta>0&&real>=meta?pot:0};
+  return{media,inc,meta,real,falta:real-meta,pct:meta>0?real/meta*100:null,pot,conq:Math.min(Math.max(real-base,0),inc)*evcMeta.valor};
 }
 function evcMetaSoma(ms){
   const s=ms.filter(Boolean).reduce((a,m)=>({media:a.media+m.media,inc:a.inc+m.inc,meta:a.meta+m.meta,real:a.real+m.real,falta:a.falta+m.falta,pot:a.pot+m.pot,conq:a.conq+m.conq}),{media:0,inc:0,meta:0,real:0,falta:0,pot:0,conq:0});
