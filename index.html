@@ -6681,9 +6681,9 @@ const EVC_OURO='FFC9961A';
 function evcXlMetaHeader(row,c0,j){ // 8 cabeçalhos dourados, como na planilha de referência
   evcMetaHeads(j).forEach((t,k)=>{const c=row.getCell(c0+k);c.value=t;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:EVC_OURO}};c.alignment={horizontal:'center',vertical:'middle',wrapText:true};});
 }
-function evcXlMeta(ws,r,m,c0,j,aplicaMin,fm,fr){ // 8 colunas com fórmulas; fm/fr = fórmulas opcionais de média e realizado
+function evcXlMeta(ws,r,m,c0,j,aplicaMin,fm,fr,pctProprio){ // 8 colunas com fórmulas; fm/fr = fórmulas opcionais de média e realizado; pctProprio = % do cliente (senão usa $B$3)
   if(!m)return;
-  const nM=j.realFim-j.realIni+1,L=k=>EVC_COL(c0+k)+r;
+  const nM=j.realFim-j.realIni+1,L=k=>EVC_COL(c0+k)+r,P=pctProprio==null?'$B$3':String(pctProprio/100);
   const set=(k,v,fmt,fill)=>{const x=ws.getCell(L(k));x.value=v;x.numFmt=fmt;x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill||'FFFFF8E7'}};x.alignment={horizontal:'right'};};
   set(0,fm?{formula:fm}:m.media,'#,##0.0');
   set(1,{formula:aplicaMin?`MAX(${L(0)}*${nM}*$B$3,$F$3*${nM}-${L(0)}*${nM})`:`${L(0)}*${nM}*$B$3`},'#,##0.0');
