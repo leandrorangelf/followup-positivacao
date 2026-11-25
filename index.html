@@ -6372,6 +6372,10 @@ function evcAgregar(pedidos){
   return porAno;
 }
 function evcSoma(arr,fim){return arr.slice(0,fim+1).reduce((s,v)=>s+v,0);}
+// R$ = caixas × pacotes por caixa × preço aprovado da ficha do cliente (def_skus, R$/pacote); SKU sem preço na ficha não entra
+function evcPrecos(nome){for(const c of Object.values(clientesDB)){const x=(c||[]).find(k=>k.nome===nome);if(x&&x.def_skus)return x.def_skus;}return null;}
+function evcValorMeses(skus,pr){return Array.from({length:12},(_,m)=>pr?VD_SKUS.reduce((s,k)=>s+((skus[k]&&skus[k][m])||0)*VD_PACKS[k]*(parseFloat(pr[k])||0),0):0);}
+const evcMoeda=v=>v>0?'R$ '+Math.round(v).toLocaleString('pt-BR'):'—';
 function evcFim(ano){ // último mês fechado do ano (ano corrente não conta o mês em andamento)
   const hoje=new Date();
   return ano===hoje.getFullYear()?Math.max(0,hoje.getMonth()-1):11;
