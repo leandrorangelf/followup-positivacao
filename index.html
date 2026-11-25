@@ -6814,7 +6814,7 @@ async function evcPdfCliente(d){
     doc.autoTable({startY:yy,head:[['Produto',...abrev,'Média','Total '+a]],body,styles:{fontSize:8,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[31,42,68]},didParseCell:x=>{if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
   }
   if(evcMeta.ativa){
-    const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j);
+    const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j,evcPctDe(nome));
     doc.addPage();
     const ym=doc.cab(`Meta de crescimento — ${nome}`,`Real ${j.realLabel} vs média ${j.refLabel} · +${evcMeta.pct}% · ${evcRS(evcMeta.valor)} por caixa`);
     const corpo=mLin.map(l=>[l.rot,...evcPdfMetaCels(l.m)]);
