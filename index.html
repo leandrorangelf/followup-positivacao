@@ -6264,7 +6264,7 @@ function evcSomaJ(arr,i,f){return(arr||[]).slice(i,f+1).reduce((s,v)=>s+v,0);}
 function evcMetaJanelas(anos){ // resolve "automático": ano mais recente e último mês fechado
   const ult=anos[anos.length-1],h=new Date(),ab=MESES.map(m=>m.slice(0,3)),yy=y=>String(y).slice(2);
   const refAno=evcMeta.refAno||ult,realAno=evcMeta.realAno||ult;
-  const auto=realAno===h.getFullYear()?Math.max(0,h.getMonth()-1):11;
+  const auto=realAno===h.getFullYear()?h.getMonth():11; // a meta é lançada no mês em andamento
   const ri=evcMeta.realIni>=0?evcMeta.realIni:auto,rf=evcMeta.realFim>=0?evcMeta.realFim:auto;
   const c=Math.min(evcMeta.refIni,evcMeta.refFim),d=Math.max(evcMeta.refIni,evcMeta.refFim),a=Math.min(ri,rf),b=Math.max(ri,rf);
   return{refAno,refIni:c,refFim:d,realAno,realIni:a,realFim:b,
