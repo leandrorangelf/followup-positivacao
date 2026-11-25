@@ -6671,7 +6671,7 @@ async function evcExcelCliente(d){
 }
 function evcXlParams(ws,pct){ // células amarelas editáveis (linha 3): B3 = %, D3 = R$/caixa, F3 = meta mínima
   const put=(a,v,fmt)=>{const c=ws.getCell(a);c.value=v;if(fmt)c.numFmt=fmt;};
-  put('A3','Crescimento (%)');put('B3',evcMeta.pct/100,'0.0%');
+  put('A3','Crescimento (%)');put('B3',(pct==null?evcMeta.pct:pct)/100,'0.0%');
   put('C3','Prêmio por caixa (R$)');put('D3',evcMeta.valor,'#,##0.00');
   put('E3','Meta mínima (cx/mês)');put('F3',evcMeta.minimo,'0');
   ['A3','C3','E3'].forEach(a=>{ws.getCell(a).font={bold:true};});
