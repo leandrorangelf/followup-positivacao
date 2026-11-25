@@ -6729,7 +6729,7 @@ async function evcExcelRanking(d){
   const metaOn=evcMeta.ativa,jm=evcMetaJanelas(anos);
   if(metaOn)evcXlParams(ws);
   const hdr=ws.getRow(4);
-  hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.',...(metaOn?evcMetaHeads(jm):[])];
+  hdr.values=['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,ant!==undefined?`Cresc. ${ult} vs ${ant}`:'Cresc.',...(metaOn?evcMetaHeads(jm):[]),`R$ ${per} ${ult} (preço aprovado)`];
   evcXlHeader(hdr);if(metaOn){evcXlMetaHeader(hdr,5+nA,jm);hdr.height=32;}
   const cMedia=3+nA,cCresc=4+nA,cUlt=EVC_COL(2+nA),cAnt=EVC_COL(1+nA),fRow=r=>{
     const cm=ws.getCell(EVC_COL(cMedia)+r);cm.value={formula:`${cUlt}${r}/${fimC+1}`};cm.numFmt='#,##0.0';
