@@ -6318,6 +6318,8 @@ function evcMetaPainel(){
       ${lb('Crescer')}${[10,15,20,25,30].map(chip).join('')}${num('pct',evcMeta.pct,70,0.5)}${lb('%')}
       ${lb('· Prêmio R$/caixa')}${num('valor',evcMeta.valor,90)}
       ${lb('· Meta mínima (cx/mês, 0 = sem mínimo)')}${num('minimo',evcMeta.minimo,70)}
+      ${lb('· % geral vale para todos; para um cliente específico, digite o % na coluna "% Cresc." da linha dele.')}
+      ${Object.keys(evcMeta.pcts).length?`<button class="secondary-btn" style="font-size:11px;padding:3px 10px" onclick="evcMetaLimparPcts()">Limpar ${Object.keys(evcMeta.pcts).length} % por cliente</button>`:''}
     </div>
     <div style="font-size:11px;color:var(--muted);margin-top:8px">Incremento = média × ${evcMeta.pct}% · Meta = média + incremento · Falta = real − meta · % Meta = real ÷ meta · Prêmio potencial = incremento × ${evcRS(evcMeta.valor)} · Prêmio conquistado = potencial, só se bater a meta</div>`:''}
   </div>`;
