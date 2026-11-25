@@ -6376,6 +6376,52 @@ function evcSoma(arr,fim){return arr.slice(0,fim+1).reduce((s,v)=>s+v,0);}
 function evcPrecos(nome){for(const c of Object.values(clientesDB)){const x=(c||[]).find(k=>k.nome===nome);if(x&&x.def_skus)return x.def_skus;}return null;}
 function evcValorMeses(skus,pr){return Array.from({length:12},(_,m)=>pr?VD_SKUS.reduce((s,k)=>s+((skus[k]&&skus[k][m])||0)*VD_PACKS[k]*(parseFloat(pr[k])||0),0):0);}
 const evcMoeda=v=>v>0?'R$ '+Math.round(v).toLocaleString('pt-BR'):'—';
+// ── FECHAMENTO MENSAL: congela meta × realizado do mês (botão manual; admin/Vagner gravam, diretoria só consulta).
+// A meta é só cálculo de tela; depois de fechado, o mês fica gravado em evolutivo_fechamentos (ver supabase-evolutivo-fechamentos.sql).
+let evcVerFech=false,evcFechDados=[],evcFechSel='';
+async function evcFecharMes(){
+  if(!vdPodeEditar()||!evcRank||!evcMeta.ativa)return;
+  const jm=evcMetaJanelas(evcRank.anos);
+  if(jm.realIni!==jm.realFim){toast('Escolha um único mês em "Realizado em" para fechar','error');return;}
+  const ano=jm.realAno,mes=jm.realFim,h=new Date(),linhas=evcRank.linhas.filter(l=>l.meta);
+  if(!linhas.length)return;
+  const aberto=ano===h.getFullYear()&&mes>=h.getMonth();
+  if(!confirm(`Fechar ${MESES[mes]}/${ano} para ${linhas.length} cliente(s)?\n\nFiltros atuais: coordenador "${evcCoord}", origem "${evcOrigem}".\n`+(aberto?'O mês ainda está em andamento: os números ficam congelados até hoje.\n':'')+'Se este mês já foi fechado, o fechamento será substituído.'))return;
+  const par={pct_geral:evcMeta.pct,valor_cx:evcMeta.valor,minimo:evcMeta.minimo,ref_ano:jm.refAno,ref_ini:jm.refIni,ref_fim:jm.refFim,coord:evcCoord,origem:evcOrigem};
+  const rows=linhas.map(l=>({ano,mes,cliente_nome:l.nome,coordenador:l.coord||'',media:l.meta.media,pct:evcPctDe(l.nome),incremento:l.meta.inc,meta:l.meta.meta,realizado:l.meta.real,premio_potencial:l.meta.pot,premio_conquistado:l.meta.conq,parametros:par,criado_por:user}));
+  const r=await sb('/rest/v1/evolutivo_fechamentos?on_conflict=ano,mes,cliente_nome,coordenador',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+  if(r.ok){toast(`${MESES[mes]}/${ano} fechado (${rows.length} clientes)`);auditLog('evolutivo_fechar_mes',`Fechou ${MESES[mes]}/${ano} no Evolutivo (${rows.length} clientes)`,par);}
+  else toast('Erro ao fechar o mês. A tabela evolutivo_fechamentos já foi criada no Supabase?','error');
+}
+async function evcVerFechamentos(){
+  evcVerFech=true;
+  g('evc-content').innerHTML='<div class="loading">Carregando...</div>';
+  const d=await sb('/rest/v1/evolutivo_fechamentos?select=*&order=ano.desc,mes.desc,cliente_nome&limit=20000',{ret:true});
+  evcFechDados=Array.isArray(d)?d:[];
+  if(!evcFechDados.some(x=>x.ano+'-'+x.mes===evcFechSel))evcFechSel=evcFechDados.length?evcFechDados[0].ano+'-'+evcFechDados[0].mes:'';
+  evcRenderFechamentos();
+}
+function evcFechVoltar(){evcVerFech=false;evcRender();}
+function evcFechEscolher(v){evcFechSel=v;evcRenderFechamentos();}
+function evcRenderFechamentos(){
+  const voltar='<button class="secondary-btn" onclick="evcFechVoltar()">← Voltar ao Evolutivo</button>';
+  const meses=[...new Set(evcFechDados.map(x=>x.ano+'-'+x.mes))];
+  if(!meses.length){g('evc-content').innerHTML=`<div style="margin-bottom:12px">${voltar}</div><div class="empty">Nenhum mês fechado ainda.</div>`;return;}
+  const linhas=evcFechDados.filter(x=>x.ano+'-'+x.mes===evcFechSel);
+  const m=x=>({media:+x.media||0,inc:+x.incremento||0,meta:+x.meta||0,real:+x.realizado||0,falta:(+x.realizado||0)-(+x.meta||0),pct:+x.meta>0?(+x.realizado)/(+x.meta)*100:null,pot:+x.premio_potencial||0,conq:+x.premio_conquistado||0});
+  const tot=evcMetaSoma(linhas.map(m)),p0=linhas[0]||{},par=p0.parametros||{};
+  const opts=meses.map(k=>{const[a,mm]=k.split('-');return`<option value="${k}"${k===evcFechSel?' selected':''}>${MESES[Number(mm)]}/${a}</option>`;}).join('');
+  const heads=['Média','Incremento','Meta','Realizado','Falta','% Meta','Prêmio Potencial','Prêmio Conquistado'];
+  g('evc-content').innerHTML=`
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">${voltar}
+    <select class="client-filter" onchange="evcFechEscolher(this.value)">${opts}</select>
+    <span style="font-size:11px;color:var(--muted)">Fechado em ${p0.criado_em?new Date(p0.criado_em).toLocaleDateString('pt-BR'):'—'} por ${vdEsc(p0.criado_por||'—')} · +${par.pct_geral!=null?par.pct_geral:'—'}% geral · R$ ${par.valor_cx!=null?par.valor_cx:'—'} por caixa · coord ${vdEsc(par.coord||'todos')} · origem ${vdEsc(par.origem||'—')}</span></div>
+  <div style="background:var(--card);border-radius:var(--r-md);padding:16px;box-shadow:var(--shadow-sm)"><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr style="background:var(--soft);color:var(--muted);font-size:11px;text-transform:uppercase"><th style="text-align:left;padding:8px 10px">Cliente</th><th style="text-align:left;padding:8px">Coord</th><th style="text-align:center;padding:8px">% Cresc.</th>${heads.map(t=>`<th style="text-align:center;padding:8px">${t}</th>`).join('')}</tr></thead>
+    <tbody>${linhas.map(x=>`<tr style="border-top:1px solid var(--border)"><td style="padding:7px 10px;font-weight:600">${vdEsc(x.cliente_nome)}</td><td style="padding:7px 8px;font-size:11px;color:var(--muted)">${vdEsc(x.coordenador||'')}</td><td style="text-align:center;padding:7px 8px">${x.pct!=null?x.pct+'%':'—'}</td>${evcMetaTd(m(x))}</tr>`).join('')}
+    <tr style="background:var(--border);font-weight:700;border-top:2px solid var(--text)"><td colspan="3" style="padding:8px 10px">TOTAL — ${linhas.length} cliente(s)</td>${evcMetaTd(tot,8)}</tr></tbody>
+  </table></div></div>`;
+}
 function evcFim(ano){ // último mês fechado do ano (ano corrente não conta o mês em andamento)
   const hoje=new Date();
   return ano===hoje.getFullYear()?Math.max(0,hoje.getMonth()-1):11;
