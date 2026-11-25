@@ -6469,7 +6469,7 @@ function evcRenderRanking(dados,nomes){
   evcUltimo=null;
 }
 function evcRenderCliente(pedidos){
-  const ag=evcAgregar(pedidos);
+  const ag=evcAgregar(pedidos),pr=evcPrecos(evcCliente);
   const anos=Object.keys(ag).map(Number).sort((a,b)=>a-b);
   evcUltimo={nome:evcCliente,ag,anos};evcRank=null;
   const corAno=Object.fromEntries(anos.map((a,i)=>[a,EVC_CORES_ANO[i%EVC_CORES_ANO.length]]));
