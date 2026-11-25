@@ -6569,9 +6569,7 @@ function evcRenderCliente(pedidos){
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
         ${kpi('Consolidado do ano',relFmt(totAno)+' cx')}
         ${kpi('Média mensal'+(a===new Date().getFullYear()?' (meses fechados)':''),relFmt1(media)+' cx')}
-        ${kpi('Melhor mês',d.total[melhor]?vdEsc(abrev[melhor])+' · '+relFmt(d.total[melhor]):'—')}
-        ${pr?kpi('Valor do ano (preço aprovado)',evcMoeda(evcSoma(evcValorMeses(d.skus,pr),11))):''}
-      </div>
+        ${kpi('Melhor mês',d.total[melhor]?vdEsc(abrev[melhor])+' · '+relFmt(d.total[melhor]):'—')}      </div>
       ${cresc?`<div style="font-size:14px;margin-bottom:12px">${cresc}</div>`:''}
       ${relSvgBarChartGrupos(abrev,skus.map(s=>({nome:s,valores:d.skus[s],cor:EVC_CORES[s]})))}
       <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;border-collapse:collapse;font-size:12px">
