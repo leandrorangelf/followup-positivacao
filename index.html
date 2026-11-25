@@ -7520,7 +7520,7 @@ function relRenderPedidos(lista){
       <td style="padding:7px 8px;color:var(--muted)">${vdEsc(p.cliente_uf||'—')}</td>
       <td style="padding:7px 8px;font-size:11px;color:var(--muted)">${vdEsc(p.coordenador)}</td>
       <td style="padding:7px 8px;font-size:11px;color:var(--muted)">${mes}</td>
-      <td style="padding:7px 8px">${p.origem?vdOrigemBadgeHTML(p.origem):'<span style="color:var(--muted);font-size:11px">—</span>'}</td>
+      <td style="padding:7px 8px">${p.origem?vdOrigemBadgeHTML(relOrigemNome(p.origem)):'<span style="color:var(--muted);font-size:11px">—</span>'}</td>
       <td style="padding:7px 8px">${badge}</td>
       ${skuTds}
       <td style="padding:7px 8px;text-align:center;font-weight:700">${x.pedidoCx}</td>
