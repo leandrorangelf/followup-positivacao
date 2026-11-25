@@ -6481,7 +6481,7 @@ function evcRenderCliente(pedidos){
         <tbody>${todosSkus.map(s=>linhaPer(vdEsc(s),a=>ag[a].skus[s]||Array(12).fill(0),false)).join('')}${linhaPer('TOTAL',a=>ag[a].total,true)}</tbody>
       </table></div>
     </div>`:'';
-  const jm=evcMetaJanelas(anos),mLin=evcMeta.ativa?evcMetaLinhasCliente(ag,jm):[];
+  const jm=evcMetaJanelas(anos),mLin=evcMeta.ativa?evcMetaLinhasCliente(ag,jm,evcPctDe(evcCliente)):[];
   const metaCliente=mLin.length?`
     <div style="background:var(--card);border-radius:var(--r-md);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm);border-left:4px solid var(--purple)">
       <div style="font-size:15px;font-weight:700;margin-bottom:8px">🎯 Meta de crescimento — real ${jm.realLabel} vs média ${jm.refLabel} <span style="font-size:11px;color:var(--muted);font-weight:400">· +${evcMeta.pct}% · ${evcRS(evcMeta.valor)} por caixa de incremento</span></div>
