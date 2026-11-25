@@ -6371,7 +6371,6 @@ function evcFimComum(anos){
   return anos.includes(h.getFullYear())?Math.max(0,h.getMonth()-1):11;
 }
 function evcRender(){
-  evcMetaPainel();
   const fimEl=g('evc-fim-mes');
   if(fimEl){
     if(fimEl.options.length<2)fimEl.innerHTML='<option value="auto">Automático (meses fechados)</option>'+MESES.map((m,i)=>`<option value="${i}">até ${m}</option>`).join('');
