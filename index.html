@@ -6911,7 +6911,7 @@ function relPopularOrigens(){
   const atual=relOrigemFiltro;
   const origens=[...new Set(relDados.map(p=>p.origem).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR'));
   sel.innerHTML='<option value="todos">Todas as origens</option><option value="fabrica">🏭 Fábrica</option><option value="dist">🚛 Distribuidoras</option>'+
-    origens.map(o=>'<option value="'+vdEsc(o)+'">'+vdEsc(o)+'</option>').join('');
+    origens.map(o=>'<option value="'+vdEsc(o)+'">'+vdEsc(relOrigemNome(o))+'</option>').join('');
   sel.value=[...sel.options].some(o=>o.value===atual)?atual:'todos';
   relOrigemFiltro=sel.value;
 }
