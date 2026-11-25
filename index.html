@@ -6905,6 +6905,7 @@ function relTextoPedido(p){
 function relTextoForecast(p){
   return relNorm([p?.cliente_nome,p?.cliente,p?.cliente_uf,p?.coordenador,p?.origem,p?.status,p?.probabilidade].filter(Boolean).join(' '));
 }
+const relOrigemNome=o=>String(o||'').replace(/^GB\b/i,'New'); // só exibição no relatório: GB (antigas) aparecem como New; o pedido segue com a origem real no histórico
 function relPopularOrigens(){
   const sel=g('rel-origem');if(!sel)return;
   const atual=relOrigemFiltro;
