@@ -6895,7 +6895,7 @@ async function evcPdfRanking(d){
   const pctT=nA>1&&tot[nA-2]>0?(tot[nA-1]-tot[nA-2])/tot[nA-2]*100:null;
   const body=[...linhas.map(l=>[l.nome,l.coord||'',...l.tots.map(v=>v?relFmt(v):'–'),l.media?relFmt1(l.media):'–',evcPctTxt(l.pct),...mCels(l.meta),l.val]),[`TOTAL (${linhas.length})`,'',...tot.map(relFmt),relFmt1(tot[nA-1]/(fimC+1)),evcPctTxt(pctT),...mTot,'']];
   const colCresc=2+nA+1;
-  doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.',...(mOn?evcMetaHeads(jm):[]),`R$ ${ult}`]],body,styles:{fontSize:mOn?7:8},columnStyles:Object.fromEntries(Array.from({length:nA+3+(mOn?8:0)},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(mOn)evcPdfMetaCor(x,colCresc+1);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+  doc.autoTable({startY:y,head:[['Cliente','Coord',...anos.map(a=>`${per} ${a}`),`Média/mês ${ult}`,'Cresc.',...(mOn?evcMetaHeads(jm):[]),'Preço aprovado (R$/pacote)']],body,styles:{fontSize:mOn?7:8},columnStyles:Object.fromEntries(Array.from({length:nA+3+(mOn?8:0)},(_,i)=>[2+i,{halign:'center'}])),headStyles:{fillColor:[31,42,68]},didParseCell:x=>{evcPdfCorVar([colCresc])(x);if(mOn)evcPdfMetaCor(x,colCresc+1);if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
   doc.rodape();
   doc.save('evolutivo-clientes-ranking.pdf');
 }
