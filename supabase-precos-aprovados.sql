@@ -1,12 +1,13 @@
 -- Preços aprovados Clean por cliente → clientes.def_skus (R$ por pacote, mesma unidade da ficha)
 -- Gudang = GR + GM + GTWIN | Cretec = CM + CC | CLK = CK
--- Rodar UMA vez no SQL Editor do Supabase. É idempotente (pode rodar de novo após corrigir nomes).
--- O resultado lista cada linha da planilha com quantos clientes foram atualizados (0 = nome não encontrado).
+-- Rodar no SQL Editor do Supabase. É idempotente (pode rodar de novo).
+-- O resultado lista cada linha com quantos clientes foram atualizados (0 = nome não encontrado).
 -- Só mexe nos 6 preços de def_skus; não altera ativo, coordenador nem pedidos já lançados.
--- coord: primeira palavra do coordenador no sistema (igor, vitor, rosana, junior); null = não filtra (ex.: Marcio Vit).
+-- coord: primeira palavra do coordenador no sistema (igor, vitor, rosana, junior); null = não filtra.
+-- O nome tem que ser igual ao do banco (sem diferença de acento, caixa ou espaços).
 
 with raw(nome, coord, gud, cre, clk) as (values
-  ('AMAZON','vitor',200,165,102),
+  ('AMAZON DISTRIBUIDORA','vitor',200,165,102),
   ('ARAUJO & OLIVEIRA TAB LTDA','vitor',200,165,102),
   ('BE ROYAL','rosana',200,165,102),
   ('BENTES OLIVEIRA COMERCIO','vitor',210,170,102),
@@ -23,35 +24,34 @@ with raw(nome, coord, gud, cre, clk) as (values
   ('CONCEITO AL',null,200,165,102),
   ('DMC DISTRIBUIDORA MINEIRA DE CIGARROS','igor',200,165,102),
   ('DUE VALLE','rosana',200,155,102),
-  ('EDILON','junior',210,165,105),
+  ('EDILON DE SOUZA CARVALHO',null,210,165,105),
   ('EDIVANES','igor',205,165,102),
-  ('EL PRIME','igor',170,155,102),
+  ('EL PRIME - MR DISTRIBUIDORA','igor',170,155,102),
   ('EURO TAB','vitor',210,170,102),
   ('EURO TABAGYN GO','vitor',210,170,102),
   ('FREEDOM TECH LTDA','rosana',210,175,102),
-  ('NB CE',null,130,110,102),
-  ('NB MA',null,130,110,102),
-  ('NB SP','igor',130,110,102),
-  ('GUIMARÃES E CANDIDO','igor',190,155,102),
+  ('NEW BLUETEX CE',null,130,110,102),   -- planilha: NB CE
+  ('NEW BLUETEX MA',null,130,110,102),   -- planilha: NB MA
+  ('NEW BLUETEX SP',null,130,110,102),   -- planilha: NB SP
+  ('GUIMARAES CANDIDO MG','igor',190,155,102),
   ('J IZIDORIO','vitor',200,165,102),
-  ('LM DISTRIBUIDORA','igor',200,155,102),
+  ('LM ROCHA',null,200,155,102),         -- planilha: LM DISTRIBUIDORA (RJ) — conferir se é o mesmo cliente
   ('JC DISTRIBUIDORA','igor',200,155,102),
   ('JK','igor',205,165,102),
   ('JOAO PEDRO','igor',220,165,102),
   ('JOSE GRIJALVO DA SILVA MOREIRA','vitor',210,170,102),
   ('L & L','vitor',200,155,102),
   ('LA DIST','igor',205,165,102),
-  ('LEGAL DRNK',null,195,165,102),
+  ('LEGAL DRINK',null,195,165,102),
   ('LH SANTOS','rosana',195,165,102),
   ('MARINGA COMERCIO E REPRESENTAÇOES LTDA','vitor',205,155,102),
   ('MARTA MG ( ANTIGO PEDRO HENRIQUE )','igor',205,165,102),
   ('MAXWEL SILVA BARBORSA / EMPORIO DO TABACO','igor',205,165,102),
   ('MG PRESENTES - 25 DE MARCO - MARIA','igor',200,155,102),
   ('MP COMERCIO','rosana',220,165,102),
-  ('MUCCI DISTRIBUIDORA DE TABACO LTDA','vitor',205,155,102),
-  ('NEW BLUETEX','vitor',130,155,102),   -- AM: planilha traz Cretec 155 (os outros New Bluetex são 110) — conferir
-  ('NEW BLUETEX','igor',130,110,102),    -- MG
-  ('NEW BLUETEX','rosana',130,110,102),  -- SC
+  ('MUCCI DISTRIBUIDORA','vitor',205,155,102),
+  ('NEW BLUETEX AM',null,130,155,102),   -- planilha traz Cretec 155 (os outros New Bluetex são 110) — conferir
+  ('NEW BLUETEX MG',null,130,110,102),
   ('NOVA IDEAL','igor',205,165,102),
   ('PANTELAO -PB',null,200,165,102),
   ('PORTO SEGURO MG','igor',205,165,102),
