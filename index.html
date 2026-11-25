@@ -6261,7 +6261,7 @@ function evcMetaJanelas(anos){ // resolve "automático": ano mais recente e últ
     realLabel:(a===b?ab[a]:ab[a]+'–'+ab[b])+'/'+yy(realAno)};
 }
 const evcMetaHeads=j=>[`Média ${j.refLabel}`,'Incremento','Meta',`Real ${j.realLabel}`,'Falta','% Meta','Prêmio Potencial','Prêmio Conquistado'];
-function evcMetaCalc(arrRef,arrReal,j,aplicaMin){
+function evcMetaCalc(arrRef,arrReal,j,aplicaMin,pctProprio){ // pctProprio: % do cliente (omitido = % geral)
   const nR=j.refFim-j.refIni+1,nM=j.realFim-j.realIni+1;
   const media=evcSomaJ(arrRef,j.refIni,j.refFim)/nR,base=media*nM;
   let inc=base*evcMeta.pct/100;
