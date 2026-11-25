@@ -6269,7 +6269,7 @@ function evcMetaJanelas(anos){ // resolve "automático": ano mais recente e últ
   const c=Math.min(evcMeta.refIni,evcMeta.refFim),d=Math.max(evcMeta.refIni,evcMeta.refFim),a=Math.min(ri,rf),b=Math.max(ri,rf);
   return{refAno,refIni:c,refFim:d,realAno,realIni:a,realFim:b,
     refLabel:(c===d?ab[c]:ab[c]+'–'+ab[d])+(refAno!==realAno?'/'+yy(refAno):''),
-    realLabel:(a===b?ab[a]:ab[a]+'–'+ab[b])+'/'+yy(realAno)};
+    realLabel:(a===b?ab[a]:ab[a]+'–'+ab[b])+'/'+yy(realAno)+(realAno===h.getFullYear()&&b>=h.getMonth()?' (até hoje)':'')};
 }
 const evcMetaHeads=j=>[`Média ${j.refLabel}`,'Incremento','Meta',`Real ${j.realLabel}`,'Falta','% Meta','Prêmio Potencial','Prêmio Conquistado'];
 function evcMetaCalc(arrRef,arrReal,j,aplicaMin,pctProprio){ // pctProprio: % do cliente (omitido = % geral)
