@@ -6238,7 +6238,7 @@ async function irEvolutivoCli(){
 // ── META DE CRESCIMENTO (modelo planilha): média mensal de um período de referência + % de crescimento ──
 // Média = média mensal do período de referência (ex.: Abr–Jun) · Incremento = média × % × nº de meses do realizado
 // Meta = média + incremento · Falta = realizado − meta (negativo = ainda falta) · % Meta = realizado ÷ meta
-// Prêmio potencial = incremento × R$/caixa · Prêmio conquistado = caixas realizadas além da média × R$/caixa
+// Prêmio potencial = incremento × R$/caixa · Prêmio conquistado = 0 até realizado ≥ meta; ao bater, (realizado − média) × R$/caixa
 // Meta mínima (cx/mês) é opcional (0 = desligada): vale só para o total do cliente, para cliente muito pequeno não ficar com meta ridícula.
 let evcMeta={ativa:true,pct:10,valor:500,minimo:0,refAno:0,refIni:3,refFim:5,realAno:0,realIni:-1,realFim:-1}; // 0 / -1 = automático
 try{Object.assign(evcMeta,JSON.parse(localStorage.getItem('evcMeta4')||'{}'));}catch(e){}
