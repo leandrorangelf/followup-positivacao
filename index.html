@@ -6264,7 +6264,7 @@ const evcMetaHeads=j=>[`Média ${j.refLabel}`,'Incremento','Meta',`Real ${j.real
 function evcMetaCalc(arrRef,arrReal,j,aplicaMin,pctProprio){ // pctProprio: % do cliente (omitido = % geral)
   const nR=j.refFim-j.refIni+1,nM=j.realFim-j.realIni+1;
   const media=evcSomaJ(arrRef,j.refIni,j.refFim)/nR,base=media*nM;
-  let inc=base*evcMeta.pct/100;
+  let inc=base*(pctProprio==null?evcMeta.pct:pctProprio)/100;
   if(aplicaMin)inc=Math.max(inc,evcMeta.minimo*nM-base);
   const meta=base+inc,real=evcSomaJ(arrReal,j.realIni,j.realFim),pot=inc*evcMeta.valor;
   return{media,inc,meta,real,falta:real-meta,pct:meta>0?real/meta*100:null,pot,conq:meta>0&&real>=meta?pot:0};
