@@ -6654,7 +6654,7 @@ async function evcExcelCliente(d){
     const wm=wb.addWorksheet('Meta de crescimento',{views:[{showGridLines:false}]});
     wm.getCell('A1').value=`Meta de crescimento — ${nome}`;wm.getCell('A1').font={bold:true,size:16};
     wm.getCell('A2').value=`Real ${j.realLabel} vs média ${j.refLabel}. Altere as células amarelas (linha 3) e tudo recalcula; para uma meta específica, digite direto no Incremento.`;wm.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
-    evcXlParams(wm);
+    evcXlParams(wm,evcPctDe(nome));
     const hm=wm.getRow(5);hm.getCell(1).value='Produto';evcXlHeader(hm);evcXlMetaHeader(hm,2,j);hm.height=32;
     const rng=(ano,ry,i,fim)=>anos.includes(ano)?`'Ano ${ano}'!${EVC_COL(2+i)}${ry}:${EVC_COL(2+fim)}${ry}`:null;
     mLin.forEach((l,k)=>{
