@@ -4508,6 +4508,7 @@ async function vdSalvarPedido(){
   if(vdForm.prazo==='solicitar'&&!g('vf-prazo-dias').value){toast('Informe os dias do prazo solicitado','error');return}
   const original=vdEditPedidoId?vdPedidos.find(p=>p.id===vdEditPedidoId):null;
   const prazoAprovado=vdForm.prazo==='aprovado';
+  const parcFixo=vdForm.prazo==='2835'||vdForm.prazo==='283542';
   const coordPedido=respNovo||(original?original.coordenador:coordAtual);
   const ped={
     coordenador:coordPedido,cliente_id:cli.id,cliente_nome:cli.nome,cliente_uf:cli.uf||null,
