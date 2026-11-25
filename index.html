@@ -6650,7 +6650,7 @@ async function evcExcelCliente(d){
     evcXlImg(wb,ws,await evcGraficoPng(abrev,skus.map(s=>({nome:s,valores:d2.skus[s]||Array(12).fill(0),cor:EVC_CORES[s]}))),trY+3);
   }
   if(evcMeta.ativa){ // aba da meta por produto: média e realizado ligados às abas de cada ano
-    const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j);
+    const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j,evcPctDe(nome));
     const wm=wb.addWorksheet('Meta de crescimento',{views:[{showGridLines:false}]});
     wm.getCell('A1').value=`Meta de crescimento — ${nome}`;wm.getCell('A1').font={bold:true,size:16};
     wm.getCell('A2').value=`Real ${j.realLabel} vs média ${j.refLabel}. Altere as células amarelas (linha 3) e tudo recalcula; para uma meta específica, digite direto no Incremento.`;wm.getCell('A2').font={italic:true,color:{argb:'FF6B7280'}};
