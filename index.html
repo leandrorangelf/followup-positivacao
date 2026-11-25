@@ -6669,7 +6669,7 @@ async function evcExcelCliente(d){
   }
   evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'evolutivo-'+evcSlug(nome)+'.xlsx');
 }
-function evcXlParams(ws){ // células amarelas editáveis (linha 3): B3 = %, D3 = R$/caixa, F3 = meta mínima
+function evcXlParams(ws,pct){ // células amarelas editáveis (linha 3): B3 = %, D3 = R$/caixa, F3 = meta mínima
   const put=(a,v,fmt)=>{const c=ws.getCell(a);c.value=v;if(fmt)c.numFmt=fmt;};
   put('A3','Crescimento (%)');put('B3',evcMeta.pct/100,'0.0%');
   put('C3','Prêmio por caixa (R$)');put('D3',evcMeta.valor,'#,##0.00');
