@@ -6593,7 +6593,7 @@ function evcRenderCliente(pedidos){
   }).join('');
   g('evc-content').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-      <div style="font-size:18px;font-weight:800">${vdEsc(evcCliente)}</div>
+      <div><div style="font-size:18px;font-weight:800">${vdEsc(evcCliente)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Preço aprovado (R$/pacote): <b style="color:var(--text)">${evcPrecoTxt(pr)}</b></div></div>
       <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="evcSet('cliente','')">← Ranking</button><button class="secondary-btn" onclick="evcExportarExcel()">⬇ Excel (editável)</button><button class="secondary-btn" onclick="evcExportarPdf()">⬇ PDF (visual)</button></div>
     </div>${comparativo}${periodoAPeriodo}${evcMetaPainel()}${metaCliente}${blocos||'<div class="empty">Sem pedidos para este cliente.</div>'}`;
 }
