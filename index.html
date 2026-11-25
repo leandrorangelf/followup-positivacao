@@ -6375,8 +6375,8 @@ function evcAgregar(pedidos){
 function evcSoma(arr,fim){return arr.slice(0,fim+1).reduce((s,v)=>s+v,0);}
 // R$ = caixas × pacotes por caixa × preço aprovado da ficha do cliente (def_skus, R$/pacote); SKU sem preço na ficha não entra
 function evcPrecos(nome){for(const c of Object.values(clientesDB)){const x=(c||[]).find(k=>k.nome===nome);if(x&&x.def_skus)return x.def_skus;}return null;}
-function evcValorMeses(skus,pr){return Array.from({length:12},(_,m)=>pr?VD_SKUS.reduce((s,k)=>s+((skus[k]&&skus[k][m])||0)*VD_PACKS[k]*(parseFloat(pr[k])||0),0):0);}
-const evcMoeda=v=>v>0?'R$ '+Math.round(v).toLocaleString('pt-BR'):'—';
+// Preço aprovado do cliente (R$ por pacote, como está na ficha) — só informativo, não multiplica nada.
+function evcPrecoTxt(pr){if(!pr)return'—';const f=v=>{v=parseFloat(v);return v>0?String(v).replace('.',','):'—';};return'Gudang '+f(pr.GR)+' · Cretec '+f(pr.CM)+' · CLK '+f(pr.CK);}
 // ── FECHAMENTO MENSAL: congela meta × realizado do mês (botão manual; admin/Vagner gravam, diretoria só consulta).
 // A meta é só cálculo de tela; depois de fechado, o mês fica gravado em evolutivo_fechamentos (ver supabase-evolutivo-fechamentos.sql).
 let evcVerFech=false,evcFechDados=[],evcFechSel='';
