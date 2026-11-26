@@ -7497,9 +7497,9 @@ function relImprimirFaturado(){
   }).join('');
   relPrintWindow('Relatório de Faturado',`
     <table>
-      <thead><tr><th>#</th><th>Cliente</th><th>UF</th><th>Coord</th><th>Tipo</th>${thSkus}<th class="r">Total cx</th><th>Status</th></tr></thead>
+      <thead><tr><th>#</th><th>Cliente</th><th>UF</th><th>Coord</th><th>Mês</th><th>Tipo</th>${thSkus}<th class="r">Total cx</th><th>Status</th></tr></thead>
       <tbody>${rows}
-        <tr class="total-row"><td colspan="5">TOTAL (${faturados.length} registros)</td>${tdTotSkus}<td class="r">${relFmt(totalCx)}</td><td></td></tr>
+        <tr class="total-row"><td colspan="6">TOTAL (${faturados.length} registros)</td>${tdTotSkus}<td class="r">${relFmt(totalCx)}</td><td></td></tr>
       </tbody>
     </table>`);
 }
