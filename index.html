@@ -6881,8 +6881,9 @@ async function evcPdfCliente(d){
     const sk=skus.filter(s=>d2.skus[s]&&evcSoma(d2.skus[s],11)>0);
     yy=doc.img(await evcGraficoPng(abrev,sk.map(s=>({nome:s,valores:d2.skus[s],cor:EVC_CORES[s]}))),yy);
     const f=v=>v?relFmt(v):'–';
-    const body=[...sk.map(s=>[s,...d2.skus[s].map(f),relFmt1(evcSoma(d2.skus[s],fimA)/(fimA+1)),relFmt(evcSoma(d2.skus[s],11))]),['TOTAL',...d2.total.map(f),relFmt1(media),relFmt(totAno)]];
-    doc.autoTable({startY:yy,head:[['Produto',...abrev,'Média','Total '+a]],body,styles:{fontSize:8,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[31,42,68]},didParseCell:x=>{if(x.section==='body'&&x.row.index===body.length-1){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}}});
+    const body=[...sk.map(s=>[s,...d2.skus[s].map(f),relFmt1(evcSoma(d2.skus[s],fimA)/(fimA+1)),relFmt(evcSoma(d2.skus[s],11))]),['TOTAL',...d2.total.map(f),relFmt1(media),relFmt(totAno)],
+      ...[['IN (verde)',d2.in],['OFF (laranja)',d2.off]].map(([rot,arr])=>[rot,...arr.map(f),relFmt1(evcSoma(arr,fimA)/(fimA+1)),relFmt(evcSoma(arr,11))])];
+    doc.autoTable({startY:yy,head:[['Produto',...abrev,'Média','Total '+a]],body,styles:{fontSize:8,halign:'center'},columnStyles:{0:{halign:'left',fontStyle:'bold'}},headStyles:{fillColor:[31,42,68]},didParseCell:x=>{if(x.section!=='body')return;if(x.row.index===sk.length){x.cell.styles.fontStyle='bold';x.cell.styles.fillColor=[229,231,235];}else if(x.row.index===sk.length+1){x.cell.styles.textColor=[22,163,74];x.cell.styles.fontStyle='bold';}else if(x.row.index===sk.length+2){x.cell.styles.textColor=[217,119,6];x.cell.styles.fontStyle='bold';}}});
   }
   if(evcMeta.ativa){
     const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j,evcPctDe(nome));
