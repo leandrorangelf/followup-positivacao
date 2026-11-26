@@ -7544,7 +7544,7 @@ function relRenderForecast(forecast){
     <div style="font-size:13px;font-weight:700">Relatório de Forecast — ${MESES[mesAtual]}/${anoAtual}
       <span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:8px">${forecast.length} registros · ${relFmt(totalCx)} cx previstas</span>
     </div>
-    <button class="primary-btn" onclick="relImprimirForecast()">Imprimir / PDF</button>
+    <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="relExportarExcel('forecast')">⬇ Excel</button><button class="primary-btn" onclick="relImprimirForecast()">Imprimir / PDF</button></div>
   </div>
   <div style="overflow-x:auto;background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow-sm)">
     <table style="width:100%;border-collapse:collapse;font-size:12px">
