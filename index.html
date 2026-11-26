@@ -7389,7 +7389,7 @@ function relRenderFaturado(lista){
     <div style="font-size:13px;font-weight:700">Relatório de Faturado — ${MESES[mesAtual]}/${anoAtual}
       <span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:8px">${faturados.length} registros · ${relFmt(totalCx)} cx faturadas</span>
     </div>
-    <button class="primary-btn" onclick="relImprimirFaturado()">Imprimir / PDF</button>
+    <div style="display:flex;gap:8px"><button class="secondary-btn" onclick="relExportarExcel('faturado')">⬇ Excel</button><button class="primary-btn" onclick="relImprimirFaturado()">Imprimir / PDF</button></div>
   </div>
   <div style="overflow-x:auto;background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow-sm)">
     <table style="width:100%;border-collapse:collapse;font-size:12px">
