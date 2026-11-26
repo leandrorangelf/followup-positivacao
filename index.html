@@ -7973,6 +7973,8 @@ function relTotalizadorClientesHTML(listaCompleta){
           <th style="text-align:center;padding:8px">Cretec cx</th>
           <th style="text-align:center;padding:8px">Click cx</th>
           <th style="text-align:center;padding:8px">Total cx</th>
+          <th style="text-align:center;padding:8px"><span class="dot-status dot-in"></span> IN</th>
+          <th style="text-align:center;padding:8px"><span class="dot-status dot-off"></span> OFF</th>
         </tr></thead>
         <tbody>${rows.map((r,i)=>`<tr style="border-top:1px solid var(--border);${i%2===1?'background:var(--soft)':''}">
           <td style="padding:7px 10px;font-weight:600">${vdEsc(r.nome)}</td>
