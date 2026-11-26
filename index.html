@@ -6708,7 +6708,7 @@ async function evcExcelCliente(d){
     [['IN (verde)',d2.in,'FF16A34A'],['OFF (laranja)',d2.off,'FFD97706']].forEach(([rot,arr,cor],k)=>{ // caixas por tipo de pedido
       const r=trY+1+k,row=ws.getRow(r);
       row.getCell(1).value=rot;row.getCell(1).font={bold:true,color:{argb:cor}};
-      for(let m=0;m<12;m++){const c=row.getCell(2+m);c.value=arr[m]||0;c.numFmt='#,##0;-#,##0;"–"';}
+      for(let m=0;m<12;m++){const c=row.getCell(2+m);c.value=arr[m]||0;c.numFmt='#,##0;-#,##0;"–"';c.font={color:{argb:cor}};}
       row.getCell(14).value={formula:`SUM(B${r}:${EVC_COL(2+fimA)}${r})/${fimA+1}`};row.getCell(14).numFmt='#,##0.0';
       row.getCell(15).value={formula:`SUM(B${r}:M${r})`};row.getCell(15).numFmt='#,##0';
       row.getCell(16).value={formula:`SUM(B${r}:${EVC_COL(2+fimC)}${r})`};row.getCell(16).numFmt='#,##0';
