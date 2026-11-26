@@ -6705,9 +6705,17 @@ async function evcExcelCliente(d){
     ws.getColumn(1).width=14;
     for(let c=2;c<=16;c++)ws.getColumn(c).width=c>13?13:8;
     ws.addConditionalFormatting({ref:`B4:M${3+n}`,rules:[{type:'colorScale',cfvo:[{type:'min'},{type:'max'}],color:[{argb:'FFFFFFFF'},{argb:'FF8B7CF6'}]}]});
-    const mm=ws.getRow(trY+2);mm.getCell(1).value='Melhor mês';mm.getCell(1).font={bold:true};
+    [['IN (verde)',d2.in,'FF16A34A'],['OFF (laranja)',d2.off,'FFD97706']].forEach(([rot,arr,cor],k)=>{ // caixas por tipo de pedido
+      const r=trY+1+k,row=ws.getRow(r);
+      row.getCell(1).value=rot;row.getCell(1).font={bold:true,color:{argb:cor}};
+      for(let m=0;m<12;m++){const c=row.getCell(2+m);c.value=arr[m]||0;c.numFmt='#,##0;-#,##0;"–"';}
+      row.getCell(14).value={formula:`SUM(B${r}:${EVC_COL(2+fimA)}${r})/${fimA+1}`};row.getCell(14).numFmt='#,##0.0';
+      row.getCell(15).value={formula:`SUM(B${r}:M${r})`};row.getCell(15).numFmt='#,##0';
+      row.getCell(16).value={formula:`SUM(B${r}:${EVC_COL(2+fimC)}${r})`};row.getCell(16).numFmt='#,##0';
+    });
+    const mm=ws.getRow(trY+4);mm.getCell(1).value='Melhor mês';mm.getCell(1).font={bold:true};
     mm.getCell(2).value={formula:`INDEX($B$3:$M$3,MATCH(MAX(B${trY}:M${trY}),B${trY}:M${trY},0))`};
-    evcXlImg(wb,ws,await evcGraficoPng(abrev,skus.map(s=>({nome:s,valores:d2.skus[s]||Array(12).fill(0),cor:EVC_CORES[s]}))),trY+3);
+    evcXlImg(wb,ws,await evcGraficoPng(abrev,skus.map(s=>({nome:s,valores:d2.skus[s]||Array(12).fill(0),cor:EVC_CORES[s]}))),trY+5);
   }
   if(evcMeta.ativa){ // aba da meta por produto: média e realizado ligados às abas de cada ano
     const j=evcMetaJanelas(anos),mLin=evcMetaLinhasCliente(ag,j,evcPctDe(nome));
