@@ -7985,7 +7985,9 @@ function relTotalizadorClientesHTML(listaCompleta){
           <td style="padding:7px 8px;text-align:center">${r.cretecCx?relFmt(r.cretecCx):'—'}</td>
           <td style="padding:7px 8px;text-align:center">${r.clickCx?relFmt(r.clickCx):'—'}</td>
           <td style="padding:7px 8px;text-align:center;font-weight:700">${relFmt(r.totalCx)}</td>
-        </tr>`).join('')}
+          <td style="padding:7px 8px;text-align:center">${r.inCx?relFmt(r.inCx):'—'}</td>
+          <td style="padding:7px 8px;text-align:center">${r.offCx?relFmt(r.offCx):'—'}</td>
+        </tr>`.replace(/^/,'')).join('')}
         <tr style="background:var(--border);font-weight:700;font-size:11px;border-top:2px solid var(--text)">
           <td colspan="3" style="padding:8px 10px">TOTAL — ${rows.length} cliente(s)</td>
           <td style="text-align:center;padding:8px">${totPedidos}</td>
