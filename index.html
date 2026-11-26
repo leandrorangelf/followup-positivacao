@@ -7449,7 +7449,7 @@ async function relExportarExcel(aba){
     const wb=new ExcelJS.Workbook();wb.creator='Follow-up Positivação';
     const ws=wb.addWorksheet(nome,{views:[{state:'frozen',ySplit:3,showGridLines:false}]});
     ws.getCell('A1').value=`Relatório de ${nome} — ${relCoordFiltro==='todos'?'Todos os coordenadores':relCoordFiltro} · ${MESES[mesAtual]} ${anoAtual}`;ws.getCell('A1').font={bold:true,size:14};
-    const hr=ws.getRow(3);hr.values=['#','Cliente','UF','Coord','Tipo',...(forecast?[]:['Origem']),...VD_SKUS,'Total cx',forecast?'Prob.':'Status'];evcXlHeader(hr);
+    const hr=ws.getRow(3);hr.values=['#','Cliente','UF','Coord','Mês','Tipo',...(forecast?[]:['Origem']),...VD_SKUS,'Total cx',forecast?'Prob.':'Status'];evcXlHeader(hr);
     lista.forEach((p,i)=>{
       const r=4+i,row=ws.getRow(r),x=forecast?null:vdResumoPedido(p);
       const tipo=forecast?String(p.tipo||'in').toLowerCase():vdTipoPedido(p);
