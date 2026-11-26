@@ -7936,10 +7936,12 @@ function relTotalizadorClientesHTML(listaCompleta){
   const porCliente={};
   lista.forEach(p=>{
     const k=p.cliente_nome;
-    if(!porCliente[k])porCliente[k]={nome:k,uf:p.cliente_uf,coord:p.coordenador,pedidos:0,gudangCx:0,cretecCx:0,clickCx:0,totalCx:0};
+    if(!porCliente[k])porCliente[k]={nome:k,uf:p.cliente_uf,coord:p.coordenador,pedidos:0,gudangCx:0,cretecCx:0,clickCx:0,totalCx:0,inCx:0,offCx:0};
     porCliente[k].pedidos++;
+    const tp=vdTipoPedido(p)==='off'?'offCx':'inCx';
     (p.pedidos_vendas_itens||[]).forEach(i=>{
       const q=Number(i.qty_caixas||0);
+      porCliente[k][tp]+=q;
       if(GUDANG_SKUS.includes(i.sku))porCliente[k].gudangCx+=q;
       else if(CRETEC_SKUS.includes(i.sku))porCliente[k].cretecCx+=q;
       else if(i.sku==='CK')porCliente[k].clickCx+=q;
