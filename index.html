@@ -7445,7 +7445,7 @@ async function relExportarExcel(aba){
     if(!lista.length){toast('Nada para exportar','error');return;}
     await evcCarregarExcelJS();
     const nome={pedidos:'Pedidos',faturado:'Faturado',forecast:'Forecast'}[aba];
-    const c0=forecast?6:7,cT=c0+VD_SKUS.length;
+    const c0=forecast?7:8,cT=c0+VD_SKUS.length;
     const wb=new ExcelJS.Workbook();wb.creator='Follow-up Positivação';
     const ws=wb.addWorksheet(nome,{views:[{state:'frozen',ySplit:3,showGridLines:false}]});
     ws.getCell('A1').value=`Relatório de ${nome} — ${relCoordFiltro==='todos'?'Todos os coordenadores':relCoordFiltro} · ${MESES[mesAtual]} ${anoAtual}`;ws.getCell('A1').font={bold:true,size:14};
