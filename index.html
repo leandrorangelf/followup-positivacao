@@ -7995,6 +7995,8 @@ function relTotalizadorClientesHTML(listaCompleta){
           <td style="text-align:center;padding:8px">${relFmt(totCretec)}</td>
           <td style="text-align:center;padding:8px">${relFmt(totClick)}</td>
           <td style="text-align:center;padding:8px">${relFmt(totCx)}</td>
+          <td style="text-align:center;padding:8px">${relFmt(rows.reduce((s,r)=>s+r.inCx,0))}</td>
+          <td style="text-align:center;padding:8px">${relFmt(rows.reduce((s,r)=>s+r.offCx,0))}</td>
         </tr>
         </tbody>
       </table>
