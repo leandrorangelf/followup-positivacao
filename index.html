@@ -6798,9 +6798,9 @@ async function evcExcelRanking(d){
   if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,cCresc+1);
   {const cp=cCresc+(metaOn?9:1);[1,2].forEach(k=>{const col=EVC_COL(cp+k),c=tr.getCell(cp+k);c.value={formula:`SUM(${col}5:${col}${rt-1})`};c.numFmt='#,##0';});}
   tr.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
-  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?9:1)}};
+  ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?11:3)}};
   ws.getColumn(1).width=36;ws.getColumn(2).width=14;
-  for(let c=3;c<=cCresc+(metaOn?9:1);c++)ws.getColumn(c).width=16;ws.getColumn(cCresc+(metaOn?9:1)).width=36;if(metaOn)evcXlMetaVisual(ws,cCresc+1,5,rt-1);
+  for(let c=3;c<=cCresc+(metaOn?11:3);c++)ws.getColumn(c).width=16;ws.getColumn(cCresc+(metaOn?9:1)).width=36;if(metaOn)evcXlMetaVisual(ws,cCresc+1,5,rt-1);
   // aba mensal: total geral mês a mês por ano + variação
   const wm=wb.addWorksheet('Total por mês',{views:[{showGridLines:false}]});
   wm.getCell('A1').value='Total por mês — todos os clientes do filtro';wm.getCell('A1').font={bold:true,size:16};
