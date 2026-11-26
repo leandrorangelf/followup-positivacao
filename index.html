@@ -7921,6 +7921,22 @@ function relBaixarCsv(filename,linhas){
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+const REL_XL_IN='FF16A34A',REL_XL_OFF='FFD97706';
+async function relBaixarXlsx(arq,aba,linhas,cores){ // cores: {coluna(1-based):argb}; 1ª linha = cabeçalho, última = TOTAL
+  try{
+    await evcCarregarExcelJS();
+    const wb=new ExcelJS.Workbook(),ws=wb.addWorksheet(aba,{views:[{state:'frozen',ySplit:1}]});
+    linhas.forEach(l=>ws.addRow(l));
+    evcXlHeader(ws.getRow(1));
+    Object.entries(cores).forEach(([i,cor])=>{
+      ws.getRow(1).getCell(+i).fill={type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+      for(let r=2;r<=linhas.length;r++)ws.getRow(r).getCell(+i).font={bold:true,color:{argb:cor}};
+    });
+    const tr=ws.getRow(linhas.length);tr.eachCell(c=>{c.border={top:{style:'medium'}};if(!c.font||!c.font.color)c.font={bold:true};});
+    ws.columns.forEach(c=>{c.width=14;});ws.getColumn(1).width=34;
+    evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),arq);
+  }catch(e){toast('Erro ao gerar o Excel','error');}
+}
 function relExportarTotalizadorSku(){
   if(!relTotSkuRows.length){toast('Nada para exportar','error');return;}
   const linhas=[['SKU','Total cx','In cx','Off cx']];
