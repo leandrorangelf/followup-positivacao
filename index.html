@@ -7589,9 +7589,9 @@ function relImprimirForecast(){
   }).join('');
   relPrintWindow('Relatório de Forecast',`
     <table>
-      <thead><tr><th>#</th><th>Cliente</th><th>Coord</th><th>Tipo</th>${thSkus}<th class="r">Total cx</th><th>Prob.</th><th>Status</th></tr></thead>
+      <thead><tr><th>#</th><th>Cliente</th><th>Coord</th><th>Mês</th><th>Tipo</th>${thSkus}<th class="r">Total cx</th><th>Prob.</th><th>Status</th></tr></thead>
       <tbody>${rows}
-        <tr class="total-row"><td colspan="4">TOTAL (${forecast.length})</td>${tdTotSkus}<td class="r">${relFmt(totalCx)}</td><td colspan="2"></td></tr>
+        <tr class="total-row"><td colspan="5">TOTAL (${forecast.length})</td>${tdTotSkus}<td class="r">${relFmt(totalCx)}</td><td colspan="2"></td></tr>
       </tbody>
     </table>`);
 }
