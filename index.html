@@ -7493,7 +7493,7 @@ function relImprimirFaturado(){
       const fat=it?Math.min(Number(it.qty_caixas||0),Number(it.qty_faturada||0)):0;
       return`<td class="c">${fat||'—'}</td>`;
     }).join('');
-    return`<tr><td>${i+1}</td><td><strong>${vdEsc(p.cliente_nome)}</strong></td><td>${vdEsc(p.cliente_uf||'—')}</td><td>${vdEsc(p.coordenador)}</td><td>${badge}</td>${skuTds}<td class="r"><strong>${x.faturadoCx}</strong></td><td>${stLabel}</td></tr>`;
+    return`<tr><td>${i+1}</td><td><strong>${vdEsc(p.cliente_nome)}</strong></td><td>${vdEsc(p.cliente_uf||'—')}</td><td>${vdEsc(p.coordenador)}</td><td>${MESES[p.mes]?.slice(0,3)||'—'}/${p.ano}</td><td>${badge}</td>${skuTds}<td class="r"><strong>${x.faturadoCx}</strong></td><td>${stLabel}</td></tr>`;
   }).join('');
   relPrintWindow('Relatório de Faturado',`
     <table>
