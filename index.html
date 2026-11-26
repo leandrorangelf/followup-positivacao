@@ -6475,7 +6475,8 @@ function evcRenderRanking(dados,nomes){
     const media=ag[ult]?evcSoma(ag[ult].total,fimC)/(fimC+1):0;
     const meta=metaOn?evcMetaCalc(ag[jm.refAno]&&ag[jm.refAno].total,ag[jm.realAno]&&ag[jm.realAno].total,jm,true,evcPctDe(n)):null;
     const val=evcPrecoTxt(evcPrecos(n)); // preço aprovado do cliente (R$/pacote)
-    return{nome:n,coord:porCli[n][0].coordenador,tots,media,pct,meta,val,pctProprio:evcMeta.pcts[n]!=null?evcMeta.pcts[n]:null};
+    const inCx=ag[ult]?evcSoma(ag[ult].in,fimC):0,offCx=ag[ult]?evcSoma(ag[ult].off,fimC):0;
+    return{nome:n,coord:porCli[n][0].coordenador,tots,media,pct,meta,val,inCx,offCx,pctProprio:evcMeta.pcts[n]!=null?evcMeta.pcts[n]:null};
   }).sort((a,b)=>(b.tots[b.tots.length-1]||0)-(a.tots[a.tots.length-1]||0));
   const ult=anos[anos.length-1];
   const agTodos=evcAgregar(dados);
