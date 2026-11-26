@@ -6805,8 +6805,9 @@ async function evcExcelRanking(d){
   for(let k=0;k<nA;k++){const col=EVC_COL(3+k);tr.getCell(3+k).value={formula:`SUM(${col}5:${col}${rt-1})`};tr.getCell(3+k).numFmt='#,##0';}
   fRow(rt);
   if(metaOn)evcXlMetaTot(ws,rt,5,rt-1,cCresc+1);
-  {const cp=cCresc+(metaOn?9:1);[1,2].forEach(k=>{const col=EVC_COL(cp+k),c=tr.getCell(cp+k);c.value={formula:`SUM(${col}5:${col}${rt-1})`};c.numFmt='#,##0';});}
+  {const cp=cCresc+(metaOn?9:1);[1,2].forEach(k=>{const col=EVC_COL(cp+k),c=tr.getCell(cp+k);c.value={formula:`SUM(${col}5:${col}${rt-1})`};c.numFmt='#,##0';const h=ws.getRow(4).getCell(cp+k);h.fill={type:'pattern',pattern:'solid',fgColor:{argb:k===1?'FF16A34A':'FFD97706'}};});}
   tr.eachCell(c=>{c.font={bold:true};c.border={top:{style:'medium'}};});
+  {const cp=cCresc+(metaOn?9:1);[1,2].forEach(k=>{tr.getCell(cp+k).font={bold:true,color:{argb:k===1?'FF16A34A':'FFD97706'}};});}
   ws.autoFilter={from:{row:4,column:1},to:{row:rt-1,column:cCresc+(metaOn?11:3)}};
   ws.getColumn(1).width=36;ws.getColumn(2).width=14;
   for(let c=3;c<=cCresc+(metaOn?11:3);c++)ws.getColumn(c).width=16;ws.getColumn(cCresc+(metaOn?9:1)).width=36;if(metaOn)evcXlMetaVisual(ws,cCresc+1,5,rt-1);
