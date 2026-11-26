@@ -7585,7 +7585,7 @@ function relImprimirForecast(){
     const prob=p.probabilidade||'—';
     const probBadge=prob==='alta'?'<span class="badge-alta">Alta</span>':prob==='media'?'<span class="badge-media">Média</span>':prob;
     const skuTds=RSKUS.map(s=>{const it=(p.forecast_pedidos_itens||[]).find(x=>x.sku===s);return`<td class="c">${Number(it?.qty_caixas||0)||'—'}</td>`;}).join('');
-    return`<tr><td>${i+1}</td><td><strong>${vdEsc(p.cliente_nome)}</strong></td><td>${vdEsc(p.coordenador)}</td><td>${badge}</td>${skuTds}<td class="r"><strong>${Number(p.total_caixas||0)}</strong></td><td>${probBadge}</td><td>${vdEsc(p.status||'—')}</td></tr>`;
+    return`<tr><td>${i+1}</td><td><strong>${vdEsc(p.cliente_nome)}</strong></td><td>${vdEsc(p.coordenador)}</td><td>${MESES[relMesForecast(p)]?.slice(0,3)||'—'}/${p.forecast_ano||anoAtual}</td><td>${badge}</td>${skuTds}<td class="r"><strong>${Number(p.total_caixas||0)}</strong></td><td>${probBadge}</td><td>${vdEsc(p.status||'—')}</td></tr>`;
   }).join('');
   relPrintWindow('Relatório de Forecast',`
     <table>
