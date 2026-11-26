@@ -7449,7 +7449,7 @@ async function relExportarExcel(aba){
     const wb=new ExcelJS.Workbook();wb.creator='Follow-up Positivação';
     const ws=wb.addWorksheet(nome,{views:[{state:'frozen',ySplit:3,showGridLines:false}]});
     ws.getCell('A1').value=`Relatório de ${nome} — ${relCoordFiltro==='todos'?'Todos os coordenadores':relCoordFiltro} · ${MESES[mesAtual]} ${anoAtual}`;ws.getCell('A1').font={bold:true,size:14};
-    const hr=ws.getRow(3);hr.values=['#','Cliente','UF','Coord','Mês','Tipo',...(forecast?[]:['Origem']),...VD_SKUS,'Total cx',forecast?'Prob.':'Status'];evcXlHeader(hr);
+    const hr=ws.getRow(3);hr.values=['#','Cliente','Mês','UF','Coord','Tipo',...(forecast?[]:['Origem']),...VD_SKUS,'Total cx',forecast?'Prob.':'Status'];evcXlHeader(hr);
     lista.forEach((p,i)=>{
       const r=4+i,row=ws.getRow(r),x=forecast?null:vdResumoPedido(p);
       const tipo=forecast?String(p.tipo||'in').toLowerCase():vdTipoPedido(p);
@@ -7457,8 +7457,8 @@ async function relExportarExcel(aba){
       const qs=VD_SKUS.map(s=>{const it=itens.find(y=>y.sku===s);if(!it)return 0;const q=Number(it.qty_caixas||0);return aba==='faturado'?Math.min(q,Number(it.qty_faturada||0)):q;});
       const total=forecast?Number(p.total_caixas||0):aba==='faturado'?x.faturadoCx:x.pedidoCx;
       const status=forecast?(p.probabilidade||'—'):x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Parcial':'Pendente';
-      const mesTxt=forecast?(MESES[relMesForecast(p)]||'—')+'/'+(p.forecast_ano||anoAtual):(MESES[p.mes]||'—')+'/'+p.ano;
-      row.values=[i+1,p.cliente_nome||'',p.cliente_uf||'',p.coordenador||'',mesTxt,tipo==='off'?'OFF':'IN',...(forecast?[]:[relOrigemNome(p.origem)||'Fábrica']),...qs.map(q=>q||0),total,status];
+      const mi=forecast?relMesForecast(p):relMesPedido(p),anoP=forecast?(p.forecast_ano??p.ano):p.ano;
+      row.values=[i+1,p.cliente_nome||'',(MESES[mi]||'—')+(anoP?'/'+anoP:''),p.cliente_uf||'',p.coordenador||'',tipo==='off'?'OFF':'IN',...(forecast?[]:[relOrigemNome(p.origem)||'Fábrica']),...qs.map(q=>q||0),total,status];
       const ct=row.getCell(6);ct.alignment={horizontal:'center'};ct.font={bold:true,color:{argb:tipo==='off'?'FF92400E':'FF166534'}};ct.fill={type:'pattern',pattern:'solid',fgColor:{argb:tipo==='off'?'FFFEF3C7':'FFDCFCE7'}};
       for(let c=c0;c<=cT;c++)row.getCell(c).numFmt='#,##0;-#,##0;"–"';
     });
@@ -7469,7 +7469,7 @@ async function relExportarExcel(aba){
       row.eachCell(c=>{c.font={bold:true,...(cor?{color:{argb:cor}}:{})};if(!k)c.border={top:{style:'medium'}};});
     });
     ws.autoFilter={from:{row:3,column:1},to:{row:fim,column:cT+1}};
-    ws.getColumn(1).width=5;ws.getColumn(2).width=36;ws.getColumn(3).width=6;ws.getColumn(4).width=16;ws.getColumn(5).width=12;ws.getColumn(6).width=8;
+    ws.getColumn(1).width=5;ws.getColumn(2).width=36;ws.getColumn(3).width=12;ws.getColumn(4).width=6;ws.getColumn(5).width=16;ws.getColumn(6).width=8;
     for(let c=7;c<=cT+1;c++)ws.getColumn(c).width=c>=c0&&c<=cT?9:14;
     evcBaixarBlob(new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'relatorio-'+aba+'.xlsx');
   }catch(e){toast('Erro ao gerar o Excel','error');}
