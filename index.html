@@ -7459,13 +7459,13 @@ async function relExportarExcel(aba){
       const status=forecast?(p.probabilidade||'—'):x.status==='faturado'?'Faturado':x.status==='entregue'?'Entregue':x.status==='parcial'?'Parcial':'Pendente';
       const mesTxt=forecast?(MESES[relMesForecast(p)]||'—')+'/'+(p.forecast_ano||anoAtual):(MESES[p.mes]||'—')+'/'+p.ano;
       row.values=[i+1,p.cliente_nome||'',p.cliente_uf||'',p.coordenador||'',mesTxt,tipo==='off'?'OFF':'IN',...(forecast?[]:[relOrigemNome(p.origem)||'Fábrica']),...qs.map(q=>q||0),total,status];
-      const ct=row.getCell(5);ct.alignment={horizontal:'center'};ct.font={bold:true,color:{argb:tipo==='off'?'FF92400E':'FF166534'}};ct.fill={type:'pattern',pattern:'solid',fgColor:{argb:tipo==='off'?'FFFEF3C7':'FFDCFCE7'}};
+      const ct=row.getCell(6);ct.alignment={horizontal:'center'};ct.font={bold:true,color:{argb:tipo==='off'?'FF92400E':'FF166534'}};ct.fill={type:'pattern',pattern:'solid',fgColor:{argb:tipo==='off'?'FFFEF3C7':'FFDCFCE7'}};
       for(let c=c0;c<=cT;c++)row.getCell(c).numFmt='#,##0;-#,##0;"–"';
     });
     const rt=4+lista.length,fim=rt-1;
     [['TOTAL',null,null],['IN (verde)','IN',REL_XL_IN],['OFF (laranja)','OFF',REL_XL_OFF]].forEach(([rot,tp,cor],k)=>{
       const row=ws.getRow(rt+k);row.getCell(2).value=rot;
-      for(let c=c0;c<=cT;c++){const col=EVC_COL(c);row.getCell(c).value={formula:tp?`SUMIF($E$4:$E$${fim},"${tp}",${col}4:${col}${fim})`:`SUM(${col}4:${col}${fim})`};row.getCell(c).numFmt='#,##0';}
+      for(let c=c0;c<=cT;c++){const col=EVC_COL(c);row.getCell(c).value={formula:tp?`SUMIF($F$4:$F$${fim},"${tp}",${col}4:${col}${fim})`:`SUM(${col}4:${col}${fim})`};row.getCell(c).numFmt='#,##0';}
       row.eachCell(c=>{c.font={bold:true,...(cor?{color:{argb:cor}}:{})};if(!k)c.border={top:{style:'medium'}};});
     });
     ws.autoFilter={from:{row:3,column:1},to:{row:fim,column:cT+1}};
