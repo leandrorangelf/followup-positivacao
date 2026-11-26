@@ -8005,8 +8005,8 @@ function relTotalizadorClientesHTML(listaCompleta){
 }
 function relExportarTotalizadorClientes(){
   if(!relTotClientesRows.length){toast('Nada para exportar','error');return;}
-  const linhas=[['Cliente','UF','Coordenador','Pedidos','Gudang cx','Cretec cx','Click cx','Total cx']];
-  relTotClientesRows.forEach(r=>linhas.push([r.nome,r.uf||'',r.coord||'',r.pedidos,r.gudangCx,r.cretecCx,r.clickCx,r.totalCx]));
+  const linhas=[['Cliente','UF','Coordenador','Pedidos','Gudang cx','Cretec cx','Click cx','Total cx','IN cx','OFF cx']];
+  relTotClientesRows.forEach(r=>linhas.push([r.nome,r.uf||'',r.coord||'',r.pedidos,r.gudangCx,r.cretecCx,r.clickCx,r.totalCx,r.inCx,r.offCx]));
   const totPedidos=relTotClientesRows.reduce((s,r)=>s+r.pedidos,0);
   const totGudang=relTotClientesRows.reduce((s,r)=>s+r.gudangCx,0);
   const totCretec=relTotClientesRows.reduce((s,r)=>s+r.cretecCx,0);
