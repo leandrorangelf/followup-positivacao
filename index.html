@@ -6353,8 +6353,9 @@ function evcAgregar(pedidos){
   pedidos.forEach(p=>{
     const ano=Number(p.ano),mes=Number(p.mes);
     if(!(mes>=0&&mes<=11)||!ano)return;
-    if(!porAno[ano])porAno[ano]={skus:{},total:Array(12).fill(0)};
+    if(!porAno[ano])porAno[ano]={skus:{},total:Array(12).fill(0),in:Array(12).fill(0),off:Array(12).fill(0)};
     const tot=vdResumoPedido(p).pedidoCx;
+    porAno[ano][vdTipoPedido(p)==='off'?'off':'in'][mes]+=tot; // IN (verde) / OFF (laranja)
     let somaItens=0;
     (p.pedidos_vendas_itens||[]).forEach(i=>{
       const q=Number(i.qty_caixas||0);
