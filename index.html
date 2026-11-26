@@ -6798,7 +6798,7 @@ async function evcExcelRanking(d){
     fRow(r);
     if(metaOn)evcXlMeta(ws,r,l.meta,cCresc+1,jm,true,null,null,l.pctProprio);
     {const c=row.getCell(cCresc+(metaOn?9:1));c.value=l.val;}
-    {const cp=cCresc+(metaOn?9:1);[l.inCx,l.offCx].forEach((v,k)=>{const c=row.getCell(cp+1+k);c.value=v;c.numFmt='#,##0;-#,##0;"–"';});}
+    {const cp=cCresc+(metaOn?9:1);[l.inCx,l.offCx].forEach((v,k)=>{const c=row.getCell(cp+1+k);c.value=v;c.numFmt='#,##0;-#,##0;"–"';c.font={bold:true,color:{argb:k?'FFD97706':'FF16A34A'}};});}
   });
   const rt=5+linhas.length,tr=ws.getRow(rt);
   tr.getCell(1).value=`TOTAL — ${linhas.length} cliente(s)`;
