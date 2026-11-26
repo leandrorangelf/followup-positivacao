@@ -8030,7 +8030,7 @@ function relExportarTotalizadorClientes(){
   const totClick=relTotClientesRows.reduce((s,r)=>s+r.clickCx,0);
   const totCx=relTotClientesRows.reduce((s,r)=>s+r.totalCx,0);
   linhas.push(['TOTAL','','',totPedidos,totGudang,totCretec,totClick,totCx,relTotClientesRows.reduce((s,r)=>s+r.inCx,0),relTotClientesRows.reduce((s,r)=>s+r.offCx,0)]);
-  relBaixarCsv('totalizador-clientes.csv',linhas);
+  relBaixarXlsx('totalizador-clientes.xlsx','Por cliente',linhas,{9:REL_XL_IN,10:REL_XL_OFF});
 }
 
 function relToggleSel(id){
