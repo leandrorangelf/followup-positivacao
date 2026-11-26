@@ -7943,7 +7943,7 @@ function relExportarTotalizadorSku(){
   let totTotal=0,totIn=0,totOff=0;
   relTotSkuRows.forEach(([sku,v])=>{linhas.push([sku,v.total,v.in,v.off]);totTotal+=v.total;totIn+=v.in;totOff+=v.off;});
   linhas.push(['TOTAL',totTotal,totIn,totOff]);
-  relBaixarCsv('totalizador-sku.csv',linhas);
+  relBaixarXlsx('totalizador-sku.xlsx','Por SKU',linhas,{3:REL_XL_IN,4:REL_XL_OFF});
 }
 let relTotClientesRows=[];
 function relTotalizadorClientesHTML(listaCompleta){
